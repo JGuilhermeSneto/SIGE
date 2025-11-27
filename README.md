@@ -25,4 +25,13 @@ Se estiver tudo livre, atualize seus arquivos locais com:
 $ git pull origin front
 
 testeando
+<<<<<<< HEAD
+
+REadme do pedro
+=======
+
+Fork de isreal
+
+=======
 ddd
+>>>>>>> 8457959969ea8f337228eb838eaa8b4433cc0504
