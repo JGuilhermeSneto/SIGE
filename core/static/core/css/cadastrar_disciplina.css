@@ -2,25 +2,27 @@ body
 {
     background-color:#fff;
 }
-.conteudo {
+.conteudo 
+{
     margin-left: 220px;
-    margin-top: 10px; /* ↓ antes era 60px */
+    margin-top: 90px; /* ↓ antes era 60px */
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items:center;
+    justify-content:center;
 }
 
 .titulo
 {
     font-size:40px;
-    padding:10px;
+    margin-bottom: 35px;
 }
 
 .formulario
 {
-    padding-top:20px;
-    width: 100%;
+    padding-top:30px;
+    width: 90%;
     border-top:1px solid #ededed;
 }
 
@@ -32,15 +34,47 @@ body
     margin-bottom: 15px;
 }
 
-.formulario .linha label {
+.formulario .linha label 
+{
     width: 50%;
 }
 
 .formulario input,
-.formulario select {
+.formulario select 
+{
     flex: 1;        
     padding: 5px 8px;
     color: #868686;
+    border:1px solid #d3d3d3;
+}
+.acoes 
+{
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-secondary
+{
+    border: 1px solid #d3d3d3;
+    background-color:#e9ecf1;
+    border-radius:5px;
+    padding:5px 8px;
+    color:black;
+    font-size:15px;
+    text-decoration: none;
+}
+
+.btn-primary
+{
+    border: 1px solid #cfd9f1;
+    background-color:#3176f4;
+    border-radius:5px;
+    padding:5px 8px;
+    color:white;
+    font-size:15px;
+    cursor:pointer;
 }
 
 /* Responsividade para Tablets e Telas Médias */
