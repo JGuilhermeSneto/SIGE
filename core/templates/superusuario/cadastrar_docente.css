@@ -529,3 +529,11 @@ select:-webkit-autofill:focus {
     -webkit-text-fill-color: #333;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+.etapa {
+    display: none;
+}
+
+.etapa.ativa {
+    display: block;
+}

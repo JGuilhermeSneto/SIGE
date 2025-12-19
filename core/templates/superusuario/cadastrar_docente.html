@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGE - Cadastrar Discentes</title>
+    <title>SIGE - Cadastrar Docentes</title>
 
-    <link rel="stylesheet" href="cadastrar_discente.css">
+    <link rel="stylesheet" href="cadastrar_docente.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -15,10 +14,9 @@
 
 <div class="container">
 
-    <!-- CONTEÚDO -->
     <main>
         <div class="topo-formulario">
-            <h1>cadastrar discentes</h1>
+            <h1>cadastrar docentes</h1>
         </div>
 
         <div class="conteudo-principal-rolavel">
@@ -61,41 +59,6 @@
                         <input type="date">
                     </div>
 
-                    <div class="caixa-texto">
-                        <label>Naturalidade</label>
-                        <select>
-                            <option disabled selected>Selecione</option>
-                            <option>Brasileiro(a)</option>
-                            <option>Estrangeiro(a)</option>
-                        </select>
-                    </div>
-
-                    <div class="caixa-texto">
-                        <label>Filiação 1</label>
-                        <input type="text">
-                    </div>
-
-                    <div class="caixa-texto">
-                        <label>Filiação 2</label>
-                        <input type="text">
-                    </div>
-
-                    <div class="caixa-texto" id="necessidade-especial-container">
-                        <label>Aluno com NE</label>
-                        <div class="radio-opcoes-simples">
-                            <input type="radio" name="ne" id="ne_sim">
-                            <label for="ne_sim">Sim</label>
-
-                            <input type="radio" name="ne" id="ne_nao" checked>
-                            <label for="ne_nao">Não</label>
-                        </div>
-                    </div>
-
-                    <div class="caixa-texto" id="descricao-ne-container" style="display:none;">
-                        <label>Descrição</label>
-                        <textarea></textarea>
-                    </div>
-
                     <div class="botoes">
                         <button type="button" class="btn" onclick="proximaEtapa(1)">Próximo</button>
                     </div>
@@ -111,7 +74,7 @@
 
                     <div class="caixa-texto">
                         <label>Estado</label>
-                        <select id="estado">
+                        <select>
                             <option disabled selected>UF</option>
                             <option>SP</option>
                             <option>RJ</option>
@@ -119,8 +82,8 @@
                     </div>
 
                     <div class="caixa-texto">
-                        <label>Cidade</label>
-                        <input type="text" id="cidade">
+                        <label>Município</label>
+                        <input type="text">
                     </div>
 
                     <div class="caixa-texto">
@@ -135,6 +98,11 @@
 
                     <div class="caixa-texto">
                         <label>Número</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Complemento</label>
                         <input type="text">
                     </div>
 
@@ -153,11 +121,18 @@
                     </div>
 
                     <div class="caixa-texto">
-                        <label>Turma</label>
-                        <select>
-                            <option>INFORMÁTICA</option>
-                            <option>TSI</option>
-                        </select>
+                        <label>Formação</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Especialização</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Área de Atuação</label>
+                        <input type="text">
                     </div>
 
                     <div class="caixa-texto">
@@ -183,11 +158,6 @@
 
 <!-- ================= JS ================= -->
 <script>
-/* MENU */
-document.getElementById("menu-toggle").onclick = () => {
-    document.getElementById("menu-lateral").classList.toggle("ativo");
-};
-
 /* MÁSCARA TELEFONE */
 document.getElementById("telefone").addEventListener("input", e => {
     let v = e.target.value.replace(/\D/g, "");
@@ -213,14 +183,6 @@ function voltarEtapa(n) {
     document.getElementById(`passo-${n}`).classList.remove("ativo");
     document.getElementById(`passo-${n-1}`).classList.add("ativo");
 }
-
-/* NECESSIDADE ESPECIAL */
-document.getElementById("ne_sim").onchange = () => {
-    document.getElementById("descricao-ne-container").style.display = "flex";
-};
-document.getElementById("ne_nao").onchange = () => {
-    document.getElementById("descricao-ne-container").style.display = "none";
-};
 </script>
 
 </body>
