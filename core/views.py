@@ -33,7 +33,7 @@ def login_view(request):
             elif hasattr(user, 'aluno'):
                 return redirect('painel_aluno')
             elif hasattr(user, 'gestor'):
-                return redirect('painel_gestor')  # <- adicionado
+                return redirect('painel_super')  # <- adicionado
     else:
         form = LoginForm()
 
@@ -71,14 +71,19 @@ def gerar_calendario():
 def is_superuser(user):
     return user.is_superuser
 
+def is_super_ou_gestor(user):
+    return user.is_superuser or hasattr(user, 'gestor')
+
+
 
 @login_required
-@user_passes_test(is_superuser)
+@user_passes_test(is_super_ou_gestor)
 def painel_super(request):
     foto_perfil_url = get_foto_perfil(request.user)
 
     return render(request, "core/painel_super.html", {
         "usuario": request.user,
+        "nome_exibicao": get_nome_exibicao(request.user),
         "total_professores": Professor.objects.count(),
         "total_alunos": Aluno.objects.count(),
         "total_turmas": Turma.objects.count(),
@@ -103,11 +108,16 @@ def usuarios(request):
     })
 
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import update_session_auth_hash
+from django.shortcuts import render, redirect
+
 @login_required
 def editar_perfil(request):
     user = request.user
 
-    # Detecta se o usuário tem um perfil associado
+    # Detecta perfil associado
     perfil = None
     if hasattr(user, "professor"):
         perfil = user.professor
@@ -115,23 +125,31 @@ def editar_perfil(request):
         perfil = user.aluno
     elif hasattr(user, "gestor"):
         perfil = user.gestor
-    # superusuário continua sem perfil, e funciona mesmo assim
+    # superusuário pode não ter perfil e está ok
 
     if request.method == "POST":
         form = EditarPerfilForm(request.POST, instance=user)
 
         if form.is_valid():
+            # ---------------------------
+            # 📧 Salva dados básicos
+            # ---------------------------
             user = form.save(commit=False)
-            user.save()
 
-            # Se o campo "nova senha" foi preenchido
+            # ---------------------------
+            # 🔐 Troca de senha (se houver)
+            # ---------------------------
             nova_senha = form.cleaned_data.get("nova_senha")
             if nova_senha:
                 user.set_password(nova_senha)
                 user.save()
-                update_session_auth_hash(request, user)  # mantém logado
+                update_session_auth_hash(request, user)
+            else:
+                user.save()
 
-            # Se enviou foto e o usuário tem perfil com campo foto
+            # ---------------------------
+            # 📸 Foto de perfil
+            # ---------------------------
             foto = request.FILES.get("foto")
             if perfil and foto:
                 perfil.foto = foto
@@ -139,7 +157,9 @@ def editar_perfil(request):
 
             messages.success(request, "Perfil atualizado com sucesso!")
 
-            # Redirecionamento correto de acordo com o tipo de usuário
+            # ---------------------------
+            # 🔁 Redirecionamento
+            # ---------------------------
             if user.is_superuser:
                 return redirect("painel_super")
             if hasattr(user, "professor"):
@@ -147,18 +167,19 @@ def editar_perfil(request):
             if hasattr(user, "aluno"):
                 return redirect("painel_aluno")
             if hasattr(user, "gestor"):
-                return redirect("painel_gestor")
+                return redirect("painel_super")
 
-            # fallback (quase nunca usado)
             return redirect("login")
+
+        else:
+            # Erros do form (senha, email, etc.)
+            messages.error(request, "Corrija os erros abaixo.")
 
     else:
         form = EditarPerfilForm(instance=user)
 
-    # foto atual se existir
-    foto_atual = None
-    if perfil and perfil.foto:
-        foto_atual = perfil.foto.url
+    # Foto atual
+    foto_atual = perfil.foto.url if perfil and perfil.foto else None
 
     return render(request, "core/editar_perfil.html", {
         "form": form,
@@ -166,6 +187,7 @@ def editar_perfil(request):
         "foto_atual": foto_atual,
         "foto_perfil_url": get_foto_perfil(user),
     })
+
 
 
 
@@ -226,6 +248,25 @@ def remover_foto_perfil(request):
 
     messages.success(request, "Foto removida com sucesso!")
     return redirect("editar_perfil")
+
+def get_nome_exibicao(user):
+    if hasattr(user, 'gestor'):
+        return user.gestor.nome_completo
+
+    if hasattr(user, 'professor'):
+        return user.professor.nome_completo
+
+    if hasattr(user, 'aluno'):
+        return user.aluno.nome_completo
+
+    # Superusuário
+    nome = f"{user.first_name} {user.last_name}".strip()
+    if nome:
+        return nome
+
+    # Último fallback (nunca deveria acontecer)
+    return user.email
+
 
 
 # -------------------- PROFESSORES --------------------
@@ -295,29 +336,12 @@ def excluir_professor(request, professor_id):
     return redirect('listar_professores')
 
 # ---- GESTOR (Painel da Gestão Escolar) ----
+
 @login_required
 def painel_gestor(request):
-    if not hasattr(request.user, 'gestor'):
-        return redirect('login')
+    return redirect('painel_super')
 
-    gestor = request.user.gestor
-    cargo = gestor.cargo
 
-    total_professores = Professor.objects.count()
-    total_alunos = Aluno.objects.count()
-    total_turmas = Turma.objects.count()
-    total_disciplinas = Disciplina.objects.count()
-
-    return render(request, 'core/painel_gestor.html', {
-        'gestor': gestor,
-        'cargo': cargo,
-        'total_professores': total_professores,
-        'total_alunos': total_alunos,
-        'total_turmas': total_turmas,
-        'total_disciplinas': total_disciplinas,
-    })
-
-# ---- GESTORES ----
 @login_required
 @user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'gestor') and u.gestor.cargo in ['diretor', 'vice_diretor']))
 def cadastrar_gestor(request):
@@ -340,29 +364,7 @@ def cadastrar_gestor(request):
     return render(request, 'core/cadastrar_gestor.html', {'form': form})
 
 # ---- GESTOR (Painel da Gestão Escolar) ----
-@login_required
-def painel_gestor(request):
-    # Pega o gestor logado
-    if not hasattr(request.user, 'gestor'):
-        messages.error(request, "Você não é um gestor.")
-        return redirect('login')
 
-    gestor = request.user.gestor
-    cargo = gestor.cargo
-
-    total_professores = Professor.objects.count()
-    total_alunos = Aluno.objects.count()
-    total_turmas = Turma.objects.count()
-    total_disciplinas = Disciplina.objects.count()
-
-    return render(request, 'core/painel_gestor.html', {
-        'gestor': gestor,
-        'cargo': cargo,
-        'total_professores': total_professores,
-        'total_alunos': total_alunos,
-        'total_turmas': total_turmas,
-        'total_disciplinas': total_disciplinas,
-    })
 
 
 @login_required
@@ -399,7 +401,7 @@ def editar_gestor(request, gestor_id):
 
     if not (is_super or is_mesmo_gestor):
         messages.error(request, "Você não tem permissão para editar este gestor.")
-        return redirect('painel_gestor')
+        return redirect('painel_super')
 
     if request.method == 'POST':
         form = GestorForm(request.POST, instance=gestor, request=request)
@@ -424,7 +426,7 @@ def editar_gestor(request, gestor_id):
                 return redirect('listar_gestores')
 
             # Gestor comum volta ao painel dele
-            return redirect('painel_gestor')
+            return redirect('painel_super')
 
         else:
             messages.error(request, "Corrija os erros abaixo.")

@@ -4,178 +4,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGE - Cadastrar Docentes</title>
-    <link rel="stylesheet" href="cadastrar_docente.css">
+    <title>SIGE - Cadastrar Discentes</title>
+
+    <link rel="stylesheet" href="cadastrar_discente.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 
 <body>
-    <!--Div Global-->
-    <div class="container">
 
-        <!--Menu Topo, Fixo-->
-        <div class="menu-principal">
-            <img src="Logo_Branca.png" class="logo-menu">
-            <h2>sige</h2>
-            <i class="fa-solid fa-bars icone-menu hamburguer" id="menu-toggle"></i>
-            <div class="menu-icones">
-                <i class="fa-solid fa-user icone-menu menu-icon-start"></i>
-                <i class="fa-solid fa-right-from-bracket icone-menu"></i>
-            </div>
+<div class="container">
+
+    <!-- CONTEÚDO -->
+    <main>
+        <div class="topo-formulario">
+            <h1>cadastrar discentes</h1>
         </div>
 
-        <!--Menu Lateral, Fixo-->
-        <div class="menu-lateral" id="menu-lateral">
-            <nav class="nav-lateral">
-                <a href="#"><i class="fa-solid fa-house" style="color: #ffffff;"></i> Início</a>
-                <a href="#"><i class="fa-solid fa-graduation-cap" style="color: #ffffff;"></i> Turmas</a>
-                <a href="#"><i class="fa-solid fa-users" style="color: #ffffff;"></i> Usuários</a>
-                <a href="#"><i class="fa-solid fa-book-open" style="color: #ffffff;"></i> Disciplinas</a>
-            </nav>
-        </div>
+        <div class="conteudo-principal-rolavel">
 
-        <!--Main conténdo todo conteúdo da Página-->
-        <main>
-            <div class="topo-formulario">
-                <h1>cadastrar docentes</h1>
+            <!-- PASSOS -->
+            <div class="passos-indicadores">
+                <span class="passo ativo" id="passo-1">1. Dados Pessoais</span>
+                <span class="passo inativo" id="passo-2">2. Endereço</span>
+                <span class="passo inativo" id="passo-3">3. Alocação</span>
             </div>
 
-            <div class="conteudo-principal-rolavel">
+            <!-- FORM ÚNICO -->
+            <form class="formulario" method="POST">
 
-                <div class="passos-indicadores">
-                    <span class="passo ativo">1. Dados Pessoais</span>
-                    <span class="passo inativo">2. Endereço</span>
-                    <span class="passo inativo">3. Alocação</span> </div>
-
-                <form class="formulario" action="endereco_docente.html" method="GET">
+                <!-- ================= ETAPA 1 ================= -->
+                <div class="etapa ativa" id="etapa-1">
 
                     <div class="caixa-texto">
-                        <label for="nome">Nome</label>
-                        <input type="text" name="nome" placeholder="Digite o nome completo">
+                        <label>Nome</label>
+                        <input type="text" placeholder="Digite o nome completo">
                     </div>
 
                     <div class="caixa-texto">
-                        <label for="cpf">CPF</label>
-                        <input type="text" name="cpf" placeholder="Digite o seu CPF">
+                        <label>CPF</label>
+                        <input type="text" placeholder="Digite o CPF">
                     </div>
 
                     <div class="caixa-texto">
-                        <label for="email">E-mail</label>
-                        <input type="email" name="email" placeholder="exemplo@email.com">
+                        <label>E-mail</label>
+                        <input type="email" placeholder="exemplo@email.com">
                     </div>
 
                     <div class="caixa-texto">
-                        <label for="telefone">Telefone</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(XX) XXXXX-XXXX" maxlength="15">
-                    </div>
-                    <div class="caixa-texto">
-                        <label for="data_nascimento">Nascimento</label>
-                        <input type="date" name="data_nascimento">
+                        <label>Telefone</label>
+                        <input type="tel" id="telefone" placeholder="(XX) XXXXX-XXXX">
                     </div>
 
                     <div class="caixa-texto">
-                        <label for="naturalidade">Naturalidade</label>
-                        <select name="naturalidade" id="naturalidade">
-                            <option value="" disabled selected>Selecione a Naturalidade</option>
-                            <option value="brasileiro">Brasileiro(a)</option>
-                            <option value="estrangeiro">Estrangeiro(a)</option>
+                        <label>Nascimento</label>
+                        <input type="date">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Naturalidade</label>
+                        <select>
+                            <option disabled selected>Selecione</option>
+                            <option>Brasileiro(a)</option>
+                            <option>Estrangeiro(a)</option>
                         </select>
                     </div>
 
                     <div class="caixa-texto">
-                        <label for="nome_pai">Filiação 1</label>
-                        <input type="text" name="nome_pai" placeholder="Nome completo do pai">
+                        <label>Filiação 1</label>
+                        <input type="text">
                     </div>
 
                     <div class="caixa-texto">
-                        <label for="nome_mae">Filiação 2</label>
-                        <input type="text" name="nome_mae" placeholder="Nome completo da mãe">
+                        <label>Filiação 2</label>
+                        <input type="text">
                     </div>
 
-                    <!--<div class="caixa-texto" id="necessidade-especial-container">
+                    <div class="caixa-texto" id="necessidade-especial-container">
                         <label>Aluno com NE</label>
                         <div class="radio-opcoes-simples">
-                            <input type="radio" id="ne_sim" name="necessidades_especiais" value="sim">
+                            <input type="radio" name="ne" id="ne_sim">
                             <label for="ne_sim">Sim</label>
 
-                            <input type="radio" id="ne_nao" name="necessidades_especiais" value="nao" checked>
+                            <input type="radio" name="ne" id="ne_nao" checked>
                             <label for="ne_nao">Não</label>
                         </div>
-                    </div>-->
+                    </div>
 
-                    <div class="caixa-texto" id="descricao-ne-container" style="display: none;">
-                        <label for="descricao_ne">Descrição</label>
-                        <textarea name="descricao_ne" id="descricao_ne" placeholder="Descreva a necessidade especial"></textarea>
+                    <div class="caixa-texto" id="descricao-ne-container" style="display:none;">
+                        <label>Descrição</label>
+                        <textarea></textarea>
                     </div>
 
                     <div class="botoes">
-                        <button type="submit" class="btn">Próximo</button>
-                        <a href="superusuario.html" class="btn-voltar2">Voltar</a>
+                        <button type="button" class="btn" onclick="proximaEtapa(1)">Próximo</button>
                     </div>
-                </form>
-            </div>
-        </main>
-    </div>
+                </div>
 
-    <!--Script para Função Hamburguer(responsividade)-->
-    <script>
-        // Função para aplicar a máscara de telefone (xx)xxxxx-xxxx
-        function maskTelefone(event) {
-            const input = event.target;
-            let value = input.value.replace(/\D/g, ""); // 1. Remove tudo que não for dígito
-            let maskedValue = "";
+                <!-- ================= ETAPA 2 ================= -->
+                <div class="etapa" id="etapa-2">
 
-            if (value.length > 0) {
-                maskedValue += "(" + value.substring(0, 2); // (xx
-            }
-            if (value.length > 2) {
-                maskedValue += ") " + value.substring(2, 7); // (xx) xxxxx
-            }
-            if (value.length > 7) {
-                maskedValue += "-" + value.substring(7, 11); // (xx) xxxxx-xxxx
-            }
+                    <div class="caixa-texto">
+                        <label>CEP</label>
+                        <input type="text" id="cep">
+                    </div>
 
-            input.value = maskedValue;
-        }
+                    <div class="caixa-texto">
+                        <label>Estado</label>
+                        <select id="estado">
+                            <option disabled selected>UF</option>
+                            <option>SP</option>
+                            <option>RJ</option>
+                        </select>
+                    </div>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const toggleBtn = document.getElementById("menu-toggle");
-            const menuLateral = document.getElementById("menu-lateral");
-            const neSim = document.getElementById("ne_sim");
-            const neNao = document.getElementById("ne_nao");
-            const descricaoNeContainer = document.getElementById("descricao-ne-container");
-            const descricaoNeInput = document.getElementById("descricao_ne");
+                    <div class="caixa-texto">
+                        <label>Cidade</label>
+                        <input type="text" id="cidade">
+                    </div>
 
-            // Atribui a função de máscara ao campo de telefone
-            const telefoneInput = document.getElementById("telefone");
-            if (telefoneInput) {
-                telefoneInput.addEventListener("input", maskTelefone);
-            }
+                    <div class="caixa-texto">
+                        <label>Bairro</label>
+                        <input type="text">
+                    </div>
 
-            // Função do menu hambúrguer
-            toggleBtn.addEventListener("click", () => {
-                menuLateral.classList.toggle("ativo");
-            });
+                    <div class="caixa-texto">
+                        <label>Logradouro</label>
+                        <input type="text">
+                    </div>
 
-            // Lógica para mostrar/esconder o campo de descrição da NE
-            function toggleDescricaoNE() {
-                if (neSim && neSim.checked) {
-                    descricaoNeContainer.style.display = 'flex';
-                    descricaoNeInput.setAttribute('required', '');
-                } else if (descricaoNeContainer) {
-                    descricaoNeContainer.style.display = 'none';
-                    descricaoNeInput.removeAttribute('required');
-                    descricaoNeInput.value = '';
-                }
-            }
-            if (neSim && neNao) {
-                neSim.addEventListener('change', toggleDescricaoNE);
-                neNao.addEventListener('change', toggleDescricaoNE);
-            }
-            toggleDescricaoNE();
-        });
-    </script>
+                    <div class="caixa-texto">
+                        <label>Número</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">Anterior</button>
+                        <button type="button" class="btn" onclick="proximaEtapa(2)">Próximo</button>
+                    </div>
+                </div>
+
+                <!-- ================= ETAPA 3 ================= -->
+                <div class="etapa" id="etapa-3">
+
+                    <div class="caixa-texto">
+                        <label>Matrícula</label>
+                        <input type="text">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Turma</label>
+                        <select>
+                            <option>INFORMÁTICA</option>
+                            <option>TSI</option>
+                        </select>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Senha</label>
+                        <input type="password">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Confirmar</label>
+                        <input type="password">
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">Anterior</button>
+                        <button type="submit" class="btn">Salvar Cadastro</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+/* MENU */
+document.getElementById("menu-toggle").onclick = () => {
+    document.getElementById("menu-lateral").classList.toggle("ativo");
+};
+
+/* MÁSCARA TELEFONE */
+document.getElementById("telefone").addEventListener("input", e => {
+    let v = e.target.value.replace(/\D/g, "");
+    if (v.length > 2) v = "(" + v.substring(0,2) + ") " + v.substring(2);
+    if (v.length > 10) v = v.substring(0,10) + "-" + v.substring(10,14);
+    e.target.value = v;
+});
+
+/* MULTI STEP */
+function proximaEtapa(n) {
+    document.getElementById(`etapa-${n}`).classList.remove("ativa");
+    document.getElementById(`etapa-${n+1}`).classList.add("ativa");
+
+    document.getElementById(`passo-${n}`).classList.remove("ativo");
+    document.getElementById(`passo-${n}`).classList.add("completo");
+    document.getElementById(`passo-${n+1}`).classList.add("ativo");
+}
+
+function voltarEtapa(n) {
+    document.getElementById(`etapa-${n}`).classList.remove("ativa");
+    document.getElementById(`etapa-${n-1}`).classList.add("ativa");
+
+    document.getElementById(`passo-${n}`).classList.remove("ativo");
+    document.getElementById(`passo-${n-1}`).classList.add("ativo");
+}
+
+/* NECESSIDADE ESPECIAL */
+document.getElementById("ne_sim").onchange = () => {
+    document.getElementById("descricao-ne-container").style.display = "flex";
+};
+document.getElementById("ne_nao").onchange = () => {
+    document.getElementById("descricao-ne-container").style.display = "none";
+};
+</script>
+
 </body>
-
 </html>

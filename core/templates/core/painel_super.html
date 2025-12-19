@@ -14,7 +14,7 @@
     <main class="conteudo-principal-rolavel">
 
         <div class="usuario">
-            <h1>Olá, {{ request.user.first_name|default:request.user.username }}</h1>
+            <h1>Olá, {{ nome_exibicao }}</h1>
         </div>
 
         <div class="conteudo-geral">

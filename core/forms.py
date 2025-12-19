@@ -73,31 +73,65 @@ class NotaForm(forms.ModelForm):
         fields = ['nota1', 'nota2', 'nota3', 'nota4']
 
 
+from django import forms
+from django.contrib.auth.models import User
+
 class EditarPerfilForm(forms.ModelForm):
-    nome_completo = forms.CharField(label='Nome completo', required=True)
-    nova_senha = forms.CharField(
+    senha_atual = forms.CharField(
+        label="Senha atual",
         required=False,
-        label='Nova senha (opcional)',
+        widget=forms.PasswordInput
+    )
+
+    nova_senha = forms.CharField(
+        label="Nova senha",
+        required=False,
+        widget=forms.PasswordInput
+    )
+
+    confirmar_senha = forms.CharField(
+        label="Confirmar nova senha",
+        required=False,
         widget=forms.PasswordInput
     )
 
     class Meta:
         model = User
-        fields = ['nome_completo', 'email']
+        fields = ['email']
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if self.instance and (not self.initial.get('nome_completo')):
-            self.initial['nome_completo'] = f"{self.instance.first_name} {self.instance.last_name}"
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
 
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        nome = self.cleaned_data['nome_completo'].strip().split(' ', 1)
-        user.first_name = nome[0]
-        user.last_name = nome[1] if len(nome) > 1 else ''
-        if commit:
-            user.save()
-        return user
+        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError("Este e-mail já está em uso.")
+
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        senha_atual = cleaned_data.get("senha_atual")
+        nova_senha = cleaned_data.get("nova_senha")
+        confirmar_senha = cleaned_data.get("confirmar_senha")
+
+        # Só valida senha se o usuário tentou alterar
+        if senha_atual or nova_senha or confirmar_senha:
+
+            if not senha_atual:
+                raise forms.ValidationError("Informe a senha atual.")
+
+            if not self.instance.check_password(senha_atual):
+                raise forms.ValidationError("Senha atual incorreta.")
+
+            if not nova_senha or not confirmar_senha:
+                raise forms.ValidationError("Preencha a nova senha e a confirmação.")
+
+            if nova_senha != confirmar_senha:
+                raise forms.ValidationError("As senhas não coincidem.")
+
+        return cleaned_data
+
+
 
 
 

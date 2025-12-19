@@ -1,166 +1,117 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Meu Perfil{% endblock %}
+{% block title %}Editar Perfil{% endblock %}
+{% block header_title %}Editar Perfil{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/perfil.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/cadastro_aluno.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="container">
 
-<div class="topo-formulario">
-    <h1>Minhas Informações</h1>
-</div>
+    <h2 style="text-align:center;">Editar Perfil</h2>
 
-<div class="conteudo-principal-rolavel perfil-card">
 
-    <!-- HEADER DO PERFIL -->
-    <div class="perfil-header-content">
-        
-        <!-- FOTO -->
-        <div class="perfil-imagem-area">
-            {% if perfil.foto %}
-                <img src="{{ perfil.foto.url }}" class="perfil-imagem" id="imagem-perfil">
-            {% else %}
-                <img src="{% static 'core/img/default_user.png' %}" class="perfil-imagem" id="imagem-perfil">
-            {% endif %}
 
-            <input type="file" id="upload-imagem" accept="image/*" name="foto" form="perfil-form" style="display:none;">
-            
-            <label for="upload-imagem" class="btn-trocar-foto" id="label-trocar-foto" style="display:none;">
-                <i class="fa-solid fa-camera"></i>
-            </label>
-        </div>
-
-        <div class="perfil-info-principal">
-            <h2 id="display-nome">{{ user.get_full_name }}</h2>
-            <p class="perfil-funcao">{{ perfil.get_tipo_display }}</p>
-        </div>
+    <!-- FOTO ATUAL / PREVIEW -->
+    <div style="text-align:center; margin-bottom:20px;">
+        {% if perfil and perfil.foto %}
+            <img id="preview-img" src="{{ perfil.foto.url }}" class="foto-perfil-preview">
+        {% else %}
+            <div id="preview-img" class="foto-perfil-preview foto-default">
+                <i class="fa-solid fa-user"></i>
+            </div>
+        {% endif %}
     </div>
 
-    <hr>
+        <!-- NOME COMPLETO (AUTOMÁTICO, SEM FORM) -->
+    {% if perfil %}
+        <p style="text-align:center; margin-top:-10px; color:#ffffff;">
+            {{ perfil.nome_completo }}
+        </p>
+    {% endif %}
+    
+    <!-- BOTÃO REMOVER FOTO -->
+    {% if perfil and perfil.foto %}
+        <form method="post" action="{% url 'remover_foto_perfil' %}" style="text-align:center; margin-bottom:20px;">
+            {% csrf_token %}
+            <button type="submit" class="submit-btn" style="background:#c62828;">
+                Remover Foto
+            </button>
+        </form>
+    {% endif %}
 
     <!-- FORMULÁRIO -->
-    <form id="perfil-form" class="formulario" method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <!-- NOME - FIXO -->
-        <div class="linha-form">
-            <div class="coluna-dado">
-                <label>Nome Completo</label>
-                <input type="text" value="{{ user.get_full_name }}" disabled>
-            </div>
+        {{ form.as_p }}
 
-            <div class="coluna-dado">
-                <label>Matrícula</label>
-                <input type="text" value="{{ perfil.matricula }}" disabled>
-            </div>
-        </div>
+        <label><strong>Nova Foto de Perfil:</strong></label>
+        <input type="file" name="foto" id="foto-input" style="margin-top:10px;">
 
-        <!-- CPF + EMAIL (EMAIL EDITÁVEL) -->
-        <div class="linha-form">
-            <div class="coluna-dado">
-                <label>CPF</label>
-                <input type="text" value="{{ perfil.cpf }}" disabled>
-            </div>
 
-            <div class="coluna-dado">
-                <label>E-mail *</label>
-                <input type="email" name="email" id="email-field" value="{{ user.email }}" disabled>
-            </div>
-        </div>
-
-        <!-- SENHA (APENAS VIA BOTÃO) -->
-        <div id="area-senha" style="display:none; margin-top:20px;">
-            <h3 style="margin-bottom:10px;">Alterar Senha</h3>
-
-            <div class="linha-form">
-                <div class="coluna-dado">
-                    <label>Senha Atual *</label>
-                    <input type="password" name="senha_atual">
-                </div>
-
-                <div class="coluna-dado">
-                    <label>Nova Senha *</label>
-                    <input type="password" name="nova_senha1">
-                </div>
-            </div>
-
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label>Confirmar Nova Senha *</label>
-                    <input type="password" name="nova_senha2">
-                </div>
-            </div>
-
-            <ul style="font-size:11pt; color:#666; margin:10px 0 0 15px;">
-                <li>Mínimo 8 caracteres</li>
-                <li>Pelo menos 1 letra maiúscula</li>
-                <li>Pelo menos 1 número</li>
-            </ul>
-
-            <a href="{% url 'password_reset' %}" style="color:#4a90e2; font-size:12pt; margin-top:10px; display:inline-block;">
-                Esqueceu a senha?
-            </a>
-        </div>
-
-        <!-- BOTÕES -->
-        <div class="botoes-crud">
-            <button type="button" class="btn-acao editar" id="btn-editar">
-                <i class="fa-solid fa-pen"></i> Editar Perfil
-            </button>
-
-            <button type="submit" class="btn-acao salvar" id="btn-salvar" style="display:none;">
-                <i class="fa-solid fa-check"></i> Salvar
-            </button>
-
-            <button type="button" class="btn-acao cancelar" id="btn-cancelar" style="display:none;">
-                <i class="fa-solid fa-xmark"></i> Cancelar
-            </button>
-
-            <button type="button" class="btn-acao senha" id="btn-trocar-senha">
-                <i class="fa-solid fa-lock"></i> Mudar Senha
-            </button>
-        </div>
-
+        <button type="submit" class="submit-btn" style="margin-top:20px;">
+            Salvar
+        </button>
     </form>
+
 </div>
 
-<!-- SCRIPT -->
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("foto-input").addEventListener("change", function() {
+    const file = this.files[0];
+    const preview = document.getElementById("preview-img");
 
-    const emailField = document.getElementById("email-field");
-    const btnEditar = document.getElementById("btn-editar");
-    const btnSalvar = document.getElementById("btn-salvar");
-    const btnCancelar = document.getElementById("btn-cancelar");
-    const areaSenha = document.getElementById("area-senha");
-    const btnSenha = document.getElementById("btn-trocar-senha");
-    const labelFoto = document.getElementById("label-trocar-foto");
-
-    const originalEmail = emailField.value;
-
-    function setEditMode(on) {
-        emailField.disabled = !on;
-        labelFoto.style.display = on ? "flex" : "none";
-        btnEditar.style.display = on ? "none" : "flex";
-        btnSalvar.style.display = on ? "flex" : "none";
-        btnCancelar.style.display = on ? "flex" : "none";
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            if (preview.tagName.toLowerCase() === "div") {
+                const img = document.createElement("img");
+                img.id = "preview-img";
+                img.className = "foto-perfil-preview";
+                img.src = e.target.result;
+                preview.replaceWith(img);
+            } else {
+                preview.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
     }
+});
 
-    btnEditar.onclick = () => setEditMode(true);
+// 🔐 TOGGLE AUTOMÁTICO PARA TODOS OS CAMPOS DE SENHA
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('input[type="password"]').forEach(input => {
 
-    btnCancelar.onclick = () => {
-        emailField.value = originalEmail;
-        areaSenha.style.display = "none";
-        setEditMode(false);
-    };
+        const wrapper = document.createElement("div");
+        wrapper.style.position = "relative";
+        wrapper.style.display = "inline-block";
+        wrapper.style.width = "100%";
 
-    btnSenha.onclick = () => {
-        areaSenha.style.display = areaSenha.style.display === "none" ? "block" : "none";
-    };
+
+        input.parentNode.insertBefore(wrapper, input);
+        wrapper.appendChild(input);
+
+        const toggle = document.createElement("span");
+        toggle.innerHTML = "👁️";
+        toggle.style.position = "absolute";
+        toggle.style.right = "10px";
+        toggle.style.top = "50%";
+        toggle.style.transform = "translateY(-50%)";
+        toggle.style.cursor = "pointer";
+        toggle.style.userSelect = "none";
+
+        toggle.addEventListener("click", () => {
+            input.type = input.type === "password" ? "text" : "password";
+        });
+
+        wrapper.appendChild(toggle);
+    });
 });
 </script>
+
 
 {% endblock %}

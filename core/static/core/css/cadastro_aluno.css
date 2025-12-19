@@ -114,3 +114,30 @@ select {
     color:white;
     background:#999;
 }
+
+.nome-perfil {
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+
+.senha-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.senha-wrapper input {
+    width: 100%;
+    padding-right: 35px;
+}
+
+.toggle-senha {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
