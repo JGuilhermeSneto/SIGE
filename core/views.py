@@ -745,11 +745,6 @@ def editar_turma(request, turma_id):
     })
 
 
-from django.contrib.auth import authenticate
-from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Turma
 
 @login_required
 def excluir_turma(request, turma_id):
@@ -757,25 +752,8 @@ def excluir_turma(request, turma_id):
         return redirect('login')
 
     turma = get_object_or_404(Turma, id=turma_id)
-
-    if request.method == "POST":
-        senha = request.POST.get('senha')
-
-        # verifica se a senha está correta
-        user = authenticate(username=request.user.username, password=senha)
-        if user is not None:
-            turma.delete()
-            messages.success(request, 'Turma excluída com sucesso!')
-            return redirect('listar_turmas')
-        else:
-            # senha incorreta, mostra mensagem
-            messages.error(request, 'Senha incorreta. Não foi possível excluir a turma.')
-            return redirect('listar_turmas')
-
-    # se não for POST, redireciona
+    turma.delete()
     return redirect('listar_turmas')
-
-
 
 
 # PROFESSOR

@@ -4,23 +4,11 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/lista_disciplinas.css' %}">
-
 {% endblock %}
 
 {% block content %}
 
 <main class="conteudo-principal">
-
-    <!-- Exibir mensagens -->
-    {% if messages %}
-        <div>
-        {% for message in messages %}
-            <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
-        {% endfor %}
-        </div>
-    {% endif %}
 
     <!-- CABEÇALHO -->
     <div class="header-docentes">
@@ -46,11 +34,12 @@
                 
             </a>
 
-            <!-- BOTÃO EXCLUIR TURMA COM MODAL -->
-            <button class="btn-adicionar" style="background:#d9534f" onclick="abrirModal({{ turma.id }})">
-                <i class="fas fa-trash"></i>
-            </button>
-
+            <a href="{% url 'excluir_turma' turma.id %}"
+               onclick="return confirm('Tem certeza que deseja excluir esta turma e todas as disciplinas dela?');">
+                <button class="btn-adicionar" style="background:#d9534f">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </a>
         </div>
 
     </div>
@@ -139,69 +128,5 @@
     </div>
 
 </main>
-
-<!-- MODAL DE EXCLUSÃO -->
-<div id="modal-excluir" class="modal">
-    <div class="modal-conteudo">
-        <h2>Confirmar exclusão</h2>
-        <p>Digite sua senha para continuar:</p>
-        <input type="password" id="senha-excluir" placeholder="Senha" required>
-        <p>Tem certeza que deseja excluir?</p>
-        <div style="display:flex; gap:10px; justify-content:flex-end;">
-            <button class="btn-adicionar" style="background:#d9534f" id="btn-confirmar">Sim, tenho certeza</button>
-            <button class="btn-voltar" onclick="fecharModal()">Não</button>
-        </div>
-    </div>
-</div>
-
-<script>
-let turmaSelecionada = null;
-
-function abrirModal(turmaId) {
-    turmaSelecionada = turmaId;
-    document.getElementById('modal-excluir').style.display = 'block';
-}
-
-function fecharModal() {
-    turmaSelecionada = null;
-    document.getElementById('modal-excluir').style.display = 'none';
-}
-
-// Evento do botão "Sim, tenho certeza"
-document.getElementById('btn-confirmar').addEventListener('click', function() {
-    const senha = document.getElementById('senha-excluir').value;
-
-    if(!senha) {
-        alert('Digite a senha antes de confirmar.');
-        return;
-    }
-
-    // cria formulário dinâmico e envia POST
-    const form = document.createElement('form');
-    form.method = 'POST';
-    // Gera a URL dinamicamente com o nome da rota
-        const urlExcluir = "{% url 'excluir_turma' 0 %}".replace('/0/', `/${turmaSelecionada}/`);
-        form.action = urlExcluir;
-    form.style.display = 'none';
-
-    // CSRF token
-    const csrfToken = '{{ csrf_token }}';
-    const inputCsrf = document.createElement('input');
-    inputCsrf.type = 'hidden';
-    inputCsrf.name = 'csrfmiddlewaretoken';
-    inputCsrf.value = csrfToken;
-    form.appendChild(inputCsrf);
-
-    // Senha
-    const inputSenha = document.createElement('input');
-    inputSenha.type = 'hidden';
-    inputSenha.name = 'senha';
-    inputSenha.value = senha;
-    form.appendChild(inputSenha);
-
-    document.body.appendChild(form);
-    form.submit();
-});
-</script>
 
 {% endblock %}
