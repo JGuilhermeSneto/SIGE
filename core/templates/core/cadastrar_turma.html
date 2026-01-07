@@ -1,54 +1,120 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Painel do Superusuário{% endblock %}
-{% block header_title %}Cadastro da Turma{% endblock %}
-
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static 'core/css/cadastro_aluno.css' %}">
+{% block title %}
+    {% if turma %}
+        Editar Turma
+    {% else %}
+        Cadastro de Turma
+    {% endif %}
 {% endblock %}
 
-{% block user_info %}
-  <span>Olá, <a href="{% url 'editar_perfil_super' %}" title="Editar Perfil">{{ request.user.get_full_name|default:request.user.username }}</a></span>
-  <a href="{% url 'painel_super' %}" title="Voltar ao Painel"><i class="fas fa-arrow-left"></i></a>
-  <a href="{% url 'logout' %}" title="Sair"><i class="fas fa-power-off"></i></a>
+{% block header_title %}
+    {% if turma %}
+        Editar Turma
+    {% else %}
+        Cadastro de Turma
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/cadastros.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <h2>Cadastro da Turma</h2>
 
-  {% if erro %}
-    <p style="color: red;">{{ erro }}</p>
-  {% endif %}
+<main class="conteudo-principal">
 
-  <form method="post">
-    {% csrf_token %}
+    <!-- CABEÇALHO -->
+    <div class="header-docentes">
 
-    <!-- Nome -->
-    <div class="form-group">
-      <label for="nome">Nome da Turma:</label>
-      <input type="text" id="nome" name="nome" required>
+        <a href="{% url 'listar_turmas' %}">
+            <button class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+        </a>
+
+        <h1 class="titulo-pagina">
+            {% if turma %}
+                Editar Turma
+            {% else %}
+                Cadastro de Turma
+            {% endif %}
+        </h1>
+
     </div>
 
-    <!-- Turno -->
-    <div class="form-group">
-      <label for="turno">Turno:</label>
-      <select id="turno" name="turno" required>
-        <option value="">Selecione...</option>
-        <option value="manhã">Manhã</option>
-        <option value="tarde">Tarde</option>
-        <option value="noite">Noite</option>
-      </select>
+    <!-- CARD -->
+    <div class="card-tabela">
+
+        {% if erro %}
+            <p style="color:red; margin-bottom:15px;">{{ erro }}</p>
+        {% endif %}
+
+        <form method="post" class="form-cadastro">
+            {% csrf_token %}
+
+            <!-- Nome -->
+            <div class="form-group">
+                <label for="nome">Nome da Turma</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    required
+                    value="{{ turma.nome|default:'' }}"
+                >
+            </div>
+
+            <!-- Turno -->
+            <div class="form-group">
+                <label for="turno">Turno</label>
+                <select id="turno" name="turno" required>
+                    <option value="">Selecione...</option>
+                    <option value="manha" {% if turma.turno == "manha" %}selected{% endif %}>Manhã</option>
+                    <option value="tarde" {% if turma.turno == "tarde" %}selected{% endif %}>Tarde</option>
+                    <option value="noite" {% if turma.turno == "noite" %}selected{% endif %}>Noite</option>
+                </select>
+            </div>
+
+            <!-- Ano letivo -->
+            <div class="form-group">
+                <label for="ano">Ano Letivo</label>
+
+                <input
+                    type="number"
+                    id="ano"
+                    name="ano"
+                    list="lista-anos"
+                    required
+                    min="2010"
+                    max="{{ anos|last }}"
+                    placeholder="Ex: 2025"
+                    value="{{ turma.ano|default:'' }}"
+                >
+
+                <datalist id="lista-anos">
+                    {% for ano in anos %}
+                        <option value="{{ ano }}"></option>
+                    {% endfor %}
+                </datalist>
+            </div>
+
+            <!-- Botão -->
+            <div class="form-actions">
+                <button type="submit" class="btn-adicionar">
+                    {% if turma %}
+                        Salvar Alterações
+                    {% else %}
+                        Cadastrar Turma
+                    {% endif %}
+                </button>
+            </div>
+
+        </form>
+
     </div>
 
-    <!-- Ano letivo -->
-    <div class="form-group">
-      <label for="ano">Ano Letivo:</label>
-      <input type="number" id="ano" name="ano" required min="2000" max="2100">
-    </div>
+</main>
 
-    <button type="submit" class="submit-btn">Cadastrar</button>
-  </form>
-</div>
 {% endblock %}

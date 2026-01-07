@@ -666,6 +666,11 @@ def listar_turmas(request):
     })
 
 
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .models import Turma
+
 @login_required
 def cadastrar_turma(request):
     if not request.user.is_superuser:
@@ -673,34 +678,78 @@ def cadastrar_turma(request):
 
     erro = None
 
+    ano_atual = datetime.now().year
+    anos = list(range(2010, ano_atual + 2))  # 2010 até ano atual + 1
+
     if request.method == 'POST':
-        nome = request.POST['nome']
+        nome = request.POST.get('nome')
         turno = request.POST.get('turno')
         ano = request.POST.get('ano')
 
-        if Turma.objects.filter(nome=nome, ano=ano).exists():
-            erro = 'Essa turma já existe neste ano.'
+        # -------- VALIDAÇÕES --------
+        try:
+            ano = int(ano)
+        except (TypeError, ValueError):
+            erro = 'Ano letivo inválido.'
         else:
-            Turma.objects.create(nome=nome, turno=turno, ano=ano)
-            return redirect('listar_turmas')
+            if ano < 2010 or ano > ano_atual + 1:
+                erro = 'O ano letivo deve ser entre 2010 e o próximo ano.'
+            elif Turma.objects.filter(nome=nome, ano=ano).exists():
+                erro = 'Essa turma já existe neste ano.'
+            else:
+                Turma.objects.create(
+                    nome=nome,
+                    turno=turno,
+                    ano=ano
+                )
+                return redirect('listar_turmas')
 
-    return render(request, 'core/cadastrar_turma.html', {'erro': erro})
+    return render(
+        request,
+        'core/cadastrar_turma.html',
+        {
+            'erro': erro,
+            'anos': anos
+        }
+    )
 
 
 
+
+@login_required
 def editar_turma(request, turma_id):
+    if not request.user.is_superuser:
+        return redirect('login')
+
     turma = Turma.objects.get(id=turma_id)
+    erro = None
 
     if request.method == "POST":
-        turma.nome = request.POST.get('nome')
-        turma.turno = request.POST.get('turno')
-        turma.ano = request.POST.get('ano')
-        turma.save()
-        messages.success(request, "Turma atualizada com sucesso!")
-        return redirect('listar_turmas')
+        nome = request.POST.get('nome')
+        turno = request.POST.get('turno')
+        ano = request.POST.get('ano')
 
-    return render(request, 'core/editar_turma.html', {'turma': turma})
+        if Turma.objects.filter(nome=nome, ano=ano).exclude(id=turma.id).exists():
+            erro = 'Já existe outra turma com esse nome neste ano.'
+        else:
+            turma.nome = nome
+            turma.turno = turno
+            turma.ano = ano
+            turma.save()
+            messages.success(request, "Turma atualizada com sucesso!")
+            return redirect('listar_turmas')
 
+    return render(request, 'core/cadastrar_turma.html', {
+        'turma': turma,
+        'erro': erro
+    })
+
+
+from django.contrib.auth import authenticate
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Turma
 
 @login_required
 def excluir_turma(request, turma_id):
@@ -708,8 +757,25 @@ def excluir_turma(request, turma_id):
         return redirect('login')
 
     turma = get_object_or_404(Turma, id=turma_id)
-    turma.delete()
+
+    if request.method == "POST":
+        senha = request.POST.get('senha')
+
+        # verifica se a senha está correta
+        user = authenticate(username=request.user.username, password=senha)
+        if user is not None:
+            turma.delete()
+            messages.success(request, 'Turma excluída com sucesso!')
+            return redirect('listar_turmas')
+        else:
+            # senha incorreta, mostra mensagem
+            messages.error(request, 'Senha incorreta. Não foi possível excluir a turma.')
+            return redirect('listar_turmas')
+
+    # se não for POST, redireciona
     return redirect('listar_turmas')
+
+
 
 
 # PROFESSOR

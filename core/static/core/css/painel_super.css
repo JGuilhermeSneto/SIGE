@@ -122,6 +122,17 @@ main {
     font-weight: bold;
 }
 
+/* Ano do calendário */
+.calendario-ano {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #888;
+    margin-top: 2px;
+    letter-spacing: 0.08em;
+}
+
+
 /* Responsividade para Tablets e Telas Médias */
 @media (max-width: 1024px) {
     .conteudo-geral {

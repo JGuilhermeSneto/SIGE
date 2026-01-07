@@ -6,29 +6,10 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/lista_docentes.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
 {% endblock %}
 
-{% block user_info %}
-  <span>Olá,
-    <a href="{% url 'editar_perfil' %}">
-      {{ request.user.get_full_name|default:request.user.username }}
-    </a>
-  </span>
 
-  <a href="{% url 'editar_perfil' %}">
-    <i class="fas fa-user"></i>
-  </a>
-
-  <!-- Botão voltar para USUÁRIOS -->
-  <a href="{% url 'usuarios' %}" class="btn-voltar">
-    <i class="fas fa-arrow-left"></i>
-  </a>
-
-  <a href="{% url 'logout' %}">
-    <i class="fas fa-power-off"></i>
-  </a>
-{% endblock %}
 
 {% block content %}
 
