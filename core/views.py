@@ -451,27 +451,45 @@ def listar_alunos(request):
 @user_passes_test(is_superuser)
 def cadastrar_aluno(request):
     erro = None
+
     if request.method == 'POST':
-        nome_completo = request.POST.get('nome_completo', '').strip()
-        idade = request.POST.get('idade', '').strip()
-        email = request.POST.get('email', '').strip()
-        senha = request.POST.get('senha', '').strip()
-        turma_id = request.POST.get('turma')
+        form = AlunoForm(request.POST, request.FILES)
 
-        if not nome_completo or not idade or not email or not senha or not turma_id:
-            erro = 'Preencha todos os campos obrigatórios.'
-        elif User.objects.filter(email=email).exists():
-            erro = 'Já existe um usuário com este e-mail.'
-        else:
-            user = User.objects.create_user(username=email, email=email, password=senha)
-            turma = get_object_or_404(Turma, id=turma_id)
-            Aluno.objects.create(user=user, nome_completo=nome_completo, idade=idade, turma=turma)
-            messages.success(request, f'Aluno {nome_completo} cadastrado com sucesso!')
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            senha = form.cleaned_data['senha']
+            nome = form.cleaned_data['nome_completo']
+
+            # cria o usuário
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=senha
+            )
+
+            # cria o aluno
+            aluno = form.save(commit=False)
+            aluno.user = user
+            aluno.save()
+
+            messages.success(
+                request,
+                f'Aluno {nome} cadastrado com sucesso!'
+            )
             return redirect('listar_alunos')
+        else:
+            erro = 'Verifique os campos do formulário.'
+    else:
+        form = AlunoForm()
 
-    turmas = Turma.objects.all()
-    return render(request, 'core/cadastrar_aluno.html', {'turmas': turmas, 'erro': erro})
-
+    return render(
+        request,
+        'core/cadastrar_aluno.html',
+        {
+            'form': form,
+            'erro': erro,
+        }
+    )
 
 @login_required
 @user_passes_test(is_superuser)

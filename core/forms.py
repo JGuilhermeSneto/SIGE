@@ -41,14 +41,47 @@ class ProfessorForm(forms.ModelForm):
 
 # --- ALUNO ---
 class AlunoForm(forms.ModelForm):
-    nome_completo = forms.CharField(label='Nome completo')
+    # ---------- DADOS DO USUÁRIO ----------
     email = forms.EmailField(label='E-mail')
-    password = forms.CharField(label='Senha', widget=forms.PasswordInput)
-    idade = forms.IntegerField(label='Idade')
+    password = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput
+    )
+    password_confirm = forms.CharField(
+        label='Confirmar senha',
+        widget=forms.PasswordInput
+    )
+
+    # ---------- DADOS DO ALUNO ----------
+    nome_completo = forms.CharField(label='Nome completo')
+    cpf = forms.CharField(label='CPF', max_length=14)
 
     class Meta:
         model = Aluno
-        fields = ['nome_completo', 'idade', 'turma']
+        fields = [
+            'nome_completo',
+            'cpf',
+            'turma',
+        ]
+
+    # ---------- VALIDAÇÕES ----------
+    def clean_cpf(self):
+        cpf = self.cleaned_data['cpf']
+
+        if Aluno.objects.filter(cpf=cpf).exists():
+            raise forms.ValidationError('CPF já cadastrado.')
+
+        return cpf
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password')
+        password_confirm = cleaned_data.get('password_confirm')
+
+        if password and password_confirm and password != password_confirm:
+            self.add_error('password_confirm', 'As senhas não coincidem.')
+
+        return cleaned_data
 
 
 # --- DISCIPLINA ---

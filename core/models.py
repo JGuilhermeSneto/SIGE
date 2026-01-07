@@ -29,11 +29,43 @@ class Professor(models.Model):
 
 
 # ------------------ ALUNO ------------------
+# ------------------ ALUNO ------------------
 class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # Dados pessoais
     nome_completo = models.CharField(max_length=255)
-    idade = models.IntegerField()
+    cpf = models.CharField(max_length=14, unique=True)
+    telefone = models.CharField(max_length=20, blank=True)
+    data_nascimento = models.DateField(null=True, blank=False)
+
+    NATURALIDADE_CHOICES = [
+        ('brasileiro', 'Brasileiro(a)'),
+        ('estrangeiro', 'Estrangeiro(a)'),
+    ]
+    naturalidade = models.CharField(
+        max_length=20,
+        choices=NATURALIDADE_CHOICES,
+        blank=True
+    )
+
+    filiacao_1 = models.CharField(max_length=255, blank=False)
+    filiacao_2 = models.CharField(max_length=255, blank=True)
+
+    necessidade_especial = models.BooleanField(default=False)
+    descricao_necessidade = models.TextField(blank=True)
+
+    # Endereço
+    cep = models.CharField(max_length=9, blank=True)
+    estado = models.CharField(max_length=2, blank=True)
+    cidade = models.CharField(max_length=100, blank=True)
+    bairro = models.CharField(max_length=100, blank=True)
+    logradouro = models.CharField(max_length=255, blank=True)
+    numero = models.CharField(max_length=10, blank=True)
+
+    # Alocação
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+
     foto = models.ImageField(upload_to="fotos/", null=True, blank=True)
 
     def __str__(self):
