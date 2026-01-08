@@ -1,40 +1,93 @@
 {% extends 'core/base.html' %}
 {% load static %}
-{% load get_item %}
-{% block title %}Cadastro de Disciplina {% endblock %}
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/cadastrar_disciplina.css' %}">
+
+{% block title %}
+  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
 {% endblock %}
+
+{% block header_title %}
+  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/cadastros.css' %}">
+{% endblock %}
+
 {% block content %}
 
-<!--Conteudo-->
-<main class="conteudo">
-    <h2 class="titulo">Adicionar Disciplina em {{ turma.nome }}</h2>
+<main class="conteudo-principal">
 
-    <!--Formulário-->
-    <form method="POST" class="formulario">
-        {% csrf_token %}
+    <div class="header-docentes">
 
-        <div class="linha">
-            <label for="nome">Nome da Disciplina:</label>
-            <input type="text" id="nome" name="nome" placeholder="Digite o nome da disciplina" required>
-        </div>
-        <div class="linha">
-            <label for="professor">Professor Responsável:</label>
-            <select id="professor" name="professor" required>
-                <option selected disabled>Selecione o professor</option>
-            {% for prof in professores %}
-                <option value="{{ prof.id }}">{{ prof.nome_completo }}</option>
+        <a href="{% url 'listar_disciplinas_turma' turma.id %}">
+            <button class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i>
+            </button>
+        </a>
+
+        <h1 class="titulo-pagina">
+            {% if disciplina %}
+                Editar Disciplina
+            {% else %}
+                Cadastrar Disciplina
+            {% endif %}
+        </h1>
+
+    </div>
+
+    <div class="card-tabela">
+
+        {% if messages %}
+            {% for message in messages %}
+                <p style="color:red; margin-bottom:10px;">{{ message }}</p>
             {% endfor %}
-            </select>
-        </div>
+        {% endif %}
 
-        <!--Botões-->
-        <div class="acoes">
-            <a href="{% url 'listar_disciplinas_turma' turma.id %}" class="btn-voltar">Voltar</a>
-            <button type="submit" class="btn-adicionar">Adicionar</button>
-        </div>
-    </form>
+        <form method="post" class="form-cadastro">
+            {% csrf_token %}
+
+            <!-- Nome -->
+            <div class="form-group">
+                <label>Nome da Disciplina</label>
+                <input
+                    type="text"
+                    name="nome"
+                    required
+                    value="{{ disciplina.nome|default:'' }}"
+                >
+            </div>
+
+            <!-- Professor -->
+            <div class="form-group">
+                <label>Professor</label>
+                <select name="professor" required>
+                    <option value="">Selecione...</option>
+                    {% for professor in professores %}
+                        <option value="{{ professor.id }}"
+                            {% if disciplina and disciplina.professor.id == professor.id %}
+                                selected
+                            {% endif %}
+                        >
+                            {{ professor.nome_completo }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-adicionar">
+                    {% if disciplina %}
+                        Salvar Alterações
+                    {% else %}
+                        Adicionar Disciplina
+                    {% endif %}
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
 </main>
 
 {% endblock %}

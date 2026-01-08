@@ -281,113 +281,39 @@
     color: inherit;
 }
 
-/* Hover apenas no conteúdo, não afeta menus */
-.conteudo-principal a:hover {
-    text-decoration: none;
-    color: #2a5cac;
+.grade-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    font-size: 15px;
 }
 
-
-/* Select do ano letivo */
-.select-ano {
-    height: 40px;
-    padding: 0 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    cursor: pointer;
+.grade-table th {
+    background: #1a2530;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
 }
 
-/* Centralizar botão de ação */
-.coluna-acoes {
+.grade-table td {
+    border: 1px solid #e5e5e5;
+    padding: 8px;
     text-align: center;
 }
 
-.coluna-acoes a {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+.horario-col {
+    font-weight: 600;
+    background: #f2f2f2;
+    color: #333;
+    white-space: nowrap;
 }
 
-/* Ícone de ação alinhado */
-.coluna-acoes i {
-    font-size: 16px;
-}
-
-
-/* Linha da busca + filtro */
-.barra-busca-linha {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-    padding: 0 20px 15px;
-}
-
-/* Mantém a busca com o tamanho correto */
-.barra-busca {
-    flex: 1;
-}
-
-/* Filtro ano letivo */
-.filtro-ano {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filtro-ano label {
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.filtro-ano select {
-    height: 40px;
-    padding: 0 12px;
-    border-radius: 8px;
+.grade-table select {
+    width: 100%;
+    padding: 6px 8px;
+    border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 14px;
     cursor: pointer;
 }
-
-/* FORMULÁRIO PADRÃO */
-.form-cadastro {
-    max-width: 500px;
-    margin: 0 auto;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 18px;
-}
-
-.form-group label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 6px;
-    color: #333;
-}
-
-.form-group input,
-.form-group select {
-    height: 42px;
-    padding: 0 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #4285F4;
-}
-
-.form-actions {
-    text-align: right;
-    margin-top: 20px;
-}
-
-
-

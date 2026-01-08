@@ -29,14 +29,72 @@ class LoginForm(forms.Form):
 
 
 # --- PROFESSOR ---
+from django import forms
+from django.contrib.auth.models import User
+from .models import Professor
+
+
 class ProfessorForm(forms.ModelForm):
-    nome_completo = forms.CharField(label='Nome completo')
+    # -------- Dados de login (User) --------
     email = forms.EmailField(label='E-mail')
-    password = forms.CharField(label='Senha', widget=forms.PasswordInput)
+    password = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput
+    )
+    confirmar_senha = forms.CharField(
+        label='Confirmar senha',
+        widget=forms.PasswordInput
+    )
+
+    # -------- Ajustes de labels --------
+    data_nascimento = forms.DateField(
+        label='Data de nascimento',
+        widget=forms.DateInput(attrs={'type': 'date'}),
+        required=False
+    )
 
     class Meta:
         model = Professor
-        fields = ['nome_completo']
+        fields = [
+            # Dados pessoais
+            'nome_completo',
+            'cpf',
+            'telefone',
+            'data_nascimento',
+
+            # Endereço
+            'cep',
+            'estado',
+            'cidade',
+            'bairro',
+            'logradouro',
+            'numero',
+            'complemento',
+
+            # Profissional
+            'formacao',
+            'especializacao',
+            'area_atuacao',
+
+        ]
+
+    # -------- Validação --------
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Este e-mail já está cadastrado.')
+        return email
+
+    def clean(self):
+        cleaned_data = super().clean()
+        senha = cleaned_data.get('password')
+        confirmar = cleaned_data.get('confirmar_senha')
+
+        if senha and confirmar and senha != confirmar:
+            self.add_error('confirmar_senha', 'As senhas não coincidem.')
+
+        return cleaned_data
+
 
 
 # --- ALUNO ---
@@ -214,68 +272,179 @@ from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from .models import Gestor
 
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from .models import Gestor
+
+
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth import update_session_auth_hash
+from django.core.exceptions import ValidationError
+from django.contrib.auth.password_validation import validate_password
+from .models import Gestor
+
+
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
+from django.contrib.auth import update_session_auth_hash
+
+from .models import Gestor
+
+
 class GestorForm(forms.ModelForm):
-    email = forms.EmailField(required=True, label="E-mail")
+    email = forms.EmailField(
+        required=True,
+        label="E-mail"
+    )
+
     senha = forms.CharField(
-        required=False,
+        required=True,
         label="Senha",
-        widget=forms.PasswordInput(render_value=False),
-        help_text="Deixe em branco se não quiser alterar a senha."
+        widget=forms.PasswordInput(render_value=False)
+    )
+
+    senha_confirmacao = forms.CharField(
+        required=True,
+        label="Confirmar senha",
+        widget=forms.PasswordInput(render_value=False)
     )
 
     class Meta:
         model = Gestor
-        fields = ['nome_completo', 'cargo', 'email', 'senha']
+        fields = [
+            'nome_completo',
+            'cpf',
+            'data_nascimento',
+            'telefone',
+            'cep',        # 🔥 ADICIONADO
+            'uf',
+            'cidade',
+            'endereco',
+            'cargo',
+            'foto',       # 📸 OPCIONAL
+        ]
+
+        widgets = {
+            'data_nascimento': forms.DateInput(attrs={'type': 'date'}),
+        }
 
     def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)  # recebe o request opcionalmente
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
 
-        # Inicializa o email com o user associado, se existir
+        # 🔒 TODOS OS CAMPOS OBRIGATÓRIOS
+        for field in self.fields.values():
+            field.required = True
+
+        # 📸 FOTO NÃO É OBRIGATÓRIA
+        self.fields['foto'].required = False
+
+        # Se estiver editando, carrega e-mail do user
         if self.instance.pk and hasattr(self.instance, 'user') and self.instance.user:
             self.fields['email'].initial = self.instance.user.email
 
+    # =========================
+    # VALIDAÇÕES INDIVIDUAIS
+    # =========================
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
+
         if not email:
-            raise forms.ValidationError("O e-mail é obrigatório.")
+            raise ValidationError("O e-mail é obrigatório.")
 
         qs = User.objects.filter(email=email)
+
         if self.instance.pk and hasattr(self.instance, 'user') and self.instance.user:
             qs = qs.exclude(pk=self.instance.user.pk)
+
         if qs.exists():
-            raise forms.ValidationError("Este e-mail já está em uso.")
+            raise ValidationError("Este e-mail já está em uso.")
 
         return email
 
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get('cpf')
+
+        if not cpf:
+            raise ValidationError("O CPF é obrigatório.")
+
+        qs = Gestor.objects.filter(cpf=cpf)
+
+        if self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+
+        if qs.exists():
+            raise ValidationError("Este CPF já está cadastrado.")
+
+        return cpf
+
+    def clean_cep(self):
+        cep = self.cleaned_data.get('cep')
+
+        if not cep:
+            raise ValidationError("O CEP é obrigatório.")
+
+        cep_numeros = cep.replace('-', '')
+
+        if len(cep_numeros) != 8 or not cep_numeros.isdigit():
+            raise ValidationError("Informe um CEP válido.")
+
+        return cep
+
+    # =========================
+    # VALIDAÇÃO DE SENHA
+    # =========================
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        senha = cleaned_data.get('senha')
+        senha_confirmacao = cleaned_data.get('senha_confirmacao')
+
+        if not senha or not senha_confirmacao:
+            raise ValidationError("Senha e confirmação são obrigatórias.")
+
+        if senha != senha_confirmacao:
+            raise ValidationError("As senhas não coincidem.")
+
+        validate_password(senha)
+
+        return cleaned_data
+
+    # =========================
+    # SAVE
+    # =========================
+
     def save(self, commit=True):
         gestor = super().save(commit=False)
+
         email = self.cleaned_data.get('email')
         senha = self.cleaned_data.get('senha')
 
         if gestor.user:
-            # Atualiza e-mail e username
-            if email:
-                gestor.user.email = email
-                gestor.user.username = email
+            gestor.user.email = email
+            gestor.user.username = email
+            gestor.user.set_password(senha)
 
-            # Atualiza senha apenas se preenchida
-            if senha:
-                gestor.user.set_password(senha)
-                if commit:
-                    gestor.user.save()
-                    # Atualiza sessão se request estiver disponível
-                    if self.request:
-                        update_session_auth_hash(self.request, gestor.user)
-            else:
-                if commit:
-                    gestor.user.save()
+            if commit:
+                gestor.user.save()
+
+                # mantém sessão ativa se for edição
+                if self.request:
+                    update_session_auth_hash(self.request, gestor.user)
 
         if commit:
             gestor.save()
 
         return gestor
-    
+
 
 
 class DisciplinaForm(forms.ModelForm):

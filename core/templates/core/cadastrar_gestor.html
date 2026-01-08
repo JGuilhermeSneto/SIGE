@@ -1,9 +1,337 @@
 {% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Cadastro de Gestor{% endblock %}
+{% block header_title %}Cadastro de Gestor{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/cadastro_gestor.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+{% endblock %}
+
 {% block content %}
-<h2>Cadastrar Gestor</h2>
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Salvar</button>
-</form>
+<div class="container">
+    <main>
+        <div class="topo-formulario">
+            <h1>Cadastrar Gestor</h1>
+        </div>
+
+        <div class="conteudo-principal-rolavel">
+
+            <div class="passos-indicadores">
+                <span class="passo ativo" id="passo-1">1. Dados Pessoais</span>
+                <span class="passo inativo" id="passo-2">2. Endereço</span>
+                <span class="passo inativo" id="passo-3">3. Cargo</span>
+            </div>
+
+            <form method="POST" class="formulario" enctype="multipart/form-data" id="form-gestor">
+                {% csrf_token %}
+
+                <!-- ETAPA 1 -->
+                <div class="etapa ativa" id="etapa-1">
+                    <div class="caixa-texto">
+                        <label class="required">Nome completo</label>
+                        <input type="text" name="nome_completo" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">CPF</label>
+                        <input type="text" name="cpf" id="cpf" maxlength="14" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">Data de nascimento</label>
+                        <input type="date" name="data_nascimento" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">Telefone</label>
+                        <input type="tel" name="telefone" id="telefone" maxlength="15" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">E-mail</label>
+                        <input type="email" name="email" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn" onclick="validarEtapa(1)">Próximo</button>
+                    </div>
+                </div>
+
+                <!-- ETAPA 2 -->
+                <div class="etapa" id="etapa-2">
+                    <div class="caixa-texto">
+                        <label class="required">CEP</label>
+                        <input type="text" name="cep" id="cep" maxlength="9" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">UF</label>
+                        <select name="uf" id="uf" required>
+                            <option value="">Selecione a UF</option>
+                            <option value="AC">AC</option>
+                            <option value="AL">AL</option>
+                            <option value="AP">AP</option>
+                            <option value="AM">AM</option>
+                            <option value="BA">BA</option>
+                            <option value="CE">CE</option>
+                            <option value="DF">DF</option>
+                            <option value="ES">ES</option>
+                            <option value="GO">GO</option>
+                            <option value="MA">MA</option>
+                            <option value="MT">MT</option>
+                            <option value="MS">MS</option>
+                            <option value="MG">MG</option>
+                            <option value="PA">PA</option>
+                            <option value="PB">PB</option>
+                            <option value="PR">PR</option>
+                            <option value="PE">PE</option>
+                            <option value="PI">PI</option>
+                            <option value="RJ">RJ</option>
+                            <option value="RN">RN</option>
+                            <option value="RS">RS</option>
+                            <option value="RO">RO</option>
+                            <option value="RR">RR</option>
+                            <option value="SC">SC</option>
+                            <option value="SP">SP</option>
+                            <option value="SE">SE</option>
+                            <option value="TO">TO</option>
+                        </select>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">Cidade</label>
+                        <input type="text" name="cidade" id="cidade" required placeholder="Digite a cidade se não encontrar pelo CEP">
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">Endereço</label>
+                        <input type="text" name="endereco" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">Anterior</button>
+                        <button type="button" class="btn" onclick="validarEtapa(2)">Próximo</button>
+                    </div>
+                </div>
+
+                <!-- ETAPA 3 -->
+                <div class="etapa" id="etapa-3">
+                    <div class="caixa-texto">
+                        <label class="required">Cargo</label>
+                        <select name="cargo" required>
+                            <option value="">Selecione</option>
+                            <option value="diretor">Diretor</option>
+                            <option value="vice_diretor">Vice-Diretor</option>
+                            <option value="secretario">Secretário</option>
+                            <option value="coordenador">Coordenador</option>
+                        </select>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">Senha</label>
+                        <input type="password" name="senha" id="senha" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="requisitos-senha">
+                        <div class="requisito" id="req-maiuscula"><i class="fa-solid fa-xmark"></i> Pelo menos 1 letra maiúscula</div>
+                        <div class="requisito" id="req-minuscula"><i class="fa-solid fa-xmark"></i> Pelo menos 1 letra minúscula</div>
+                        <div class="requisito" id="req-numero"><i class="fa-solid fa-xmark"></i> Pelo menos 1 número</div>
+                        <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> Pelo menos 8 caracteres</div>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label class="required">Confirmar senha</label>
+                        <input type="password" name="senha_confirmacao" id="senha_confirmacao" required>
+                        <small class="erro-inline"></small>
+                    </div>
+
+                    <div class="confirmacao-senha" id="senha-match-msg">As senhas não coincidem</div>
+
+                    <div class="caixa-texto upload-foto">
+                        <label>Foto de Perfil</label>
+                        <div class="upload-container">
+                            <label class="botao-upload">
+                                <i class="fa-solid fa-camera"></i>
+                                <span>Selecionar Imagem</span>
+                                <input type="file" name="foto" accept="image/*" onchange="previewFoto(this)">
+                            </label>
+                            <div class="preview-foto">
+                                <img id="preview-imagem" src="" alt="Pré-visualização">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">Anterior</button>
+                        <button type="submit" class="btn">Salvar Cadastro</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// --- Multi-step e validação ---
+function atualizarIndicadores(etapaAtiva) {
+    for (let i = 1; i <= 3; i++) {
+        const indicador = document.getElementById(`passo-${i}`);
+        indicador.classList.remove("ativo", "completo");
+        if (i < etapaAtiva) indicador.classList.add("completo");
+        else if (i === etapaAtiva) indicador.classList.add("ativo");
+    }
+}
+
+function validarEtapa(n) {
+    const etapa = document.getElementById(`etapa-${n}`);
+    const campos = etapa.querySelectorAll("input[required], select[required]");
+    let valido = true;
+    campos.forEach(campo => {
+        const erro = campo.nextElementSibling;
+        if (!campo.value.trim()) {
+            campo.classList.add("campo-erro");
+            if (erro && erro.classList.contains('erro-inline')) {
+                erro.innerText = "Campo obrigatório";
+                erro.style.display = "block";
+            }
+            valido = false;
+        } else {
+            campo.classList.remove("campo-erro");
+            if (erro && erro.classList.contains('erro-inline')) {
+                erro.style.display = "none";
+            }
+        }
+    });
+    if (valido) proximaEtapa(n);
+}
+
+function proximaEtapa(n) {
+    document.getElementById(`etapa-${n}`).classList.remove("ativa");
+    document.getElementById(`etapa-${n+1}`).classList.add("ativa");
+    atualizarIndicadores(n+1);
+}
+
+function voltarEtapa(n) {
+    document.getElementById(`etapa-${n}`).classList.remove("ativa");
+    document.getElementById(`etapa-${n-1}`).classList.add("ativa");
+    atualizarIndicadores(n-1);
+}
+
+// --- Máscaras de CPF, telefone e CEP ---
+document.getElementById('cpf').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g,'').slice(0,11);
+    v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    e.target.value = v;
+});
+
+document.getElementById('telefone').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g,'').slice(0,11);
+    v = v.length > 10 ? v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')
+                      : v.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3');
+    e.target.value = v;
+});
+
+document.getElementById('cep').addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g,'').slice(0,8);
+    e.target.value = v.replace(/(\d{5})(\d)/,'$1-$2');
+});
+
+// --- Preview de foto ---
+function previewFoto(input) {
+    const img = document.getElementById('preview-imagem');
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            img.src = e.target.result;
+            img.style.display = "block";
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// --- Validação de senha ---
+const senha = document.getElementById('senha');
+const senhaConfirm = document.getElementById('senha_confirmacao');
+const senhaMatchMsg = document.getElementById('senha-match-msg');
+
+if (senha) {
+    senha.addEventListener('input', () => {
+        const val = senha.value;
+        const regras = [
+            { id: 'req-maiuscula', regex: /[A-Z]/ },
+            { id: 'req-minuscula', regex: /[a-z]/ },
+            { id: 'req-numero', regex: /\d/ },
+            { id: 'req-caractere', regex: /.{8,}/ }
+        ];
+        regras.forEach(r => {
+            const el = document.getElementById(r.id);
+            if(r.regex.test(val)) {
+                el.classList.add('valid');
+                el.querySelector('i').className = 'fa-solid fa-check';
+            } else {
+                el.classList.remove('valid');
+                el.querySelector('i').className = 'fa-solid fa-xmark';
+            }
+        });
+        verificarSenhaConfirm();
+    });
+}
+
+if (senhaConfirm) senhaConfirm.addEventListener('input', verificarSenhaConfirm);
+
+function verificarSenhaConfirm() {
+    if(!senhaConfirm || senhaConfirm.value === "") { 
+        if(senhaMatchMsg) senhaMatchMsg.style.display = "none"; 
+        return; 
+    }
+    if(senha.value === senhaConfirm.value) {
+        senhaMatchMsg.innerText = "Senhas coincidem";
+        senhaMatchMsg.style.display = "block";
+        senhaMatchMsg.classList.add('valid');
+    } else {
+        senhaMatchMsg.innerText = "As senhas não coincidem";
+        senhaMatchMsg.style.display = "block";
+        senhaMatchMsg.classList.remove('valid');
+    }
+}
+
+// --- Preenchimento automático de CEP ---
+document.getElementById('cep').addEventListener('blur', function() {
+    let cep = this.value.replace(/\D/g,'');
+    if(cep.length !== 8) return;
+
+    fetch(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(response => response.json())
+        .then(data => {
+            const ufSelect = document.getElementById('uf');
+            const cidadeInput = document.getElementById('cidade');
+            if(data.erro) {
+                // CEP não encontrado: mantém UF e cidade para preenchimento manual
+                ufSelect.value = '';
+                cidadeInput.value = '';
+            } else {
+                ufSelect.value = data.uf;
+                cidadeInput.value = data.localidade;
+            }
+        })
+        .catch(err => console.error("Erro ao consultar CEP:", err));
+});
+</script>
 {% endblock %}

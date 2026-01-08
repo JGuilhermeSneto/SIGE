@@ -530,10 +530,99 @@ select:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-.etapa {
-    display: none;
+/* ================= MULTI STEP – CONTROLE REAL ================= */
+
+.formulario .etapa {
+    display: none !important;
 }
 
-.etapa.ativa {
-    display: block;
+.formulario .etapa.ativa {
+    display: block !important;
+}
+
+
+
+.erro-inline {
+    color: #e63946;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: none;
+}
+.campo-erro {
+    border: 1px solid #e63946 !important;
+}
+
+.requisitos-senha {
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+.requisito {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #e63946;
+}
+.requisito.valid {
+    color: #06d6a0;
+}
+.requisito i {
+    width: 16px;
+    text-align: center;
+}
+.confirmacao-senha {
+    margin-top: 5px;
+    margin-bottom: 20px; /* Adicionado para não colar no campo de baixo */
+    font-size: 0.85rem;
+    color: #e63946;
+}
+.confirmacao-senha.valid {
+    color: #06d6a0;
+}
+label.required::after {
+    content: " *";
+    color: #e63946;
+}
+/* === CORREÇÃO DEFINITIVA DO BOTÃO DE UPLOAD === */
+/* 2. CORREÇÃO ESPECÍFICA DO UPLOAD (NÃO MEXE NO RESTO) */
+
+/* Forçamos o container de foto a ignorar o gap de 100px */
+.caixa-texto.upload-foto {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important; 
+}
+
+/* Resetamos o label "Foto de Perfil" para não herdar os 120px fixos */
+.caixa-texto.upload-foto > label {
+    width: auto !important;
+    min-width: unset !important;
+    margin-bottom: 5px;
+}
+
+/* Estilização do Botão Azul */
+.botao-upload {
+    display: inline-flex !important; 
+    align-items: center !important;
+    gap: 10px !important;
+    background-color: #4a90e2 !important;
+    color: white !important;
+    padding: 12px 20px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    font-weight: 600;
+    width: fit-content !important; /* IMPORTANTE: Faz o botão não esticar */
+    border: none;
+}
+
+.botao-upload:hover { background-color: #357ab8 !important; }
+
+.botao-upload i { color: white !important; font-size: 1.1rem; }
+
+/* Esconde o input original */
+.botao-upload input[type="file"] { display: none !important; }
+
+.preview-foto img {
+    max-width: 140px; border-radius: 50%; object-fit: cover;
+    margin-top: 15px; border: 3px solid #4a90e2; display: none;
 }

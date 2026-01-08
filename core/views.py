@@ -80,14 +80,23 @@ def is_super_ou_gestor(user):
 @user_passes_test(is_super_ou_gestor)
 def painel_super(request):
     foto_perfil_url = get_foto_perfil(request.user)
+    ano_atual = datetime.now().year
+
+    # Contagem apenas para turmas do ano atual
+    turmas_ano_atual = Turma.objects.filter(ano=ano_atual)
+
+    total_turmas = turmas_ano_atual.count()
+    total_alunos = Aluno.objects.filter(turma__in=turmas_ano_atual).distinct().count()
+    total_professores = Professor.objects.filter(disciplina__turma__in=turmas_ano_atual).distinct().count()
+    total_disciplinas = Disciplina.objects.filter(turma__in=turmas_ano_atual).distinct().count()
 
     return render(request, "core/painel_super.html", {
         "usuario": request.user,
         "nome_exibicao": get_nome_exibicao(request.user),
-        "total_professores": Professor.objects.count(),
-        "total_alunos": Aluno.objects.count(),
-        "total_turmas": Turma.objects.count(),
-        "total_disciplinas": Disciplina.objects.count(),
+        "total_professores": total_professores,
+        "total_alunos": total_alunos,
+        "total_turmas": total_turmas,
+        "total_disciplinas": total_disciplinas,
         "foto_perfil_url": foto_perfil_url,
         "agora": datetime.now(),
         "calendario": gerar_calendario(),
@@ -278,26 +287,84 @@ def listar_professores(request):
     return render(request, 'core/listar_professores.html', {'professores': professores, 'query': query})
 
 
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from .models import Professor
+
+
 @login_required
 @user_passes_test(is_superuser)
 def cadastrar_professor(request):
     erro = None
-    if request.method == 'POST':
-        nome_completo = request.POST.get('nome_completo', '').strip()
-        email = request.POST.get('email', '').strip()
-        senha = request.POST.get('senha', '').strip()
 
+    if request.method == 'POST':
+        # ================= ETAPA 1 – Dados pessoais =================
+        nome_completo = request.POST.get('nome_completo', '').strip()
+        cpf = request.POST.get('cpf', '').strip()
+        email = request.POST.get('email', '').strip()
+        telefone = request.POST.get('telefone', '').strip()
+        data_nascimento = request.POST.get('nascimento') or None
+
+        # ================= ETAPA 2 – Endereço =================
+        cep = request.POST.get('cep', '').strip()
+        estado = request.POST.get('estado', '').strip()
+        cidade = request.POST.get('cidade', '').strip()
+        bairro = request.POST.get('bairro', '').strip()
+        logradouro = request.POST.get('logradouro', '').strip()
+        numero = request.POST.get('numero', '').strip()
+        complemento = request.POST.get('complemento', '').strip()
+
+        # ================= ETAPA 3 – Profissional =================
+        formacao = request.POST.get('formacao', '').strip()
+        especializacao = request.POST.get('especializacao', '').strip()
+        area_atuacao = request.POST.get('area_atuacao', '').strip()
+        senha = request.POST.get('senha', '').strip()
+        confirmar_senha = request.POST.get('confirmar_senha', '').strip()
+
+        # ================= VALIDAÇÕES =================
         if not nome_completo or not email or not senha:
             erro = 'Preencha todos os campos obrigatórios.'
+        elif senha != confirmar_senha:
+            erro = 'As senhas não coincidem.'
         elif User.objects.filter(email=email).exists():
             erro = 'Já existe um usuário com este e-mail.'
         else:
-            user = User.objects.create_user(username=email, email=email, password=senha)
-            Professor.objects.create(user=user, nome_completo=nome_completo)
-            messages.success(request, f'Professor {nome_completo} cadastrado com sucesso!')
+            # ================= CRIA USUÁRIO =================
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=senha
+            )
+
+            # ================= CRIA PROFESSOR =================
+            Professor.objects.create(
+                user=user,
+                nome_completo=nome_completo,
+                cpf=cpf,
+                telefone=telefone,
+                data_nascimento=data_nascimento,
+                cep=cep,
+                estado=estado,
+                cidade=cidade,
+                bairro=bairro,
+                logradouro=logradouro,
+                numero=numero,
+                complemento=complemento,
+                formacao=formacao,
+                especializacao=especializacao,
+                area_atuacao=area_atuacao,
+            )
+
+            messages.success(
+                request,
+                f'Professor {nome_completo} cadastrado com sucesso!'
+            )
             return redirect('listar_professores')
 
     return render(request, 'core/cadastrar_professor.html', {'erro': erro})
+
 
 
 @login_required
@@ -341,27 +408,69 @@ def excluir_professor(request, professor_id):
 def painel_gestor(request):
     return redirect('painel_super')
 
-
 @login_required
 @user_passes_test(lambda u: u.is_superuser or (hasattr(u, 'gestor') and u.gestor.cargo in ['diretor', 'vice_diretor']))
 def cadastrar_gestor(request):
     if request.method == 'POST':
-        form = GestorForm(request.POST)
+        form = GestorForm(request.POST, request.FILES, request=request)
+
         if form.is_valid():
             nome_completo = form.cleaned_data['nome_completo']
             email = form.cleaned_data['email']
             senha = form.cleaned_data['senha']
             cargo = form.cleaned_data['cargo']
 
-            # Cria user e gestor
-            user = User.objects.create_user(username=email, email=email, password=senha)
-            Gestor.objects.create(user=user, nome_completo=nome_completo, cargo=cargo)
-            messages.success(request, f"{cargo.title()} {nome_completo} cadastrado com sucesso!")
+            # ➕ CAMPOS EXISTENTES
+            cpf = form.cleaned_data['cpf']
+            data_nascimento = form.cleaned_data['data_nascimento']
+            telefone = form.cleaned_data['telefone']
+            uf = form.cleaned_data['uf']
+            cidade = form.cleaned_data['cidade']
+            endereco = form.cleaned_data['endereco']
+
+            # ➕ NOVOS CAMPOS
+            cep = form.cleaned_data['cep']
+            foto = form.cleaned_data.get('foto')
+
+            # Cria user (LINHAS EXISTENTES MANTIDAS)
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=senha
+            )
+
+            # Cria gestor
+            Gestor.objects.create(
+                user=user,
+                nome_completo=nome_completo,
+                cargo=cargo,
+                cpf=cpf,
+                data_nascimento=data_nascimento,
+                telefone=telefone,
+                cep=cep,
+                uf=uf,
+                cidade=cidade,
+                endereco=endereco,
+                foto=foto
+            )
+
+            messages.success(
+                request,
+                f"{cargo.title()} {nome_completo} cadastrado com sucesso!"
+            )
             return redirect('listar_gestores')
+
+        else:
+            # 🔴 ISSO É O QUE FALTAVA (NÃO QUEBRA NADA)
+            for campo, erros in form.errors.items():
+                for erro in erros:
+                    messages.error(request, erro)
+
     else:
-        form = GestorForm()
+        form = GestorForm(request=request)
 
     return render(request, 'core/cadastrar_gestor.html', {'form': form})
+
 
 # ---- GESTOR (Painel da Gestão Escolar) ----
 
@@ -609,18 +718,25 @@ def editar_disciplina(request, disciplina_id):
 
     if request.method == 'POST':
         disciplina.nome = request.POST['nome']
-        disciplina.professor = get_object_or_404(Professor, id=request.POST['professor'])
+        disciplina.professor = get_object_or_404(
+            Professor,
+            id=request.POST['professor']
+        )
         disciplina.save()
 
-        # redireciona direto para as disciplinas dessa turma
-        return redirect('listar_disciplinas_turma', turma_id=disciplina.turma.id)
+        return redirect(
+            'listar_disciplinas_turma',
+            turma_id=disciplina.turma.id
+        )
 
-    professores = Professor.objects.all()
+    professores = Professor.objects.filter(user__is_superuser=False)
 
-    return render(request, 'core/editar_disciplina.html', {
+    return render(request, 'core/cadastrar_disciplina_turma.html', {
         'disciplina': disciplina,
+        'turma': disciplina.turma,
         'professores': professores,
     })
+
 
 
 
@@ -638,32 +754,52 @@ def excluir_disciplina(request, disciplina_id):
     return redirect("listar_disciplinas_turma", turma_id=turma_id)
 
 #Turma
-
-from datetime import datetime
+from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Turma
 
 @login_required
 def listar_turmas(request):
     if not request.user.is_superuser:
         return redirect('login')
 
-    ano_atual = datetime.now().year
-    ano_filtro = request.GET.get('ano', ano_atual)
+    ano_atual = timezone.localtime(timezone.now()).year
+    query = request.GET.get('q', '').strip()
 
-    query = request.GET.get('q', '')
+    # TODOS os anos disponíveis no banco, descendente
+    anos_disponiveis_qs = Turma.objects.values_list('ano', flat=True).distinct().order_by('-ano')
+    anos_disponiveis = list(anos_disponiveis_qs)
 
+    # Se não houver turmas no banco, adiciona o ano atual
+    if not anos_disponiveis:
+        anos_disponiveis = [ano_atual]
+
+    # Filtro do ano
+    ano_filtro = request.GET.get('ano')
+    try:
+        ano_filtro = int(ano_filtro) if ano_filtro else ano_atual
+    except ValueError:
+        ano_filtro = ano_atual
+
+    # Garantir que o ano_filtro existe no banco ou pelo menos no ano atual
+    if ano_filtro not in anos_disponiveis:
+        anos_disponiveis.append(ano_filtro)
+        anos_disponiveis.sort(reverse=True)
+
+    # Filtra as turmas
     turmas = Turma.objects.filter(ano=ano_filtro)
-
     if query:
         turmas = turmas.filter(nome__icontains=query)
-
-    anos_disponiveis = Turma.objects.values_list('ano', flat=True).distinct().order_by('-ano')
 
     return render(request, 'core/listar_turmas.html', {
         'turmas': turmas,
         'query': query,
-        'ano_filtro': int(ano_filtro),
+        'ano_filtro': ano_filtro,
         'anos_disponiveis': anos_disponiveis
     })
+
+
 
 
 from datetime import datetime
@@ -882,13 +1018,13 @@ def cadastrar_disciplina_para_turma(request, turma_id):
                 messages.success(request, "Disciplina cadastrada com sucesso!")
                 return redirect('listar_disciplinas_turma', turma_id=turma.id)
 
-    # 🔥 Agora lista apenas professores reais (ignora superusuário)
     professores = Professor.objects.filter(user__is_superuser=False)
 
     return render(request, 'core/cadastrar_disciplina_turma.html', {
         'turma': turma,
         'professores': professores
     })
+
 
 
 
@@ -935,30 +1071,6 @@ def get_foto_perfil(user):
     return None
 
 
-HORARIOS = {
-    "manha": [
-        "07:00 às 07:45",
-        "07:45 às 08:30",
-        "08:50 às 09:35",
-        "09:35 às 10:20",
-        "10:30 às 11:15",
-        "11:15 às 12:00",
-    ],
-    "tarde": [
-        "13:00 às 13:45",
-        "13:45 às 14:30",
-        "14:50 às 15:35",
-        "15:35 às 16:20",
-        "16:30 às 17:15",
-        "17:15 às 18:00",
-    ],
-    "noite": [
-        "19:00 às 19:45",
-        "19:45 às 20:30",
-        "20:40 às 21:25",
-        "21:25 às 22:10",
-    ],
-}
 
 from .models import GradeHorario
 
@@ -967,30 +1079,7 @@ from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 
-HORARIOS = {
-    "manha": [
-        "07:00 às 07:45",
-        "07:45 às 08:30",
-        "08:50 às 09:35",
-        "09:35 às 10:20",
-        "10:30 às 11:15",
-        "11:15 às 12:00",
-    ],
-    "tarde": [
-        "13:00 às 13:45",
-        "13:45 às 14:30",
-        "14:50 às 15:35",
-        "15:35 às 16:20",
-        "16:30 às 17:15",
-        "17:15 às 18:00",
-    ],
-    "noite": [
-        "19:00 às 19:45",
-        "19:45 às 20:30",
-        "20:40 às 21:25",
-        "21:25 às 22:10",
-    ],
-}
+
 
 
 from .models import GradeHorario
@@ -1019,7 +1108,7 @@ HORARIOS = {
         "19:00 às 19:45",
         "19:45 às 20:30",
         "20:40 às 21:25",
-        "21:25 às 22:10",
+        "21:25 às 22:00",
     ],
 }
 

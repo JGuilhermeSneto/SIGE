@@ -529,3 +529,124 @@ select:-webkit-autofill:focus {
     -webkit-text-fill-color: #333;
     transition: background-color 5000s ease-in-out 0s;
 }
+
+/* ================= MULTI STEP – CONTROLE REAL ================= */
+
+.formulario .etapa {
+    display: none !important;
+}
+
+.formulario .etapa.ativa {
+    display: block !important;
+}
+
+
+
+.erro-inline {
+    color: #e63946;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    display: none;
+}
+.campo-erro {
+    border: 1px solid #e63946 !important;
+}
+
+.requisitos-senha {
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+.requisito {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #e63946;
+}
+.requisito.valid {
+    color: #06d6a0;
+}
+.requisito i {
+    width: 16px;
+    text-align: center;
+}
+.confirmacao-senha {
+    margin-top: 5px;
+    margin-bottom: 20px; /* Adicionado para não colar no campo de baixo */
+    font-size: 0.85rem;
+    color: #e63946;
+}
+.confirmacao-senha.valid {
+    color: #06d6a0;
+}
+label.required::after {
+    content: " *";
+    color: #e63946;
+}
+/* === CORREÇÃO DEFINITIVA DO BOTÃO DE UPLOAD === */
+
+/* 1. Força a caixa de upload a ignorar o flex horizontal e o gap de 100px */
+.caixa-texto.upload-foto {
+    display: block !important; /* Muda de flex para block para o label ficar em cima */
+    margin-bottom: 20px;
+}
+
+/* 2. Ajusta o label "Foto de Perfil" */
+.caixa-texto.upload-foto > label {
+    display: block;
+    margin-bottom: 10px;
+    width: 100% !important;
+    font-size: 14pt;
+    color: #333;
+}
+
+/* 3. O Container do Botão */
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* 4. O BOTÃO EM SI (Aqui é onde a mágica acontece) */
+.botao-upload {
+    display: inline-flex !important; /* Garante que ícone e texto fiquem na mesma linha */
+    align-items: center;            /* Alinha ícone e texto verticalmente */
+    justify-content: center;
+    gap: 10px;                      /* Espaço entre o ícone e o texto */
+    background-color: #4a90e2 !important;
+    color: white !important;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: none;
+    width: fit-content;             /* Faz o botão ter o tamanho do conteúdo */
+}
+
+.botao-upload:hover {
+    background-color: #357ab8 !important;
+}
+
+/* 5. Garante que o ícone da câmera seja branco e herde o estilo do botão */
+.botao-upload i {
+    color: white !important;
+    font-size: 1.1rem;
+    margin: 0; /* Remove margens que podem vir de bibliotecas externas */
+}
+
+/* 6. Esconde o input de arquivo padrão que fica "feio" */
+.botao-upload input[type="file"] {
+    display: none !important;
+}
+
+/* 7. Prévia da imagem */
+.preview-foto img {
+    max-width: 120px;
+    max-height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 10px;
+    border: 2px solid #4a90e2;
+    display: none; /* Só aparece quando o JS carregar a imagem */
+}

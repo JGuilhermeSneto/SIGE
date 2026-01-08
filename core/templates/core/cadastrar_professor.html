@@ -5,43 +5,196 @@
 {% block header_title %}Cadastro de Professor{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'core/css/cadastro_aluno.css' %}">
-{% endblock %}
-
-{% block user_info %}
-  <span>Olá, <a href="{% url 'editar_perfil_super' %}" title="Editar Perfil">{{ request.user.get_full_name|default:request.user.username }}</a></span>
-  <a href="{% url 'painel_super' %}" title="Voltar"><i class="fas fa-arrow-left"></i></a>
-  <a href="{% url 'logout' %}" title="Sair"><i class="fas fa-power-off"></i></a>
+<link rel="stylesheet" href="{% static 'core/css/cadastrar_docente.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
 <div class="container">
-  <h2>Cadastrar Professor</h2>
 
-  {% if erro %}
-    <p style="color:red;">{{ erro }}</p>
-  {% endif %}
+    <main>
+        <div class="topo-formulario">
+            <h1>Cadastrar Docente</h1>
+        </div>
 
-  <form method="post">
-    {% csrf_token %}
-    <div class="form-row">
-      <div class="form-group">
-        <label for="nome_completo">Nome completo:</label>
-        <input type="text" id="nome_completo" name="nome_completo" required>
-      </div>
+        {% if erro %}
+            <p style="color:red; margin-bottom:15px;">{{ erro }}</p>
+        {% endif %}
 
-      <div class="form-group">
-        <label for="email">E-mail:</label>
-        <input type="email" id="email" name="email" required>
-      </div>
-    </div>
+        <div class="conteudo-principal-rolavel">
 
-    <div class="form-group">
-      <label for="senha">Senha:</label>
-      <input type="password" id="senha" name="senha" required>
-    </div>
+            <!-- INDICADOR DE PASSOS -->
+            <div class="passos-indicadores">
+                <span class="passo ativo" id="passo-1">1. Dados Pessoais</span>
+                <span class="passo inativo" id="passo-2">2. Endereço</span>
+                <span class="passo inativo" id="passo-3">3. Profissional</span>
+            </div>
 
-    <button type="submit" class="submit-btn">Cadastrar</button>
-  </form>
+            <!-- FORM ÚNICO -->
+            <form method="POST" class="formulario">
+                {% csrf_token %}
+
+                <!-- ================= ETAPA 1 ================= -->
+                <div class="etapa ativa" id="etapa-1">
+
+                    <div class="caixa-texto">
+                        <label>Nome completo</label>
+                        <input type="text" name="nome_completo" required>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>CPF</label>
+                        <input type="text" name="cpf">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>E-mail</label>
+                        <input type="email" name="email" required>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Telefone</label>
+                        <input type="tel" id="telefone" name="telefone">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Data de nascimento</label>
+                        <input type="date" name="nascimento">
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn" onclick="proximaEtapa(1)">
+                            Próximo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= ETAPA 2 ================= -->
+                <div class="etapa" id="etapa-2">
+
+                    <div class="caixa-texto">
+                        <label>CEP</label>
+                        <input type="text" name="cep">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Estado</label>
+                        <select name="estado">
+                            <option value="">UF</option>
+                            <option>SP</option>
+                            <option>RJ</option>
+                        </select>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>cidade</label>
+                        <input type="text" name="cidade">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Bairro</label>
+                        <input type="text" name="bairro">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Logradouro</label>
+                        <input type="text" name="logradouro">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Número</label>
+                        <input type="text" name="numero">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Complemento</label>
+                        <input type="text" name="complemento">
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">
+                            Anterior
+                        </button>
+                        <button type="button" class="btn" onclick="proximaEtapa(2)">
+                            Próximo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= ETAPA 3 ================= -->
+                <div class="etapa" id="etapa-3">
+
+                    <div class="caixa-texto">
+                        <label>Formação</label>
+                        <input type="text" name="formacao">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Especialização</label>
+                        <input type="text" name="especializacao">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Área de Atuação</label>
+                        <input type="text" name="area_atuacao">
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Senha</label>
+                        <input type="password" name="senha" required>
+                    </div>
+
+                    <div class="caixa-texto">
+                        <label>Confirmar Senha</label>
+                        <input type="password" name="confirmar_senha" required>
+                    </div>
+
+                    <div class="botoes">
+                        <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">
+                            Anterior
+                        </button>
+                        <button type="submit" class="btn">
+                            Salvar Cadastro
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* MÁSCARA TELEFONE */
+const tel = document.getElementById("telefone");
+if (tel) {
+    tel.addEventListener("input", e => {
+        let v = e.target.value.replace(/\D/g, "");
+        if (v.length > 2) v = "(" + v.substring(0,2) + ") " + v.substring(2);
+        if (v.length > 10) v = v.substring(0,10) + "-" + v.substring(10,14);
+        e.target.value = v;
+    });
+}
+
+/* MULTI STEP */
+function proximaEtapa(n) {
+    document.getElementById(`etapa-${n}`).classList.remove("ativa");
+    document.getElementById(`etapa-${n+1}`).classList.add("ativa");
+
+    document.getElementById(`passo-${n}`).classList.remove("ativo");
+    document.getElementById(`passo-${n}`).classList.add("completo");
+    document.getElementById(`passo-${n+1}`).classList.add("ativo");
+}
+
+function voltarEtapa(n) {
+    document.getElementById(`etapa-${n}`).classList.remove("ativa");
+    document.getElementById(`etapa-${n-1}`).classList.add("ativa");
+
+    document.getElementById(`passo-${n}`).classList.remove("ativo");
+    document.getElementById(`passo-${n-1}`).classList.add("ativo");
+}
+</script>
 {% endblock %}

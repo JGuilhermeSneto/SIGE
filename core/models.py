@@ -21,7 +21,27 @@ class Turma(models.Model):
 # ------------------ PROFESSOR ------------------
 class Professor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    # ================= DADOS PESSOAIS =================
     nome_completo = models.CharField(max_length=255)
+    cpf = models.CharField(max_length=14, unique=True)
+    telefone = models.CharField(max_length=20, blank=True)
+    data_nascimento = models.DateField(null=True, blank=True)
+
+    # ================= ENDEREÇO =================
+    cep = models.CharField(max_length=9, blank=True)
+    estado = models.CharField(max_length=2, blank=True)
+    cidade = models.CharField(max_length=100, blank=True)
+    bairro = models.CharField(max_length=100, blank=True)
+    logradouro = models.CharField(max_length=255, blank=True)
+    numero = models.CharField(max_length=10, blank=True)
+    complemento = models.CharField(max_length=100, blank=True)
+
+    # ================= DADOS PROFISSIONAIS =================
+    formacao = models.CharField(max_length=255, blank=True)
+    especializacao = models.CharField(max_length=255, blank=True)
+    area_atuacao = models.CharField(max_length=255, blank=True)
+
     foto = models.ImageField(upload_to="fotos/", null=True, blank=True)
 
     def __str__(self):
@@ -103,6 +123,14 @@ class Nota(models.Model):
 
 
 # ------------------ GESTOR ------------------
+from django.db import models
+from django.contrib.auth.models import User
+
+
+from django.db import models
+from django.contrib.auth.models import User
+
+
 class Gestor(models.Model):
     CARGO_CHOICES = [
         ('diretor', 'Diretor'),
@@ -110,9 +138,24 @@ class Gestor(models.Model):
         ('secretario', 'Secretário'),
         ('coordenador', 'Coordenador'),
     ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     nome_completo = models.CharField(max_length=150)
+
+    # ➕ DADOS PESSOAIS
+    cpf = models.CharField(max_length=14, unique=True)
+    data_nascimento = models.DateField()
+    telefone = models.CharField(max_length=20)
+
     cargo = models.CharField(max_length=20, choices=CARGO_CHOICES)
+
+    # ➕ ENDEREÇO SIMPLIFICADO
+    cep = models.CharField(max_length=9)  # 00000-000
+    uf = models.CharField(max_length=2)
+    cidade = models.CharField(max_length=100)
+    endereco = models.CharField(max_length=255)
+
+    # 📸 FOTO DE PERFIL (opcional)
     foto = models.ImageField(upload_to="fotos/", null=True, blank=True)
 
     def __str__(self):
