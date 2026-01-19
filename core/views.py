@@ -297,73 +297,25 @@ from .models import Professor
 @login_required
 @user_passes_test(is_superuser)
 def cadastrar_professor(request):
-    erro = None
-
     if request.method == 'POST':
-        # ================= ETAPA 1 – Dados pessoais =================
-        nome_completo = request.POST.get('nome_completo', '').strip()
-        cpf = request.POST.get('cpf', '').strip()
-        email = request.POST.get('email', '').strip()
-        telefone = request.POST.get('telefone', '').strip()
-        data_nascimento = request.POST.get('nascimento') or None
+        form = ProfessorForm(request.POST, request.FILES, request=request)
 
-        # ================= ETAPA 2 – Endereço =================
-        cep = request.POST.get('cep', '').strip()
-        estado = request.POST.get('estado', '').strip()
-        cidade = request.POST.get('cidade', '').strip()
-        bairro = request.POST.get('bairro', '').strip()
-        logradouro = request.POST.get('logradouro', '').strip()
-        numero = request.POST.get('numero', '').strip()
-        complemento = request.POST.get('complemento', '').strip()
-
-        # ================= ETAPA 3 – Profissional =================
-        formacao = request.POST.get('formacao', '').strip()
-        especializacao = request.POST.get('especializacao', '').strip()
-        area_atuacao = request.POST.get('area_atuacao', '').strip()
-        senha = request.POST.get('senha', '').strip()
-        confirmar_senha = request.POST.get('confirmar_senha', '').strip()
-
-        # ================= VALIDAÇÕES =================
-        if not nome_completo or not email or not senha:
-            erro = 'Preencha todos os campos obrigatórios.'
-        elif senha != confirmar_senha:
-            erro = 'As senhas não coincidem.'
-        elif User.objects.filter(email=email).exists():
-            erro = 'Já existe um usuário com este e-mail.'
-        else:
-            # ================= CRIA USUÁRIO =================
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=senha
-            )
-
-            # ================= CRIA PROFESSOR =================
-            Professor.objects.create(
-                user=user,
-                nome_completo=nome_completo,
-                cpf=cpf,
-                telefone=telefone,
-                data_nascimento=data_nascimento,
-                cep=cep,
-                estado=estado,
-                cidade=cidade,
-                bairro=bairro,
-                logradouro=logradouro,
-                numero=numero,
-                complemento=complemento,
-                formacao=formacao,
-                especializacao=especializacao,
-                area_atuacao=area_atuacao,
-            )
-
+        if form.is_valid():
+            professor = form.save()
+            
             messages.success(
                 request,
-                f'Professor {nome_completo} cadastrado com sucesso!'
+                f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!"
             )
             return redirect('listar_professores')
+        else:
+            for campo, erros in form.errors.items():
+                for erro in erros:
+                    messages.error(request, erro)
+    else:
+        form = ProfessorForm(request=request)
 
-    return render(request, 'core/cadastrar_professor.html', {'erro': erro})
+    return render(request, 'core/cadastrar_professor.html', {'form': form})
 
 
 
@@ -415,57 +367,17 @@ def cadastrar_gestor(request):
         form = GestorForm(request.POST, request.FILES, request=request)
 
         if form.is_valid():
-            nome_completo = form.cleaned_data['nome_completo']
-            email = form.cleaned_data['email']
-            senha = form.cleaned_data['senha']
-            cargo = form.cleaned_data['cargo']
-
-            # ➕ CAMPOS EXISTENTES
-            cpf = form.cleaned_data['cpf']
-            data_nascimento = form.cleaned_data['data_nascimento']
-            telefone = form.cleaned_data['telefone']
-            uf = form.cleaned_data['uf']
-            cidade = form.cleaned_data['cidade']
-            endereco = form.cleaned_data['endereco']
-
-            # ➕ NOVOS CAMPOS
-            cep = form.cleaned_data['cep']
-            foto = form.cleaned_data.get('foto')
-
-            # Cria user (LINHAS EXISTENTES MANTIDAS)
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=senha
-            )
-
-            # Cria gestor
-            Gestor.objects.create(
-                user=user,
-                nome_completo=nome_completo,
-                cargo=cargo,
-                cpf=cpf,
-                data_nascimento=data_nascimento,
-                telefone=telefone,
-                cep=cep,
-                uf=uf,
-                cidade=cidade,
-                endereco=endereco,
-                foto=foto
-            )
-
+            gestor = form.save()  # 🔥 Faz tudo automaticamente
+            
             messages.success(
                 request,
-                f"{cargo.title()} {nome_completo} cadastrado com sucesso!"
+                f"{gestor.get_cargo_display()} {gestor.nome_completo} cadastrado com sucesso!"
             )
             return redirect('listar_gestores')
-
         else:
-            # 🔴 ISSO É O QUE FALTAVA (NÃO QUEBRA NADA)
             for campo, erros in form.errors.items():
                 for erro in erros:
                     messages.error(request, erro)
-
     else:
         form = GestorForm(request=request)
 
@@ -559,46 +471,25 @@ def listar_alunos(request):
 @login_required
 @user_passes_test(is_superuser)
 def cadastrar_aluno(request):
-    erro = None
-
     if request.method == 'POST':
-        form = AlunoForm(request.POST, request.FILES)
+        form = AlunoForm(request.POST, request.FILES, request=request)
 
         if form.is_valid():
-            email = form.cleaned_data['email']
-            senha = form.cleaned_data['senha']
-            nome = form.cleaned_data['nome_completo']
-
-            # cria o usuário
-            user = User.objects.create_user(
-                username=email,
-                email=email,
-                password=senha
-            )
-
-            # cria o aluno
-            aluno = form.save(commit=False)
-            aluno.user = user
-            aluno.save()
-
+            aluno = form.save()  # 🔥 O form já cria User e Aluno!
+            
             messages.success(
                 request,
-                f'Aluno {nome} cadastrado com sucesso!'
+                f"Aluno(a) {aluno.nome_completo} cadastrado(a) com sucesso!"
             )
             return redirect('listar_alunos')
         else:
-            erro = 'Verifique os campos do formulário.'
+            for campo, erros in form.errors.items():
+                for erro in erros:
+                    messages.error(request, erro)
     else:
-        form = AlunoForm()
+        form = AlunoForm(request=request)
 
-    return render(
-        request,
-        'core/cadastrar_aluno.html',
-        {
-            'form': form,
-            'erro': erro,
-        }
-    )
+    return render(request, 'core/cadastrar_aluno.html', {'form': form})
 
 @login_required
 @user_passes_test(is_superuser)

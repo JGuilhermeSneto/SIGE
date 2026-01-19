@@ -18,7 +18,6 @@
         </div>
 
         <div class="conteudo-principal-rolavel">
-
             <div class="passos-indicadores">
                 <span class="passo ativo" id="passo-1">1. Dados Pessoais</span>
                 <span class="passo inativo" id="passo-2">2. Endereço</span>
@@ -32,32 +31,52 @@
                 <div class="etapa ativa" id="etapa-1">
                     <div class="caixa-texto">
                         <label class="required">Nome completo</label>
-                        <input type="text" name="nome_completo" required>
-                        <small class="erro-inline"></small>
+                        {{ form.nome_completo }}
+                        {% if form.nome_completo.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.nome_completo.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">CPF</label>
-                        <input type="text" name="cpf" id="cpf" maxlength="14" required>
-                        <small class="erro-inline"></small>
+                        {{ form.cpf }}
+                        {% if form.cpf.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.cpf.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Data de nascimento</label>
-                        <input type="date" name="data_nascimento" required>
-                        <small class="erro-inline"></small>
+                        {{ form.data_nascimento }}
+                        {% if form.data_nascimento.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.data_nascimento.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Telefone</label>
-                        <input type="tel" name="telefone" id="telefone" maxlength="15" required>
-                        <small class="erro-inline"></small>
+                        {{ form.telefone }}
+                        {% if form.telefone.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.telefone.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">E-mail</label>
-                        <input type="email" name="email" required>
-                        <small class="erro-inline"></small>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.email.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="botoes">
@@ -69,56 +88,42 @@
                 <div class="etapa" id="etapa-2">
                     <div class="caixa-texto">
                         <label class="required">CEP</label>
-                        <input type="text" name="cep" id="cep" maxlength="9" required>
-                        <small class="erro-inline"></small>
+                        {{ form.cep }}
+                        {% if form.cep.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.cep.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">UF</label>
-                        <select name="uf" id="uf" required>
-                            <option value="">Selecione a UF</option>
-                                <option value="AC">AC</option>
-                                <option value="AL">AL</option>
-                                <option value="AP">AP</option>
-                                <option value="AM">AM</option>
-                                <option value="BA">BA</option>
-                                <option value="CE">CE</option>
-                                <option value="DF">DF</option>
-                                <option value="ES">ES</option>
-                                <option value="GO">GO</option>
-                                <option value="MA">MA</option>
-                                <option value="MT">MT</option>
-                                <option value="MS">MS</option>
-                                <option value="MG">MG</option>
-                                <option value="PA">PA</option>
-                                <option value="PB">PB</option>
-                                <option value="PR">PR</option>
-                                <option value="PE">PE</option>
-                                <option value="PI">PI</option>
-                                <option value="RJ">RJ</option>
-                                <option value="RN">RN</option>
-                                <option value="RS">RS</option>
-                                <option value="RO">RO</option>
-                                <option value="RR">RR</option>
-                                <option value="SC">SC</option>
-                                <option value="SP">SP</option>
-                                <option value="SE">SE</option>
-                                <option value="TO">TO</option>
-
-                        </select>
-                        <small class="erro-inline"></small>
+                        {{ form.uf }}
+                        {% if form.uf.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.uf.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Cidade</label>
-                        <input type="text" name="cidade" id="cidade" required placeholder="Digite a cidade se não encontrar pelo CEP">
-                        <small class="erro-inline"></small>
+                        {{ form.cidade }}
+                        {% if form.cidade.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.cidade.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Endereço</label>
-                        <input type="text" name="endereco" required>
-                        <small class="erro-inline"></small>
+                        {{ form.endereco }}
+                        {% if form.endereco.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.endereco.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="botoes">
@@ -131,20 +136,22 @@
                 <div class="etapa" id="etapa-3">
                     <div class="caixa-texto">
                         <label class="required">Cargo</label>
-                        <select name="cargo" required>
-                            <option value="">Selecione</option>
-                            <option value="diretor">Diretor</option>
-                            <option value="vice_diretor">Vice-Diretor</option>
-                            <option value="secretario">Secretário</option>
-                            <option value="coordenador">Coordenador</option>
-                        </select>
-                        <small class="erro-inline"></small>
+                        {{ form.cargo }}
+                        {% if form.cargo.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.cargo.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Senha</label>
-                        <input type="password" name="senha" id="senha" required>
-                        <small class="erro-inline"></small>
+                        {{ form.senha }}
+                        {% if form.senha.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.senha.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="requisitos-senha">
@@ -156,8 +163,12 @@
 
                     <div class="caixa-texto">
                         <label class="required">Confirmar senha</label>
-                        <input type="password" name="senha_confirmacao" id="senha_confirmacao" required>
-                        <small class="erro-inline"></small>
+                        {{ form.senha_confirmacao }}
+                        {% if form.senha_confirmacao.errors %}
+                            <small class="erro-inline" style="display:block;">{{ form.senha_confirmacao.errors.0 }}</small>
+                        {% else %}
+                            <small class="erro-inline"></small>
+                        {% endif %}
                     </div>
 
                     <div class="confirmacao-senha" id="senha-match-msg">As senhas não coincidem</div>
@@ -168,13 +179,20 @@
                             <label class="botao-upload">
                                 <i class="fa-solid fa-camera"></i>
                                 <span>Selecionar Imagem</span>
-                                <input type="file" name="foto" accept="image/*" onchange="previewFoto(this)">
+                                {{ form.foto }}
                             </label>
                             <div class="preview-foto">
                                 <img id="preview-imagem" src="" alt="Pré-visualização">
                             </div>
                         </div>
                     </div>
+
+                    <!-- Exibir erros não-field (do clean() do form) -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors.0 }}
+                        </div>
+                    {% endif %}
 
                     <div class="botoes">
                         <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">Anterior</button>
@@ -190,6 +208,82 @@
 
 {% block extra_js %}
 <script>
+// Detecta qual etapa tem erro e abre ela
+document.addEventListener('DOMContentLoaded', function() {
+    const etapas = document.querySelectorAll('.etapa');
+    let etapaComErro = null;
+
+    etapas.forEach((etapa, index) => {
+        if (etapa.querySelector('.erro-inline[style*="display:block"]') || 
+            etapa.querySelector('.alert-danger')) {
+            etapaComErro = index + 1;
+        }
+    });
+
+    if (etapaComErro) {
+        etapas.forEach(e => e.classList.remove('ativa'));
+        document.getElementById(`etapa-${etapaComErro}`).classList.add('ativa');
+        atualizarIndicadores(etapaComErro);
+    }
+});
+
+// Adiciona IDs e atributos nos campos do form
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form-gestor');
+    
+    // CPF
+    const cpfInput = form.querySelector('[name="cpf"]');
+    if (cpfInput) {
+        cpfInput.id = 'cpf';
+        cpfInput.maxLength = 14;
+    }
+    
+    // Telefone
+    const telefoneInput = form.querySelector('[name="telefone"]');
+    if (telefoneInput) {
+        telefoneInput.id = 'telefone';
+        telefoneInput.maxLength = 15;
+    }
+    
+    // CEP
+    const cepInput = form.querySelector('[name="cep"]');
+    if (cepInput) {
+        cepInput.id = 'cep';
+        cepInput.maxLength = 9;
+    }
+    
+    // UF
+    const ufSelect = form.querySelector('[name="uf"]');
+    if (ufSelect) ufSelect.id = 'uf';
+    
+    // Cidade
+    const cidadeInput = form.querySelector('[name="cidade"]');
+    if (cidadeInput) {
+        cidadeInput.id = 'cidade';
+        cidadeInput.placeholder = 'Digite a cidade se não encontrar pelo CEP';
+    }
+    
+    // Senha
+    const senhaInput = form.querySelector('[name="senha"]');
+    if (senhaInput) {
+        senhaInput.id = 'senha';
+        senhaInput.minLength = 8;
+    }
+    
+    // Confirmar senha
+    const senhaConfirmInput = form.querySelector('[name="senha_confirmacao"]');
+    if (senhaConfirmInput) senhaConfirmInput.id = 'senha_confirmacao';
+    
+    // Foto
+    const fotoInput = form.querySelector('[name="foto"]');
+    if (fotoInput) {
+        fotoInput.accept = 'image/*';
+        fotoInput.addEventListener('change', function() {
+            previewFoto(this);
+        });
+    }
+});
+
 // --- Multi-step e validação ---
 function atualizarIndicadores(etapaAtiva) {
     for (let i = 1; i <= 3; i++) {
@@ -236,22 +330,54 @@ function voltarEtapa(n) {
 }
 
 // --- Máscaras de CPF, telefone e CEP ---
-document.getElementById('cpf').addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g,'').slice(0,11);
-    v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
-    e.target.value = v;
-});
+document.addEventListener('DOMContentLoaded', function() {
+    const cpfInput = document.getElementById('cpf');
+    if (cpfInput) {
+        cpfInput.addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g,'').slice(0,11);
+            v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+            e.target.value = v;
+        });
+    }
 
-document.getElementById('telefone').addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g,'').slice(0,11);
-    v = v.length > 10 ? v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')
-                      : v.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3');
-    e.target.value = v;
-});
+    const telefoneInput = document.getElementById('telefone');
+    if (telefoneInput) {
+        telefoneInput.addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g,'').slice(0,11);
+            v = v.length > 10 ? v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')
+                              : v.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3');
+            e.target.value = v;
+        });
+    }
 
-document.getElementById('cep').addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g,'').slice(0,8);
-    e.target.value = v.replace(/(\d{5})(\d)/,'$1-$2');
+    const cepInput = document.getElementById('cep');
+    if (cepInput) {
+        cepInput.addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g,'').slice(0,8);
+            e.target.value = v.replace(/(\d{5})(\d)/,'$1-$2');
+        });
+
+        // --- Preenchimento automático de CEP ---
+        cepInput.addEventListener('blur', function() {
+            let cep = this.value.replace(/\D/g,'');
+            if(cep.length !== 8) return;
+
+            fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                .then(response => response.json())
+                .then(data => {
+                    const ufSelect = document.getElementById('uf');
+                    const cidadeInput = document.getElementById('cidade');
+                    if(data.erro) {
+                        ufSelect.value = '';
+                        cidadeInput.value = '';
+                    } else {
+                        ufSelect.value = data.uf;
+                        cidadeInput.value = data.localidade;
+                    }
+                })
+                .catch(err => console.error("Erro ao consultar CEP:", err));
+        });
+    }
 });
 
 // --- Preview de foto ---
@@ -268,71 +394,51 @@ function previewFoto(input) {
 }
 
 // --- Validação de senha ---
-const senha = document.getElementById('senha');
-const senhaConfirm = document.getElementById('senha_confirmacao');
-const senhaMatchMsg = document.getElementById('senha-match-msg');
+document.addEventListener('DOMContentLoaded', function() {
+    const senha = document.getElementById('senha');
+    const senhaConfirm = document.getElementById('senha_confirmacao');
+    const senhaMatchMsg = document.getElementById('senha-match-msg');
 
-if (senha) {
-    senha.addEventListener('input', () => {
-        const val = senha.value;
-        const regras = [
-            { id: 'req-maiuscula', regex: /[A-Z]/ },
-            { id: 'req-minuscula', regex: /[a-z]/ },
-            { id: 'req-numero', regex: /\d/ },
-            { id: 'req-caractere', regex: /.{8,}/ }
-        ];
-        regras.forEach(r => {
-            const el = document.getElementById(r.id);
-            if(r.regex.test(val)) {
-                el.classList.add('valid');
-                el.querySelector('i').className = 'fa-solid fa-check';
-            } else {
-                el.classList.remove('valid');
-                el.querySelector('i').className = 'fa-solid fa-xmark';
-            }
+    if (senha) {
+        senha.addEventListener('input', () => {
+            const val = senha.value;
+            const regras = [
+                { id: 'req-maiuscula', regex: /[A-Z]/ },
+                { id: 'req-minuscula', regex: /[a-z]/ },
+                { id: 'req-numero', regex: /\d/ },
+                { id: 'req-caractere', regex: /.{8,}/ }
+            ];
+            regras.forEach(r => {
+                const el = document.getElementById(r.id);
+                if(r.regex.test(val)) {
+                    el.classList.add('valid');
+                    el.querySelector('i').className = 'fa-solid fa-check';
+                } else {
+                    el.classList.remove('valid');
+                    el.querySelector('i').className = 'fa-solid fa-xmark';
+                }
+            });
+            verificarSenhaConfirm();
         });
-        verificarSenhaConfirm();
-    });
-}
-
-if (senhaConfirm) senhaConfirm.addEventListener('input', verificarSenhaConfirm);
-
-function verificarSenhaConfirm() {
-    if(!senhaConfirm || senhaConfirm.value === "") { 
-        if(senhaMatchMsg) senhaMatchMsg.style.display = "none"; 
-        return; 
     }
-    if(senha.value === senhaConfirm.value) {
-        senhaMatchMsg.innerText = "Senhas coincidem";
-        senhaMatchMsg.style.display = "block";
-        senhaMatchMsg.classList.add('valid');
-    } else {
-        senhaMatchMsg.innerText = "As senhas não coincidem";
-        senhaMatchMsg.style.display = "block";
-        senhaMatchMsg.classList.remove('valid');
+
+    if (senhaConfirm) senhaConfirm.addEventListener('input', verificarSenhaConfirm);
+
+    function verificarSenhaConfirm() {
+        if(!senhaConfirm || senhaConfirm.value === "") { 
+            if(senhaMatchMsg) senhaMatchMsg.style.display = "none"; 
+            return; 
+        }
+        if(senha.value === senhaConfirm.value) {
+            senhaMatchMsg.innerText = "Senhas coincidem";
+            senhaMatchMsg.style.display = "block";
+            senhaMatchMsg.classList.add('valid');
+        } else {
+            senhaMatchMsg.innerText = "As senhas não coincidem";
+            senhaMatchMsg.style.display = "block";
+            senhaMatchMsg.classList.remove('valid');
+        }
     }
-}
-
-// --- Preenchimento automático de CEP ---
-document.getElementById('cep').addEventListener('blur', function() {
-    let cep = this.value.replace(/\D/g,'');
-    if(cep.length !== 8) return;
-
-    fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(response => response.json())
-        .then(data => {
-            const ufSelect = document.getElementById('uf');
-            const cidadeInput = document.getElementById('cidade');
-            if(data.erro) {
-                // CEP não encontrado: mantém UF e cidade para preenchimento manual
-                ufSelect.value = '';
-                cidadeInput.value = '';
-            } else {
-                ufSelect.value = data.uf;
-                cidadeInput.value = data.localidade;
-            }
-        })
-        .catch(err => console.error("Erro ao consultar CEP:", err));
 });
 </script>
 {% endblock %}

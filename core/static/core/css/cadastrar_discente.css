@@ -72,7 +72,7 @@ main {
     color: #333;
     width: 120px;
     min-width: 120px;
-    text-align: justify;
+    text-align: left;
     margin: 0;
     white-space: nowrap;
 }
@@ -398,10 +398,144 @@ select:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-.etapa {
+/* ================= MULTI-STEP ================= */
+
+.formulario .etapa {
+    display: none !important;
+}
+
+.formulario .etapa.ativa {
+    display: block !important;
+}
+
+/* ================= VALIDAÇÕES E ERROS ================= */
+
+label.required::after {
+    content: " *";
+    color: #e63946;
+}
+
+.erro-inline {
+    color: #e63946;
+    font-size: 0.75rem;
+    margin-top: 4px;
     display: none;
 }
 
-.etapa.ativa {
-    display: block;
+.campo-erro {
+    border: 1px solid #e63946 !important;
+}
+
+/* ================= VALIDAÇÃO DE SENHA ================= */
+
+.requisitos-senha {
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+
+.requisito {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #e63946;
+}
+
+.requisito.valid {
+    color: #06d6a0;
+}
+
+.requisito i {
+    width: 16px;
+    text-align: center;
+}
+
+.confirmacao-senha {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    padding: 8px;
+    border-radius: 4px;
+    display: none;
+}
+
+.confirmacao-senha.valid {
+    background: #d4edda;
+    color: #155724;
+}
+
+.confirmacao-senha:not(.valid) {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ================= UPLOAD DE FOTO - PERFEITO ================= */
+
+.caixa-texto.upload-foto {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important; 
+}
+
+.caixa-texto.upload-foto > label {
+    width: auto !important;
+    min-width: unset !important;
+    margin-bottom: 5px;
+}
+
+.upload-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+}
+
+.botao-upload {
+    display: inline-flex !important; 
+    align-items: center !important;
+    gap: 10px !important;
+    background-color: #4a90e2 !important;
+    color: white !important;
+    padding: 12px 20px !important;
+    border-radius: 6px !important;
+    cursor: pointer;
+    font-weight: 600;
+    width: fit-content !important;
+    border: none;
+    transition: all 0.2s ease;
+}
+
+.botao-upload:hover { 
+    background-color: #357ab8 !important; 
+}
+
+.botao-upload i { 
+    color: white !important; 
+    font-size: 1.1rem; 
+}
+
+.botao-upload input[type="file"] { 
+    display: none !important; 
+}
+
+/* PREVIEW PERFEITO (CIRCULAR) */
+.preview-foto {
+    margin: 20px 0;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #4f8ef7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f2f4f8;
+}
+
+.preview-foto img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: none;
 }

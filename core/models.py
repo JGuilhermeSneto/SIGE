@@ -18,79 +18,156 @@ class Turma(models.Model):
         return f"{self.nome} - {self.get_turno_display()} ({self.ano})"
 
 
-# ------------------ PROFESSOR ------------------
-class Professor(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 
-    # ================= DADOS PESSOAIS =================
+
+class Professor(models.Model):
+    # ------------------ UFs ------------------
+    UF_CHOICES = [
+        ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
+        ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
+        ("GO", "GO"), ("MA", "MA"), ("MT", "MT"), ("MS", "MS"),
+        ("MG", "MG"), ("PA", "PA"), ("PB", "PB"), ("PR", "PR"),
+        ("PE", "PE"), ("PI", "PI"), ("RJ", "RJ"), ("RN", "RN"),
+        ("RS", "RS"), ("RO", "RO"), ("RR", "RR"), ("SC", "SC"),
+        ("SP", "SP"), ("SE", "SE"), ("TO", "TO"),
+    ]
+
+    # ------------------ RELAÇÃO COM USUÁRIO ------------------
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='professor'
+    )
+
+    # ------------------ DADOS PESSOAIS ------------------
     nome_completo = models.CharField(max_length=255)
-    cpf = models.CharField(max_length=14, unique=True)
+    cpf = models.CharField(
+        max_length=14, 
+        unique=True,
+        validators=[RegexValidator(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$')]
+    )
     telefone = models.CharField(max_length=20, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
 
-    # ================= ENDEREÇO =================
+    # ------------------ ENDEREÇO ------------------
     cep = models.CharField(max_length=9, blank=True)
-    estado = models.CharField(max_length=2, blank=True)
+    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
     bairro = models.CharField(max_length=100, blank=True)
     logradouro = models.CharField(max_length=255, blank=True)
     numero = models.CharField(max_length=10, blank=True)
     complemento = models.CharField(max_length=100, blank=True)
 
-    # ================= DADOS PROFISSIONAIS =================
+    # ------------------ DADOS PROFISSIONAIS ------------------
     formacao = models.CharField(max_length=255, blank=True)
     especializacao = models.CharField(max_length=255, blank=True)
     area_atuacao = models.CharField(max_length=255, blank=True)
 
-    foto = models.ImageField(upload_to="fotos/", null=True, blank=True)
+    # ------------------ FOTO ------------------
+    foto = models.ImageField(upload_to="fotos/professores/", null=True, blank=True)
+
+    # ------------------ TIMESTAMPS ------------------
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Professor"
+        verbose_name_plural = "Professores"
+        ordering = ['nome_completo']
 
     def __str__(self):
         return self.nome_completo
+from django.db import models
+from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 
 
-# ------------------ ALUNO ------------------
-# ------------------ ALUNO ------------------
 class Aluno(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    # Dados pessoais
-    nome_completo = models.CharField(max_length=255)
-    cpf = models.CharField(max_length=14, unique=True)
-    telefone = models.CharField(max_length=20, blank=True)
-    data_nascimento = models.DateField(null=True, blank=False)
-
+    # ------------------ CHOICES ------------------
     NATURALIDADE_CHOICES = [
         ('brasileiro', 'Brasileiro(a)'),
         ('estrangeiro', 'Estrangeiro(a)'),
     ]
+
+    UF_CHOICES = [
+        ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
+        ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
+        ("GO", "GO"), ("MA", "MA"), ("MT", "MT"), ("MS", "MS"),
+        ("MG", "MG"), ("PA", "PA"), ("PB", "PB"), ("PR", "PR"),
+        ("PE", "PE"), ("PI", "PI"), ("RJ", "RJ"), ("RN", "RN"),
+        ("RS", "RS"), ("RO", "RO"), ("RR", "RR"), ("SC", "SC"),
+        ("SP", "SP"), ("SE", "SE"), ("TO", "TO"),
+    ]
+
+    # ------------------ RELAÇÃO COM USUÁRIO ------------------
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='aluno'
+    )
+
+    # ------------------ DADOS PESSOAIS ------------------
+    nome_completo = models.CharField(max_length=255)
+    cpf = models.CharField(
+        max_length=14, 
+        unique=True,
+        validators=[RegexValidator(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$')]
+    )
+    telefone = models.CharField(max_length=20, blank=True)
+    data_nascimento = models.DateField()
+    
     naturalidade = models.CharField(
         max_length=20,
         choices=NATURALIDADE_CHOICES,
-        blank=True
+        default='brasileiro'
     )
 
-    filiacao_1 = models.CharField(max_length=255, blank=False)
-    filiacao_2 = models.CharField(max_length=255, blank=True)
+    # ------------------ FILIAÇÃO ------------------
+    filiacao_1 = models.CharField(max_length=255, verbose_name="Filiação 1")
+    filiacao_2 = models.CharField(max_length=255, blank=True, verbose_name="Filiação 2")
 
-    necessidade_especial = models.BooleanField(default=False)
-    descricao_necessidade = models.TextField(blank=True)
+    # ------------------ NECESSIDADES ESPECIAIS ------------------
+    necessidade_especial = models.BooleanField(
+        default=False,
+        verbose_name="Possui necessidade especial?"
+    )
+    descricao_necessidade = models.TextField(
+        blank=True,
+        verbose_name="Descrição da necessidade especial"
+    )
 
-    # Endereço
+    # ------------------ ENDEREÇO ------------------
     cep = models.CharField(max_length=9, blank=True)
-    estado = models.CharField(max_length=2, blank=True)
+    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
     bairro = models.CharField(max_length=100, blank=True)
     logradouro = models.CharField(max_length=255, blank=True)
     numero = models.CharField(max_length=10, blank=True)
 
-    # Alocação
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
+    # ------------------ ALOCAÇÃO ------------------
+    turma = models.ForeignKey(
+        'Turma', 
+        on_delete=models.CASCADE,
+        related_name='alunos'
+    )
 
-    foto = models.ImageField(upload_to="fotos/", null=True, blank=True)
+    # ------------------ FOTO ------------------
+    foto = models.ImageField(upload_to="fotos/alunos/", null=True, blank=True)
+
+    # ------------------ TIMESTAMPS ------------------
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Aluno"
+        verbose_name_plural = "Alunos"
+        ordering = ['nome_completo']
 
     def __str__(self):
-        return self.nome_completo
-
+        return f"{self.nome_completo} - {self.turma}"
 
 # ------------------ DISCIPLINA ------------------
 class Disciplina(models.Model):
@@ -123,21 +200,13 @@ class Nota(models.Model):
 
 
 # ------------------ GESTOR ------------------
+from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.auth.models import User
-
-
-from django.db import models
-from django.contrib.auth.models import User
-
-
-from django.db import models
-from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 
 
 class Gestor(models.Model):
-
-    # ------------------ CARGOS ------------------
     CARGO_CHOICES = [
         ('diretor', 'Diretor'),
         ('vice_diretor', 'Vice-Diretor'),
@@ -145,7 +214,6 @@ class Gestor(models.Model):
         ('coordenador', 'Coordenador'),
     ]
 
-    # ------------------ UFs ------------------
     UF_CHOICES = [
         ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
         ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
@@ -156,24 +224,36 @@ class Gestor(models.Model):
         ("SP", "SP"), ("SE", "SE"), ("TO", "TO"),
     ]
 
-    # ------------------ RELAÇÃO COM USUÁRIO ------------------
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-    # ------------------ DADOS PESSOAIS ------------------
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='gestor'
+    )
+    
     nome_completo = models.CharField(max_length=150)
-    cpf = models.CharField(max_length=14, unique=True)
+    cpf = models.CharField(
+        max_length=14, 
+        unique=True,
+        validators=[RegexValidator(r'^\d{3}\.\d{3}\.\d{3}-\d{2}$')]
+    )
     data_nascimento = models.DateField()
     telefone = models.CharField(max_length=20)
     cargo = models.CharField(max_length=20, choices=CARGO_CHOICES)
-
-    # ------------------ ENDEREÇO ------------------
-    cep = models.CharField(max_length=9)  # 00000-000
+    
+    cep = models.CharField(max_length=9)
     uf = models.CharField(max_length=2, choices=UF_CHOICES)
     cidade = models.CharField(max_length=100)
     endereco = models.CharField(max_length=255)
+    
+    foto = models.ImageField(upload_to="fotos/gestores/", null=True, blank=True)
+    
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
-    # ------------------ FOTO ------------------
-    foto = models.ImageField(upload_to="fotos/", null=True, blank=True)
+    class Meta:
+        verbose_name = "Gestor"
+        verbose_name_plural = "Gestores"
+        ordering = ['nome_completo']
 
     def __str__(self):
         return f"{self.nome_completo} ({self.get_cargo_display()})"

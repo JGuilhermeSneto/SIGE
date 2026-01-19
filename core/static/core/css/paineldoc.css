@@ -165,3 +165,144 @@ input.nota-input {
   text-align: center;
  
 }
+
+
+/* ====== CONTAINER ====== */
+.notas-container {
+    max-width: 1300px;
+    margin: auto;
+}
+
+/* ====== CARD ====== */
+.card-notas {
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    overflow: hidden;
+}
+
+/* ====== HEADER ====== */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 26px;
+    background: linear-gradient(135deg, #1d3557, #457b9d);
+    color: #fff;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.card-header span {
+    opacity: .9;
+    font-size: 14px;
+}
+
+/* ====== BOTÃO VOLTAR ====== */
+.btn-voltar {
+    background: rgba(255,255,255,.15);
+    padding: 8px 14px;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    transition: .2s;
+}
+
+.btn-voltar:hover {
+    background: rgba(255,255,255,.3);
+}
+
+/* ====== TABELA ====== */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f1f5f9;
+}
+
+th, td {
+    padding: 14px 10px;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    font-weight: 600;
+    font-size: 14px;
+    color: #334155;
+}
+
+td:first-child {
+    text-align: left;
+    font-weight: 500;
+    color: #0f172a;
+}
+
+/* ====== INPUTS ====== */
+.nota-input {
+    width: 60px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    text-align: center;
+    font-size: 14px;
+}
+
+.nota-input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,.2);
+}
+
+/* ====== MÉDIA ====== */
+.media {
+    font-weight: 600;
+    color: #16a34a;
+}
+
+.media-vazia {
+    color: #94a3b8;
+}
+
+/* ====== FOOTER ====== */
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 20px;
+    background: #f8fafc;
+}
+
+/* ====== BOTÃO SALVAR ====== */
+.btn-salvar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-salvar:hover {
+    background: #1e40af;
+}
+
+.btn-salvar img {
+    width: 20px;
+}

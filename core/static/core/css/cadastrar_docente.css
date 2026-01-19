@@ -165,7 +165,6 @@ main {
 .caixa-texto {
     display: flex;
     align-items: center;
-    /* Ajustado o gap para funcionar nas páginas de dados pessoais e endereço/alocação */
     gap: 100px; 
     margin-bottom: 10px;
 }
@@ -173,7 +172,6 @@ main {
 .caixa-texto label {
     font-size: 14pt;
     color: #333;
-    /* Definindo uma largura consistente para os labels */
     width: 120px;
     min-width: 120px; 
     text-align: left;
@@ -216,7 +214,7 @@ main {
     box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
 }
 
-/* --- Estilos para o campo Radio Button (Aluno com NE - Mantido do discente) --- */
+/* --- Estilos para o campo Radio Button --- */
 #necessidade-especial-container {
     display: flex;
     align-items: center;
@@ -255,7 +253,6 @@ main {
     cursor: pointer;
 }
 
-
 /* --- Estilos para Indicadores de Passo --- */
 .passos-indicadores {
     display: flex;
@@ -282,7 +279,6 @@ main {
     border-color: #4a90e2;
 }
 
-/* Estilo para o passo que já foi concluído */
 .passo.completo {
     background-color: #38a169;
     color: white;
@@ -298,11 +294,9 @@ main {
     display: flex;
     gap: 10px;
     margin-top: 20px;
-    /* Alinha o botão "Voltar/Anterior" à esquerda e "Próximo/Salvar" à direita */
     justify-content: space-between;
 }
 
-/* Estilo para o botão que fica à direita (Próximo, Salvar Cadastro) */
 .btn {
     background-color: #4a90e2;
     color: white;
@@ -312,7 +306,6 @@ main {
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s;
-    /* Garante alinhamento à direita no fluxo com botão Anterior */
     margin-left: auto;
     order: 2;
 }
@@ -321,7 +314,6 @@ main {
     background-color: #357ab8;
 }
 
-/* Estilo para o botão "Voltar" na primeira página (Voltar) */
 .btn-voltar2 {
     background-color: #e5e5e5;
     color: #333;
@@ -337,7 +329,6 @@ main {
     order: 1;
 }
 
-/* Estilo para o botão "Anterior" nas páginas 2 e 3 (btn-voltar-tab) */
 .btn-voltar-tab {
     background-color: #e5e5e5;
     color: #333;
@@ -357,7 +348,6 @@ main {
     background-color: #d0d0d0;
 }
 
-
 /* 4. RESPONSIVIDADE */
 /* ---------------------------------- */
 
@@ -375,7 +365,6 @@ main {
     }
 }
 
-/* Responsividade para Celular */
 @media (max-width: 768px) {
     .menu-principal h2 {
         font-size: 1.2rem;
@@ -385,20 +374,17 @@ main {
         height: 50px;
     }
 
-    /* Mostra o hambúrguer no mobile */
     .hamburguer {
         display: block !important;
         margin-left: auto;
         order: 1;
     }
 
-    /* Ajuste de posição dos ícones de perfil/sair no mobile */
     .menu-icones {
         margin-left: 15px;
         order: 2;
     }
 
-    /* Menu lateral recolhível (Escondido por padrão no mobile) */
     .menu-lateral {
         position: fixed;
         top: 60px;
@@ -410,12 +396,10 @@ main {
         padding-top: 20px;
     }
 
-    /* Quando a classe 'ativo' é adicionada via JavaScript */
     .menu-lateral.ativo {
         left: 0;
     }
 
-    /* O conteúdo principal deve começar do topo da tela no mobile */
     main {
         margin-left: 0;
         padding: 15px;
@@ -442,7 +426,6 @@ main {
     .botoes {
         justify-content: space-between;
         padding-right: 0;
-        /* Inverte a ordem para Próximo/Salvar ficar em cima do Anterior em mobile */
         flex-direction: column-reverse;
         gap: 10px;
     }
@@ -464,7 +447,6 @@ main {
         order: 2;
     }
 
-    /* Responsividade NE */
     #necessidade-especial-container {
         flex-direction: column;
         align-items: flex-start;
@@ -482,7 +464,6 @@ main {
         justify-content: flex-start;
     }
 
-    /* Responsividade Indicadores */
     .passos-indicadores {
         flex-direction: column;
         gap: 10px;
@@ -493,7 +474,6 @@ main {
     }
 }
 
-/* Celulares Pequenos */
 @media (max-width: 480px) {
     .menu-principal {
         padding: 0 10px;
@@ -512,9 +492,7 @@ main {
     }
 }
 
-/* * FIX: Sobrescreve a cor de fundo azul/amarela aplicada automaticamente
- * pelo navegador em campos que usam o recurso de Preenchimento Automático (Autofill).
- */
+/* FIX: Autofill */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -530,7 +508,7 @@ select:-webkit-autofill:focus {
     transition: background-color 5000s ease-in-out 0s;
 }
 
-/* ================= MULTI STEP – CONTROLE REAL ================= */
+/* ================= MULTI STEP ================= */
 
 .formulario .etapa {
     display: none !important;
@@ -540,7 +518,7 @@ select:-webkit-autofill:focus {
     display: block !important;
 }
 
-
+/* ================= VALIDAÇÕES E ERROS ================= */
 
 .erro-inline {
     color: #e63946;
@@ -548,105 +526,126 @@ select:-webkit-autofill:focus {
     margin-top: 4px;
     display: none;
 }
+
 .campo-erro {
     border: 1px solid #e63946 !important;
 }
+
+label.required::after {
+    content: " *";
+    color: #e63946;
+}
+
+/* ================= VALIDAÇÃO DE SENHA ================= */
 
 .requisitos-senha {
     margin-top: 10px;
     font-size: 0.85rem;
 }
+
 .requisito {
     display: flex;
     align-items: center;
     gap: 5px;
     color: #e63946;
 }
+
 .requisito.valid {
     color: #06d6a0;
 }
+
 .requisito i {
     width: 16px;
     text-align: center;
 }
+
 .confirmacao-senha {
     margin-top: 5px;
-    margin-bottom: 20px; /* Adicionado para não colar no campo de baixo */
-    font-size: 0.85rem;
-    color: #e63946;
-}
-.confirmacao-senha.valid {
-    color: #06d6a0;
-}
-label.required::after {
-    content: " *";
-    color: #e63946;
-}
-/* === CORREÇÃO DEFINITIVA DO BOTÃO DE UPLOAD === */
-
-/* 1. Força a caixa de upload a ignorar o flex horizontal e o gap de 100px */
-.caixa-texto.upload-foto {
-    display: block !important; /* Muda de flex para block para o label ficar em cima */
     margin-bottom: 20px;
+    font-size: 0.85rem;
+    padding: 8px;
+    border-radius: 4px;
+    display: none;
 }
 
-/* 2. Ajusta o label "Foto de Perfil" */
+.confirmacao-senha.valid {
+    background: #d4edda;
+    color: #155724;
+}
+
+.confirmacao-senha:not(.valid) {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* ================= UPLOAD DE FOTO - PERFEITO ================= */
+
+.caixa-texto.upload-foto {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important; 
+}
+
 .caixa-texto.upload-foto > label {
-    display: block;
-    margin-bottom: 10px;
-    width: 100% !important;
-    font-size: 14pt;
-    color: #333;
+    width: auto !important;
+    min-width: unset !important;
+    margin-bottom: 5px;
 }
 
-/* 3. O Container do Botão */
 .upload-container {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
+    gap: 15px;
 }
 
-/* 4. O BOTÃO EM SI (Aqui é onde a mágica acontece) */
 .botao-upload {
-    display: inline-flex !important; /* Garante que ícone e texto fiquem na mesma linha */
-    align-items: center;            /* Alinha ícone e texto verticalmente */
-    justify-content: center;
-    gap: 10px;                      /* Espaço entre o ícone e o texto */
+    display: inline-flex !important; 
+    align-items: center !important;
+    gap: 10px !important;
     background-color: #4a90e2 !important;
     color: white !important;
-    padding: 10px 20px;
-    border-radius: 6px;
+    padding: 12px 20px !important;
+    border-radius: 6px !important;
     cursor: pointer;
     font-weight: 600;
-    transition: all 0.2s ease;
+    width: fit-content !important;
     border: none;
-    width: fit-content;             /* Faz o botão ter o tamanho do conteúdo */
+    transition: all 0.2s ease;
 }
 
-.botao-upload:hover {
-    background-color: #357ab8 !important;
+.botao-upload:hover { 
+    background-color: #357ab8 !important; 
 }
 
-/* 5. Garante que o ícone da câmera seja branco e herde o estilo do botão */
-.botao-upload i {
-    color: white !important;
-    font-size: 1.1rem;
-    margin: 0; /* Remove margens que podem vir de bibliotecas externas */
+.botao-upload i { 
+    color: white !important; 
+    font-size: 1.1rem; 
 }
 
-/* 6. Esconde o input de arquivo padrão que fica "feio" */
-.botao-upload input[type="file"] {
-    display: none !important;
+.botao-upload input[type="file"] { 
+    display: none !important; 
 }
 
-/* 7. Prévia da imagem */
-.preview-foto img {
-    max-width: 120px;
-    max-height: 120px;
+/* PREVIEW PERFEITO (CIRCULAR) */
+.preview-foto {
+    margin: 20px 0;
+    width: 140px;
+    height: 140px;
     border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #4f8ef7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f2f4f8;
+}
+
+.preview-foto img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    margin-top: 10px;
-    border: 2px solid #4a90e2;
-    display: none; /* Só aparece quando o JS carregar a imagem */
+    border-radius: 50%;
+    display: none;
 }
