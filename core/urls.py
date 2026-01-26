@@ -16,6 +16,10 @@ urlpatterns = [
     path('professores/editar/<int:professor_id>/', views.editar_professor, name='editar_professor'),
     path('professores/excluir/<int:professor_id>/', views.excluir_professor, name='excluir_professor'),
     path('painel/professor/', views.painel_professor, name='painel_professor'),
+    path('disciplinas/professor/', views.disciplinas_professor, name='disciplinas_professor'),
+    path('turma/<int:turma_id>/disciplinas/', views.disciplinas_turma, name='disciplinas_turma'),
+    # NOVA: Visualizar grade horária da turma
+    path('professor/turma/<int:turma_id>/grade/', views.visualizar_grade_professor, name='visualizar_grade_professor'),
     path('lancar-nota/<int:disciplina_id>/', views.lancar_nota, name='lancar_nota'),
 
 

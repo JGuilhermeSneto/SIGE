@@ -1,51 +1,95 @@
-{% extends 'core/base.html' %}
+{% extends "core/base.html" %}
 {% load static %}
 
 {% block title %}Painel do Professor{% endblock %}
-{% block header_title %}Painel do Professor{% endblock %}
-
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'core/css/discentes.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/disciplinas_professor.css' %}">
-{% endblock %}
-
-{% block user_info %}
-  <span>Olá, <a href="#">{{ request.user.get_full_name }}</a></span>
-  <a href="{% url 'editar_perfil_professor' %}"><i class="fas fa-user"></i></a>
-  <a href="{% url 'logout' %}"><i class="fas fa-power-off"></i></a>
+<link rel="stylesheet" href="{% static 'core/css/painel_professor.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="content-box">
-    <h2 class="titulo">Disciplinas Atribuídas</h2>
 
-    {% if disciplinas %}
-    <table class="tabela-disciplinas">
-      <thead class="tabela1">
-        <tr class="tabela-principal">
-          <th class="tabela-cabecalho">Disciplina</th>
-          <th class="tabela-cabecalho">Turma</th>
-          <th class="tabela-cabecalho">Ações</th>
-        </tr>
-      </thead>
-      <tbody class="tabela2">
-        {% for d in disciplinas %}
-        <tr class="linhas-tabela">
-          <td class="tabela-info">{{ d.nome }}</td>
-          <td class="tabela-info">{{ d.turma.nome }}</td>
-          <td class="tabela-icones">
-            <a href="{% url 'lancar_nota' d.id %}" class="action-btn editar">
-              <i class="fas fa-pen-to-square"></i> Lançar Notas
-            </a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-      <p style="color: white;">Nenhuma disciplina atribuída.</p>
-    {% endif %}
-  </div>
+<div class="container">
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="conteudo-principal-rolavel">
+
+        <!-- HEADER COM NOME E FILTRO -->
+        <div class="header-painel">
+            <h1>Olá, {{ nome_exibicao }}</h1>
+            
+            <form method="get" class="filtro-ano-painel">
+                <label>📅 Ano Letivo</label>
+                <select name="ano" onchange="this.form.submit()">
+                    {% for ano in anos_disponiveis %}
+                        <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+                            {{ ano }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <div class="conteudo-geral">
+
+            <!-- CARDS DE ESTATÍSTICAS -->
+            <section class="cards">
+
+                <div class="card">
+                    <p>Disciplinas</p>
+                    <h2>{{ total_disciplinas }}</h2>
+                </div>
+
+                <div class="card">
+                    <p>Turmas</p>
+                    <h2>{{ total_turmas }}</h2>
+                </div>
+
+                <div class="card">
+                    <p>Total de Alunos</p>
+                    <h2>{{ total_alunos }}</h2>
+                </div>
+
+                <div class="card card-notas">
+                    <p>Notas Lançadas</p>
+                    <h2>{{ total_notas_lancadas }}<span class="texto-pequeno">/{{ total_notas_possiveis }}</span></h2>
+                </div>
+
+            </section>
+
+            <!-- CALENDÁRIO -->
+            <div class="calendario-container">
+                <div class="calendario">
+                    <div class="calendario-box">
+                        <div class="calendario-cabecalho">
+                            <h2>{{ agora|date:"F"|upper }}</h2>
+                            <span class="calendario-ano">{{ agora|date:"Y" }}</span>
+                        </div>
+
+                        <div class="calendario-grade">
+                            <!-- Nome dos dias -->
+                            <div class="nome-dia">DOM</div>
+                            <div class="nome-dia">SEG</div>
+                            <div class="nome-dia">TER</div>
+                            <div class="nome-dia">QUA</div>
+                            <div class="nome-dia">QUI</div>
+                            <div class="nome-dia">SEX</div>
+                            <div class="nome-dia">SAB</div>
+
+                            {% for celula in calendario %}
+                                <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
+                                    {% if not celula.vazio %}{{ celula.numero }}{% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+       
+
+    </main>
 </div>
+
 {% endblock %}

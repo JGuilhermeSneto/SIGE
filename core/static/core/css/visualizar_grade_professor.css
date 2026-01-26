@@ -1,0 +1,307 @@
+/* Conteúdo Principal */
+main {
+    margin-left: 220px;
+    margin-top: 20px;
+    padding: 20px;
+}
+
+/* ================= HEADER ================= */
+.header-pagina {
+    margin-bottom: 30px;
+}
+
+.header-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: #fff;
+    color: #555;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13pt;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+    width: fit-content;
+}
+
+.btn-voltar:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.titulo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.titulo-container h1 {
+    margin: 0;
+    font-size: 28pt;
+    color: #555;
+    font-weight: 600;
+}
+
+.badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 15px;
+    font-size: 12pt;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.badge-turma {
+    background: #6a11cb;
+    color: white;
+}
+
+.badge-ano {
+    background: #4a90e2;
+    color: white;
+}
+
+.badge-turno {
+    background: #f0f0f0;
+    color: #555;
+}
+
+/* ================= INFO DISCIPLINAS ================= */
+.info-disciplinas {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.info-disciplinas h3 {
+    margin: 0 0 15px 0;
+    font-size: 16pt;
+    font-weight: 600;
+}
+
+.lista-disciplinas-info {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.badge-disciplina {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12pt;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* ================= GRADE HORÁRIA ================= */
+.grade-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.tabela-grade {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13pt;
+}
+
+.tabela-grade thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.tabela-grade th {
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14pt;
+}
+
+.tabela-grade th:first-child {
+    border-top-left-radius: 8px;
+}
+
+.tabela-grade th:last-child {
+    border-top-right-radius: 8px;
+}
+
+.tabela-grade td {
+    padding: 15px;
+    text-align: center;
+    border: 1px solid #e0e0e0;
+}
+
+.coluna-horario {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    min-width: 140px;
+}
+
+.celula-horario {
+    background: #f8f8f8;
+    font-weight: 600;
+    color: #555;
+    font-size: 11pt;
+}
+
+.celula-disciplina {
+    background: #fafafa;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.celula-disciplina:hover {
+    background: #f0f0f0;
+}
+
+/* Destaque para disciplinas do professor */
+.minha-disciplina {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%);
+    color: #333;
+    font-weight: 600;
+    border: 2px solid #667eea;
+}
+
+.minha-disciplina:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+}
+
+/* ================= LEGENDA ================= */
+.legenda {
+    margin-top: 20px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.legenda-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12pt;
+    color: #555;
+}
+
+.cor-destaque,
+.cor-normal {
+    width: 30px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.cor-destaque {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.25) 0%, rgba(118, 75, 162, 0.25) 100%);
+    border: 2px solid #667eea;
+}
+
+.cor-normal {
+    background: #fafafa;
+}
+
+/* ================= MENSAGEM VAZIA ================= */
+.mensagem-vazia {
+    text-align: center;
+    padding: 80px 20px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    color: #888;
+}
+
+.mensagem-vazia i {
+    font-size: 64pt;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.mensagem-vazia p {
+    font-size: 16pt;
+    margin: 0;
+}
+
+/* ================= RESPONSIVIDADE ================= */
+
+@media (max-width: 1024px) {
+    main {
+        margin-left: 180px;
+    }
+}
+
+@media (max-width: 768px) {
+    main {
+        margin-left: 0;
+        padding: 15px;
+    }
+
+    .titulo-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .titulo-container h1 {
+        font-size: 22pt;
+    }
+
+    .grade-container {
+        padding: 15px;
+    }
+
+    .tabela-grade {
+        font-size: 11pt;
+    }
+
+    .tabela-grade th,
+    .tabela-grade td {
+        padding: 10px 5px;
+    }
+
+    .legenda {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .info-disciplinas {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .titulo-container h1 {
+        font-size: 20pt;
+    }
+
+    .tabela-grade {
+        font-size: 10pt;
+    }
+
+    .celula-horario {
+        font-size: 9pt;
+    }
+}

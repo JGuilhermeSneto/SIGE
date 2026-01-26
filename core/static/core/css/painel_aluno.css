@@ -95,9 +95,21 @@
 
 .card-dados h3 {
     font-size: 2rem;
-    color: #4285F4;
+    color: #333;
     margin: 0;
     font-weight: 700;
+}
+
+.card-dados h3.aprovado {
+    color: #16a34a;
+}
+
+.card-dados h3.recuperacao {
+    color: #f59e0b;
+}
+
+.card-dados h3.reprovado {
+    color: #dc2626;
 }
 
 /* ============================
@@ -189,7 +201,19 @@
 .disciplina-media .valor-media {
     font-size: 1.8rem;
     font-weight: 700;
-    color: #4285F4;
+    color: #333;
+}
+
+.disciplina-media .valor-media.aprovado {
+    color: #16a34a;
+}
+
+.disciplina-media .valor-media.recuperacao {
+    color: #f59e0b;
+}
+
+.disciplina-media .valor-media.reprovado {
+    color: #dc2626;
 }
 
 .seta {
@@ -357,7 +381,16 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 0.95rem;
+    table-layout: fixed; /* <- trava as colunas */
 }
+
+/* Largura fixa da coluna Horário */
+.grade-table th:first-child,
+.grade-table td.horario-col {
+    width: 180px;          /* ajuste se quiser menor/maior */
+    white-space: nowrap;   /* não quebra linha */
+}
+
 
 .grade-table thead th {
     background: #f3f4f6;

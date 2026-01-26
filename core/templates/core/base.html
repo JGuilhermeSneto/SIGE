@@ -22,9 +22,28 @@
   <!-- 🌟 MENU SUPERIOR FIXO -->
   <header class="menu-principal">
 
-      <img src="{% static 'core/img/Logo-menu.png' %}" class="logo-menu">
+{% if request.user.is_authenticated %}
+    {% if request.user.is_superuser %}
+        {% url 'painel_super' as home_url %}
+    {% elif request.user.gestor %}
+        {% url 'painel_super' as home_url %}
+    {% elif request.user.professor %}
+        {% url 'painel_professor' as home_url %}
+    {% elif request.user.aluno %}
+        {% url 'painel_aluno' as home_url %}
+    {% else %}
+        {% url 'login' as home_url %}
+    {% endif %}
+{% else %}
+    {% url 'login' as home_url %}
+{% endif %}
 
-      <h2>SIGE</h2>
+<a href="{{ home_url }}" class="brand-link">
+    <img src="{% static 'core/img/Logo-menu.png' %}" class="logo-menu">
+    <h2>SIGE</h2>
+</a>
+
+
 
       <!-- Botão Hamburguer (mobile) -->
       <i class="fa-solid fa-bars icone-menu hamburguer" id="menu-toggle"></i>
@@ -74,26 +93,45 @@
   </header>
 
 
-  <!-- 🌟 MENU LATERAL FIXO -->
-  <aside class="menu-lateral" id="menu-lateral" {% if request.user.is_authenticated and request.user.aluno %}style="display:none;"{% endif %}>
-      <nav class="nav-lateral">
 
-          <a href="{% url 'painel_super' %}">
-              <i class="fa-solid fa-house"></i> Início
-          </a>
-
-          <a href="{% url 'listar_turmas' %}">
-              <i class="fa-solid fa-graduation-cap"></i> Turmas
-          </a>
-
-          <a href="{% url 'usuarios' %}">
-              <i class="fa-solid fa-users"></i> Usuários
-          </a>
+    <!-- 🌟 MENU LATERAL FIXO -->
+    {% load custom_tags %}
 
 
+    {% if not request.user.is_authenticated or not request.user|has_attr:"aluno" %}
+    <!-- 🌟 MENU LATERAL FIXO -->
+    <aside class="menu-lateral" id="menu-lateral">
+        <nav class="nav-lateral">
 
-      </nav>
-  </aside>
+            {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
+                <a href="{% url 'painel_super' %}">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+
+                <a href="{% url 'listar_turmas' %}">
+                    <i class="fa-solid fa-graduation-cap"></i> Turmas
+                </a>
+
+                <a href="{% url 'usuarios' %}">
+                    <i class="fa-solid fa-users"></i> Usuários
+                </a>
+
+            {% elif request.user|has_attr:"professor" %}
+                <a href="{% url 'painel_professor' %}">
+                    <i class="fa-solid fa-house"></i> Início
+                </a>
+
+                <a href="{% url 'disciplinas_professor' %}">
+                    <i class="fa-solid fa-graduation-cap"></i> Minhas Turmas
+                </a>
+            {% endif %}
+
+        </nav>
+    </aside>
+    {% endif %}
+
+
+
 
 
   <!-- 🌟 ÁREA DE CONTEÚDO -->

@@ -1,0 +1,87 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Disciplinas - {{ turma.nome }}{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/disciplinas_turmas.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <main class="conteudo-principal">
+
+        <!-- HEADER -->
+        <div class="header-pagina">
+            <div class="header-info">
+                <a href="{% url 'disciplinas_professor' %}" class="btn-voltar">
+                    <i class="fas fa-arrow-left"></i> Voltar às Turmas
+                </a>
+                <div class="titulo-container">
+                    <h1>{{ turma.nome }}</h1>
+                    <div class="badges">
+                        <span class="badge badge-ano">{{ turma.ano }}</span>
+                        <span class="badge badge-turno">{{ turma.get_turno_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÃO GRADE HORÁRIA -->
+        <div class="secao-grade">
+            <a href="{% url 'visualizar_grade_professor' turma.id %}" class="btn-grade-horaria">
+                📅 Ver Grade Horária da Turma
+            </a>
+        </div>
+
+        <!-- LISTA DE DISCIPLINAS -->
+        <div class="secao-disciplinas">
+            <h2 class="subtitulo">📖 Disciplinas que leciono nesta turma</h2>
+
+            {% if disciplinas_detalhadas %}
+                <div class="lista-disciplinas">
+                    {% for item in disciplinas_detalhadas %}
+                        <div class="card-disciplina">
+                            <div class="disciplina-header">
+                                <h3>{{ item.disciplina.nome }}</h3>
+                            </div>
+                            
+                            <div class="disciplina-info">
+                                <div class="info-item">
+                                    <span class="info-label">👥 Alunos:</span>
+                                    <span class="info-valor">{{ item.alunos_count }}</span>
+                                </div>
+                                
+                                <div class="info-item">
+                                    <span class="info-label">📝 Notas:</span>
+                                    <span class="info-valor">{{ item.notas_lancadas }}/{{ item.notas_possiveis }}</span>
+                                </div>
+                            </div>
+
+                            <div class="progresso-container">
+                                <div class="progresso-barra">
+                                    <div class="progresso-preenchido" style="width: {{ item.percentual }}%"></div>
+                                </div>
+                                <span class="progresso-texto">{{ item.percentual }}% completo</span>
+                            </div>
+
+                            <div class="disciplina-acoes">
+                                <a href="{% url 'visualizar_disciplinas' item.disciplina.id %}" class="btn-ver-detalhes">
+                                     Ver Detalhes
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mensagem-vazia">
+                    <i class="fas fa-inbox"></i>
+                    <p>Nenhuma disciplina encontrada nesta turma.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </main>
+</div>
+
+{% endblock %}

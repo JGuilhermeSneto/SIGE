@@ -46,51 +46,9 @@
             <div class="card-info">
                 <div class="card-icon">🎯</div>
                 <div class="card-dados">
-                    {% if total_notas_possiveis > 0 and total_notas_lancadas == total_notas_possiveis %}
-
-                        {# ==========================
-                           SITUAÇÃO GERAL (CORRETA)
-                           Reprovado: existe alguma disciplina com media <= 4
-                           Recuperação: não tem <=4, mas existe alguma com media < 6
-                           Aprovado: todas com media >= 6
-                           ========================== #}
-
-                        {# flags #}
-                        {% with tem_reprovacao=False tem_recuperacao=False %}
-
-                            {# 1) verifica se tem reprovado em alguma disciplina (<=4) #}
-                            {% for item in disciplinas_com_notas %}
-                                {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                                    {% if item.nota.media <= 4 %}
-                                        {% with tem_reprovacao=True %}{% endwith %}
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-
-                            {# 2) se não reprovou, verifica recuperação (media < 6) #}
-                            {% if not tem_reprovacao %}
-                                {% for item in disciplinas_com_notas %}
-                                    {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                                        {% if item.nota.media < 6 %}
-                                            {% with tem_recuperacao=True %}{% endwith %}
-                                        {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-
-                            <p>Situação</p>
-                            <h3>
-                                {% if tem_reprovacao %}
-                                    Reprovado
-                                {% elif tem_recuperacao %}
-                                    Recuperação
-                                {% else %}
-                                    Aprovado
-                                {% endif %}
-                            </h3>
-
-                        {% endwith %}
-
+                    {% if situacao_geral != "--" %}
+                        <p>Situação Geral</p>
+                        <h3 class="{{ situacao_classe }}">{{ situacao_geral }}</h3>
                     {% else %}
                         <p>Notas Lançadas</p>
                         <h3>{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</h3>
@@ -112,24 +70,11 @@
                             <div class="disciplina-info">
                                 <h3>{{ item.disciplina.nome }}</h3>
                                 <p>Prof. {{ item.disciplina.professor.nome_completo }}</p>
-
-                                {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                                    <p style="margin-top:6px;">
-                                        <strong>Situação:</strong>
-                                        {% if item.nota.media >= 6 %}
-                                            <span>Aprovado</span>
-                                        {% elif item.nota.media > 4 %}
-                                            <span>Recuperação</span>
-                                        {% else %}
-                                            <span>Reprovado</span>
-                                        {% endif %}
-                                    </p>
-                                {% endif %}
                             </div>
 
                             <div class="disciplina-media">
                                 <span class="label">Média</span>
-                                <span class="valor-media">
+                                <span class="valor-media {% if item.nota.media %}{% if item.nota.media >= 7 %}aprovado{% elif item.nota.media >= 5 %}recuperacao{% else %}reprovado{% endif %}{% endif %}">
                                     {{ item.nota.media|floatformat:1|default:"--" }}
                                 </span>
                             </div>
@@ -154,21 +99,6 @@
                                 <span class="nota-label">4º Bimestre</span>
                                 <span class="nota-valor">{{ item.nota.nota4|default:"--" }}</span>
                             </div>
-
-                            {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                            <div class="nota-item">
-                                <span class="nota-label"><strong>Situação</strong></span>
-                                <span class="nota-valor">
-                                    {% if item.nota.media >= 6 %}
-                                        <strong>Aprovado</strong>
-                                    {% elif item.nota.media > 4 %}
-                                        <strong>Recuperação</strong>
-                                    {% else %}
-                                        <strong>Reprovado</strong>
-                                    {% endif %}
-                                </span>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
@@ -298,7 +228,6 @@
                         <th>3º Bim</th>
                         <th>4º Bim</th>
                         <th>Média</th>
-                        <th>Situação</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -310,19 +239,6 @@
                         <td>{{ item.nota.nota3|default:"--" }}</td>
                         <td>{{ item.nota.nota4|default:"--" }}</td>
                         <td><strong>{{ item.nota.media|floatformat:1|default:"--" }}</strong></td>
-                        <td>
-                            {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                                {% if item.nota.media >= 6 %}
-                                    <strong>Aprovado</strong>
-                                {% elif item.nota.media > 4 %}
-                                    <strong>Recuperação</strong>
-                                {% else %}
-                                    <strong>Reprovado</strong>
-                                {% endif %}
-                            {% else %}
-                                --
-                            {% endif %}
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -330,44 +246,13 @@
                     <tr>
                         <td colspan="5"><strong>Média Geral</strong></td>
                         <td><strong>{{ media_geral|floatformat:1|default:"--" }}</strong></td>
-                        <td>
-                            {% if total_notas_possiveis > 0 and total_notas_lancadas == total_notas_possiveis %}
-
-                                {% with tem_reprovacao=False tem_recuperacao=False %}
-
-                                    {% for item in disciplinas_com_notas %}
-                                        {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                                            {% if item.nota.media <= 4 %}
-                                                {% with tem_reprovacao=True %}{% endwith %}
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if not tem_reprovacao %}
-                                        {% for item in disciplinas_com_notas %}
-                                            {% if item.nota and item.nota.nota1 != None and item.nota.nota2 != None and item.nota.nota3 != None and item.nota.nota4 != None %}
-                                                {% if item.nota.media < 6 %}
-                                                    {% with tem_recuperacao=True %}{% endwith %}
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
-
-                                    {% if tem_reprovacao %}
-                                        <strong>Reprovado</strong>
-                                    {% elif tem_recuperacao %}
-                                        <strong>Recuperação</strong>
-                                    {% else %}
-                                        <strong>Aprovado</strong>
-                                    {% endif %}
-
-                                {% endwith %}
-
-                            {% else %}
-                                --
-                            {% endif %}
-                        </td>
                     </tr>
+                    {% if situacao_geral != "--" %}
+                    <tr>
+                        <td colspan="5"><strong>Situação Geral</strong></td>
+                        <td><strong>{{ situacao_geral }}</strong></td>
+                    </tr>
+                    {% endif %}
                 </tfoot>
             </table>
 

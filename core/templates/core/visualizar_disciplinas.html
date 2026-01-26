@@ -10,9 +10,16 @@
 {% block content %}
 <main class="detalhes">
     <div class="header-detalhes">
-        <a class="voltar" href="{% url 'listar_disciplinas_turma' disciplina.turma.id %}">
-            <i class="fas fa-arrow-left"></i> 
-        </a>
+        {% if request.user.is_superuser %}
+                    <a class="voltar" href="{% url 'listar_disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
+                        <i class="fas fa-arrow-left"></i> 
+                    </a>
+                {% else %}
+                    <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                {% endif %}
+    
         <h2 class="titulo">{{disciplina.nome}}</h2>
         <a href="#" class="imprimir">Imprimir 
             <i class="fas fa-print"></i>

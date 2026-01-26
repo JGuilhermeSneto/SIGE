@@ -1,0 +1,105 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Minhas Turmas{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/disciplinas_professor.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <main class="conteudo-principal">
+
+        <!-- HEADER -->
+        <div class="header-pagina">
+            <div class="header-info">
+                <a href="{% url 'painel_professor' %}" class="btn-voltar">
+                    <i class="fas fa-arrow-left"></i> Voltar ao Painel
+                </a>
+                <h1>📚 Minhas Turmas</h1>
+            </div>
+
+            <div class="header-acoes">
+                <!-- FILTRO DE ANO -->
+                <form method="get" class="filtro-ano">
+                    <label>📅</label>
+                    <select name="ano" onchange="this.form.submit()">
+                        {% for ano in anos_disponiveis %}
+                            <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+                                {{ ano }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    {% if query %}
+                        <input type="hidden" name="q" value="{{ query }}">
+                    {% endif %}
+                </form>
+
+                <!-- BUSCA -->
+                <form method="get" class="form-busca">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Buscar turma..." 
+                        value="{{ query }}"
+                        class="input-busca"
+                    >
+                    {% if ano_filtro %}
+                        <input type="hidden" name="ano" value="{{ ano_filtro }}">
+                    {% endif %}
+                    <button type="submit" class="btn-busca">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- LISTA DE TURMAS -->
+        {% if turmas_detalhadas %}
+            <div class="lista-turmas">
+                {% for item in turmas_detalhadas %}
+                    <div class="card-turma">
+                        <div class="turma-header">
+                            <div class="turma-titulo">
+                                <h2>{{ item.turma.nome }}</h2>
+                                <div class="badges">
+                                    <span class="badge badge-ano">{{ item.turma.ano }}</span>
+                                    <span class="badge badge-turno">{{ item.turno_display }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="turma-info">
+                            <div class="info-item">
+                                <i class="fas fa-book"></i>
+                                <span>{{ item.disciplinas_count }} disciplina{{ item.disciplinas_count|pluralize }}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users"></i>
+                                <span>{{ item.alunos_count }} aluno{{ item.alunos_count|pluralize }}</span>
+                            </div>
+                        </div>
+
+                        <div class="turma-acoes">
+                            <a href="{% url 'disciplinas_turma' item.turma.id %}" class="btn-ver-disciplinas">
+                                Ver Disciplinas <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="mensagem-vazia">
+                <i class="fas fa-inbox"></i>
+                <p>Nenhuma turma encontrada para o ano de {{ ano_filtro }}.</p>
+                {% if query %}
+                    <a href="{% url 'disciplinas_professor' %}?ano={{ ano_filtro }}" class="btn-limpar">Limpar busca</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </main>
+</div>
+
+{% endblock %}
