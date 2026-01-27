@@ -786,7 +786,7 @@ def painel_professor(request):
     # Anos disponíveis baseados nas turmas onde o professor leciona
     anos_disponiveis_qs = Turma.objects.filter(
         disciplina__professor=professor
-    ).values_list('ano', flat=True).distinct().order_by('=ano')
+    ).values_list('ano', flat=True).distinct().order_by('-ano')
     anos_disponiveis = list(anos_disponiveis_qs)
     
     ano_atual = datetime.now().year
@@ -913,7 +913,7 @@ def disciplinas_professor(request):
     # Anos disponíveis
     anos_disponiveis_qs = Turma.objects.filter(
         id__in=turmas_ids
-    ).values_list('ano', flat=True).distinct().order_by('=ano')
+    ).values_list('ano', flat=True).distinct().order_by('-ano')
     anos_disponiveis = list(anos_disponiveis_qs)
     
     ano_atual = datetime.now().year
