@@ -82,11 +82,13 @@ O desenvolvimento do SIGE está fundamentado em conceitos de **gestão escolar**
 
 ## 🎓 Autores
 
-- Suanderson Santos Silva  
-- João Batista do Nascimento Júnior  
-- José Guilherme da Silva Neto  
-- Israel Cipriano Ribeiro Filho  
-- Pedro Henrique de Oliveira Querino  
+- [Suanderson Santos Silva](https://github.com/Suanderson)
+- [João Batista do Nascimento Júnior](https://github.com/JuniorNascimento2)
+- [José Guilherme da Silva Neto](https://github.com/JGuilhermeSneto)
+- [Israel Cipriano Ribeiro Filho](https://github.com/israelcipriano)
+- [Pedro Henrique de Oliveira Querino](https://github.com/Henrriks)
+- [Vanessa Gonçalves](https://github.com/vangoncalves)
+
 
 ---
 
