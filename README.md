@@ -55,7 +55,7 @@ Este projeto possui caráter **educacional e social**, sendo desenvolvido com te
 - JavaScript  
 
 ### Banco de Dados
-- SQLite  
+MySQL
 
 ### Versionamento
 - Git  
