@@ -1,105 +1,160 @@
-# 📚 SISTEMA INTERNO DE GERENCIAMENTO ESCOLAR (SIGE)
+# 🏫 SIGE - Sistema de Gestão Escolar
 
-**School Internal Management System – SIGE**
+![Banner](https://img.shields.io/badge/Django-4.x-green) ![Python](https://img.shields.io/badge/Python-3.11-blue) ![CI/CD](https://img.shields.io/badge/CI/CD-GitHub%20Actions-yellow)
 
----
+O **SIGE** é um sistema completo de gestão escolar desenvolvido em **Django**, com foco em **qualidade de código**, **testes automatizados** e **integração contínua (CI/CD)**.
 
-## 📌 Sobre o Projeto
-
-O **Sistema Interno de Gerenciamento Escolar (SIGE)** é um sistema web desenvolvido para apoiar a administração **acadêmica e administrativa** de instituições de ensino públicas e privadas.  
-Seu objetivo é **otimizar a gestão escolar**, centralizando informações essenciais e promovendo maior organização, transparência e eficiência nos processos educacionais.
-
-O SIGE permite o gerenciamento de alunos, professores, turmas, disciplinas, notas e presenças por meio de uma interface intuitiva, segura e acessível, atendendo diferentes perfis de usuários, como administradores, gestores, professores e alunos.
-
-Este projeto possui caráter **educacional e social**, sendo desenvolvido com tecnologias **open source**, visando contribuir para a modernização da gestão escolar e para a democratização do acesso à tecnologia educacional.
+Este README serve como guia completo para configurar, desenvolver, testar e manter o projeto.
 
 ---
 
-## 🎯 Objetivos do Sistema
+## 🌐 Tecnologias e Bibliotecas
 
-- Modernizar os processos de gestão escolar  
-- Centralizar dados acadêmicos e administrativos  
-- Facilitar o acompanhamento pedagógico  
-- Reduzir erros e processos manuais  
-- Apoiar a transformação digital na educação  
-- Oferecer uma solução acessível para escolas com recursos limitados  
-
----
-
-## ⚙️ Funcionalidades Principais
-
-- Cadastro, edição, listagem e exclusão (**CRUD**) de:
-  - Alunos
-  - Professores
-  - Turmas
-  - Disciplinas
-  - Usuários do sistema
-- Autenticação de usuários por perfil
-- Controle de notas e presenças
-- Visualização de desempenho acadêmico
-- Dashboards administrativos e pedagógicos
-- Geração de relatórios
-- Interface responsiva e intuitiva
+| Categoria           | Tecnologias/Bibliotecas | Função                               |
+|--------------------|-----------------------|-------------------------------------|
+| Linguagem           | Python 3.11           | Backend                              |
+| Framework           | Django 4.x            | Estrutura MVC                        |
+| Banco de Dados      | PostgreSQL / MySQL    | Armazenamento de dados               |
+| Front-end           | HTML, CSS, Bootstrap  | Interface do usuário                 |
+| Testes              | `pytest`, `unittest`  | Testes unitários e integração        |
+| Linting             | `flake8`, `pylint`    | Verificação de estilo e qualidade    |
+| Tipagem             | `mypy`                | Verificação estática de tipos        |
+| Controle de Versão  | Git, GitHub           | Versionamento de código              |
+| CI/CD               | GitHub Actions        | Workflow automático                  |
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## 📂 Estrutura do Projeto
 
-### Back-end
-- Python  
-- Django  
-
-### Front-end
-- HTML5  
-- CSS3  
-- JavaScript  
-
-### Banco de Dados
-MySQL
-
-### Versionamento
-- Git  
-- GitHub  
-
----
-
-## 👥 Perfis de Usuários
-
-- Administrador / Super Usuário  
-- Gestor Escolar  
-- Professor  
-- Aluno  
-
-Cada perfil possui permissões específicas de acesso e funcionalidades dentro do sistema.
-
----
-
-## 📚 Fundamentação do Projeto
-
-O desenvolvimento do SIGE está fundamentado em conceitos de **gestão escolar**, **tecnologia educacional** e **sistemas de informação**, alinhando-se às necessidades contemporâneas das instituições de ensino e às demandas por soluções digitais eficientes e acessíveis.
-
----
-
-## 🎓 Autores
-
-- [Suanderson Santos Silva](https://github.com/Suanderson)
-- [João Batista do Nascimento Júnior](https://github.com/JuniorNascimento2)
-- [José Guilherme da Silva Neto](https://github.com/JGuilhermeSneto)
-- [Israel Cipriano Ribeiro Filho](https://github.com/israelcipriano)
-- [Pedro Henrique de Oliveira Querino](https://github.com/Henrriks)
-- [Vanessa Gonçalves](https://github.com/vangoncalves)
+```text
+SIGE/
+├─ core/                   # Aplicação principal
+│  ├─ admin.py             # Registro de models no admin
+│  ├─ forms.py             # Formulários do Django
+│  ├─ models.py            # Models (Banco de Dados)
+│  ├─ views.py             # Views e lógica de negócio
+│  ├─ urls.py              # Rotas da aplicação
+│  ├─ templatetags/        # Tags customizadas do Django
+│  └─ tests.py             # Testes unitários
+├─ notas/                  # Configurações do Django
+│  ├─ settings.py          # Configurações do projeto
+│  ├─ urls.py              # URLs globais
+│  └─ wsgi.py              # Servidor WSGI
+├─ migrations/             # Migrations do banco
+├─ requirements.txt        # Dependências do projeto
+└─ README.md               # Documentação
+```
 
 
----
 
-## 📄 Considerações Finais
+## ⚙️ Configuração do Ambiente
+1️⃣ Clonar o repositório
+```
+git clone https://github.com/SEU_USUARIO/SIGE.git
+cd SIGE
+```
 
-O SIGE se apresenta como uma solução viável, escalável e segura para a gestão escolar, integrando tecnologias modernas e boas práticas de desenvolvimento de software.  
-Além de atender aos requisitos funcionais e não funcionais, o sistema contribui socialmente ao oferecer uma ferramenta gratuita e de fácil utilização, fortalecendo a inovação no contexto educacional.
+## 2️⃣ Criar ambiente virtual
+# Linux / macOS
 
----
+```
+python -m venv venv
+source venv/bin/activate
+```
+# Windows
+```
+python -m venv venv
+venv\Scripts\activate
+```
+
+## 3️⃣ Instalar dependências
+```
+pip install -r requirements.txt
+```
+
+## 4️⃣ Configurar banco de dados
+
+Abra settings.py e configure PostgreSQL ou MySQL:
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',  # ou mysql
+        'NAME': 'nome_do_banco',
+        'USER': 'usuario',
+        'PASSWORD': 'senha',
+        'HOST': 'localhost',
+        'PORT': '5432',  # ou 3306 para MySQL
+    }
+}
+```
+
+## 5️⃣ Criar migrations e aplicar no banco
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+
+
+## 6️⃣ Criar superusuário Django
+```
+python manage.py createsuperuser
+```
+## 7️⃣ Rodar servidor local
+
+```
+python manage.py runserver
+```
+Acesse http://127.0.0.1:8000/
+ para testar o projeto.
+
+ 
+## 🧪 Testes e Comandos Úteis
+
+Todos os comandos podem ser executados **localmente no terminal** ou **automaticamente pelo workflow do GitHub Actions**.
+
+| Comando                  | Função                           | Onde Executar       |
+|--------------------------|---------------------------------|------------------|
+| `python manage.py test`  | Executa todos os testes Django  | Local / Workflow CI |
+| `flake8 .`               | Verifica estilo PEP8            | Local / Workflow CI |
+| `pylint **/*.py`         | Análise de qualidade do código  | Local / Workflow CI |
+| `mypy .`                 | Checagem de tipos estáticos     | Local / Workflow CI |
+
+## 💡 Dicas:
+
+Sempre rode flake8 e pylint antes de commitar.
+Testes locais ajudam a detectar problemas antes do CI.
+
+## ⚡ Git e GitHub
+
+| Comando | Função |
+|---------|--------|
+| `git status` | Verifica alterações não commitadas |
+| `git add .` | Adiciona alterações para commit |
+| `git commit -m "mensagem"` | Cria commit com mensagem |
+| `git push origin main` | Envia alterações para GitHub |
+| `git pull` | Atualiza branch local com remoto |
+
+
+## 🔄 Workflow CI/CD - GitHub Actions
+Sempre que uma branch é atualizada ou um pull request é criado, o workflow é ativado.
+O workflow executa:
+```
+flake8 .          # Validação de estilo
+pylint **/*.py    # Qualidade do código
+mypy .            # Checagem de tipos
+python manage.py test  # Execução de testes Django
+```
+Se algum comando falhar, o workflow marca como failed no GitHub, impedindo merge até corrigir.
+
+Visualização do Workflow:
+```
+Push / PR → GitHub Actions → Linting & Tests → Status OK / Failed
+```
 
 ## 📖 Referências
 
-- LIBÂNEO, J. C. *Organização e gestão da escola: teoria e prática*. Goiânia: Alternativa, 2013.  
-- DJANGO SOFTWARE FOUNDATION. *Documentação Django*.
+- [Django Documentation](https://docs.djangoproject.com/)
+- [Flake8](https://flake8.pycqa.org/en/latest/)
+- [Pylint](https://pylint.pycqa.org/en/latest/)
+- [MyPy](https://mypy.readthedocs.io/en/stable/)
+- [GitHub Actions](https://docs.github.com/en/actions)
