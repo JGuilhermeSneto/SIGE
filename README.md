@@ -12,7 +12,7 @@ Este README serve como guia completo para configurar, desenvolver, testar e mant
 
 | Categoria           | Tecnologias/Bibliotecas | Função                               |
 |--------------------|-----------------------|-------------------------------------|
-| Linguagem           | ``Python 3.11`           | Backend                              |
+| Linguagem           | `Python 3.11`           | Backend                              |
 | Framework           | ``Django 4.x ``           | Estrutura MVC                        |
 | Banco de Dados      | `PostgreSQL / MySQL`    | Armazenamento de dados               |
 | Front-end           | `HTML, CSS, JAVASCRIPT` | Interface do usuário                 |
