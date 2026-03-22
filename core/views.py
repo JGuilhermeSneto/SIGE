@@ -8,7 +8,7 @@ from .forms import (
     LoginForm, ProfessorForm, AlunoForm, DisciplinaForm, TurmaForm,
     NotaForm, EditarPerfilForm, GestorForm
 )
-from datetime import datetime
+from datetime import datetime, timezone
 import calendar
 from django.contrib.auth.decorators import user_passes_test
 
@@ -41,7 +41,7 @@ def login_view(request):
     else:
         form = LoginForm()
 
-    return render(request, 'core/login.html', {'form': form})
+    return render(request, 'auth/login.html', {'form': form})  # ✅ Primeira função corrigida!!
 
 
 
@@ -82,35 +82,30 @@ def is_super_ou_gestor(user):
     return user.is_superuser or hasattr(user, 'gestor')
 
 
+# ========================== SUPERUSUÁRIO ========================
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def painel_super(request):
     foto_perfil_url = get_foto_perfil(request.user)
     ano_atual = datetime.now().year
 
-    #  FILTRO DE ANO
-    # Busca todos os anos disponíveis das turmas
+    # FILTRO DE ANO
     anos_disponiveis_qs = Turma.objects.values_list('ano', flat=True).distinct().order_by('-ano')
-
     anos_disponiveis = list(anos_disponiveis_qs)
-    
-    # Se não houver turmas, adiciona o ano atual
+
     if not anos_disponiveis:
         anos_disponiveis = [ano_atual]
-    
-    # Pega o ano do filtro (GET) ou usa o ano atual
+
     ano_filtro = request.GET.get('ano')
     try:
         ano_filtro = int(ano_filtro) if ano_filtro else ano_atual
     except ValueError:
         ano_filtro = ano_atual
-    
-    # Garante que o ano_filtro existe na lista
+
     if ano_filtro not in anos_disponiveis:
         anos_disponiveis.append(ano_filtro)
         anos_disponiveis.sort(reverse=True)
 
-    # Contagem para turmas do ano filtrado (em vez de ano_atual)
     turmas_ano_filtrado = Turma.objects.filter(ano=ano_filtro)
 
     total_turmas = turmas_ano_filtrado.count()
@@ -128,10 +123,12 @@ def painel_super(request):
         "foto_perfil_url": foto_perfil_url,
         "agora": datetime.now(),
         "calendario": gerar_calendario(),
-        "anos_disponiveis": anos_disponiveis, 
-        "ano_filtro": ano_filtro,              
+        "anos_disponiveis": anos_disponiveis,
+        "ano_filtro": ano_filtro,
     })
 
+
+# ========================== USUÁRIOS ==========================
 @login_required
 def usuarios(request):
     pode_ver_gestores = False
@@ -143,7 +140,7 @@ def usuarios(request):
             pode_ver_gestores = True
 
     return render(request, "core/usuarios.html", {
-        "pode_ver_gestores": pode_ver_gestores
+        "pode_ver_gestores": pode_ver_gestores #✅ corrigido 
     })
 
 
@@ -164,20 +161,14 @@ def editar_perfil(request):
         perfil = user.aluno
     elif hasattr(user, "gestor"):
         perfil = user.gestor
-    # superusuário pode não ter perfil e está ok
 
     if request.method == "POST":
         form = EditarPerfilForm(request.POST, instance=user)
 
         if form.is_valid():
-            # ====================================
-            # 📧 Salva dados básicos
-            # ====================================
             user = form.save(commit=False)
 
-            # ====================================
-            # 🔐 Troca de senha (se houver)
-            # ====================================
+            # Troca de senha
             nova_senha = form.cleaned_data.get("nova_senha")
             if nova_senha:
                 user.set_password(nova_senha)
@@ -186,9 +177,7 @@ def editar_perfil(request):
             else:
                 user.save()
 
-            # ====================================
-            # 📸 Foto de perfil
-            # ====================================
+            # Foto de perfil
             foto = request.FILES.get("foto")
             if perfil and foto:
                 perfil.foto = foto
@@ -196,9 +185,7 @@ def editar_perfil(request):
 
             messages.success(request, "Perfil atualizado com sucesso!")
 
-            # ====================================
-            # 🔁 Redirecionamento
-            # ====================================
+            # Redirecionamento
             if user.is_superuser:
                 return redirect("painel_super")
             if hasattr(user, "professor"):
@@ -211,13 +198,11 @@ def editar_perfil(request):
             return redirect("login")
 
         else:
-            # Erros do form (senha, email, etc.)
             messages.error(request, "Corrija os erros abaixo.")
 
     else:
         form = EditarPerfilForm(instance=user)
 
-    # Foto atual
     foto_atual = perfil.foto.url if perfil and perfil.foto else None
 
     return render(request, "core/editar_perfil.html", {
@@ -228,45 +213,29 @@ def editar_perfil(request):
     })
 
 
-
-
 def get_foto_perfil(user):
     # Professor
-    try:
-        if hasattr(user, "professor") and user.professor.foto:
-            return user.professor.foto.url
-    except:
-        pass
+    if hasattr(user, "professor") and user.professor and user.professor.foto:
+        return user.professor.foto.url
 
     # Aluno
-    try:
-        if hasattr(user, "aluno") and user.aluno.foto:
-            return user.aluno.foto.url
-    except:
-        pass
+    if hasattr(user, "aluno") and user.aluno and user.aluno.foto:
+        return user.aluno.foto.url
 
     # Gestor
-    try:
-        if hasattr(user, "gestor") and user.gestor.foto:
-            return user.gestor.foto.url
-    except:
-        pass
+    if hasattr(user, "gestor") and user.gestor and user.gestor.foto:
+        return user.gestor.foto.url
 
-    # SUPERSUÁRIO
-    try:
-        if hasattr(user, "superperfil") and user.superperfil.foto:
-            return user.superperfil.foto.url
-    except:
-        pass
+    # Superusuário
+    if hasattr(user, "superperfil") and user.superperfil and user.superperfil.foto:
+        return user.superperfil.foto.url
 
-    return None
-
+    return None #✅✅ refatorado
 
 @login_required
 def remover_foto_perfil(request):
     user = request.user
 
-    # detecta perfil (professor, aluno ou gestor)
     perfil = None
     if hasattr(user, "professor"):
         perfil = user.professor
@@ -279,9 +248,8 @@ def remover_foto_perfil(request):
         messages.error(request, "Nenhum perfil associado ao usuário.")
         return redirect("editar_perfil")
 
-    # remove a foto se existir
     if perfil.foto:
-        perfil.foto.delete(save=False)  # apaga o arquivo físico
+        perfil.foto.delete(save=False)
         perfil.foto = None
         perfil.save()
 
@@ -289,23 +257,20 @@ def remover_foto_perfil(request):
     return redirect("editar_perfil")
 
 def get_nome_exibicao(user):
-    if hasattr(user, 'gestor'):
+    if hasattr(user, 'gestor') and user.gestor:
         return user.gestor.nome_completo
 
-    if hasattr(user, 'professor'):
+    if hasattr(user, 'professor') and user.professor:
         return user.professor.nome_completo
 
-    if hasattr(user, 'aluno'):
+    if hasattr(user, 'aluno') and user.aluno:
         return user.aluno.nome_completo
 
-    # Superusuário
     nome = f"{user.first_name} {user.last_name}".strip()
     if nome:
         return nome
 
-    # Último fallback (nunca deveria acontecer)
     return user.email
-
 
 
 # ========================== PROFESSORES ==========================
@@ -313,17 +278,19 @@ def get_nome_exibicao(user):
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def listar_professores(request):
     query = request.GET.get('q', '')
-    professores = Professor.objects.filter(nome_completo__icontains=query) if query else Professor.objects.all()
-    return render(request, 'core/listar_professores.html', {'professores': professores, 'query': query})
+
+    if query:
+        professores = Professor.objects.filter(nome_completo__icontains=query)
+    else:
+        professores = Professor.objects.all()
+
+    return render(request, 'professor/listar_professores.html', {
+        'professores': professores,
+        'query': query
+    })
 
 
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from .models import Professor
-
-
+# ========================== CADASTRAR PROFESSOR ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def cadastrar_professor(request):
@@ -332,7 +299,7 @@ def cadastrar_professor(request):
 
         if form.is_valid():
             professor = form.save()
-            
+
             messages.success(
                 request,
                 f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!"
@@ -345,21 +312,31 @@ def cadastrar_professor(request):
     else:
         form = ProfessorForm(request=request)
 
-    return render(request, 'core/cadastrar_professor.html', {'form': form})
+    return render(request, 'professor/cadastrar_professor.html', {
+        'form': form
+    })
 
 
-
+# ========================== EDITAR PROFESSOR ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def editar_professor(request, professor_id):
     professor = get_object_or_404(Professor, id=professor_id)
-    
+
     if request.method == 'POST':
-        form = ProfessorForm(request.POST, request.FILES, instance=professor, request=request)
-        
+        form = ProfessorForm(
+            request.POST,
+            request.FILES,
+            instance=professor,
+            request=request
+        )
+
         if form.is_valid():
             form.save()
-            messages.success(request, f'Professor(a) {professor.nome_completo} atualizado(a) com sucesso!')
+            messages.success(
+                request,
+                f'Professor(a) {professor.nome_completo} atualizado(a) com sucesso!'
+            )
             return redirect('listar_professores')
         else:
             for campo, erros in form.errors.items():
@@ -368,9 +345,13 @@ def editar_professor(request, professor_id):
     else:
         form = ProfessorForm(instance=professor, request=request)
 
-    return render(request, 'core/cadastrar_professor.html', {'form': form, 'professor': professor})
+    return render(request, 'professor/cadastrar_professor.html', {
+        'form': form,
+        'professor': professor
+    })
 
 
+# ========================== EXCLUIR PROFESSOR ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def excluir_professor(request, professor_id):
@@ -380,8 +361,9 @@ def excluir_professor(request, professor_id):
     messages.success(request, 'Professor removido.')
     return redirect('listar_professores')
 
-# ==== GESTOR (Painel da Gestão Escolar) ====
+##✅✅ refatorado
 
+# ==== GESTOR (Painel da Gestão Escolar) ====
 
 
 @login_required
@@ -405,20 +387,22 @@ def cadastrar_gestor(request):
     else:
         form = GestorForm(request=request)
 
-    return render(request, 'core/cadastrar_gestor.html', {'form': form})
-
+    return render(request, 'gestor/cadastrar_gestor.html', {'form': form})
+##✅✅ refatorado
 
 # ==== GESTOR (Painel da Gestão Escolar) ====
-
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def listar_gestores(request):
     gestores = Gestor.objects.select_related('user').all()
-    return render(request, 'core/listar_gestores.html', {'gestores': gestores})
+    return render(request, 'gestor/listar_gestores.html', {
+        'gestores': gestores
+    })
 
 
+# ========================== EXCLUIR GESTOR ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def excluir_gestor(request, gestor_id):
@@ -428,13 +412,8 @@ def excluir_gestor(request, gestor_id):
     messages.success(request, 'Gestor excluído com sucesso.')
     return redirect('listar_gestores')
 
-from django.contrib.auth import update_session_auth_hash
-from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .forms import GestorForm
-from .models import Gestor
 
+# ========================== EDITAR GESTOR ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def editar_gestor(request, gestor_id):
@@ -443,6 +422,7 @@ def editar_gestor(request, gestor_id):
 
     if request.method == 'POST':
         form = GestorForm(request.POST, request.FILES, instance=gestor, request=request)
+        
         if form.is_valid():
             form.save()
 
@@ -453,16 +433,15 @@ def editar_gestor(request, gestor_id):
 
             messages.success(request, "Gestor atualizado com sucesso!")
             return redirect('listar_gestores')
-
         else:
             messages.error(request, "Corrija os erros abaixo.")
     else:
         form = GestorForm(instance=gestor, initial={'email': user.email})
 
-    return render(request, 'core/cadastrar_gestor.html', {'form': form, 'gestor': gestor})
-
-
-
+    return render(request, 'gestor/cadastrar_gestor.html', {
+        'form': form,
+        'gestor': gestor
+    })##✅✅ refatorado
 
 
 # ========================== ALUNO =========================
@@ -470,10 +449,19 @@ def editar_gestor(request, gestor_id):
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def listar_alunos(request):
     query = request.GET.get('q', '')
-    alunos = Aluno.objects.filter(nome_completo__icontains=query) if query else Aluno.objects.all()
-    return render(request, 'core/listar_alunos.html', {'alunos': alunos, 'query': query})
+    
+    if query:
+        alunos = Aluno.objects.filter(nome_completo__icontains=query)
+    else:
+        alunos = Aluno.objects.all()
+
+    return render(request, 'aluno/listar_alunos.html', {
+        'alunos': alunos,
+        'query': query
+    })
 
 
+# ========================== CADASTRAR ALUNO ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def cadastrar_aluno(request):
@@ -481,7 +469,7 @@ def cadastrar_aluno(request):
         form = AlunoForm(request.POST, request.FILES, request=request)
 
         if form.is_valid():
-            aluno = form.save()  # 🔥 O form já cria User e Aluno!
+            aluno = form.save()
             
             messages.success(
                 request,
@@ -495,8 +483,12 @@ def cadastrar_aluno(request):
     else:
         form = AlunoForm(request=request)
 
-    return render(request, 'core/cadastrar_aluno.html', {'form': form})
+    return render(request, 'aluno/cadastrar_aluno.html', {
+        'form': form
+    })
 
+
+# ========================== EDITAR ALUNO ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def editar_aluno(request, aluno_id):
@@ -524,11 +516,10 @@ def editar_aluno(request, aluno_id):
     else:
         form = AlunoForm(instance=aluno, request=request)
 
-    return render(request, 'core/cadastrar_aluno.html', {
+    return render(request, 'aluno/cadastrar_aluno.html', {
         'form': form,
         'aluno': aluno
-    })
-
+    })##✅✅ refatorado
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
@@ -617,70 +608,57 @@ def editar_disciplina(request, disciplina_id):
         'turma': disciplina.turma,
         'professores': professores,
     })
-
-
+##✅✅ refatorado
 
 
 
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
-
 def excluir_disciplina(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
-    turma_id = disciplina.turma.id  # salva antes de deletar
+    turma_id = disciplina.turma.id
 
     disciplina.delete()
     messages.success(request, "Disciplina excluída com sucesso!")
 
-    # 🔥 volta para a listagem de disciplinas da turma
     return redirect("listar_disciplinas_turma", turma_id=turma_id)
 
-#Turma
-from django.utils import timezone
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from .models import Turma
 
+# ========================== LISTAR TURMAS ==========================
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def listar_turmas(request):
     ano_atual = timezone.localtime(timezone.now()).year
     query = request.GET.get('q', '').strip()
 
-    # TODOS os anos disponíveis no banco, descendente
     anos_disponiveis_qs = Turma.objects.values_list('ano', flat=True).distinct().order_by('-ano')
     anos_disponiveis = list(anos_disponiveis_qs)
 
-    # Se não houver turmas no banco, adiciona o ano atual
     if not anos_disponiveis:
         anos_disponiveis = [ano_atual]
 
-    # Filtro do ano
     ano_filtro = request.GET.get('ano')
     try:
         ano_filtro = int(ano_filtro) if ano_filtro else ano_atual
     except ValueError:
         ano_filtro = ano_atual
 
-    # Garantir que o ano_filtro existe no banco ou pelo menos no ano atual
     if ano_filtro not in anos_disponiveis:
         anos_disponiveis.append(ano_filtro)
         anos_disponiveis.sort(reverse=True)
 
-    # Filtra as turmas
     turmas = Turma.objects.filter(ano=ano_filtro)
+
     if query:
         turmas = turmas.filter(nome__icontains=query)
 
-    return render(request, 'core/listar_turmas.html', {
+    return render(request, 'turma/listar_turmas.html', {
         'turmas': turmas,
         'query': query,
         'ano_filtro': ano_filtro,
         'anos_disponiveis': anos_disponiveis
     })
-
-
 
 
 from datetime import datetime
@@ -732,11 +710,10 @@ def cadastrar_turma(request):
 
 
 
-
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
 def editar_turma(request, turma_id):
-    turma = Turma.objects.get(id=turma_id)
+    turma = get_object_or_404(Turma, id=turma_id)
     erro = None
 
     if request.method == "POST":
@@ -754,11 +731,10 @@ def editar_turma(request, turma_id):
             messages.success(request, "Turma atualizada com sucesso!")
             return redirect('listar_turmas')
 
-    return render(request, 'core/cadastrar_turma.html', {
+    return render(request, 'turma/cadastrar_turma.html', {
         'turma': turma,
         'erro': erro
     })
-
 
 
 @login_required
@@ -766,9 +742,13 @@ def editar_turma(request, turma_id):
 def excluir_turma(request, turma_id):
 
     turma = get_object_or_404(Turma, id=turma_id)
-    turma.delete()
-    return redirect('listar_turmas')
 
+    turma.delete()
+
+    messages.success(request, "Turma excluída com sucesso!")
+
+    return redirect('listar_turmas')
+##✅✅ refatorado
 
 # PROFESSOR
 @login_required
@@ -890,6 +870,7 @@ def painel_professor(request):
         'ano_filtro': ano_filtro,
     })
 
+##✅ refatorado
 
 
 
@@ -975,11 +956,14 @@ def disciplinas_professor(request):
         'ano_filtro': ano_filtro,
     })
 
+##✅✅ refatorado
+
 
 # ==================== 3. DISCIPLINAS DE UMA TURMA ESPECÍFICA ====================
 @login_required
 def disciplinas_turma(request, turma_id):
     """Mostra as disciplinas que o professor leciona em uma turma específica"""
+
     if not hasattr(request.user, 'professor'):
         return redirect('login')
     
@@ -987,24 +971,23 @@ def disciplinas_turma(request, turma_id):
     turma = get_object_or_404(Turma, id=turma_id)
     foto_perfil_url = get_foto_perfil(request.user)
     
-    # Busca apenas as disciplinas do professor nesta turma
     disciplinas = Disciplina.objects.filter(
         turma=turma,
         professor=professor
     ).order_by('nome')
     
-    # Verifica se o professor realmente leciona nesta turma
     if not disciplinas.exists():
         messages.error(request, 'Você não leciona nenhuma disciplina nesta turma.')
-        return redirect('minhas_turmas')
+        return redirect('disciplinas_professor')  # corrigido
     
-    # Informações detalhadas de cada disciplina
     disciplinas_detalhadas = []
+    
     for disciplina in disciplinas:
         alunos_count = Aluno.objects.filter(turma=turma).count()
         notas_disciplina = Nota.objects.filter(disciplina=disciplina)
         
         notas_lancadas_disc = 0
+        
         for nota in notas_disciplina:
             if nota.nota1 is not None:
                 notas_lancadas_disc += 1
@@ -1022,14 +1005,18 @@ def disciplinas_turma(request, turma_id):
             'alunos_count': alunos_count,
             'notas_lancadas': notas_lancadas_disc,
             'notas_possiveis': notas_possiveis_disc,
-            'percentual': int((notas_lancadas_disc / notas_possiveis_disc * 100) if notas_possiveis_disc > 0 else 0)
+            'percentual': int(
+                (notas_lancadas_disc / notas_possiveis_disc * 100)
+                if notas_possiveis_disc > 0 else 0
+            )
         })
     
-    return render(request, 'core/disciplinas_turma.html', {
+    return render(request, 'professor/disciplinas_turma.html', {
         'turma': turma,
         'disciplinas_detalhadas': disciplinas_detalhadas,
         'foto_perfil_url': foto_perfil_url,
     })
+###✅✅ refatorado
 
 
 @login_required
@@ -1111,6 +1098,8 @@ def visualizar_grade_professor(request, turma_id):
         'grade_horario': grade_formatada,
         'disciplinas_professor': disciplinas_prof,
     })
+
+##✅✅ corrijido
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
