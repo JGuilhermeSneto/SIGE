@@ -8,9 +8,5 @@ updates:
       prefix: "deps"
       include: "scope"
     open-pull-requests-limit: 5
-    ignore:
-      - dependency-name: "django"
-        versions:
-          - ">=5.0.0,<6.0.0"
     allow:
       - dependency-type: "all"
