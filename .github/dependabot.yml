@@ -1,18 +1,16 @@
 version: 2
 updates:
-  # Atualizações das dependências do Python
   - package-ecosystem: "pip"
-    directory: "/"  # Diretório onde está o requirements.txt
+    directory: "/"  # Onde está o requirements.txt
     schedule:
-      interval: "weekly"  # Verifica atualizações semanalmente
+      interval: "weekly"
     commit-message:
       prefix: "deps"
       include: "scope"
-    open-pull-requests-limit: 5  # Limite de PRs abertos simultâneos
+    open-pull-requests-limit: 5
     ignore:
-      # Exemplo: ignorar atualizações de pacotes problemáticos
       - dependency-name: "django"
         versions:
-          - "5.x"  # Ignora atualizações para Django 5 por enquanto
+          - ">=5.0.0,<6.0.0"
     allow:
-      - dependency-type: "all"  # Atualiza dependências normais e de desenvolvimento
+      - dependency-type: "all"
