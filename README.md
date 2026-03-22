@@ -12,15 +12,15 @@ Este README serve como guia completo para configurar, desenvolver, testar e mant
 
 | Categoria           | Tecnologias/Bibliotecas | Função                               |
 |--------------------|-----------------------|-------------------------------------|
-| Linguagem           | Python 3.11           | Backend                              |
-| Framework           | Django 4.x            | Estrutura MVC                        |
-| Banco de Dados      | PostgreSQL / MySQL    | Armazenamento de dados               |
-| Front-end           | HTML, CSS, Bootstrap  | Interface do usuário                 |
+| Linguagem           | ``Python 3.11`           | Backend                              |
+| Framework           | ``Django 4.x ``           | Estrutura MVC                        |
+| Banco de Dados      | `PostgreSQL / MySQL`    | Armazenamento de dados               |
+| Front-end           | `HTML, CSS, JAVASCRIPT` | Interface do usuário                 |
 | Testes              | `pytest`, `unittest`  | Testes unitários e integração        |
 | Linting             | `flake8`, `pylint`    | Verificação de estilo e qualidade    |
 | Tipagem             | `mypy`                | Verificação estática de tipos        |
-| Controle de Versão  | Git, GitHub           | Versionamento de código              |
-| CI/CD               | GitHub Actions        | Workflow automático                  |
+| Controle de Versão  | ``Git, GitHub``           | Versionamento de código              |
+| CI/CD               | ``GitHub Actions``        | Workflow automático                  |
 
 ---
 
