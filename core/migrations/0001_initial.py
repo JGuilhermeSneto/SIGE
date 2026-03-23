@@ -16,128 +16,438 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Turma',
+            name="Turma",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=100)),
-                ('turno', models.CharField(choices=[('manha', 'Manhã'), ('tarde', 'Tarde'), ('noite', 'Noite')], default='manha', max_length=20)),
-                ('ano', models.IntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=100)),
+                (
+                    "turno",
+                    models.CharField(
+                        choices=[
+                            ("manha", "Manhã"),
+                            ("tarde", "Tarde"),
+                            ("noite", "Noite"),
+                        ],
+                        default="manha",
+                        max_length=20,
+                    ),
+                ),
+                ("ano", models.IntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='Aluno',
+            name="Aluno",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome_completo', models.CharField(max_length=255)),
-                ('cpf', models.CharField(max_length=14, unique=True, validators=[django.core.validators.RegexValidator('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')])),
-                ('telefone', models.CharField(blank=True, max_length=20)),
-                ('data_nascimento', models.DateField()),
-                ('naturalidade', models.CharField(choices=[('brasileiro', 'Brasileiro(a)'), ('estrangeiro', 'Estrangeiro(a)')], default='brasileiro', max_length=20)),
-                ('filiacao_1', models.CharField(max_length=255, verbose_name='Filiação 1')),
-                ('filiacao_2', models.CharField(blank=True, max_length=255, verbose_name='Filiação 2')),
-                ('necessidade_especial', models.BooleanField(default=False, verbose_name='Possui necessidade especial?')),
-                ('descricao_necessidade', models.TextField(blank=True, verbose_name='Descrição da necessidade especial')),
-                ('cep', models.CharField(blank=True, max_length=9)),
-                ('estado', models.CharField(blank=True, choices=[('AC', 'AC'), ('AL', 'AL'), ('AP', 'AP'), ('AM', 'AM'), ('BA', 'BA'), ('CE', 'CE'), ('DF', 'DF'), ('ES', 'ES'), ('GO', 'GO'), ('MA', 'MA'), ('MT', 'MT'), ('MS', 'MS'), ('MG', 'MG'), ('PA', 'PA'), ('PB', 'PB'), ('PR', 'PR'), ('PE', 'PE'), ('PI', 'PI'), ('RJ', 'RJ'), ('RN', 'RN'), ('RS', 'RS'), ('RO', 'RO'), ('RR', 'RR'), ('SC', 'SC'), ('SP', 'SP'), ('SE', 'SE'), ('TO', 'TO')], max_length=2)),
-                ('cidade', models.CharField(blank=True, max_length=100)),
-                ('bairro', models.CharField(blank=True, max_length=100)),
-                ('logradouro', models.CharField(blank=True, max_length=255)),
-                ('numero', models.CharField(blank=True, max_length=10)),
-                ('foto', models.ImageField(blank=True, null=True, upload_to='fotos/alunos/')),
-                ('criado_em', models.DateTimeField(auto_now_add=True)),
-                ('atualizado_em', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='aluno', to=settings.AUTH_USER_MODEL)),
-                ('turma', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='alunos', to='core.turma')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome_completo", models.CharField(max_length=255)),
+                (
+                    "cpf",
+                    models.CharField(
+                        max_length=14,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$"
+                            )
+                        ],
+                    ),
+                ),
+                ("telefone", models.CharField(blank=True, max_length=20)),
+                ("data_nascimento", models.DateField()),
+                (
+                    "naturalidade",
+                    models.CharField(
+                        choices=[
+                            ("brasileiro", "Brasileiro(a)"),
+                            ("estrangeiro", "Estrangeiro(a)"),
+                        ],
+                        default="brasileiro",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "filiacao_1",
+                    models.CharField(max_length=255, verbose_name="Filiação 1"),
+                ),
+                (
+                    "filiacao_2",
+                    models.CharField(
+                        blank=True, max_length=255, verbose_name="Filiação 2"
+                    ),
+                ),
+                (
+                    "necessidade_especial",
+                    models.BooleanField(
+                        default=False, verbose_name="Possui necessidade especial?"
+                    ),
+                ),
+                (
+                    "descricao_necessidade",
+                    models.TextField(
+                        blank=True, verbose_name="Descrição da necessidade especial"
+                    ),
+                ),
+                ("cep", models.CharField(blank=True, max_length=9)),
+                (
+                    "estado",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("AC", "AC"),
+                            ("AL", "AL"),
+                            ("AP", "AP"),
+                            ("AM", "AM"),
+                            ("BA", "BA"),
+                            ("CE", "CE"),
+                            ("DF", "DF"),
+                            ("ES", "ES"),
+                            ("GO", "GO"),
+                            ("MA", "MA"),
+                            ("MT", "MT"),
+                            ("MS", "MS"),
+                            ("MG", "MG"),
+                            ("PA", "PA"),
+                            ("PB", "PB"),
+                            ("PR", "PR"),
+                            ("PE", "PE"),
+                            ("PI", "PI"),
+                            ("RJ", "RJ"),
+                            ("RN", "RN"),
+                            ("RS", "RS"),
+                            ("RO", "RO"),
+                            ("RR", "RR"),
+                            ("SC", "SC"),
+                            ("SP", "SP"),
+                            ("SE", "SE"),
+                            ("TO", "TO"),
+                        ],
+                        max_length=2,
+                    ),
+                ),
+                ("cidade", models.CharField(blank=True, max_length=100)),
+                ("bairro", models.CharField(blank=True, max_length=100)),
+                ("logradouro", models.CharField(blank=True, max_length=255)),
+                ("numero", models.CharField(blank=True, max_length=10)),
+                (
+                    "foto",
+                    models.ImageField(blank=True, null=True, upload_to="fotos/alunos/"),
+                ),
+                ("criado_em", models.DateTimeField(auto_now_add=True)),
+                ("atualizado_em", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="aluno",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "turma",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="alunos",
+                        to="core.turma",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Aluno',
-                'verbose_name_plural': 'Alunos',
-                'ordering': ['nome_completo'],
+                "verbose_name": "Aluno",
+                "verbose_name_plural": "Alunos",
+                "ordering": ["nome_completo"],
             },
         ),
         migrations.CreateModel(
-            name='Gestor',
+            name="Gestor",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome_completo', models.CharField(max_length=150)),
-                ('cpf', models.CharField(max_length=14, unique=True, validators=[django.core.validators.RegexValidator('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')])),
-                ('data_nascimento', models.DateField()),
-                ('telefone', models.CharField(max_length=20)),
-                ('cargo', models.CharField(choices=[('diretor', 'Diretor'), ('vice_diretor', 'Vice-Diretor'), ('secretario', 'Secretário'), ('coordenador', 'Coordenador')], max_length=20)),
-                ('cep', models.CharField(max_length=9)),
-                ('uf', models.CharField(choices=[('AC', 'AC'), ('AL', 'AL'), ('AP', 'AP'), ('AM', 'AM'), ('BA', 'BA'), ('CE', 'CE'), ('DF', 'DF'), ('ES', 'ES'), ('GO', 'GO'), ('MA', 'MA'), ('MT', 'MT'), ('MS', 'MS'), ('MG', 'MG'), ('PA', 'PA'), ('PB', 'PB'), ('PR', 'PR'), ('PE', 'PE'), ('PI', 'PI'), ('RJ', 'RJ'), ('RN', 'RN'), ('RS', 'RS'), ('RO', 'RO'), ('RR', 'RR'), ('SC', 'SC'), ('SP', 'SP'), ('SE', 'SE'), ('TO', 'TO')], max_length=2)),
-                ('cidade', models.CharField(max_length=100)),
-                ('endereco', models.CharField(max_length=255)),
-                ('foto', models.ImageField(blank=True, null=True, upload_to='fotos/gestores/')),
-                ('criado_em', models.DateTimeField(auto_now_add=True)),
-                ('atualizado_em', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='gestor', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome_completo", models.CharField(max_length=150)),
+                (
+                    "cpf",
+                    models.CharField(
+                        max_length=14,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$"
+                            )
+                        ],
+                    ),
+                ),
+                ("data_nascimento", models.DateField()),
+                ("telefone", models.CharField(max_length=20)),
+                (
+                    "cargo",
+                    models.CharField(
+                        choices=[
+                            ("diretor", "Diretor"),
+                            ("vice_diretor", "Vice-Diretor"),
+                            ("secretario", "Secretário"),
+                            ("coordenador", "Coordenador"),
+                        ],
+                        max_length=20,
+                    ),
+                ),
+                ("cep", models.CharField(max_length=9)),
+                (
+                    "uf",
+                    models.CharField(
+                        choices=[
+                            ("AC", "AC"),
+                            ("AL", "AL"),
+                            ("AP", "AP"),
+                            ("AM", "AM"),
+                            ("BA", "BA"),
+                            ("CE", "CE"),
+                            ("DF", "DF"),
+                            ("ES", "ES"),
+                            ("GO", "GO"),
+                            ("MA", "MA"),
+                            ("MT", "MT"),
+                            ("MS", "MS"),
+                            ("MG", "MG"),
+                            ("PA", "PA"),
+                            ("PB", "PB"),
+                            ("PR", "PR"),
+                            ("PE", "PE"),
+                            ("PI", "PI"),
+                            ("RJ", "RJ"),
+                            ("RN", "RN"),
+                            ("RS", "RS"),
+                            ("RO", "RO"),
+                            ("RR", "RR"),
+                            ("SC", "SC"),
+                            ("SP", "SP"),
+                            ("SE", "SE"),
+                            ("TO", "TO"),
+                        ],
+                        max_length=2,
+                    ),
+                ),
+                ("cidade", models.CharField(max_length=100)),
+                ("endereco", models.CharField(max_length=255)),
+                (
+                    "foto",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="fotos/gestores/"
+                    ),
+                ),
+                ("criado_em", models.DateTimeField(auto_now_add=True)),
+                ("atualizado_em", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="gestor",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Gestor',
-                'verbose_name_plural': 'Gestores',
-                'ordering': ['nome_completo'],
+                "verbose_name": "Gestor",
+                "verbose_name_plural": "Gestores",
+                "ordering": ["nome_completo"],
             },
         ),
         migrations.CreateModel(
-            name='Professor',
+            name="Professor",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome_completo', models.CharField(max_length=255)),
-                ('cpf', models.CharField(max_length=14, unique=True, validators=[django.core.validators.RegexValidator('^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$')])),
-                ('telefone', models.CharField(blank=True, max_length=20)),
-                ('data_nascimento', models.DateField(blank=True, null=True)),
-                ('cep', models.CharField(blank=True, max_length=9)),
-                ('estado', models.CharField(blank=True, choices=[('AC', 'AC'), ('AL', 'AL'), ('AP', 'AP'), ('AM', 'AM'), ('BA', 'BA'), ('CE', 'CE'), ('DF', 'DF'), ('ES', 'ES'), ('GO', 'GO'), ('MA', 'MA'), ('MT', 'MT'), ('MS', 'MS'), ('MG', 'MG'), ('PA', 'PA'), ('PB', 'PB'), ('PR', 'PR'), ('PE', 'PE'), ('PI', 'PI'), ('RJ', 'RJ'), ('RN', 'RN'), ('RS', 'RS'), ('RO', 'RO'), ('RR', 'RR'), ('SC', 'SC'), ('SP', 'SP'), ('SE', 'SE'), ('TO', 'TO')], max_length=2)),
-                ('cidade', models.CharField(blank=True, max_length=100)),
-                ('bairro', models.CharField(blank=True, max_length=100)),
-                ('logradouro', models.CharField(blank=True, max_length=255)),
-                ('numero', models.CharField(blank=True, max_length=10)),
-                ('complemento', models.CharField(blank=True, max_length=100)),
-                ('formacao', models.CharField(blank=True, max_length=255)),
-                ('especializacao', models.CharField(blank=True, max_length=255)),
-                ('area_atuacao', models.CharField(blank=True, max_length=255)),
-                ('foto', models.ImageField(blank=True, null=True, upload_to='fotos/professores/')),
-                ('criado_em', models.DateTimeField(auto_now_add=True)),
-                ('atualizado_em', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='professor', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome_completo", models.CharField(max_length=255)),
+                (
+                    "cpf",
+                    models.CharField(
+                        max_length=14,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "^\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}$"
+                            )
+                        ],
+                    ),
+                ),
+                ("telefone", models.CharField(blank=True, max_length=20)),
+                ("data_nascimento", models.DateField(blank=True, null=True)),
+                ("cep", models.CharField(blank=True, max_length=9)),
+                (
+                    "estado",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("AC", "AC"),
+                            ("AL", "AL"),
+                            ("AP", "AP"),
+                            ("AM", "AM"),
+                            ("BA", "BA"),
+                            ("CE", "CE"),
+                            ("DF", "DF"),
+                            ("ES", "ES"),
+                            ("GO", "GO"),
+                            ("MA", "MA"),
+                            ("MT", "MT"),
+                            ("MS", "MS"),
+                            ("MG", "MG"),
+                            ("PA", "PA"),
+                            ("PB", "PB"),
+                            ("PR", "PR"),
+                            ("PE", "PE"),
+                            ("PI", "PI"),
+                            ("RJ", "RJ"),
+                            ("RN", "RN"),
+                            ("RS", "RS"),
+                            ("RO", "RO"),
+                            ("RR", "RR"),
+                            ("SC", "SC"),
+                            ("SP", "SP"),
+                            ("SE", "SE"),
+                            ("TO", "TO"),
+                        ],
+                        max_length=2,
+                    ),
+                ),
+                ("cidade", models.CharField(blank=True, max_length=100)),
+                ("bairro", models.CharField(blank=True, max_length=100)),
+                ("logradouro", models.CharField(blank=True, max_length=255)),
+                ("numero", models.CharField(blank=True, max_length=10)),
+                ("complemento", models.CharField(blank=True, max_length=100)),
+                ("formacao", models.CharField(blank=True, max_length=255)),
+                ("especializacao", models.CharField(blank=True, max_length=255)),
+                ("area_atuacao", models.CharField(blank=True, max_length=255)),
+                (
+                    "foto",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="fotos/professores/"
+                    ),
+                ),
+                ("criado_em", models.DateTimeField(auto_now_add=True)),
+                ("atualizado_em", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="professor",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Professor',
-                'verbose_name_plural': 'Professores',
-                'ordering': ['nome_completo'],
+                "verbose_name": "Professor",
+                "verbose_name_plural": "Professores",
+                "ordering": ["nome_completo"],
             },
         ),
         migrations.CreateModel(
-            name='GradeHorario',
+            name="GradeHorario",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('dados', models.JSONField(default=dict)),
-                ('turma', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='core.turma')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("dados", models.JSONField(default=dict)),
+                (
+                    "turma",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.turma"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Disciplina',
+            name="Disciplina",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome', models.CharField(max_length=100)),
-                ('professor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.professor')),
-                ('turma', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.turma')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome", models.CharField(max_length=100)),
+                (
+                    "professor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.professor"
+                    ),
+                ),
+                (
+                    "turma",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.turma"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Nota',
+            name="Nota",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nota1', models.FloatField(blank=True, null=True)),
-                ('nota2', models.FloatField(blank=True, null=True)),
-                ('nota3', models.FloatField(blank=True, null=True)),
-                ('nota4', models.FloatField(blank=True, null=True)),
-                ('aluno', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.aluno')),
-                ('disciplina', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.disciplina')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nota1", models.FloatField(blank=True, null=True)),
+                ("nota2", models.FloatField(blank=True, null=True)),
+                ("nota3", models.FloatField(blank=True, null=True)),
+                ("nota4", models.FloatField(blank=True, null=True)),
+                (
+                    "aluno",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="core.aluno"
+                    ),
+                ),
+                (
+                    "disciplina",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="core.disciplina",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('aluno', 'disciplina')},
+                "unique_together": {("aluno", "disciplina")},
             },
         ),
     ]
