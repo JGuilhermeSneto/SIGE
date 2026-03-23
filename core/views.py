@@ -8,10 +8,13 @@ from .forms import (
     LoginForm, ProfessorForm, AlunoForm, DisciplinaForm, TurmaForm,
     NotaForm, EditarPerfilForm, GestorForm
 )
-from datetime import datetime, timezone
+from django.utils import timezone
 import calendar
 from django.contrib.auth.decorators import user_passes_test
-
+from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from .models import Turma
 
 # ======================== LOGIN / LOGOUT ========================
 def login_view(request):
@@ -575,7 +578,7 @@ def visualizar_disciplinas(request, disciplina_id):
         "notas_dict": notas_dict
     }
 
-    return render(request, 'core/visualizar_disciplinas.html', context)
+    return render(request, 'disciplina/visualizar_disciplinas.html', context)
 
 
 
@@ -603,7 +606,7 @@ def editar_disciplina(request, disciplina_id):
 
     professores = Professor.objects.filter(user__is_superuser=False)
 
-    return render(request, 'core/cadastrar_disciplina_turma.html', {
+    return render(request, 'disciplina/cadastrar_disciplina_turma.html', {
         'disciplina': disciplina,
         'turma': disciplina.turma,
         'professores': professores,
@@ -661,10 +664,7 @@ def listar_turmas(request):
     })
 
 
-from datetime import datetime
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from .models import Turma
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, 'gestor'))
@@ -701,7 +701,7 @@ def cadastrar_turma(request):
 
     return render(
         request,
-        'core/cadastrar_turma.html',
+        'turma/cadastrar_turma.html',
         {
             'erro': erro,
             'anos': anos
@@ -854,7 +854,7 @@ def painel_professor(request):
             'percentual': int((notas_lancadas_disc / notas_possiveis_disc * 100) if notas_possiveis_disc > 0 else 0)
         })
     
-    return render(request, 'core/painel_professor.html', {
+    return render(request, 'professor/painel_professor.html', {
         'professor': professor,
         'nome_exibicao': professor.nome_completo,
         'total_disciplinas': total_disciplinas,
@@ -948,7 +948,7 @@ def disciplinas_professor(request):
             'turno_display': turma.get_turno_display(),
         })
     
-    return render(request, 'core/disciplinas_professor.html', {
+    return render(request, 'professor/disciplinas_professor.html', {
         'turmas_detalhadas': turmas_detalhadas,
         'foto_perfil_url': foto_perfil_url,
         'query': query,
@@ -1093,7 +1093,7 @@ def visualizar_grade_professor(request, turma_id):
     except GradeHorario.DoesNotExist:
         grade_formatada = None
     
-    return render(request, 'core/visualizar_grade_professor.html', {
+    return render(request, 'professor/visualizar_grade_professor.html', {
         'turma': turma,
         'grade_horario': grade_formatada,
         'disciplinas_professor': disciplinas_prof,
@@ -1148,7 +1148,7 @@ def lancar_nota(request, disciplina_id):
 
     notas_dict = {n.aluno_id: n for n in Nota.objects.filter(disciplina_id=disciplina.id)}
 
-    return render(request, 'core/lancar_nota.html', {
+    return render(request, 'professor/lancar_nota.html', {
         'disciplina': disciplina,
         'alunos': alunos,
         'notas_dict': notas_dict,
@@ -1293,7 +1293,7 @@ def painel_aluno(request):
     calendario = gerar_calendario()
     agora = datetime.now()
 
-    return render(request, 'core/painel_aluno.html', {
+    return render(request, 'aluno/painel_aluno.html', {
         "aluno": aluno,
         "disciplinas_com_notas": disciplinas_com_notas,
         "media_geral": media_geral,
@@ -1334,7 +1334,7 @@ def cadastrar_disciplina_para_turma(request, turma_id):
 
     professores = Professor.objects.filter(user__is_superuser=False)
 
-    return render(request, 'core/cadastrar_disciplina_turma.html', {
+    return render(request, 'disciplina/cadastrar_disciplina_turma.html', {
         'turma': turma,
         'professores': professores
     })
@@ -1353,7 +1353,7 @@ def listar_disciplinas_turma(request, turma_id):
     if query:
         disciplinas = disciplinas.filter(nome__icontains=query)
 
-    return render(request, "core/listar_disciplinas_turma.html", {
+    return render(request, "disciplina/listar_disciplinas_turma.html", {
         "turma": turma,
         "disciplinas": disciplinas,
         "query": query
