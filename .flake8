@@ -1,8 +1,17 @@
+
 [flake8]
 max-line-length = 120
 
+# Ignorar erros/avisos comuns em Django e código gerado dinamicamente
 ignore =
     E501,E402,E265,E262,E202,E203,E204,E231,E261,
     E302,E303,E304,E305,E306,
     W291,W292,W293,W391,W503,W504,
     F821,F401,F811,F841
+
+exclude =
+    migrations,
+    __pycache__,
+    manage.py,
+    venv,
+    settings.py
