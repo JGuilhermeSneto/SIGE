@@ -4,8 +4,7 @@ Forms para o aplicativo core.
 Contém formulários de login, cadastro e gerenciamento de usuários e notas.
 """
 
-# ===================== IMPORTS (TODOS NO TOPO) =====================
-
+# ===================== IMPORTS =====================
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -13,17 +12,17 @@ from django.core.exceptions import ValidationError
 
 from .models import Aluno, Disciplina, Gestor, Nota, Professor, Turma
 
-# ===================== LOGIN =====================
 
+# ===================== LOGIN =====================
 
 class LoginForm(forms.Form):
     """Formulário para login de usuários."""
 
     email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
-    user = None  # Inicializa atributo para evitar W0201
+    user: User | None = None  # Inicializa atributo para evitar W0201
 
-    def clean(self):
+    def clean(self) -> dict:
         """Validação customizada do formulário de login."""
         email = self.cleaned_data.get("email")
         password = self.cleaned_data.get("password")
@@ -40,13 +39,12 @@ class LoginForm(forms.Form):
         self.user = user
         return self.cleaned_data
 
-    def get_user(self):
+    def get_user(self) -> User:
         """Retorna o usuário autenticado."""
         return self.user
 
 
 # ===================== PROFESSOR =====================
-
 
 class ProfessorForm(forms.ModelForm):
     """Formulário para cadastro/edição de professores."""
@@ -59,7 +57,7 @@ class ProfessorForm(forms.ModelForm):
         model = Professor
         fields = "__all__"
 
-    def clean_email(self):
+    def clean_email(self) -> str:
         """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)
@@ -72,7 +70,6 @@ class ProfessorForm(forms.ModelForm):
 
 # ===================== ALUNO =====================
 
-
 class AlunoForm(forms.ModelForm):
     """Formulário para cadastro/edição de alunos."""
 
@@ -84,7 +81,7 @@ class AlunoForm(forms.ModelForm):
         model = Aluno
         fields = "__all__"
 
-    def clean_email(self):
+    def clean_email(self) -> str:
         """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)
@@ -97,7 +94,6 @@ class AlunoForm(forms.ModelForm):
 
 # ===================== DISCIPLINA =====================
 
-
 class DisciplinaForm(forms.ModelForm):
     """Formulário para cadastro/edição de disciplinas."""
 
@@ -107,7 +103,6 @@ class DisciplinaForm(forms.ModelForm):
 
 
 # ===================== TURMA =====================
-
 
 class TurmaForm(forms.ModelForm):
     """Formulário para cadastro/edição de turmas."""
@@ -119,7 +114,6 @@ class TurmaForm(forms.ModelForm):
 
 # ===================== NOTA =====================
 
-
 class NotaForm(forms.ModelForm):
     """Formulário para cadastro/edição de notas."""
 
@@ -129,7 +123,6 @@ class NotaForm(forms.ModelForm):
 
 
 # ===================== EDITAR PERFIL =====================
-
 
 class EditarPerfilForm(forms.ModelForm):
     """Formulário para edição de perfil de usuário."""
@@ -142,7 +135,7 @@ class EditarPerfilForm(forms.ModelForm):
         model = User
         fields = ["email"]
 
-    def clean_email(self):
+    def clean_email(self) -> str:
         """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
@@ -151,7 +144,6 @@ class EditarPerfilForm(forms.ModelForm):
 
 
 # ===================== GESTOR =====================
-
 
 class GestorForm(forms.ModelForm):
     """Formulário para cadastro/edição de gestores."""
@@ -164,7 +156,7 @@ class GestorForm(forms.ModelForm):
         model = Gestor
         fields = "__all__"
 
-    def clean_email(self):
+    def clean_email(self) -> str:
         """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)

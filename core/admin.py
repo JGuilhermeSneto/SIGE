@@ -15,3 +15,4 @@ class GestorAdmin(admin.ModelAdmin):
     list_filter = ["cargo", "uf"]
     search_fields = ["nome_completo", "cpf", "cidade"]
     readonly_fields = ["criado_em", "atualizado_em"]
+

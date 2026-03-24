@@ -10,7 +10,6 @@ from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
 # ===================== CONSTANTES =====================
-
 UF_CHOICES = [
     ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
     ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
@@ -39,7 +38,7 @@ class Turma(models.Model):
     ano = models.IntegerField()
 
     def __str__(self) -> str:
-        return f"{self.nome} - {self.get_turno_display()} ({self.ano})"
+        return f"{self.nome} - {self.get_turno_display()} ({self.ano})"  # noqa: E1101
 
 
 class Professor(models.Model):
@@ -138,7 +137,7 @@ class Gestor(models.Model):
         ordering = ["nome_completo"]
 
     def __str__(self) -> str:
-        return f"{self.nome_completo} ({self.get_cargo_display()})"
+        return f"{self.nome_completo} ({self.get_cargo_display()})"  # noqa: E1101
 
 
 class GradeHorario(models.Model):
@@ -148,3 +147,4 @@ class GradeHorario(models.Model):
 
     def __str__(self) -> str:
         return f"Grade Horária - {self.turma}"
+    
