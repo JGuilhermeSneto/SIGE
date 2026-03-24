@@ -18,14 +18,12 @@
         </div>
 
         <div class="conteudo-principal-rolavel">
-            <!-- INDICADOR DE PASSOS -->
             <div class="passos-indicadores">
                 <span class="passo ativo" id="passo-1">1. Dados Pessoais</span>
                 <span class="passo inativo" id="passo-2">2. Endereço</span>
                 <span class="passo inativo" id="passo-3">3. Profissional</span>
             </div>
 
-            <!-- FORM ÚNICO -->
             <form method="POST" class="formulario" enctype="multipart/form-data" id="form-professor">
                 {% csrf_token %}
 
@@ -34,55 +32,47 @@
                     <div class="caixa-texto">
                         <label class="required">Nome completo</label>
                         {{ form.nome_completo }}
-                        {% if form.nome_completo.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.nome_completo.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.nome_completo.errors %}<small class="erro-inline" style="display:block;">{{ form.nome_completo.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">CPF</label>
                         {{ form.cpf }}
-                        {% if form.cpf.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.cpf.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.cpf.errors %}<small class="erro-inline" style="display:block;">{{ form.cpf.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">E-mail</label>
                         {{ form.email }}
-                        {% if form.email.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.email.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.email.errors %}<small class="erro-inline" style="display:block;">{{ form.email.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Telefone</label>
                         {{ form.telefone }}
-                        {% if form.telefone.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.telefone.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.telefone.errors %}<small class="erro-inline" style="display:block;">{{ form.telefone.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label>Data de nascimento</label>
-                        {% if professor.pk and professor.data_nascimento %}
-                            <input type="date" name="data_nascimento" value="{{ professor.data_nascimento|date:'Y-m-d' }}" id="id_data_nascimento">
-                        {% else %}
-                            {{ form.data_nascimento }}
-                        {% endif %}
-                        {% if form.data_nascimento.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.data_nascimento.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {# Campo visível — apenas exibição, não enviado ao Django #}
+                        <input
+                            type="text"
+                            id="data_nascimento_display"
+                            placeholder="DD/MM/AAAA"
+                            autocomplete="off"
+                            readonly
+                            style="cursor:pointer;"
+                            value="{% if professor.pk and professor.data_nascimento %}{{ professor.data_nascimento|date:'d/m/Y' }}{% endif %}"
+                        >
+                        {# Campo hidden — enviado ao Django no formato Y-m-d #}
+                        <input
+                            type="hidden"
+                            id="data_nascimento_hidden"
+                            name="data_nascimento"
+                            value="{% if professor.pk and professor.data_nascimento %}{{ professor.data_nascimento|date:'Y-m-d' }}{% endif %}"
+                        >
+                        {% if form.data_nascimento.errors %}<small class="erro-inline" style="display:block;">{{ form.data_nascimento.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="botoes">
@@ -95,71 +85,43 @@
                     <div class="caixa-texto">
                         <label class="required">CEP</label>
                         {{ form.cep }}
-                        {% if form.cep.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.cep.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.cep.errors %}<small class="erro-inline" style="display:block;">{{ form.cep.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Estado</label>
                         {{ form.estado }}
-                        {% if form.estado.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.estado.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.estado.errors %}<small class="erro-inline" style="display:block;">{{ form.estado.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Cidade</label>
                         {{ form.cidade }}
-                        {% if form.cidade.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.cidade.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.cidade.errors %}<small class="erro-inline" style="display:block;">{{ form.cidade.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label>Bairro</label>
                         {{ form.bairro }}
-                        {% if form.bairro.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.bairro.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.bairro.errors %}<small class="erro-inline" style="display:block;">{{ form.bairro.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Logradouro</label>
                         {{ form.logradouro }}
-                        {% if form.logradouro.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.logradouro.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.logradouro.errors %}<small class="erro-inline" style="display:block;">{{ form.logradouro.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label class="required">Número</label>
                         {{ form.numero }}
-                        {% if form.numero.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.numero.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.numero.errors %}<small class="erro-inline" style="display:block;">{{ form.numero.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label>Complemento</label>
                         {{ form.complemento }}
-                        {% if form.complemento.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.complemento.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.complemento.errors %}<small class="erro-inline" style="display:block;">{{ form.complemento.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="botoes">
@@ -173,46 +135,28 @@
                     <div class="caixa-texto">
                         <label>Formação</label>
                         {{ form.formacao }}
-                        {% if form.formacao.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.formacao.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.formacao.errors %}<small class="erro-inline" style="display:block;">{{ form.formacao.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label>Especialização</label>
                         {{ form.especializacao }}
-                        {% if form.especializacao.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.especializacao.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.especializacao.errors %}<small class="erro-inline" style="display:block;">{{ form.especializacao.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label>Área de Atuação</label>
                         {{ form.area_atuacao }}
-                        {% if form.area_atuacao.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.area_atuacao.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.area_atuacao.errors %}<small class="erro-inline" style="display:block;">{{ form.area_atuacao.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="caixa-texto">
                         <label {% if not professor.pk %}class="required"{% endif %}>
                             Senha
-                            {% if professor.pk %}
-                                <small style="color: #666; font-weight: normal;"> (deixe em branco para manter a senha atual)</small>
-                            {% endif %}
+                            {% if professor.pk %}<small style="color:#666;font-weight:normal;"> (deixe em branco para manter a senha atual)</small>{% endif %}
                         </label>
                         {{ form.senha }}
-                        {% if form.senha.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.senha.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.senha.errors %}<small class="erro-inline" style="display:block;">{{ form.senha.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="requisitos-senha" id="requisitos-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
@@ -225,11 +169,7 @@
                     <div class="caixa-texto" id="confirmar-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
                         <label {% if not professor.pk %}class="required"{% endif %}>Confirmar Senha</label>
                         {{ form.senha_confirmacao }}
-                        {% if form.senha_confirmacao.errors %}
-                            <small class="erro-inline" style="display:block;">{{ form.senha_confirmacao.errors.0 }}</small>
-                        {% else %}
-                            <small class="erro-inline"></small>
-                        {% endif %}
+                        {% if form.senha_confirmacao.errors %}<small class="erro-inline" style="display:block;">{{ form.senha_confirmacao.errors.0 }}</small>{% else %}<small class="erro-inline"></small>{% endif %}
                     </div>
 
                     <div class="confirmacao-senha" id="senha-match-msg" style="display:none;">As senhas não coincidem</div>
@@ -252,11 +192,8 @@
                         </div>
                     </div>
 
-                    <!-- Exibir erros não-field -->
                     {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors.0 }}
-                        </div>
+                        <div class="alert alert-danger">{{ form.non_field_errors.0 }}</div>
                     {% endif %}
 
                     <div class="botoes">
@@ -272,20 +209,17 @@
 
 {% block extra_js %}
 <script>
-const isEdicao = {{ professor.pk|yesno:"true,false" }};
+const isEdicao = "{{ professor.pk|yesno:'true,false' }}" === "true";
 
-// ========== DETECÇÃO DE ERROS E ABERTURA DA ETAPA CORRETA ==========
-document.addEventListener('DOMContentLoaded', function() {
+// ========== ERROS — ABRIR ETAPA CORRETA ==========
+document.addEventListener('DOMContentLoaded', function () {
     const etapas = document.querySelectorAll('.etapa');
     let etapaComErro = null;
-
     etapas.forEach((etapa, index) => {
-        if (etapa.querySelector('.erro-inline[style*="display:block"]') || 
-            etapa.querySelector('.alert-danger')) {
+        if (etapa.querySelector('.erro-inline[style*="display:block"]') || etapa.querySelector('.alert-danger')) {
             etapaComErro = index + 1;
         }
     });
-
     if (etapaComErro) {
         etapas.forEach(e => e.classList.remove('ativa'));
         document.getElementById(`etapa-${etapaComErro}`).classList.add('ativa');
@@ -293,251 +227,308 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// ========== ADICIONA IDs NOS CAMPOS ==========
-document.addEventListener('DOMContentLoaded', function() {
+// ========== IDs E INICIALIZAÇÃO ==========
+document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('form-professor');
-    
-    const cpfInput = form.querySelector('[name="cpf"]');
-    if (cpfInput) {
-        cpfInput.id = 'cpf';
-        cpfInput.maxLength = 14;
-    }
-    
-    const telefoneInput = form.querySelector('[name="telefone"]');
-    if (telefoneInput) {
-        telefoneInput.id = 'telefone';
-        telefoneInput.maxLength = 15;
-    }
-    
-    const cepInput = form.querySelector('[name="cep"]');
-    if (cepInput) {
-        cepInput.id = 'cep';
-        cepInput.maxLength = 9;
-    }
-    
-    const estadoSelect = form.querySelector('[name="estado"]');
-    if (estadoSelect) estadoSelect.id = 'estado';
-    
-    const cidadeInput = form.querySelector('[name="cidade"]');
-    if (cidadeInput) {
-        cidadeInput.id = 'cidade';
-        cidadeInput.placeholder = 'Digite a cidade se não encontrar pelo CEP';
-    }
 
-    const bairroInput = form.querySelector('[name="bairro"]');
-    if (bairroInput) bairroInput.id = 'bairro';
+    const cpf = form.querySelector('[name="cpf"]');
+    if (cpf) { cpf.id = 'cpf'; cpf.maxLength = 14; cpf.placeholder = '000.000.000-00'; }
 
-    const logradouroInput = form.querySelector('[name="logradouro"]');
-    if (logradouroInput) logradouroInput.id = 'logradouro';
-    
-    const senhaInput = form.querySelector('[name="senha"]');
-    if (senhaInput) {
-        senhaInput.id = 'senha';
-        senhaInput.minLength = 6;
-    }
-    
-    const senhaConfirmInput = form.querySelector('[name="senha_confirmacao"]');
-    if (senhaConfirmInput) senhaConfirmInput.id = 'senha_confirmacao';
-    
-    const fotoInput = form.querySelector('[name="foto"]');
-    if (fotoInput) {
-        fotoInput.accept = 'image/*';
-        fotoInput.addEventListener('change', function() {
-            previewFoto(this);
-        });
-    }
+    const tel = form.querySelector('[name="telefone"]');
+    if (tel) { tel.id = 'telefone'; tel.maxLength = 15; tel.placeholder = '(00) 00000-0000'; }
+
+    const cep = form.querySelector('[name="cep"]');
+    if (cep) { cep.id = 'cep'; cep.maxLength = 9; cep.placeholder = '00000-000'; }
+
+    const est = form.querySelector('[name="estado"]');
+    if (est) est.id = 'estado';
+
+    const cid = form.querySelector('[name="cidade"]');
+    if (cid) { cid.id = 'cidade'; cid.placeholder = 'Digite a cidade se não encontrar pelo CEP'; }
+
+    const bai = form.querySelector('[name="bairro"]');
+    if (bai) bai.id = 'bairro';
+
+    const log = form.querySelector('[name="logradouro"]');
+    if (log) log.id = 'logradouro';
+
+    const sen = form.querySelector('[name="senha"]');
+    if (sen) { sen.id = 'senha'; sen.minLength = 6; }
+
+    const senC = form.querySelector('[name="senha_confirmacao"]');
+    if (senC) senC.id = 'senha_confirmacao';
+
+    const foto = form.querySelector('[name="foto"]');
+    if (foto) { foto.accept = 'image/*'; foto.addEventListener('change', function () { previewFoto(this); }); }
+
+    // Datepicker — campo de exibição clicável
+    const display = document.getElementById('data_nascimento_display');
+    if (display) display.addEventListener('click', abrirDatepicker);
+
+    iniciarMascaras();
+    iniciarSenha();
+    iniciarCEP();
 });
 
-// ========== LÓGICA DE SENHA NA EDIÇÃO ==========
-document.addEventListener('DOMContentLoaded', function() {
+// ========== DATEPICKER ==========
+let dpAno, dpMes;
+
+function abrirDatepicker() {
+    const display = document.getElementById('data_nascimento_display');
+    const hoje = new Date();
+    const partes = display.value.split('/');
+
+    if (partes.length === 3 && partes[2].length === 4) {
+        dpAno = parseInt(partes[2]);
+        dpMes = parseInt(partes[1]) - 1;
+    } else {
+        dpAno = hoje.getFullYear();
+        dpMes = hoje.getMonth();
+    }
+
+    let overlay = document.getElementById('dp-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'dp-overlay';
+        overlay.innerHTML = `
+            <div id="dp-box" style="background:#fff;border-radius:16px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.2);min-width:310px;font-family:'Poppins',sans-serif;">
+                <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;">
+                    <button type="button" id="dp-prev" style="background:none;border:1px solid #ddd;border-radius:8px;font-size:20px;cursor:pointer;color:#4f8ef7;padding:2px 10px;line-height:1.4;">&#8249;</button>
+                    <select id="dp-mes" style="flex:1;border:1px solid #ddd;border-radius:8px;padding:5px 8px;font-family:'Poppins',sans-serif;font-size:13px;background:#f7f7f7;cursor:pointer;outline:none;"></select>
+                    <select id="dp-ano" style="flex:1;border:1px solid #ddd;border-radius:8px;padding:5px 8px;font-family:'Poppins',sans-serif;font-size:13px;background:#f7f7f7;cursor:pointer;outline:none;"></select>
+                    <button type="button" id="dp-next" style="background:none;border:1px solid #ddd;border-radius:8px;font-size:20px;cursor:pointer;color:#4f8ef7;padding:2px 10px;line-height:1.4;">&#8250;</button>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;font-weight:600;color:#888;margin-bottom:6px;">
+                    <span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span>
+                </div>
+                <div id="dp-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center;"></div>
+                <div style="display:flex;gap:8px;margin-top:12px;">
+                    <button type="button" id="dp-hoje" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd;background:#f7f7f7;cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;">Hoje</button>
+                    <button type="button" id="dp-fechar" style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd;background:#f7f7f7;cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;">Fechar</button>
+                </div>
+            </div>`;
+        overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.35);align-items:center;justify-content:center;';
+
+        document.body.appendChild(overlay);
+
+        document.getElementById('dp-prev').addEventListener('click', () => { dpMes--; if (dpMes < 0) { dpMes = 11; dpAno--; } renderDP(); });
+        document.getElementById('dp-next').addEventListener('click', () => { dpMes++; if (dpMes > 11) { dpMes = 0; dpAno++; } renderDP(); });
+        document.getElementById('dp-hoje').addEventListener('click', () => { const h = new Date(); dpAno = h.getFullYear(); dpMes = h.getMonth(); selecionarDia(h.getDate()); });
+        document.getElementById('dp-fechar').addEventListener('click', fecharDatepicker);
+        overlay.addEventListener('click', e => { if (e.target === overlay) fecharDatepicker(); });
+        document.getElementById('dp-mes').addEventListener('change', e => { dpMes = parseInt(e.target.value); renderDP(); });
+        document.getElementById('dp-ano').addEventListener('change', e => { dpAno = parseInt(e.target.value); renderDP(); });
+    }
+
+    overlay.style.display = 'flex';
+    renderDP();
+}
+
+function renderDP() {
+    const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+    const hoje = new Date();
+    const anoAtual = hoje.getFullYear();
+
+    document.getElementById('dp-mes').innerHTML = meses.map((m, i) =>
+        `<option value="${i}" ${i === dpMes ? 'selected' : ''}>${m}</option>`).join('');
+
+    let anosHtml = '';
+    for (let a = anoAtual; a >= anoAtual - 100; a--)
+        anosHtml += `<option value="${a}" ${a === dpAno ? 'selected' : ''}>${a}</option>`;
+    document.getElementById('dp-ano').innerHTML = anosHtml;
+
+    const primeiroDia = new Date(dpAno, dpMes, 1).getDay();
+    const totalDias   = new Date(dpAno, dpMes + 1, 0).getDate();
+
+    const displayVal = document.getElementById('data_nascimento_display').value.split('/');
+    const diaSel = displayVal.length === 3 ? parseInt(displayVal[0]) : null;
+    const mesSel = displayVal.length === 3 ? parseInt(displayVal[1]) - 1 : null;
+    const anoSel = displayVal.length === 3 ? parseInt(displayVal[2]) : null;
+
+    const diaStyle = 'padding:7px 0;border-radius:8px;font-size:13px;cursor:pointer;border:none;background:none;font-family:Poppins,sans-serif;width:100%;';
+    let html = '';
+    for (let i = 0; i < primeiroDia; i++)
+        html += `<button type="button" style="${diaStyle}visibility:hidden;pointer-events:none;"></button>`;
+    for (let d = 1; d <= totalDias; d++) {
+        const eHoje = d === hoje.getDate() && dpMes === hoje.getMonth() && dpAno === anoAtual;
+        const eSel  = d === diaSel && dpMes === mesSel && dpAno === anoSel;
+        const extra = eSel
+            ? 'background:#4f8ef7;color:#fff;font-weight:600;'
+            : eHoje ? 'border:2px solid #4f8ef7;color:#4f8ef7;font-weight:600;' : '';
+        html += `<button type="button" style="${diaStyle}${extra}" onmouseover="this.style.background='#eef4ff';this.style.color='#4f8ef7';" onmouseout="this.style.background='${eSel ? '#4f8ef7' : ''}';this.style.color='${eSel ? '#fff' : ''}';" onclick="selecionarDia(${d})">${d}</button>`;
+    }
+    document.getElementById('dp-grid').innerHTML = html;
+}
+
+function selecionarDia(dia) {
+    const dd = String(dia).padStart(2, '0');
+    const mm = String(dpMes + 1).padStart(2, '0');
+    document.getElementById('data_nascimento_display').value = `${dd}/${mm}/${dpAno}`;
+    document.getElementById('data_nascimento_hidden').value  = `${dpAno}-${mm}-${dd}`;
+    fecharDatepicker();
+}
+
+function fecharDatepicker() {
+    const o = document.getElementById('dp-overlay');
+    if (o) o.style.display = 'none';
+}
+
+// ========== SENHA NA EDIÇÃO ==========
+function iniciarSenha() {
     if (!isEdicao) return;
-
-    const senhaInput = document.getElementById('senha');
-    const requisitosContainer = document.getElementById('requisitos-senha-container');
-    const confirmarContainer = document.getElementById('confirmar-senha-container');
-
-    if (senhaInput) {
-        senhaInput.addEventListener('input', function() {
-            if (this.value.length > 0) {
-                requisitosContainer.style.display = 'block';
-                confirmarContainer.style.display = 'flex';
-            } else {
-                requisitosContainer.style.display = 'none';
-                confirmarContainer.style.display = 'none';
-            }
+    const sen = document.getElementById('senha');
+    const req = document.getElementById('requisitos-senha-container');
+    const con = document.getElementById('confirmar-senha-container');
+    if (sen) {
+        sen.addEventListener('input', function () {
+            const mostrar = this.value.length > 0;
+            req.style.display = mostrar ? 'block' : 'none';
+            con.style.display = mostrar ? 'flex'  : 'none';
         });
     }
-});
+}
 
-// ========== MULTI-STEP E VALIDAÇÃO ==========
+// ========== MULTI-STEP ==========
 function atualizarIndicadores(etapaAtiva) {
     for (let i = 1; i <= 3; i++) {
-        const indicador = document.getElementById(`passo-${i}`);
-        indicador.classList.remove("ativo", "completo");
-        if (i < etapaAtiva) indicador.classList.add("completo");
-        else if (i === etapaAtiva) indicador.classList.add("ativo");
+        const ind = document.getElementById(`passo-${i}`);
+        ind.classList.remove('ativo', 'completo');
+        if (i < etapaAtiva) ind.classList.add('completo');
+        else if (i === etapaAtiva) ind.classList.add('ativo');
     }
 }
 
 function validarEtapa(n) {
-    const etapa = document.getElementById(`etapa-${n}`);
-    const campos = etapa.querySelectorAll("input[required], select[required]");
-    let valido = true;
-    
+    const etapa  = document.getElementById(`etapa-${n}`);
+    const campos = etapa.querySelectorAll('input[required], select[required]');
+    let valido   = true;
+
     campos.forEach(campo => {
+        if (isEdicao && (campo.name === 'senha' || campo.name === 'senha_confirmacao')) return;
         const erro = campo.nextElementSibling;
-        
-        // Na edição, senha não é obrigatória
-        if (isEdicao && (campo.name === 'senha' || campo.name === 'senha_confirmacao')) {
-            return;
-        }
-        
         if (!campo.value.trim()) {
-            campo.classList.add("campo-erro");
-            if (erro && erro.classList.contains('erro-inline')) {
-                erro.innerText = "Campo obrigatório";
-                erro.style.display = "block";
-            }
+            campo.classList.add('campo-erro');
+            if (erro && erro.classList.contains('erro-inline')) { erro.innerText = 'Campo obrigatório'; erro.style.display = 'block'; }
             valido = false;
         } else {
-            campo.classList.remove("campo-erro");
-            if (erro && erro.classList.contains('erro-inline')) {
-                erro.style.display = "none";
-            }
+            campo.classList.remove('campo-erro');
+            if (erro && erro.classList.contains('erro-inline')) erro.style.display = 'none';
         }
     });
-    
+
     if (valido) proximaEtapa(n);
 }
 
 function proximaEtapa(n) {
-    document.getElementById(`etapa-${n}`).classList.remove("ativa");
-    document.getElementById(`etapa-${n+1}`).classList.add("ativa");
-    atualizarIndicadores(n+1);
+    document.getElementById(`etapa-${n}`).classList.remove('ativa');
+    document.getElementById(`etapa-${n + 1}`).classList.add('ativa');
+    atualizarIndicadores(n + 1);
 }
 
 function voltarEtapa(n) {
-    document.getElementById(`etapa-${n}`).classList.remove("ativa");
-    document.getElementById(`etapa-${n-1}`).classList.add("ativa");
-    atualizarIndicadores(n-1);
+    document.getElementById(`etapa-${n}`).classList.remove('ativa');
+    document.getElementById(`etapa-${n - 1}`).classList.add('ativa');
+    atualizarIndicadores(n - 1);
 }
 
 // ========== MÁSCARAS ==========
-document.addEventListener('DOMContentLoaded', function() {
-    const cpfInput = document.getElementById('cpf');
-    if (cpfInput) {
-        cpfInput.addEventListener('input', e => {
-            let v = e.target.value.replace(/\D/g,'').slice(0,11);
-            v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+function iniciarMascaras() {
+    const cpf = document.getElementById('cpf');
+    if (cpf) {
+        cpf.addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            v = v.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
             e.target.value = v;
         });
     }
 
-    const telefoneInput = document.getElementById('telefone');
-    if (telefoneInput) {
-        telefoneInput.addEventListener('input', e => {
-            let v = e.target.value.replace(/\D/g,'').slice(0,11);
-            v = v.length > 10 ? v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')
-                              : v.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3');
+    const tel = document.getElementById('telefone');
+    if (tel) {
+        tel.addEventListener('input', e => {
+            let v = e.target.value.replace(/\D/g, '').slice(0, 11);
+            v = v.length > 10
+                ? v.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
+                : v.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
             e.target.value = v;
         });
     }
+}
 
-    const cepInput = document.getElementById('cep');
-    if (cepInput) {
-        cepInput.addEventListener('input', e => {
-            let v = e.target.value.replace(/\D/g,'').slice(0,8);
-            e.target.value = v.replace(/(\d{5})(\d)/,'$1-$2');
-        });
+// ========== CEP ==========
+function iniciarCEP() {
+    const cep = document.getElementById('cep');
+    if (!cep) return;
 
-        cepInput.addEventListener('blur', function() {
-            let cep = this.value.replace(/\D/g,'');
-            if(cep.length !== 8) return;
+    cep.addEventListener('input', e => {
+        let v = e.target.value.replace(/\D/g, '').slice(0, 8);
+        e.target.value = v.replace(/(\d{5})(\d)/, '$1-$2');
+    });
 
-            fetch(`https://viacep.com.br/ws/${cep}/json/`)
-                .then(response => response.json())
-                .then(data => {
-                    const estadoSelect = document.getElementById('estado');
-                    const cidadeInput = document.getElementById('cidade');
-                    const bairroInput = document.getElementById('bairro');
-                    const logradouroInput = document.getElementById('logradouro');
-                    
-                    if(data.erro) {
-                        estadoSelect.value = '';
-                        cidadeInput.value = '';
-                        bairroInput.value = '';
-                        logradouroInput.value = '';
-                    } else {
-                        estadoSelect.value = data.uf;
-                        cidadeInput.value = data.localidade;
-                        bairroInput.value = data.bairro || '';
-                        logradouroInput.value = data.logradouro || '';
-                    }
-                })
-                .catch(err => console.error("Erro ao consultar CEP:", err));
-        });
-    }
-});
+    cep.addEventListener('blur', function () {
+        const c = this.value.replace(/\D/g, '');
+        if (c.length !== 8) return;
+        fetch(`https://viacep.com.br/ws/${c}/json/`)
+            .then(r => r.json())
+            .then(data => {
+                const est = document.getElementById('estado');
+                const cid = document.getElementById('cidade');
+                const bai = document.getElementById('bairro');
+                const log = document.getElementById('logradouro');
+                if (data.erro) {
+                    [est, cid, bai, log].forEach(el => { if (el) el.value = ''; });
+                } else {
+                    if (est) est.value = data.uf;
+                    if (cid) cid.value = data.localidade;
+                    if (bai) bai.value = data.bairro || '';
+                    if (log) log.value = data.logradouro || '';
+                }
+            })
+            .catch(err => console.error('Erro CEP:', err));
+    });
+}
 
-// ========== PREVIEW DE FOTO ==========
+// ========== PREVIEW FOTO ==========
 function previewFoto(input) {
     const img = document.getElementById('preview-imagem');
     if (input.files && input.files[0]) {
         const reader = new FileReader();
-        reader.onload = e => {
-            img.src = e.target.result;
-            img.style.display = "block";
-        };
+        reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
         reader.readAsDataURL(input.files[0]);
     }
 }
 
 // ========== VALIDAÇÃO DE SENHA ==========
-document.addEventListener('DOMContentLoaded', function() {
-    const senha = document.getElementById('senha');
-    const senhaConfirm = document.getElementById('senha_confirmacao');
-    const senhaMatchMsg = document.getElementById('senha-match-msg');
+document.addEventListener('DOMContentLoaded', function () {
+    const senha    = document.getElementById('senha');
+    const confirm  = document.getElementById('senha_confirmacao');
+    const matchMsg = document.getElementById('senha-match-msg');
+
+    function checarMatch() {
+        if (!confirm || confirm.value === '') { if (matchMsg) matchMsg.style.display = 'none'; return; }
+        const igual = senha.value === confirm.value;
+        matchMsg.innerText = igual ? 'Senhas coincidem' : 'As senhas não coincidem';
+        matchMsg.style.display = 'block';
+        matchMsg.classList.toggle('valid', igual);
+    }
 
     if (senha) {
         senha.addEventListener('input', () => {
-            const val = senha.value;
-            const regras = [
-                { id: 'req-maiuscula', regex: /[A-Z]/ },
-                { id: 'req-minuscula', regex: /[a-z]/ },
-                { id: 'req-numero', regex: /\d/ },
-                { id: 'req-caractere', regex: /.{6,}/ }
-            ];
-            regras.forEach(r => {
+            [
+                { id: 'req-maiuscula', re: /[A-Z]/ },
+                { id: 'req-minuscula', re: /[a-z]/ },
+                { id: 'req-numero',    re: /\d/ },
+                { id: 'req-caractere', re: /.{6,}/ },
+            ].forEach(r => {
                 const el = document.getElementById(r.id);
-                if(el && r.regex.test(val)) {
-                    el.classList.add('valid');
-                    el.querySelector('i').className = 'fa-solid fa-check';
-                } else if(el) {
-                    el.classList.remove('valid');
-                    el.querySelector('i').className = 'fa-solid fa-xmark';
-                }
+                if (!el) return;
+                const ok = r.re.test(senha.value);
+                el.classList.toggle('valid', ok);
+                el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
             });
-            verificarSenhaConfirm();
+            checarMatch();
         });
     }
-
-    if (senhaConfirm) senhaConfirm.addEventListener('input', verificarSenhaConfirm);
-
-    function verificarSenhaConfirm() {
-        if(!senhaConfirm || senhaConfirm.value === "") { 
-            if(senhaMatchMsg) senhaMatchMsg.style.display = "none"; 
-            return; 
-        }
-        if(senha.value === senhaConfirm.value) {
-            senhaMatchMsg.innerText = "Senhas coincidem";
-            senhaMatchMsg.style.display = "block";
-            senhaMatchMsg.classList.add('valid');
-        } else {
-            senhaMatchMsg.innerText = "As senhas não coincidem";
-            senhaMatchMsg.style.display = "block";
-            senhaMatchMsg.classList.remove('valid');
-        }
-    }
+    if (confirm) confirm.addEventListener('input', checarMatch);
 });
 </script>
 {% endblock %}

@@ -320,7 +320,7 @@
 {% block extra_js %}
 <script>
 
-const isEdicao = {{ aluno.pk|yesno:"true,false" }};
+const isEdicao = "{{ aluno.pk|yesno:'true,false' }}" === "true";
 // ========== DETECÇÃO DE ERROS ==========
 document.addEventListener('DOMContentLoaded', function() {
     const etapas = document.querySelectorAll('.etapa');

@@ -1,17 +1,15 @@
+"""Views do módulo core do sistema SIGE."""
 import calendar
 from datetime import datetime
-import unicodedata
 
 from django.contrib import messages
-from django.contrib.auth import (authenticate, login, logout,
-                                 update_session_auth_hash)
+from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import (AlunoForm, DisciplinaForm, EditarPerfilForm, GestorForm,
-                    LoginForm, NotaForm, ProfessorForm, TurmaForm)
+from .forms import (AlunoForm, EditarPerfilForm, GestorForm,
+                    LoginForm, ProfessorForm)
 from .models import Aluno, Disciplina, Gestor, GradeHorario, Nota, Professor, Turma
 
 
@@ -44,14 +42,17 @@ HORARIOS = {
 
 # ======================== HELPERS ========================
 def is_superuser(user):
+    """Verifica se o usuário é superusuário."""
     return user.is_superuser
 
 
 def is_super_ou_gestor(user):
+    """Verifica se o usuário é superusuário ou gestor."""
     return user.is_superuser or hasattr(user, "gestor")
 
 
 def get_foto_perfil(user):
+    """Retorna a URL da foto de perfil do usuário, se existir."""
     for tipo in ["professor", "aluno", "gestor", "superperfil"]:
         try:
             perfil = getattr(user, tipo, None)
@@ -63,6 +64,7 @@ def get_foto_perfil(user):
 
 
 def get_nome_exibicao(user):
+    """Retorna o nome de exibição do usuário conforme seu perfil."""
     for tipo in ["gestor", "professor", "aluno"]:
         perfil = getattr(user, tipo, None)
         if perfil and getattr(perfil, "nome_completo", None):
@@ -72,6 +74,7 @@ def get_nome_exibicao(user):
 
 
 def get_user_profile(user):
+    """Retorna o perfil associado ao usuário (professor, aluno, gestor etc)."""
     for tipo in ["professor", "aluno", "gestor", "superperfil"]:
         perfil = getattr(user, tipo, None)
         if perfil:
@@ -80,18 +83,20 @@ def get_user_profile(user):
 
 
 def redirect_user(user):
+    """Retorna o nome da URL de redirecionamento conforme o tipo de usuário."""
     if user.is_superuser:
         return "painel_super"
-    elif hasattr(user, "professor"):
+    if hasattr(user, "professor"):
         return "painel_professor"
-    elif hasattr(user, "aluno"):
+    if hasattr(user, "aluno"):
         return "painel_aluno"
-    elif hasattr(user, "gestor"):
+    if hasattr(user, "gestor"):
         return "painel_super"
     return "login"
 
 
 def gerar_calendario():
+    """Gera as células do calendário do mês atual."""
     hoje = datetime.today()
     cal = calendar.monthcalendar(hoje.year, hoje.month)
     celulas = []
@@ -109,6 +114,7 @@ def gerar_calendario():
 
 # ======================== LOGIN / LOGOUT ========================
 def login_view(request):
+    """Processa o login do usuário."""
     if request.user.is_authenticated:
         return redirect(redirect_user(request.user))
 
@@ -123,6 +129,7 @@ def login_view(request):
 
 
 def logout_view(request):
+    """Realiza o logout do usuário."""
     logout(request)
     return redirect("login")
 
@@ -131,6 +138,7 @@ def logout_view(request):
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def painel_super(request):
+    """Exibe o painel principal do superusuário/gestor."""
     ano_atual = datetime.now().year
 
     anos_disponiveis_qs = (
@@ -181,6 +189,7 @@ def painel_super(request):
 # ========================== USUÁRIOS ==========================
 @login_required
 def usuarios(request):
+    """Lista os usuários do sistema."""
     pode_ver_gestores = False
 
     if request.user.is_superuser:
@@ -197,6 +206,7 @@ def usuarios(request):
 # ======================== PERFIL ========================
 @login_required
 def editar_perfil(request):
+    """Permite ao usuário editar seu perfil."""
     user = request.user
     perfil = get_user_profile(user)
     form = EditarPerfilForm(request.POST or None, instance=user)
@@ -238,6 +248,7 @@ def editar_perfil(request):
 
 @login_required
 def remover_foto_perfil(request):
+    """Remove a foto de perfil do usuário."""
     perfil = get_user_profile(request.user)
 
     if not perfil:
@@ -257,6 +268,7 @@ def remover_foto_perfil(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def listar_professores(request):
+    """Lista todos os professores cadastrados."""
     query = request.GET.get("q", "")
 
     if query:
@@ -274,6 +286,7 @@ def listar_professores(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def cadastrar_professor(request):
+    """Cadastra um novo professor."""
     if request.method == "POST":
         form = ProfessorForm(request.POST, request.FILES, request=request)
         if form.is_valid():
@@ -283,10 +296,9 @@ def cadastrar_professor(request):
                 f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!",
             )
             return redirect("listar_professores")
-        else:
-            for campo, erros in form.errors.items():
-                for erro in erros:
-                    messages.error(request, erro)
+        for _, erros in form.errors.items():
+            for erro in erros:
+                messages.error(request, erro)
     else:
         form = ProfessorForm(request=request)
 
@@ -296,6 +308,7 @@ def cadastrar_professor(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def editar_professor(request, professor_id):
+    """Edita os dados de um professor."""
     professor = get_object_or_404(Professor, id=professor_id)
 
     if request.method == "POST":
@@ -309,10 +322,9 @@ def editar_professor(request, professor_id):
                 f"Professor(a) {professor.nome_completo} atualizado(a) com sucesso!",
             )
             return redirect("listar_professores")
-        else:
-            for campo, erros in form.errors.items():
-                for erro in erros:
-                    messages.error(request, erro)
+        for _, erros in form.errors.items():
+            for erro in erros:
+                messages.error(request, erro)
     else:
         form = ProfessorForm(instance=professor, request=request)
 
@@ -326,6 +338,7 @@ def editar_professor(request, professor_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def excluir_professor(request, professor_id):
+    """Exclui um professor do sistema."""
     professor = get_object_or_404(Professor, id=professor_id)
     professor.user.delete()
     messages.success(request, "Professor removido.")
@@ -336,6 +349,7 @@ def excluir_professor(request, professor_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def cadastrar_gestor(request):
+    """Cadastra um novo gestor."""
     if request.method == "POST":
         form = GestorForm(request.POST, request.FILES, request=request)
         if form.is_valid():
@@ -345,10 +359,9 @@ def cadastrar_gestor(request):
                 f"{gestor.get_cargo_display()} {gestor.nome_completo} cadastrado com sucesso!",
             )
             return redirect("listar_gestores")
-        else:
-            for campo, erros in form.errors.items():
-                for erro in erros:
-                    messages.error(request, erro)
+        for _, erros in form.errors.items():
+            for erro in erros:
+                messages.error(request, erro)
     else:
         form = GestorForm(request=request)
 
@@ -358,6 +371,7 @@ def cadastrar_gestor(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def listar_gestores(request):
+    """Lista todos os gestores cadastrados."""
     gestores = Gestor.objects.select_related("user").all()
     return render(request, "gestor/listar_gestores.html", {"gestores": gestores})
 
@@ -365,6 +379,7 @@ def listar_gestores(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def excluir_gestor(request, gestor_id):
+    """Exclui um gestor do sistema."""
     gestor = get_object_or_404(Gestor, id=gestor_id)
     gestor.user.delete()
     messages.success(request, "Gestor excluído com sucesso.")
@@ -374,6 +389,7 @@ def excluir_gestor(request, gestor_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
 def editar_gestor(request, gestor_id):
+    """Edita os dados de um gestor."""
     gestor = get_object_or_404(Gestor, id=gestor_id)
     user = gestor.user
 
@@ -387,8 +403,7 @@ def editar_gestor(request, gestor_id):
                 user.save()
             messages.success(request, "Gestor atualizado com sucesso!")
             return redirect("listar_gestores")
-        else:
-            messages.error(request, "Corrija os erros abaixo.")
+        messages.error(request, "Corrija os erros abaixo.")
     else:
         form = GestorForm(instance=gestor, initial={"email": user.email})
 
@@ -401,6 +416,7 @@ def editar_gestor(request, gestor_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def listar_alunos(request):
+    """Lista todos os alunos cadastrados."""
     query = request.GET.get("q", "")
 
     if query:
@@ -416,6 +432,7 @@ def listar_alunos(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def cadastrar_aluno(request):
+    """Cadastra um novo aluno."""
     if request.method == "POST":
         form = AlunoForm(request.POST, request.FILES, request=request)
         if form.is_valid():
@@ -424,10 +441,9 @@ def cadastrar_aluno(request):
                 request, f"Aluno(a) {aluno.nome_completo} cadastrado(a) com sucesso!"
             )
             return redirect("listar_alunos")
-        else:
-            for campo, erros in form.errors.items():
-                for erro in erros:
-                    messages.error(request, erro)
+        for _, erros in form.errors.items():
+            for erro in erros:
+                messages.error(request, erro)
     else:
         form = AlunoForm(request=request)
 
@@ -437,6 +453,7 @@ def cadastrar_aluno(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def editar_aluno(request, aluno_id):
+    """Edita os dados de um aluno."""
     aluno = get_object_or_404(Aluno, id=aluno_id)
 
     if request.method == "POST":
@@ -447,10 +464,9 @@ def editar_aluno(request, aluno_id):
                 request, f"Aluno(a) {aluno.nome_completo} atualizado(a) com sucesso!"
             )
             return redirect("listar_alunos")
-        else:
-            for campo, erros in form.errors.items():
-                for erro in erros:
-                    messages.error(request, erro)
+        for _, erros in form.errors.items():
+            for erro in erros:
+                messages.error(request, erro)
     else:
         form = AlunoForm(instance=aluno, request=request)
 
@@ -462,6 +478,7 @@ def editar_aluno(request, aluno_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def excluir_aluno(request, aluno_id):
+    """Exclui um aluno do sistema."""
     aluno = get_object_or_404(Aluno, id=aluno_id)
     aluno.user.delete()
     messages.success(request, "Aluno removido.")
@@ -472,6 +489,7 @@ def excluir_aluno(request, aluno_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def listar_turmas(request):
+    """Lista todas as turmas cadastradas."""
     ano_atual = timezone.localtime(timezone.now()).year
     query = request.GET.get("q", "").strip()
 
@@ -513,6 +531,7 @@ def listar_turmas(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def cadastrar_turma(request):
+    """Cadastra uma nova turma."""
     erro = None
     ano_atual = datetime.now().year
     anos = list(range(2010, ano_atual + 2))
@@ -541,6 +560,7 @@ def cadastrar_turma(request):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def editar_turma(request, turma_id):
+    """Edita os dados de uma turma."""
     turma = get_object_or_404(Turma, id=turma_id)
     erro = None
     ano_atual = datetime.now().year
@@ -561,7 +581,11 @@ def editar_turma(request, turma_id):
             messages.success(request, "Turma atualizada com sucesso!")
             return redirect("listar_turmas")
 
-    return render(request, "turma/cadastrar_turma.html", {"turma": turma, "erro": erro, "anos": anos})
+    return render(
+        request,
+        "turma/cadastrar_turma.html",
+        {"turma": turma, "erro": erro, "anos": anos},
+    )
 
 
 @login_required
@@ -570,6 +594,7 @@ def editar_turma(request, turma_id):
     or (hasattr(u, "gestor") and u.gestor.cargo != "secretario")
 )
 def excluir_turma(request, turma_id):
+    """Exclui uma turma do sistema."""
     turma = get_object_or_404(Turma, id=turma_id)
     turma.delete()
     messages.success(request, "Turma excluída com sucesso!")
@@ -579,6 +604,7 @@ def excluir_turma(request, turma_id):
 # ========================== DISCIPLINAS ==========================
 @login_required
 def visualizar_disciplinas(request, disciplina_id):
+    """Exibe os detalhes de uma disciplina com notas dos alunos."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
 
     if not (
@@ -613,6 +639,7 @@ def visualizar_disciplinas(request, disciplina_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def editar_disciplina(request, disciplina_id):
+    """Edita os dados de uma disciplina."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
     professores = Professor.objects.filter(user__is_superuser=False)  # ✅ definido aqui
 
@@ -639,6 +666,7 @@ def editar_disciplina(request, disciplina_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def excluir_disciplina(request, disciplina_id):
+    """Exclui uma disciplina do sistema."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
     turma_id = disciplina.turma.id
     disciplina.delete()
@@ -649,6 +677,7 @@ def excluir_disciplina(request, disciplina_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def cadastrar_disciplina_para_turma(request, turma_id):
+    """Cadastra uma nova disciplina vinculada a uma turma."""
     turma = get_object_or_404(Turma, id=turma_id)
 
     if request.method == "POST":
@@ -678,6 +707,7 @@ def cadastrar_disciplina_para_turma(request, turma_id):
 @login_required
 @user_passes_test(lambda u: u.is_superuser or hasattr(u, "gestor"))
 def listar_disciplinas_turma(request, turma_id):
+    """Lista as disciplinas de uma turma específica."""
     turma = get_object_or_404(Turma, id=turma_id)
     query = request.GET.get("q", "")
     disciplinas = Disciplina.objects.filter(turma=turma)
@@ -694,6 +724,7 @@ def listar_disciplinas_turma(request, turma_id):
 
 @login_required
 def disciplinas_turma(request, turma_id):
+    """Exibe as disciplinas de uma turma para professor ou gestor."""
     user = request.user
     turma = get_object_or_404(Turma, id=turma_id)
     foto_perfil_url = get_foto_perfil(user)
@@ -759,6 +790,7 @@ def disciplinas_turma(request, turma_id):
 # ======================== PAINEL PROFESSOR ========================
 @login_required
 def painel_professor(request):
+    """Exibe o painel principal do professor."""
     if not hasattr(request.user, "professor"):
         return redirect("login")
 
@@ -864,6 +896,7 @@ def painel_professor(request):
 
 @login_required
 def disciplinas_professor(request):
+    """Lista as disciplinas do professor logado."""
     if not hasattr(request.user, "professor"):
         return redirect("login")
 
@@ -936,6 +969,7 @@ def disciplinas_professor(request):
 
 @login_required
 def visualizar_grade_professor(request, turma_id):
+    """Exibe a grade horária de uma turma para o professor."""
     if not hasattr(request.user, "professor"):
         return redirect("login")
 
@@ -986,6 +1020,7 @@ def visualizar_grade_professor(request, turma_id):
     lambda u: u.is_superuser or hasattr(u, "gestor") or hasattr(u, "professor")
 )
 def lancar_nota(request, disciplina_id):
+    """Lança notas dos alunos em uma disciplina."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
     alunos = Aluno.objects.filter(turma_id=disciplina.turma_id).order_by("nome_completo")
 
@@ -1031,6 +1066,7 @@ def lancar_nota(request, disciplina_id):
 # ======================== PAINEL ALUNO ========================
 @login_required
 def painel_aluno(request):
+    """Exibe o painel do aluno com notas e grade horária."""
     if not hasattr(request.user, "aluno"):
         return redirect("login")
 
@@ -1143,8 +1179,9 @@ def painel_aluno(request):
 # ======================== GRADE HORÁRIA ========================
 @login_required
 def grade_horaria(request, turma_id):
+    """Exibe e permite editar a grade horária de uma turma."""
     turma = get_object_or_404(Turma, id=turma_id)
-    grade, criado = GradeHorario.objects.get_or_create(turma=turma)
+    grade, _ = GradeHorario.objects.get_or_create(turma=turma)
 
     dias = ["segunda", "terca", "quarta", "quinta", "sexta"]
     nomes_dias = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"]

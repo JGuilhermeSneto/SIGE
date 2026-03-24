@@ -1,0 +1,6 @@
+[MASTER]
+load-plugins=pylint_django
+ignore=migrations
+
+[DJANGO]
+django-settings-module=notas.settings
