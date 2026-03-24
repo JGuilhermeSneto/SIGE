@@ -2,32 +2,38 @@
 {% load static %}
 {% load get_item %}
 
-{% block title %}{{ disciplina.nome }}{% endblock %}
+{% block title %}{{ disciplina.nome|default:"Disciplina" }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/visualizar_disciplinas.css' %}">
 {% endblock %}
+
 {% block content %}
 <main class="detalhes">
     <div class="header-detalhes">
-        {% if request.user.is_superuser %}
-                    <a class="voltar" href="{% url 'listar_disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
-                        <i class="fas fa-arrow-left"></i> 
-                    </a>
-                {% else %}
-                    <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
-                {% endif %}
-    
-        <h2 class="titulo">{{disciplina.nome}}</h2>
+
+        <!-- BOTÃO VOLTAR -->
+        {% if disciplina and disciplina.turma %}
+            <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i> 
+            </a>
+        {% else %}
+            <a class="voltar" href="{% url 'listar_turmas' %}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i> 
+            </a>
+        {% endif %}
+
+        <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
+
+        <!-- BOTÃO IMPRIMIR -->
         <a href="#" class="imprimir">Imprimir 
             <i class="fas fa-print"></i>
         </a>
     </div>
+
     <div class="prof">
         <div class="info">
-            <p>Turno: {{ disciplina.turma.turno }}</p>
+            <p>Turno: {{ disciplina.turma.get_turno_display|default:"-" }}</p>
 
             {% if disciplina.professor %}
                 <p>Professor(a): {{ disciplina.professor.nome_completo }}</p>
@@ -35,20 +41,30 @@
                 <p><strong>Professor:</strong> Não atribuído</p>
             {% endif %}
         </div>
+
         <div class="botoes">
-            <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">Notas</a>
-            <a class="disciplina" href="">Frequência</a>
+            <!-- Lançar Notas -->
+            {% if disciplina.id %}
+                <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">Notas</a>
+            {% else %}
+                <a class="nota" href="#" onclick="alert('Disciplina não definida!'); return false;">Notas</a>
+            {% endif %}
+
+            <!-- Frequência (ajuste a URL caso tenha view específica) -->
+            <a class="disciplina" href="#">Frequência</a>
         </div>
     </div>
+
+    <!-- TABELA DE NOTAS -->
     <div class="tabela">  
         <table class="tabela-notas">
             <thead>
                 <tr>
                     <th class="nome">Nome</th>
-                    <th class="bim1">1ºBimestre</th>
-                    <th class="bim2">2ºBimestre</th>
-                    <th class="bim3">3ºBimestre</th>
-                    <th class="bim4">4ºBimestre</th>
+                    <th class="bim1">1º Bimestre</th>
+                    <th class="bim2">2º Bimestre</th>
+                    <th class="bim3">3º Bimestre</th>
+                    <th class="bim4">4º Bimestre</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,20 +74,22 @@
                             <td>{{ aluno.nome_completo }}</td>
                             {% if nota %}
                                 <td>{{ nota.nota1|default_if_none:"-" }}</td>
-                                <td>{{ nota.nota2|default_if_none:"-"  }}</td>
-                                <td>{{ nota.nota3|default_if_none:"-"  }}</td>
+                                <td>{{ nota.nota2|default_if_none:"-" }}</td>
+                                <td>{{ nota.nota3|default_if_none:"-" }}</td>
                                 <td>{{ nota.nota4|default_if_none:"-" }}</td>
-                             {% else %}
+                            {% else %}
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
                                 <td>-</td>
                             {% endif %}
                         </tr>
-                    {% endwith %}  
+                    {% endwith %}
                 {% empty %}
                     <tr>
-                        <td colspan="5">Nenhum aluno cadastrado.</td>
+                        <td colspan="5" style="text-align:center; padding:15px;">
+                            Nenhum aluno cadastrado.
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -79,11 +97,11 @@
     </div>
 </main>
 
+<!-- SCRIPT PARA IMPRIMIR -->
 <script>
-    document.querySelector('.imprimir')
-  .addEventListener('click', e => {
-    e.preventDefault();
-    window.print();
-  });
+    document.querySelector('.imprimir').addEventListener('click', e => {
+        e.preventDefault();
+        window.print();
+    });
 </script>
 {% endblock %}

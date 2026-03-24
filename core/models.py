@@ -1,8 +1,50 @@
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.db import models
+=======
+# ===================== IMPORTS (TODOS NO TOPO) =====================
+
+from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
+from django.db import models
+
+# ===================== CONSTANTES COMPARTILHADAS =====================
+
+UF_CHOICES = [
+    ("AC", "AC"),
+    ("AL", "AL"),
+    ("AP", "AP"),
+    ("AM", "AM"),
+    ("BA", "BA"),
+    ("CE", "CE"),
+    ("DF", "DF"),
+    ("ES", "ES"),
+    ("GO", "GO"),
+    ("MA", "MA"),
+    ("MT", "MT"),
+    ("MS", "MS"),
+    ("MG", "MG"),
+    ("PA", "PA"),
+    ("PB", "PB"),
+    ("PR", "PR"),
+    ("PE", "PE"),
+    ("PI", "PI"),
+    ("RJ", "RJ"),
+    ("RN", "RN"),
+    ("RS", "RS"),
+    ("RO", "RO"),
+    ("RR", "RR"),
+    ("SC", "SC"),
+    ("SP", "SP"),
+    ("SE", "SE"),
+    ("TO", "TO"),
+]
 
 
-# ------------------ TURMA ------------------
+# ===================== TURMA =====================
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
+
+
 class Turma(models.Model):
     TURNO_CHOICES = [
         ("manha", "Manhã"),
@@ -15,9 +57,10 @@ class Turma(models.Model):
     ano = models.IntegerField()
 
     def __str__(self):
-        return f"{self.nome} - {self.get_turno_display()} ({self.ano})"
+        return f"{self.nome} - {self.get_turno_display()} " f"({self.ano})"
 
 
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
@@ -56,11 +99,16 @@ class Professor(models.Model):
     ]
 
     # ------------------ RELAÇÃO COM USUÁRIO ------------------
+=======
+# ===================== PROFESSOR =====================
+
+
+class Professor(models.Model):
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="professor"
     )
 
-    # ------------------ DADOS PESSOAIS ------------------
     nome_completo = models.CharField(max_length=255)
     cpf = models.CharField(
         max_length=14,
@@ -70,7 +118,6 @@ class Professor(models.Model):
     telefone = models.CharField(max_length=20, blank=True)
     data_nascimento = models.DateField(null=True, blank=True)
 
-    # ------------------ ENDEREÇO ------------------
     cep = models.CharField(max_length=9, blank=True)
     estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
@@ -79,39 +126,43 @@ class Professor(models.Model):
     numero = models.CharField(max_length=10, blank=True)
     complemento = models.CharField(max_length=100, blank=True)
 
-    # ------------------ DADOS PROFISSIONAIS ------------------
     formacao = models.CharField(max_length=255, blank=True)
     especializacao = models.CharField(max_length=255, blank=True)
     area_atuacao = models.CharField(max_length=255, blank=True)
 
-    # ------------------ FOTO ------------------
     foto = models.ImageField(upload_to="fotos/professores/", null=True, blank=True)
 
-    # ------------------ TIMESTAMPS ------------------
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
+<<<<<<< HEAD
         verbose_name = "Professor"
         verbose_name_plural = "Professores"
+=======
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
         ordering = ["nome_completo"]
 
     def __str__(self):
         return self.nome_completo
 
 
+<<<<<<< HEAD
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
+=======
+# ===================== ALUNO =====================
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
 
 
 class Aluno(models.Model):
-    # ------------------ CHOICES ------------------
     NATURALIDADE_CHOICES = [
         ("brasileiro", "Brasileiro(a)"),
         ("estrangeiro", "Estrangeiro(a)"),
     ]
 
+<<<<<<< HEAD
     UF_CHOICES = [
         ("AC", "AC"),
         ("AL", "AL"),
@@ -146,6 +197,10 @@ class Aluno(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aluno")
 
     # ------------------ DADOS PESSOAIS ------------------
+=======
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aluno")
+
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
     nome_completo = models.CharField(max_length=255)
     cpf = models.CharField(
         max_length=14,
@@ -156,13 +211,19 @@ class Aluno(models.Model):
     data_nascimento = models.DateField()
 
     naturalidade = models.CharField(
+<<<<<<< HEAD
         max_length=20, choices=NATURALIDADE_CHOICES, default="brasileiro"
+=======
+        max_length=20,
+        choices=NATURALIDADE_CHOICES,
+        default="brasileiro",
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
     )
 
-    # ------------------ FILIAÇÃO ------------------
-    filiacao_1 = models.CharField(max_length=255, verbose_name="Filiação 1")
-    filiacao_2 = models.CharField(max_length=255, blank=True, verbose_name="Filiação 2")
+    filiacao_1 = models.CharField(max_length=255)
+    filiacao_2 = models.CharField(max_length=255, blank=True)
 
+<<<<<<< HEAD
     # ------------------ NECESSIDADES ESPECIAIS ------------------
     necessidade_especial = models.BooleanField(
         default=False, verbose_name="Possui necessidade especial?"
@@ -170,8 +231,11 @@ class Aluno(models.Model):
     descricao_necessidade = models.TextField(
         blank=True, verbose_name="Descrição da necessidade especial"
     )
+=======
+    necessidade_especial = models.BooleanField(default=False)
+    descricao_necessidade = models.TextField(blank=True)
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
 
-    # ------------------ ENDEREÇO ------------------
     cep = models.CharField(max_length=9, blank=True)
     estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
@@ -179,26 +243,37 @@ class Aluno(models.Model):
     logradouro = models.CharField(max_length=255, blank=True)
     numero = models.CharField(max_length=10, blank=True)
 
+<<<<<<< HEAD
     # ------------------ ALOCAÇÃO ------------------
     turma = models.ForeignKey("Turma", on_delete=models.CASCADE, related_name="alunos")
+=======
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="alunos")
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
 
-    # ------------------ FOTO ------------------
     foto = models.ImageField(upload_to="fotos/alunos/", null=True, blank=True)
 
-    # ------------------ TIMESTAMPS ------------------
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
+<<<<<<< HEAD
         verbose_name = "Aluno"
         verbose_name_plural = "Alunos"
+=======
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
         ordering = ["nome_completo"]
 
     def __str__(self):
         return f"{self.nome_completo} - {self.turma}"
 
 
+<<<<<<< HEAD
 # ------------------ DISCIPLINA ------------------
+=======
+# ===================== DISCIPLINA =====================
+
+
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
 class Disciplina(models.Model):
     nome = models.CharField(max_length=100)
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
@@ -206,6 +281,9 @@ class Disciplina(models.Model):
 
     def __str__(self):
         return f"{self.nome} ({self.turma})"
+
+
+# ===================== NOTA =====================
 
 
 class Nota(models.Model):
@@ -231,10 +309,14 @@ class Nota(models.Model):
         return f"{self.aluno} - {self.disciplina}"
 
 
+<<<<<<< HEAD
 # ------------------ GESTOR ------------------
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
+=======
+# ===================== GESTOR =====================
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
 
 
 class Gestor(models.Model):
@@ -245,6 +327,7 @@ class Gestor(models.Model):
         ("coordenador", "Coordenador"),
     ]
 
+<<<<<<< HEAD
     UF_CHOICES = [
         ("AC", "AC"),
         ("AL", "AL"),
@@ -277,6 +360,10 @@ class Gestor(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
 
+=======
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
+
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
     nome_completo = models.CharField(max_length=150)
     cpf = models.CharField(
         max_length=14,
@@ -298,18 +385,23 @@ class Gestor(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
+<<<<<<< HEAD
         verbose_name = "Gestor"
         verbose_name_plural = "Gestores"
+=======
+>>>>>>> b8aef382adc558a120b5f300463536a3c6df9e01
         ordering = ["nome_completo"]
 
     def __str__(self):
         return f"{self.nome_completo} ({self.get_cargo_display()})"
 
 
-# ------------------ GRADE HORÁRIA ------------------
+# ===================== GRADE HORÁRIA =====================
+
+
 class GradeHorario(models.Model):
-    turma = models.OneToOneField("Turma", on_delete=models.CASCADE)
-    dados = models.JSONField(default=dict)  # tabela completa da grade
+    turma = models.OneToOneField(Turma, on_delete=models.CASCADE)
+    dados = models.JSONField(default=dict)
 
     def __str__(self):
         return f"Grade Horária - {self.turma}"

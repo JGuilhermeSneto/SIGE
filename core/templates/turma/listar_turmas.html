@@ -15,14 +15,9 @@
     <!-- CABEÇALHO -->
     <div class="header-docentes">
 
-        <a href="{% url 'painel_super' %}">
-            <button class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </a>
-
         <h1 class="titulo-pagina">Turmas</h1>
 
+        <!-- BOTÃO ADICIONAR TURMA -->
         <a href="{% url 'cadastrar_turma' %}">
             <button class="btn-adicionar">Adicionar Turma</button>
         </a>
@@ -32,44 +27,36 @@
     <!-- CARD PRINCIPAL -->
     <div class="card-tabela">
 
-        <!-- BUSCA + FILTRO (LADO A LADO) -->
-<div class="barra-busca-linha">
+        <!-- BUSCA + FILTRO -->
+        <div class="barra-busca-linha">
 
-    <!-- BUSCA -->
-    <div class="barra-busca">
-        <form method="get"
-              action="{% url 'listar_turmas' %}"
-              style="width:100%; display:flex;">
-            <input type="text"
-                   name="q"
-                   placeholder="Buscar turma..."
-                   value="{{ query|default:'' }}">
-        </form>
-        <i class="fa-solid fa-magnifying-glass"></i>
-    </div>
+            <!-- BUSCA -->
+            <div class="barra-busca">
+                <form method="get" action="{% url 'listar_turmas' %}" style="width:100%; display:flex;">
+                    <input type="text" name="q" placeholder="Buscar turma..." value="{{ query|default:'' }}">
+                </form>
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
 
-    <!-- FILTRO ANO LETIVO -->
-    <form method="get" class="filtro-ano">
-        <label>Ano letivo</label>
-        <select name="ano" onchange="this.form.submit()">
-            {% for ano in anos_disponiveis %}
-                <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
-                    {{ ano }}
-                </option>
-            {% endfor %}
-        </select>
+            <!-- FILTRO ANO LETIVO -->
+            <form method="get" class="filtro-ano">
+                <label>Ano letivo</label>
+                <select name="ano" onchange="this.form.submit()">
+                    {% for ano in anos_disponiveis %}
+                        <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+                            {{ ano }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% if query %}
+                    <input type="hidden" name="q" value="{{ query }}">
+                {% endif %}
+            </form>
 
-        {% if query %}
-            <input type="hidden" name="q" value="{{ query }}">
-        {% endif %}
-    </form>
+        </div>
 
-</div>
-
-
-        <!-- TABELA -->
+        <!-- TABELA DE TURMAS -->
         <div class="container-tabela">
-
             <table class="tabela-docentes">
                 <thead>
                     <tr>
@@ -86,14 +73,31 @@
                         <td>{{ turma.nome }}</td>
                         <td>{{ turma.ano }}</td>
                         <td>{{ turma.get_turno_display }}</td>
-
                         <td class="coluna-acoes">
 
-                            <a href="{% url 'listar_disciplinas_turma' turma.id %}"
-                               class="acao-btn"
-                               title="Ver Disciplinas">
-                                <i class="fa-solid fa-book"></i>
-                            </a>
+                            {% if turma.id %}
+                                <!-- Ver Disciplinas da Turma -->
+                                
+                                <a href="{% url 'disciplinas_turma' turma.id %}" class="acao-btn" title="Ver Disciplinas">
+                                    <i class="fa-solid fa-book"></i>
+                                </a>
+
+                                <!-- Criar/Visualizar Grade Horária -->
+                                <a href="{% url 'grade_horaria' turma.id %}" class="acao-btn" title="Grade Horária">
+                                    <i class="fa-solid fa-table"></i>
+                                </a>
+
+                                <!-- Editar Turma -->
+                                <a href="{% url 'editar_turma' turma.id %}" class="acao-btn" title="Editar Turma">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+
+                                <!-- Excluir Turma -->
+                                <a href="{% url 'excluir_turma' turma.id %}" class="acao-btn"
+                                   onclick="return confirm('Deseja realmente excluir esta turma?');">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            {% endif %}
 
                         </td>
                     </tr>
@@ -105,9 +109,7 @@
                     </tr>
                     {% endfor %}
                 </tbody>
-
             </table>
-
         </div>
 
     </div>
@@ -115,5 +117,3 @@
 </main>
 
 {% endblock %}
-
-

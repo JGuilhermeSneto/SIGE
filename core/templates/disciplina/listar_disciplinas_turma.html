@@ -1,6 +1,8 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+{% block title %}Disciplinas da Turma{% endblock %}
+{% block header_title %}Disciplinas da Turma{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/lista_disciplinas.css' %}">
@@ -21,17 +23,16 @@
         </a>
 
         <h1 class="titulo-pagina">
-            Disciplinas da Turma 
-            <span class="subtitulo-turma">{{ turma.nome }} – {{ turma.turno }}</span>
+            Disciplinas da Turma
+            <span class="subtitulo-turma">{{ turma.nome }} – {{ turma.get_turno_display }}</span>
         </h1>
 
-        <!-- EDITAR + EXCLUIR TURMA (lado direito) -->
+        <!-- EDITAR + EXCLUIR TURMA -->
         <div style="display:flex; gap:10px;">
             <a href="{% url 'editar_turma' turma.id %}">
                 <button class="btn-adicionar" style="background:#1e90ff">
-                    <i class="fas fa-pen"></i> 
+                    <i class="fas fa-pen"></i>
                 </button>
-                
             </a>
 
             <a href="{% url 'excluir_turma' turma.id %}"
@@ -44,10 +45,10 @@
 
     </div>
 
-    <!-- CARD -->
+    <!-- CARD PRINCIPAL -->
     <div class="card-tabela">
 
-        <!-- BUSCA + BOTÕES -->
+        <!-- BUSCA + AÇÕES -->
         <div class="barra-busca-linha">
 
             <!-- BUSCA -->
@@ -56,12 +57,12 @@
                     <input type="text"
                            name="q"
                            placeholder="Buscar disciplina..."
-                           value="{{ query }}">
+                           value="{{ query|default:'' }}">
                 </form>
                 <i class="fa-solid fa-magnifying-glass"></i>
             </div>
 
-            <!-- AÇÕES AO LADO DA BUSCA -->
+            <!-- BOTÕES ADICIONAR / GRADE -->
             <div style="display:flex; gap:10px;">
                 <a href="{% url 'cadastrar_disciplina_turma' turma.id %}">
                     <button class="btn-adicionar">
@@ -78,9 +79,8 @@
 
         </div>
 
-        <!-- TABELA -->
+        <!-- TABELA DE DISCIPLINAS -->
         <div class="container-tabela">
-
             <table class="tabela-docentes">
                 <thead>
                     <tr>
@@ -89,40 +89,41 @@
                         <th class="coluna-acoes">Ações</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     {% for disciplina in disciplinas %}
                     <tr>
                         <td>{{ disciplina.nome }}</td>
                         <td>{{ disciplina.professor.nome_completo }}</td>
-
                         <td class="coluna-acoes">
+
+                            <!-- VISUALIZAR DISCIPLINA -->
                             <a href="{% url 'visualizar_disciplinas' disciplina.id %}" title="Visualizar">
                                 <i class="fa-solid fa-eye"></i>
                             </a>
 
+                            <!-- EDITAR DISCIPLINA -->
                             <a href="{% url 'editar_disciplina' disciplina.id %}" title="Editar">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
 
-                            <a href="{% url 'excluir_disciplina' disciplina.id %}"
+                            <!-- EXCLUIR DISCIPLINA -->
+                            <a href="{% url 'excluir_disciplina' disciplina.id %}" 
                                title="Excluir"
                                onclick="return confirm('Deseja realmente excluir esta disciplina?');">
                                 <i class="fa-solid fa-trash"></i>
                             </a>
+
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="3" style="text-align:center; padding:15px;">
-                            Nenhuma disciplina cadastrada.
+                            Nenhuma disciplina cadastrada nesta turma.
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-
             </table>
-
         </div>
 
     </div>

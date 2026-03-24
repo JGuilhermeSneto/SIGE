@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
-
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -85,6 +84,7 @@ WSGI_APPLICATION = "notas.wsgi.application"
 
 
 
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
@@ -95,6 +95,7 @@ WSGI_APPLICATION = "notas.wsgi.application"
 #         'PORT': '3306',
 #     }
 # }
+
 
 DATABASES = {
     "default": {
@@ -142,6 +143,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "core" / "static"]
 
 LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"  # ou para sua página inicial após login
 
 
 # Default primary key field type

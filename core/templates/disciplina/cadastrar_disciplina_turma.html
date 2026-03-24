@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block title %}
-  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
+{% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
 {% endblock %}
 
 {% block header_title %}
-  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
+{% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
 {% endblock %}
 
 {% block extra_css %}
@@ -19,7 +19,8 @@
 
     <div class="header-docentes">
 
-        <a href="{% url 'listar_disciplinas_turma' turma.id %}">
+        <!-- BOTÃO VOLTAR -->
+        <a href="{% url 'disciplinas_turma' turma.id %}">
             <button class="btn-voltar">
                 <i class="fa-solid fa-arrow-left"></i>
             </button>
@@ -27,9 +28,9 @@
 
         <h1 class="titulo-pagina">
             {% if disciplina %}
-                Editar Disciplina
+            Editar Disciplina
             {% else %}
-                Cadastrar Disciplina
+            Cadastrar Disciplina
             {% endif %}
         </h1>
 
@@ -37,49 +38,43 @@
 
     <div class="card-tabela">
 
+        <!-- MENSAGENS -->
         {% if messages %}
-            {% for message in messages %}
-                <p style="color:red; margin-bottom:10px;">{{ message }}</p>
-            {% endfor %}
+        {% for message in messages %}
+        <p style="color:red; margin-bottom:10px;">{{ message }}</p>
+        {% endfor %}
         {% endif %}
 
         <form method="post" class="form-cadastro">
             {% csrf_token %}
 
-            <!-- Nome -->
+            <!-- NOME DA DISCIPLINA -->
             <div class="form-group">
                 <label>Nome da Disciplina</label>
-                <input
-                    type="text"
-                    name="nome"
-                    required
-                    value="{{ disciplina.nome|default:'' }}"
-                >
+                <input type="text" name="nome" required value="{{ disciplina.nome|default:'' }}">
             </div>
 
-            <!-- Professor -->
+            <!-- PROFESSOR -->
             <div class="form-group">
                 <label>Professor</label>
                 <select name="professor" required>
                     <option value="">Selecione...</option>
                     {% for professor in professores %}
-                        <option value="{{ professor.id }}"
-                            {% if disciplina and disciplina.professor.id == professor.id %}
-                                selected
-                            {% endif %}
-                        >
-                            {{ professor.nome_completo }}
-                        </option>
+                    <option value="{{ professor.id }}" 
+                        {% if disciplina and disciplina.professor.id == professor.id %}selected{% endif %}>
+                        {{ professor.nome_completo }}
+                    </option>
                     {% endfor %}
                 </select>
             </div>
 
+            <!-- BOTÃO DE ENVIO -->
             <div class="form-actions">
                 <button type="submit" class="btn-adicionar">
                     {% if disciplina %}
-                        Salvar Alterações
+                    Salvar Alterações
                     {% else %}
-                        Adicionar Disciplina
+                    Adicionar Disciplina
                     {% endif %}
                 </button>
             </div>

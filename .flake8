@@ -5,5 +5,7 @@
 # E265, E262: comentários mal formatados
 # W293, W292, W391: linhas em branco
 # E722: bare except
+
 ignore = E501,E402,E265,E262,W293,W292,W391,E722,E303,E305,E306,E501,E261,E231,E302,W503,F811,F401
+
 max-line-length = 120
