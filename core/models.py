@@ -4,12 +4,12 @@ Models do app core.
 Contém os modelos: Turma, Professor, Aluno, Disciplina, Nota, Gestor e GradeHorario.
 """
 
-# ===================== IMPORTS =====================
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 
 # ===================== CONSTANTES =====================
+
 UF_CHOICES = [
     ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
     ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
@@ -28,6 +28,7 @@ CARGO_CHOICES = [
     ("secretario", "Secretário"),
     ("coordenador", "Coordenador"),
 ]
+
 
 # ===================== MODELS =====================
 

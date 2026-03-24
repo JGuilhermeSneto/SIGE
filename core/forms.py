@@ -4,7 +4,6 @@ Forms para o aplicativo core.
 Contém formulários de login, cadastro e gerenciamento de usuários e notas.
 """
 
-# ===================== IMPORTS =====================
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -13,17 +12,13 @@ from django.core.exceptions import ValidationError
 from .models import Aluno, Disciplina, Gestor, Nota, Professor, Turma
 
 
-# ===================== LOGIN =====================
-
 class LoginForm(forms.Form):
-    """Formulário para login de usuários."""
-
+    """Formulário de login de usuários."""
     email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
-    user: User | None = None  # Inicializa atributo para evitar W0201
+    user: User | None = None
 
     def clean(self) -> dict:
-        """Validação customizada do formulário de login."""
         email = self.cleaned_data.get("email")
         password = self.cleaned_data.get("password")
 
@@ -40,16 +35,12 @@ class LoginForm(forms.Form):
         return self.cleaned_data
 
     def get_user(self) -> User:
-        """Retorna o usuário autenticado."""
         return self.user
 
 
-# ===================== PROFESSOR =====================
-
 class ProfessorForm(forms.ModelForm):
-    """Formulário para cadastro/edição de professores."""
-
-    email = forms.EmailField(required=True, label="E-mail")
+    """Formulário de cadastro/edição de professores."""
+    email = forms.EmailField(required=True)
     senha = forms.CharField(required=False, widget=forms.PasswordInput)
     senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)
 
@@ -58,7 +49,6 @@ class ProfessorForm(forms.ModelForm):
         fields = "__all__"
 
     def clean_email(self) -> str:
-        """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)
         if self.instance.pk and self.instance.user:
@@ -68,11 +58,8 @@ class ProfessorForm(forms.ModelForm):
         return email
 
 
-# ===================== ALUNO =====================
-
 class AlunoForm(forms.ModelForm):
-    """Formulário para cadastro/edição de alunos."""
-
+    """Formulário de cadastro/edição de alunos."""
     email = forms.EmailField(required=True)
     senha = forms.CharField(required=False, widget=forms.PasswordInput)
     senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -82,7 +69,6 @@ class AlunoForm(forms.ModelForm):
         fields = "__all__"
 
     def clean_email(self) -> str:
-        """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)
         if self.instance.pk and self.instance.user:
@@ -92,41 +78,32 @@ class AlunoForm(forms.ModelForm):
         return email
 
 
-# ===================== DISCIPLINA =====================
-
 class DisciplinaForm(forms.ModelForm):
-    """Formulário para cadastro/edição de disciplinas."""
+    """Formulário de cadastro/edição de disciplinas."""
 
     class Meta:
         model = Disciplina
         fields = ["nome", "professor", "turma"]
 
 
-# ===================== TURMA =====================
-
 class TurmaForm(forms.ModelForm):
-    """Formulário para cadastro/edição de turmas."""
+    """Formulário de cadastro/edição de turmas."""
 
     class Meta:
         model = Turma
         fields = ["nome", "turno", "ano"]
 
 
-# ===================== NOTA =====================
-
 class NotaForm(forms.ModelForm):
-    """Formulário para cadastro/edição de notas."""
+    """Formulário de cadastro/edição de notas."""
 
     class Meta:
         model = Nota
         fields = ["nota1", "nota2", "nota3", "nota4"]
 
 
-# ===================== EDITAR PERFIL =====================
-
 class EditarPerfilForm(forms.ModelForm):
     """Formulário para edição de perfil de usuário."""
-
     senha_atual = forms.CharField(required=False, widget=forms.PasswordInput)
     nova_senha = forms.CharField(required=False, widget=forms.PasswordInput)
     confirmar_senha = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -136,18 +113,14 @@ class EditarPerfilForm(forms.ModelForm):
         fields = ["email"]
 
     def clean_email(self) -> str:
-        """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise forms.ValidationError("Este e-mail já está em uso.")
         return email
 
 
-# ===================== GESTOR =====================
-
 class GestorForm(forms.ModelForm):
-    """Formulário para cadastro/edição de gestores."""
-
+    """Formulário de cadastro/edição de gestores."""
     email = forms.EmailField(required=True)
     senha = forms.CharField(required=False, widget=forms.PasswordInput)
     senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -157,7 +130,6 @@ class GestorForm(forms.ModelForm):
         fields = "__all__"
 
     def clean_email(self) -> str:
-        """Valida se o e-mail não está em uso por outro usuário."""
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)
         if self.instance.pk and self.instance.user:
