@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter
 def get_item(dictionary, key):
     return dictionary.get(key)
@@ -10,6 +11,7 @@ def get_item(dictionary, key):
 from django import template
 
 register = template.Library()
+
 
 @register.filter
 def has_attr(obj, attr):
