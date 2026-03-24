@@ -1,11 +1,9 @@
-
-from django.contrib.auth.models import User
-from django.db import models
-# ===================== IMPORTS (TODOS NO TOPO) =====================
-
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
+
+# ===================== IMPORTS (TODOS NO TOPO) =====================
+
 
 # ===================== CONSTANTES COMPARTILHADAS =====================
 
@@ -41,7 +39,6 @@ UF_CHOICES = [
 
 
 # ===================== TURMA =====================
-
 
 
 class Turma(models.Model):
@@ -98,6 +95,7 @@ class Professor(models.Model):
 
     # ------------------ RELAÇÃO COM USUÁRIO ------------------
 
+
 # ===================== PROFESSOR =====================
 
 
@@ -138,12 +136,10 @@ class Professor(models.Model):
         verbose_name = "Professor"
         verbose_name_plural = "Professores"
 
-
         ordering = ["nome_completo"]
 
     def __str__(self):
         return self.nome_completo
-
 
 
 from django.contrib.auth.models import User
@@ -151,7 +147,6 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 # ===================== ALUNO =====================
-
 
 
 class Aluno(models.Model):
@@ -197,7 +192,6 @@ class Aluno(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aluno")
 
-
     nome_completo = models.CharField(max_length=255)
     cpf = models.CharField(
         max_length=14,
@@ -216,7 +210,6 @@ class Aluno(models.Model):
     filiacao_1 = models.CharField(max_length=255)
     filiacao_2 = models.CharField(max_length=255, blank=True)
 
-
     # ------------------ NECESSIDADES ESPECIAIS ------------------
     necessidade_especial = models.BooleanField(
         default=False, verbose_name="Possui necessidade especial?"
@@ -228,7 +221,6 @@ class Aluno(models.Model):
     necessidade_especial = models.BooleanField(default=False)
     descricao_necessidade = models.TextField(blank=True)
 
-
     cep = models.CharField(max_length=9, blank=True)
     estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
@@ -236,12 +228,10 @@ class Aluno(models.Model):
     logradouro = models.CharField(max_length=255, blank=True)
     numero = models.CharField(max_length=10, blank=True)
 
-
     # ------------------ ALOCAÇÃO ------------------
     turma = models.ForeignKey("Turma", on_delete=models.CASCADE, related_name="alunos")
 
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="alunos")
-
 
     foto = models.ImageField(upload_to="fotos/alunos/", null=True, blank=True)
 
@@ -259,11 +249,9 @@ class Aluno(models.Model):
         return f"{self.nome_completo} - {self.turma}"
 
 
-
 # ------------------ DISCIPLINA ------------------
 
 # ===================== DISCIPLINA =====================
-
 
 
 class Disciplina(models.Model):
@@ -301,14 +289,12 @@ class Nota(models.Model):
         return f"{self.aluno} - {self.disciplina}"
 
 
-
 # ------------------ GESTOR ------------------
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
 
 # ===================== GESTOR =====================
-
 
 
 class Gestor(models.Model):
@@ -318,7 +304,6 @@ class Gestor(models.Model):
         ("secretario", "Secretário"),
         ("coordenador", "Coordenador"),
     ]
-
 
     UF_CHOICES = [
         ("AC", "AC"),
@@ -352,9 +337,7 @@ class Gestor(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
 
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
-
 
     nome_completo = models.CharField(max_length=150)
     cpf = models.CharField(
@@ -364,7 +347,7 @@ class Gestor(models.Model):
     )
     data_nascimento = models.DateField()
     telefone = models.CharField(max_length=20)
-    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES) # type: ignore
+    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES)  # type: ignore
 
     cep = models.CharField(max_length=9)
     uf = models.CharField(max_length=2, choices=UF_CHOICES)

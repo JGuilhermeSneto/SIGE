@@ -3,12 +3,14 @@
 from django import forms  # Forms do Django para criar formulários
 from django.contrib.auth import authenticate  # Para autenticar usuários
 from django.contrib.auth.models import User  # Modelo de usuário do Django
-from django.core.exceptions import ValidationError  # Para lançar erros de validação
+from django.core.exceptions import \
+    ValidationError  # Para lançar erros de validação
 
-from .models import Aluno, Disciplina, Gestor, Nota, Professor, Turma  # Models do app core
-
+from .models import (Aluno, Disciplina, Gestor, Nota,  # Models do app core
+                     Professor, Turma)
 
 # ===================== LOGIN =====================
+
 
 class LoginForm(forms.Form):
     # Campo de e-mail
@@ -47,10 +49,17 @@ class LoginForm(forms.Form):
 
 # ===================== PROFESSOR =====================
 
+
 class ProfessorForm(forms.ModelForm):
-    email = forms.EmailField(required=True, label="E-mail")  # Campo de e-mail obrigatório
-    senha = forms.CharField(required=False, widget=forms.PasswordInput)  # Campo de senha opcional
-    senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)  # Confirmação de senha
+    email = forms.EmailField(
+        required=True, label="E-mail"
+    )  # Campo de e-mail obrigatório
+    senha = forms.CharField(
+        required=False, widget=forms.PasswordInput
+    )  # Campo de senha opcional
+    senha_confirmacao = forms.CharField(
+        required=False, widget=forms.PasswordInput
+    )  # Confirmação de senha
 
     class Meta:
         model = Professor
@@ -68,6 +77,7 @@ class ProfessorForm(forms.ModelForm):
 
 
 # ===================== ALUNO =====================
+
 
 class AlunoForm(forms.ModelForm):
     email = forms.EmailField(required=True)
@@ -91,6 +101,7 @@ class AlunoForm(forms.ModelForm):
 
 # ===================== DISCIPLINA =====================
 
+
 class DisciplinaForm(forms.ModelForm):
     class Meta:
         model = Disciplina
@@ -98,6 +109,7 @@ class DisciplinaForm(forms.ModelForm):
 
 
 # ===================== TURMA =====================
+
 
 class TurmaForm(forms.ModelForm):
     class Meta:
@@ -107,6 +119,7 @@ class TurmaForm(forms.ModelForm):
 
 # ===================== NOTA =====================
 
+
 class NotaForm(forms.ModelForm):
     class Meta:
         model = Nota
@@ -114,6 +127,7 @@ class NotaForm(forms.ModelForm):
 
 
 # ===================== EDITAR PERFIL =====================
+
 
 class EditarPerfilForm(forms.ModelForm):
     senha_atual = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -133,6 +147,7 @@ class EditarPerfilForm(forms.ModelForm):
 
 
 # ===================== GESTOR =====================
+
 
 class GestorForm(forms.ModelForm):
     email = forms.EmailField(required=True)
