@@ -76,11 +76,17 @@
                         <td class="coluna-acoes">
 
                             {% if turma.id %}
+
                                 <!-- Ver Disciplinas da Turma -->
-                                
-                                <a href="{% url 'disciplinas_turma' turma.id %}" class="acao-btn" title="Ver Disciplinas">
-                                    <i class="fa-solid fa-book"></i>
-                                </a>
+                                {% if request.user.is_superuser or request.user.gestor %}
+                                    <a href="{% url 'listar_disciplinas_turma' turma.id %}" class="acao-btn" title="Ver Disciplinas">
+                                        <i class="fa-solid fa-book"></i>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'disciplinas_turma' turma.id %}" class="acao-btn" title="Ver Disciplinas">
+                                        <i class="fa-solid fa-book"></i>
+                                    </a>
+                                {% endif %}
 
                                 <!-- Criar/Visualizar Grade Horária -->
                                 <a href="{% url 'grade_horaria' turma.id %}" class="acao-btn" title="Grade Horária">
@@ -97,6 +103,7 @@
                                    onclick="return confirm('Deseja realmente excluir esta turma?');">
                                     <i class="fa-solid fa-trash"></i>
                                 </a>
+
                             {% endif %}
 
                         </td>

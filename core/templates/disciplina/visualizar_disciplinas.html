@@ -14,19 +14,19 @@
 
         <!-- BOTÃO VOLTAR -->
         {% if disciplina and disciplina.turma %}
-            <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
-                <i class="fas fa-arrow-left"></i> 
-            </a>
+        <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i>
+        </a>
         {% else %}
-            <a class="voltar" href="{% url 'listar_turmas' %}" class="btn-voltar">
-                <i class="fas fa-arrow-left"></i> 
-            </a>
+        <a class="voltar" href="{% url 'listar_turmas' %}" class="btn-voltar">
+            <i class="fas fa-arrow-left"></i>
+        </a>
         {% endif %}
 
         <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
 
         <!-- BOTÃO IMPRIMIR -->
-        <a href="#" class="imprimir">Imprimir 
+        <a href="#" class="imprimir">Imprimir
             <i class="fas fa-print"></i>
         </a>
     </div>
@@ -36,18 +36,18 @@
             <p>Turno: {{ disciplina.turma.get_turno_display|default:"-" }}</p>
 
             {% if disciplina.professor %}
-                <p>Professor(a): {{ disciplina.professor.nome_completo }}</p>
+            <p>Professor(a): {{ disciplina.professor.nome_completo }}</p>
             {% else %}
-                <p><strong>Professor:</strong> Não atribuído</p>
+            <p><strong>Professor:</strong> Não atribuído</p>
             {% endif %}
         </div>
 
         <div class="botoes">
             <!-- Lançar Notas -->
             {% if disciplina.id %}
-                <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">Notas</a>
+            <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">Notas</a>
             {% else %}
-                <a class="nota" href="#" onclick="alert('Disciplina não definida!'); return false;">Notas</a>
+            <a class="nota" href="#" onclick="alert('Disciplina não definida!'); return false;">Notas</a>
             {% endif %}
 
             <!-- Frequência (ajuste a URL caso tenha view específica) -->
@@ -56,7 +56,7 @@
     </div>
 
     <!-- TABELA DE NOTAS -->
-    <div class="tabela">  
+    <div class="tabela">
         <table class="tabela-notas">
             <thead>
                 <tr>
@@ -69,28 +69,28 @@
             </thead>
             <tbody>
                 {% for aluno in alunos %}
-                    {% with nota=notas_dict|get_item:aluno.id %}
-                        <tr>
-                            <td>{{ aluno.nome_completo }}</td>
-                            {% if nota %}
-                                <td>{{ nota.nota1|default_if_none:"-" }}</td>
-                                <td>{{ nota.nota2|default_if_none:"-" }}</td>
-                                <td>{{ nota.nota3|default_if_none:"-" }}</td>
-                                <td>{{ nota.nota4|default_if_none:"-" }}</td>
-                            {% else %}
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                                <td>-</td>
-                            {% endif %}
-                        </tr>
-                    {% endwith %}
+                {% with nota=notas_dict|get_item:aluno.id %}
+                <tr>
+                    <td>{{ aluno.nome_completo }}</td>
+                    {% if nota %}
+                    <td>{{ nota.nota1|default_if_none:"-" }}</td>
+                    <td>{{ nota.nota2|default_if_none:"-" }}</td>
+                    <td>{{ nota.nota3|default_if_none:"-" }}</td>
+                    <td>{{ nota.nota4|default_if_none:"-" }}</td>
+                    {% else %}
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    {% endif %}
+                </tr>
+                {% endwith %}
                 {% empty %}
-                    <tr>
-                        <td colspan="5" style="text-align:center; padding:15px;">
-                            Nenhum aluno cadastrado.
-                        </td>
-                    </tr>
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:15px;">
+                        Nenhum aluno cadastrado.
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
