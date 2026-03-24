@@ -1,91 +1,63 @@
-from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.urls import path
 from . import views
 
 urlpatterns = [
+    # ==================== AUTENTICAÇÃO ====================
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
+
+    # ==================== PAINÉIS ====================
     path("painel/super/", views.painel_super, name="painel_super"),
-    path("editar/perfil/", views.editar_perfil, name="editar_perfil"),
-    # Docentes
-    path("professores/", views.listar_professores, name="listar_professores"),
-    path(
-        "professores/cadastrar/", views.cadastrar_professor, name="cadastrar_professor"
-    ),
-    path(
-        "professores/editar/<int:professor_id>/",
-        views.editar_professor,
-        name="editar_professor",
-    ),
-    path(
-        "professores/excluir/<int:professor_id>/",
-        views.excluir_professor,
-        name="excluir_professor",
-    ),
+    path("painel/gestor/", views.painel_super, name="painel_gestor"),
     path("painel/professor/", views.painel_professor, name="painel_professor"),
-    path(
-        "disciplinas/professor/",
-        views.disciplinas_professor,
-        name="disciplinas_professor",
-    ),
-    path(
-        "turma/<int:turma_id>/disciplinas/",
-        views.disciplinas_turma,
-        name="disciplinas_turma",
-    ),
-    # NOVA: Visualizar grade horária da turma
-    path(
-        "professor/turma/<int:turma_id>/grade/",
-        views.visualizar_grade_professor,
-        name="visualizar_grade_professor",
-    ),
+    path("painel/aluno/", views.painel_aluno, name="painel_aluno"),
+
+    # ==================== PERFIL ====================
+    path("editar/perfil/", views.editar_perfil, name="editar_perfil"),
+    path("editar/perfil/remover-foto/", views.remover_foto_perfil, name="remover_foto_perfil"),
+
+    # ==================== PROFESSORES ====================
+    path("professores/", views.listar_professores, name="listar_professores"),
+    path("professores/cadastrar/", views.cadastrar_professor, name="cadastrar_professor"),
+    path("professores/editar/<int:professor_id>/", views.editar_professor, name="editar_professor"),
+    path("professores/excluir/<int:professor_id>/", views.excluir_professor, name="excluir_professor"),
+
+    # ==================== DISCIPLINAS (PROFESSOR) ====================
+    path("disciplinas/professor/", views.disciplinas_professor, name="disciplinas_professor"),
+    path("turmas/<int:turma_id>/disciplinas/", views.disciplinas_turma, name="disciplinas_turma"),  # URL correta para listar disciplinas de uma turma
+    path("professor/turmas/<int:turma_id>/grade/", views.visualizar_grade_professor, name="visualizar_grade_professor"),
     path("lancar-nota/<int:disciplina_id>/", views.lancar_nota, name="lancar_nota"),
-    # Discentes
+
+    # ==================== ALUNOS ====================
     path("alunos/", views.listar_alunos, name="listar_alunos"),
     path("alunos/cadastrar/", views.cadastrar_aluno, name="cadastrar_aluno"),
     path("alunos/editar/<int:aluno_id>/", views.editar_aluno, name="editar_aluno"),
     path("alunos/excluir/<int:aluno_id>/", views.excluir_aluno, name="excluir_aluno"),
-    # Disciplinas
-    path(
-        "disciplinas/editar/<int:disciplina_id>/",
-        views.editar_disciplina,
-        name="editar_disciplina",
-    ),
-    path(
-        "disciplinas/excluir/<int:disciplina_id>/",
-        views.excluir_disciplina,
-        name="excluir_disciplina",
-    ),
-    path(
-        "turmas/<int:turma_id>/disciplinas/",
-        views.listar_disciplinas_turma,
-        name="listar_disciplinas_turma",
-    ),
-    path(
-        "disciplina/<int:disciplina_id>/",
-        views.visualizar_disciplinas,
-        name="visualizar_disciplinas",
-    ),
-    # Cadastrar disciplina por turma
-    path(
-        "turmas/<int:turma_id>/disciplinas/cadastrar/",
-        views.cadastrar_disciplina_para_turma,
-        name="cadastrar_disciplina_turma",
-    ),
-    # Turmas
+
+    # ==================== DISCIPLINAS (GESTOR) ====================
+    path("disciplinas/editar/<int:disciplina_id>/", views.editar_disciplina, name="editar_disciplina"),
+    path("disciplinas/excluir/<int:disciplina_id>/", views.excluir_disciplina, name="excluir_disciplina"),
+    path("disciplina/<int:disciplina_id>/", views.visualizar_disciplinas, name="visualizar_disciplinas"),  # visualizar disciplina específica
+    path("turmas/<int:turma_id>/disciplinas/cadastrar/", views.cadastrar_disciplina_para_turma, name="cadastrar_disciplina_turma"),
+
+    # ==================== TURMAS ====================
     path("turmas/", views.listar_turmas, name="listar_turmas"),
     path("turmas/cadastrar/", views.cadastrar_turma, name="cadastrar_turma"),
     path("turmas/editar/<int:turma_id>/", views.editar_turma, name="editar_turma"),
     path("turmas/excluir/<int:turma_id>/", views.excluir_turma, name="excluir_turma"),
-    # Gestores
-    path("painel/gestor/", views.painel_super, name="painel_gestor"),
+    path("turmas/<int:turma_id>/grade/", views.grade_horaria, name="grade_horaria"),
+
+    # ==================== GESTORES ====================
     path("gestores/", views.listar_gestores, name="listar_gestores"),
     path("gestores/cadastrar/", views.cadastrar_gestor, name="cadastrar_gestor"),
-    path(
-        "gestores/excluir/<int:gestor_id>/", views.excluir_gestor, name="excluir_gestor"
-    ),
+    path("gestores/excluir/<int:gestor_id>/", views.excluir_gestor, name="excluir_gestor"),
     path("gestores/<int:gestor_id>/editar/", views.editar_gestor, name="editar_gestor"),
-    # Recuperação de senha
+
+    # ==================== USUÁRIOS ====================
+    path("usuarios/", views.usuarios, name="usuarios"),
+
+    # ==================== RESET DE SENHA ====================
     path(
         "senha/resetar/",
         auth_views.PasswordResetView.as_view(
@@ -98,9 +70,7 @@ urlpatterns = [
     ),
     path(
         "senha/resetar/enviado/",
-        auth_views.PasswordResetDoneView.as_view(
-            template_name="core/password_reset_done.html"
-        ),
+        auth_views.PasswordResetDoneView.as_view(template_name="core/password_reset_done.html"),
         name="password_reset_done",
     ),
     path(
@@ -113,17 +83,7 @@ urlpatterns = [
     ),
     path(
         "senha/resetar/completo/",
-        auth_views.PasswordResetCompleteView.as_view(
-            template_name="core/password_reset_complete.html"
-        ),
+        auth_views.PasswordResetCompleteView.as_view(template_name="core/password_reset_complete.html"),
         name="password_reset_complete",
     ),
-    path("painel/aluno/", views.painel_aluno, name="painel_aluno"),
-    path(
-        "editar/perfil/remover-foto/",
-        views.remover_foto_perfil,
-        name="remover_foto_perfil",
-    ),
-    path("turmas/<int:turma_id>/grade/", views.grade_horaria, name="grade_horaria"),
-    path("usuarios/", views.usuarios, name="usuarios"),
 ]
