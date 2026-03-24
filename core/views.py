@@ -60,7 +60,7 @@ def gerar_calendario():
 
     for semana in cal:
         for dia in semana:
-            celulas.append(
+            celulas.append( # type: ignore
                 {  # type: ignore
                     "numero": dia,
                     "vazio": dia == 0,
