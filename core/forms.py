@@ -1,45 +1,43 @@
+"""
+Forms para o aplicativo core.
+
+Contém formulários de login, cadastro e gerenciamento de usuários e notas.
+"""
+
 # ===================== IMPORTS (TODOS NO TOPO) =====================
 
-from django import forms  # Forms do Django para criar formulários
-from django.contrib.auth import authenticate  # Para autenticar usuários
-from django.contrib.auth.models import User  # Modelo de usuário do Django
-from django.core.exceptions import \
-    ValidationError  # Para lançar erros de validação
+from django import forms
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
-from .models import (Aluno, Disciplina, Gestor, Nota,  # Models do app core
-                     Professor, Turma)
+from .models import Aluno, Disciplina, Gestor, Nota, Professor, Turma
 
 # ===================== LOGIN =====================
 
 
 class LoginForm(forms.Form):
-    # Campo de e-mail
+    """Formulário para login de usuários."""
+
     email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
-    # Campo de senha
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
-    )
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
+    user = None  # Inicializa atributo para evitar W0201
 
     def clean(self):
-        """
-        Validação customizada do formulário de login.
-        Garante que o e-mail exista e que a senha esteja correta.
-        """
+        """Validação customizada do formulário de login."""
         email = self.cleaned_data.get("email")
         password = self.cleaned_data.get("password")
 
-        # Verifica se existe um usuário com este e-mail
         try:
             user_obj = User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise forms.ValidationError("E-mail não encontrado.")
+        except User.DoesNotExist as exc:
+            raise forms.ValidationError("E-mail não encontrado.") from exc
 
-        # Autentica o usuário com a senha fornecida
         user = authenticate(username=user_obj.username, password=password)
         if not user:
             raise forms.ValidationError("Senha incorreta.")
 
-        self.user = user  # Armazena o usuário autenticado
+        self.user = user
         return self.cleaned_data
 
     def get_user(self):
@@ -51,19 +49,15 @@ class LoginForm(forms.Form):
 
 
 class ProfessorForm(forms.ModelForm):
-    email = forms.EmailField(
-        required=True, label="E-mail"
-    )  # Campo de e-mail obrigatório
-    senha = forms.CharField(
-        required=False, widget=forms.PasswordInput
-    )  # Campo de senha opcional
-    senha_confirmacao = forms.CharField(
-        required=False, widget=forms.PasswordInput
-    )  # Confirmação de senha
+    """Formulário para cadastro/edição de professores."""
+
+    email = forms.EmailField(required=True, label="E-mail")
+    senha = forms.CharField(required=False, widget=forms.PasswordInput)
+    senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)
 
     class Meta:
         model = Professor
-        fields = "__all__"  # Todos os campos do modelo
+        fields = "__all__"
 
     def clean_email(self):
         """Valida se o e-mail não está em uso por outro usuário."""
@@ -80,6 +74,8 @@ class ProfessorForm(forms.ModelForm):
 
 
 class AlunoForm(forms.ModelForm):
+    """Formulário para cadastro/edição de alunos."""
+
     email = forms.EmailField(required=True)
     senha = forms.CharField(required=False, widget=forms.PasswordInput)
     senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -103,15 +99,19 @@ class AlunoForm(forms.ModelForm):
 
 
 class DisciplinaForm(forms.ModelForm):
+    """Formulário para cadastro/edição de disciplinas."""
+
     class Meta:
         model = Disciplina
-        fields = ["nome", "professor", "turma"]  # Campos obrigatórios
+        fields = ["nome", "professor", "turma"]
 
 
 # ===================== TURMA =====================
 
 
 class TurmaForm(forms.ModelForm):
+    """Formulário para cadastro/edição de turmas."""
+
     class Meta:
         model = Turma
         fields = ["nome", "turno", "ano"]
@@ -121,6 +121,8 @@ class TurmaForm(forms.ModelForm):
 
 
 class NotaForm(forms.ModelForm):
+    """Formulário para cadastro/edição de notas."""
+
     class Meta:
         model = Nota
         fields = ["nota1", "nota2", "nota3", "nota4"]
@@ -130,6 +132,8 @@ class NotaForm(forms.ModelForm):
 
 
 class EditarPerfilForm(forms.ModelForm):
+    """Formulário para edição de perfil de usuário."""
+
     senha_atual = forms.CharField(required=False, widget=forms.PasswordInput)
     nova_senha = forms.CharField(required=False, widget=forms.PasswordInput)
     confirmar_senha = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -150,6 +154,8 @@ class EditarPerfilForm(forms.ModelForm):
 
 
 class GestorForm(forms.ModelForm):
+    """Formulário para cadastro/edição de gestores."""
+
     email = forms.EmailField(required=True)
     senha = forms.CharField(required=False, widget=forms.PasswordInput)
     senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput)
@@ -167,3 +173,4 @@ class GestorForm(forms.ModelForm):
         if qs.exists():
             raise ValidationError("Este e-mail já está em uso.")
         return email
+    
