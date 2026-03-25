@@ -521,3 +521,4 @@ class EditarPerfilForm(forms.ModelForm):
                     "A senha deve ter ao menos 6 caracteres."
                 )
         return cleaned_data
+    
