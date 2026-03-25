@@ -4,3 +4,6 @@ ignore=migrations
 
 [DJANGO]
 django-settings-module=notas.settings
+
+[DESIGN]
+max-module-lines=2000
