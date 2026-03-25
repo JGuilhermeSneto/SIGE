@@ -1,3 +1,5 @@
+"""URL configuration for the core app."""
+
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
@@ -33,13 +35,41 @@ urlpatterns = [
         name="excluir_professor",
     ),
     # ==================== DISCIPLINAS ====================
-    path("disciplinas/professor/", views.disciplinas_professor, name="disciplinas_professor"),
-    path("turmas/<int:turma_id>/disciplinas/", views.disciplinas_turma, name="disciplinas_turma"),
-    path("turmas/<int:turma_id>/disciplinas/cadastrar/", views.cadastrar_disciplina_para_turma, name="cadastrar_disciplina_turma"),
-    path("turmas/<int:turma_id>/disciplinas/listar/", views.listar_disciplinas_turma, name="listar_disciplinas_turma"),
-    path("disciplinas/<int:disciplina_id>/visualizar/", views.visualizar_disciplinas, name="visualizar_disciplinas"),
-    path("disciplinas/<int:disciplina_id>/editar/", views.editar_disciplina, name="editar_disciplina"),
-    path("disciplinas/<int:disciplina_id>/excluir/", views.excluir_disciplina, name="excluir_disciplina"),
+    path(
+        "disciplinas/professor/",
+        views.disciplinas_professor,
+        name="disciplinas_professor",
+    ),
+    path(
+        "turmas/<int:turma_id>/disciplinas/",
+        views.disciplinas_turma,
+        name="disciplinas_turma",
+    ),
+    path(
+        "turmas/<int:turma_id>/disciplinas/cadastrar/",
+        views.cadastrar_disciplina_para_turma,
+        name="cadastrar_disciplina_turma",
+    ),
+    path(
+        "turmas/<int:turma_id>/disciplinas/listar/",
+        views.listar_disciplinas_turma,
+        name="listar_disciplinas_turma",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/visualizar/",
+        views.visualizar_disciplinas,
+        name="visualizar_disciplinas",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/editar/",
+        views.editar_disciplina,
+        name="editar_disciplina",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/excluir/",
+        views.excluir_disciplina,
+        name="excluir_disciplina",
+    ),
     path(
         "professor/turmas/<int:turma_id>/grade/",
         views.visualizar_grade_professor,
@@ -60,8 +90,16 @@ urlpatterns = [
     # ==================== GESTORES ====================
     path("gestores/", views.listar_gestores, name="listar_gestores"),
     path("gestores/cadastrar/", views.cadastrar_gestor, name="cadastrar_gestor"),
-    path("gestores/excluir/<int:gestor_id>/", views.excluir_gestor, name="excluir_gestor"),
-    path("gestores/<int:gestor_id>/editar/", views.editar_gestor, name="editar_gestor"),
+    path(
+        "gestores/excluir/<int:gestor_id>/",
+        views.excluir_gestor,
+        name="excluir_gestor",
+    ),
+    path(
+        "gestores/<int:gestor_id>/editar/",
+        views.editar_gestor,
+        name="editar_gestor",
+    ),
     # ==================== USUÁRIOS ====================
     path("usuarios/", views.usuarios, name="usuarios"),
     # ==================== RESET DE SENHA ====================
