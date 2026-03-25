@@ -12,7 +12,6 @@ from .forms import (AlunoForm, EditarPerfilForm, GestorForm,
                     LoginForm, ProfessorForm)
 from .models import Aluno, Disciplina, Gestor, GradeHorario, Nota, Professor, Turma
 
-
 # ======================== HORÁRIOS ========================
 HORARIOS = {
     "manha": [
@@ -38,6 +37,9 @@ HORARIOS = {
         "21:25 às 22:00",
     ],
 }
+
+DIAS_SEMANA = ["segunda", "terca", "quarta", "quinta", "sexta"]
+NOMES_DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"]
 
 
 # ======================== HELPERS ========================
@@ -112,6 +114,142 @@ def gerar_calendario():
     return celulas
 
 
+def _get_turno_key(turno):
+    """Normaliza o turno para chave do dicionário HORARIOS."""
+    return turno.lower().replace("ã", "a").replace("á", "a")
+
+
+def _get_anos_filtro(anos_disponiveis, ano_param, ano_atual):
+    """Resolve e valida o ano de filtro, retornando (ano_filtro, anos_atualizados)."""
+    try:
+        ano_filtro = int(ano_param) if ano_param else ano_atual
+    except ValueError:
+        ano_filtro = ano_atual
+
+    if ano_filtro not in anos_disponiveis:
+        anos_disponiveis = sorted(anos_disponiveis + [ano_filtro], reverse=True)
+
+    return ano_filtro, anos_disponiveis
+
+
+def _contar_notas_lancadas(nota):
+    """Conta quantas notas bimestrais foram lançadas em um objeto Nota."""
+    return sum(
+        1 for campo in (nota.nota1, nota.nota2, nota.nota3, nota.nota4)
+        if campo is not None
+    )
+
+
+def _calcular_detalhes_disciplina(disciplina, alunos_count):
+    """Retorna dict com detalhes de notas lançadas para uma disciplina."""
+    notas_disciplina = Nota.objects.filter(disciplina=disciplina)
+    notas_lancadas = sum(_contar_notas_lancadas(n) for n in notas_disciplina)
+    notas_possiveis = alunos_count * 4
+    percentual = int(
+        (notas_lancadas / notas_possiveis * 100) if notas_possiveis > 0 else 0
+    )
+    return {
+        "disciplina": disciplina,
+        "alunos_count": alunos_count,
+        "notas_lancadas": notas_lancadas,
+        "notas_possiveis": notas_possiveis,
+        "percentual": percentual,
+    }
+
+
+def _formatar_grade(grade_obj, horarios):
+    """Converte os dados brutos de GradeHorario em dict indexado por horário."""
+    if not (horarios and grade_obj.dados):
+        return None
+    grade_formatada = {}
+    for i, horario in enumerate(horarios):
+        grade_formatada[horario] = {
+            dia: (
+                grade_obj.dados.get(dia, [])[i]
+                if i < len(grade_obj.dados.get(dia, []))
+                else ""
+            )
+            for dia in DIAS_SEMANA
+        }
+    return grade_formatada
+
+
+def _get_grade_formatada(turma):
+    """Busca e formata a grade horária de uma turma. Retorna None se não existir."""
+    try:
+        grade_obj = GradeHorario.objects.get(turma=turma)
+    except GradeHorario.DoesNotExist:
+        return None
+    turno_key = _get_turno_key(turma.turno)
+    horarios = HORARIOS.get(turno_key, [])
+    return _formatar_grade(grade_obj, horarios)
+
+
+def _calcular_situacao_aluno(disciplinas_com_notas, total_lancadas, total_possiveis):
+    """Determina situação geral do aluno (Aprovado/Reprovado/Recuperação/--)."""
+    if total_lancadas != total_possiveis or total_possiveis == 0:
+        return "--", ""
+
+    tem_reprovacao = False
+    tem_recuperacao = False
+    todas_aprovadas = True
+
+    for item in disciplinas_com_notas:
+        nota = item["nota"]
+        if not nota or nota.media is None:
+            todas_aprovadas = False
+            continue
+        if nota.media < 4:
+            tem_reprovacao = True
+            todas_aprovadas = False
+        elif nota.media < 6:
+            tem_recuperacao = True
+            todas_aprovadas = False
+
+    if tem_reprovacao:
+        return "Reprovado", "reprovado"
+    if tem_recuperacao:
+        return "Recuperação", "recuperacao"
+    if todas_aprovadas:
+        return "Aprovado", "aprovado"
+    return "--", ""
+
+
+def _get_ocupados_por_professor(turma):
+    """Retorna dict {prof_id: set((dia, idx))} com slots já ocupados em outras turmas."""
+    ocupados = {}
+    outras_grades = GradeHorario.objects.exclude(turma=turma)
+    for grade in outras_grades:
+        for dia in DIAS_SEMANA:
+            for idx, nome_disc in enumerate(grade.dados.get(dia, [])):
+                if not nome_disc:
+                    continue
+                try:
+                    disc = Disciplina.objects.get(nome=nome_disc, turma=grade.turma)
+                except Disciplina.DoesNotExist:
+                    continue
+                ocupados.setdefault(disc.professor_id, set()).add((dia, idx))
+    return ocupados
+
+
+def _build_grade_rows(grade, horarios, disciplinas_da_turma, ocupados):
+    """Monta a lista de linhas da grade para renderização."""
+    rows = []
+    for i, horario in enumerate(horarios):
+        cols = []
+        for dia in DIAS_SEMANA:
+            lista = grade.dados.get(dia, [])
+            valor = lista[i] if isinstance(lista, list) and i < len(lista) else ""
+            disponiveis = [
+                d for d in disciplinas_da_turma
+                if (d.professor_id not in ocupados)
+                or (dia, i) not in ocupados[d.professor_id]
+            ]
+            cols.append({"dia": dia, "valor": valor, "disciplinas": disponiveis})
+        rows.append({"index": i, "horario": horario, "cols": cols})
+    return rows
+
+
 # ======================== LOGIN / LOGOUT ========================
 def login_view(request):
     """Processa o login do usuário."""
@@ -140,32 +278,14 @@ def logout_view(request):
 def painel_super(request):
     """Exibe o painel principal do superusuário/gestor."""
     ano_atual = datetime.now().year
-
-    anos_disponiveis_qs = (
+    anos_disponiveis = list(
         Turma.objects.values_list("ano", flat=True).distinct().order_by("-ano")
+    ) or [ano_atual]
+
+    ano_filtro, anos_disponiveis = _get_anos_filtro(
+        anos_disponiveis, request.GET.get("ano"), ano_atual
     )
-    anos_disponiveis = list(anos_disponiveis_qs)
-
-    if not anos_disponiveis:
-        anos_disponiveis = [ano_atual]
-
-    ano_filtro = request.GET.get("ano")
-    try:
-        ano_filtro = int(ano_filtro) if ano_filtro else ano_atual
-    except ValueError:
-        ano_filtro = ano_atual
-
-    if ano_filtro not in anos_disponiveis:
-        anos_disponiveis.append(ano_filtro)
-        anos_disponiveis.sort(reverse=True)
-
     turmas = Turma.objects.filter(ano=ano_filtro)
-
-    total_turmas = turmas.count()
-    total_alunos = Aluno.objects.filter(turma__in=turmas).distinct().count()
-    total_professores = Professor.objects.filter(disciplina__turma__in=turmas).distinct().count()
-    total_disciplinas = Disciplina.objects.filter(turma__in=turmas).distinct().count()
-    foto_perfil_url = get_foto_perfil(request.user)
 
     return render(
         request,
@@ -173,11 +293,19 @@ def painel_super(request):
         {
             "usuario": request.user,
             "nome_exibicao": get_nome_exibicao(request.user),
-            "total_professores": total_professores,
-            "total_alunos": total_alunos,
-            "total_turmas": total_turmas,
-            "total_disciplinas": total_disciplinas,
-            "foto_perfil_url": foto_perfil_url,
+            "total_professores": (
+                Professor.objects.filter(
+                    disciplina__turma__in=turmas
+                ).distinct().count()
+            ),
+            "total_alunos": (
+                Aluno.objects.filter(turma__in=turmas).distinct().count()
+            ),
+            "total_turmas": turmas.count(),
+            "total_disciplinas": (
+                Disciplina.objects.filter(turma__in=turmas).distinct().count()
+            ),
+            "foto_perfil_url": get_foto_perfil(request.user),
             "agora": datetime.now(),
             "calendario": gerar_calendario(),
             "anos_disponiveis": anos_disponiveis,
@@ -190,14 +318,10 @@ def painel_super(request):
 @login_required
 def usuarios(request):
     """Lista os usuários do sistema."""
-    pode_ver_gestores = False
-
-    if request.user.is_superuser:
-        pode_ver_gestores = True
-    elif hasattr(request.user, "gestor"):
-        if request.user.gestor.cargo in ("diretor", "vice_diretor"):
-            pode_ver_gestores = True
-
+    pode_ver_gestores = request.user.is_superuser or (
+        hasattr(request.user, "gestor")
+        and request.user.gestor.cargo in ("diretor", "vice_diretor")
+    )
     return render(
         request, "core/usuarios.html", {"pode_ver_gestores": pode_ver_gestores}
     )
@@ -270,12 +394,11 @@ def remover_foto_perfil(request):
 def listar_professores(request):
     """Lista todos os professores cadastrados."""
     query = request.GET.get("q", "")
-
-    if query:
-        professores = Professor.objects.filter(nome_completo__icontains=query)
-    else:
-        professores = Professor.objects.all()
-
+    professores = (
+        Professor.objects.filter(nome_completo__icontains=query)
+        if query
+        else Professor.objects.all()
+    )
     return render(
         request,
         "professor/listar_professores.html",
@@ -394,7 +517,9 @@ def editar_gestor(request, gestor_id):
     user = gestor.user
 
     if request.method == "POST":
-        form = GestorForm(request.POST, request.FILES, instance=gestor, request=request)
+        form = GestorForm(
+            request.POST, request.FILES, instance=gestor, request=request
+        )
         if form.is_valid():
             form.save()
             nova_senha = form.cleaned_data.get("senha")
@@ -418,12 +543,11 @@ def editar_gestor(request, gestor_id):
 def listar_alunos(request):
     """Lista todos os alunos cadastrados."""
     query = request.GET.get("q", "")
-
-    if query:
-        alunos = Aluno.objects.filter(nome_completo__icontains=query)
-    else:
-        alunos = Aluno.objects.all()
-
+    alunos = (
+        Aluno.objects.filter(nome_completo__icontains=query)
+        if query
+        else Aluno.objects.all()
+    )
     return render(
         request, "aluno/listar_alunos.html", {"alunos": alunos, "query": query}
     )
@@ -493,26 +617,14 @@ def listar_turmas(request):
     ano_atual = timezone.localtime(timezone.now()).year
     query = request.GET.get("q", "").strip()
 
-    anos_disponiveis_qs = (
+    anos_disponiveis = list(
         Turma.objects.values_list("ano", flat=True).distinct().order_by("-ano")
+    ) or [ano_atual]
+
+    ano_filtro, anos_disponiveis = _get_anos_filtro(
+        anos_disponiveis, request.GET.get("ano"), ano_atual
     )
-    anos_disponiveis = list(anos_disponiveis_qs)
-
-    if not anos_disponiveis:
-        anos_disponiveis = [ano_atual]
-
-    ano_filtro = request.GET.get("ano")
-    try:
-        ano_filtro = int(ano_filtro) if ano_filtro else ano_atual
-    except ValueError:
-        ano_filtro = ano_atual
-
-    if ano_filtro not in anos_disponiveis:
-        anos_disponiveis.append(ano_filtro)
-        anos_disponiveis.sort(reverse=True)
-
     turmas = Turma.objects.filter(ano=ano_filtro)
-
     if query:
         turmas = turmas.filter(nome__icontains=query)
 
@@ -606,16 +718,19 @@ def excluir_turma(request, turma_id):
 def visualizar_disciplinas(request, disciplina_id):
     """Exibe os detalhes de uma disciplina com notas dos alunos."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+    eh_professor_da_disc = (
+        hasattr(request.user, "professor")
+        and disciplina.professor == request.user.professor
+    )
 
     if not (
         request.user.is_superuser
         or hasattr(request.user, "gestor")
-        or (
-            hasattr(request.user, "professor")
-            and disciplina.professor == request.user.professor
-        )
+        or eh_professor_da_disc
     ):
-        messages.error(request, "Você não tem permissão para visualizar esta disciplina.")
+        messages.error(
+            request, "Você não tem permissão para visualizar esta disciplina."
+        )
         return redirect("login")
 
     turma = disciplina.turma
@@ -641,7 +756,7 @@ def visualizar_disciplinas(request, disciplina_id):
 def editar_disciplina(request, disciplina_id):
     """Edita os dados de uma disciplina."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
-    professores = Professor.objects.filter(user__is_superuser=False)  # ✅ definido aqui
+    professores = Professor.objects.filter(user__is_superuser=False)
 
     if request.method == "POST":
         disciplina.nome = request.POST["nome"]
@@ -650,7 +765,7 @@ def editar_disciplina(request, disciplina_id):
         )
         disciplina.save()
         messages.success(request, "Disciplina atualizada com sucesso!")
-        return redirect("disciplinas_turma", turma_id=disciplina.turma.id)  # ✅ nome correto
+        return redirect("disciplinas_turma", turma_id=disciplina.turma.id)
 
     return render(
         request,
@@ -671,7 +786,7 @@ def excluir_disciplina(request, disciplina_id):
     turma_id = disciplina.turma.id
     disciplina.delete()
     messages.success(request, "Disciplina excluída com sucesso!")
-    return redirect("disciplinas_turma", turma_id=turma_id)  # ✅ nome correto
+    return redirect("disciplinas_turma", turma_id=turma_id)
 
 
 @login_required
@@ -693,10 +808,9 @@ def cadastrar_disciplina_para_turma(request, turma_id):
             else:
                 Disciplina.objects.create(nome=nome, professor=professor, turma=turma)
                 messages.success(request, "Disciplina cadastrada com sucesso!")
-                return redirect("disciplinas_turma", turma_id=turma.id)  # ✅ nome correto
+                return redirect("disciplinas_turma", turma_id=turma.id)
 
     professores = Professor.objects.filter(user__is_superuser=False)
-
     return render(
         request,
         "disciplina/cadastrar_disciplina_turma.html",
@@ -711,7 +825,6 @@ def listar_disciplinas_turma(request, turma_id):
     turma = get_object_or_404(Turma, id=turma_id)
     query = request.GET.get("q", "")
     disciplinas = Disciplina.objects.filter(turma=turma)
-
     if query:
         disciplinas = disciplinas.filter(nome__icontains=query)
 
@@ -733,48 +846,22 @@ def disciplinas_turma(request, turma_id):
         return redirect("login")
 
     if hasattr(user, "professor"):
-        disciplinas = Disciplina.objects.filter(turma=turma, professor=user.professor).order_by("nome")
+        disciplinas = Disciplina.objects.filter(
+            turma=turma, professor=user.professor
+        ).order_by("nome")
     else:
         disciplinas = Disciplina.objects.filter(turma=turma).order_by("nome")
 
     if not disciplinas.exists():
         messages.error(request, "Nenhuma disciplina encontrada nesta turma.")
-        if hasattr(user, "professor"):
-            return redirect("disciplinas_professor")
-        return redirect("listar_turmas")
+        return redirect(
+            "disciplinas_professor" if hasattr(user, "professor") else "listar_turmas"
+        )
 
     alunos_count = Aluno.objects.filter(turma=turma).count()
-    disciplinas_detalhadas = []
-
-    for disciplina in disciplinas:
-        notas_disciplina = Nota.objects.filter(disciplina=disciplina)
-        notas_lancadas_disc = 0
-
-        for nota in notas_disciplina:
-            if nota.nota1 is not None:
-                notas_lancadas_disc += 1
-            if nota.nota2 is not None:
-                notas_lancadas_disc += 1
-            if nota.nota3 is not None:
-                notas_lancadas_disc += 1
-            if nota.nota4 is not None:
-                notas_lancadas_disc += 1
-
-        notas_possiveis_disc = alunos_count * 4
-
-        disciplinas_detalhadas.append(
-            {
-                "disciplina": disciplina,
-                "alunos_count": alunos_count,
-                "notas_lancadas": notas_lancadas_disc,
-                "notas_possiveis": notas_possiveis_disc,
-                "percentual": int(
-                    (notas_lancadas_disc / notas_possiveis_disc * 100)
-                    if notas_possiveis_disc > 0
-                    else 0
-                ),
-            }
-        )
+    disciplinas_detalhadas = [
+        _calcular_detalhes_disciplina(d, alunos_count) for d in disciplinas
+    ]
 
     return render(
         request,
@@ -788,32 +875,12 @@ def disciplinas_turma(request, turma_id):
 
 
 # ======================== PAINEL PROFESSOR ========================
-@login_required
-def painel_professor(request):
-    """Exibe o painel principal do professor."""
-    if not hasattr(request.user, "professor"):
-        return redirect("login")
-
-    professor = request.user.professor
-    foto_perfil_url = get_foto_perfil(request.user)
-    disciplinas = Disciplina.objects.filter(professor=professor).select_related("turma")
-
-    anos_disponiveis_qs = (
-        Turma.objects.filter(disciplina__professor=professor)
-        .values_list("ano", flat=True)
-        .distinct()
-        .order_by("-ano")
-    )
-    anos_disponiveis = list(anos_disponiveis_qs)
-    ano_atual = datetime.now().year
-
-    if not anos_disponiveis:
-        anos_disponiveis = [ano_atual]
-
-    ano_filtro = request.GET.get("ano")
-    if ano_filtro:
+def _get_ano_filtro_professor(request, anos_disponiveis, ano_atual):
+    """Resolve o ano de filtro para o painel do professor, usando sessão como fallback."""
+    ano_param = request.GET.get("ano")
+    if ano_param:
         try:
-            ano_filtro = int(ano_filtro)
+            ano_filtro = int(ano_param)
             request.session["ano_filtro_professor"] = ano_filtro
         except ValueError:
             ano_filtro = request.session.get("ano_filtro_professor", ano_atual)
@@ -821,57 +888,72 @@ def painel_professor(request):
         ano_filtro = request.session.get("ano_filtro_professor", ano_atual)
 
     if ano_filtro not in anos_disponiveis:
-        anos_disponiveis.append(ano_filtro)
-        anos_disponiveis.sort(reverse=True)
+        anos_disponiveis = sorted(anos_disponiveis + [ano_filtro], reverse=True)
 
-    disciplinas_filtradas = disciplinas.filter(turma__ano=ano_filtro)
-    total_disciplinas = disciplinas_filtradas.count()
-    total_turmas = disciplinas_filtradas.values("turma").distinct().count()
+    return ano_filtro, anos_disponiveis
 
-    alunos_ids = set()
-    for disciplina in disciplinas_filtradas:
-        alunos_turma = Aluno.objects.filter(turma=disciplina.turma).values_list("id", flat=True)
-        alunos_ids.update(alunos_turma)
-    total_alunos = len(alunos_ids)
 
+def _acumular_notas_professor(disciplinas_filtradas):
+    """Calcula totais e detalhes de notas para as disciplinas de um professor."""
     total_notas_possiveis = 0
     total_notas_lancadas = 0
-
+    alunos_ids = set()
     disciplinas_detalhadas = []
+
     for disciplina in disciplinas_filtradas:
         alunos_count = Aluno.objects.filter(turma=disciplina.turma).count()
+        alunos_ids.update(
+            Aluno.objects.filter(turma=disciplina.turma).values_list("id", flat=True)
+        )
         notas_disciplina = Nota.objects.filter(disciplina=disciplina)
         total_notas_possiveis += alunos_count * 4
 
-        notas_lancadas_disc = 0
-        for nota in notas_disciplina:
-            if nota.nota1 is not None:
-                notas_lancadas_disc += 1
-                total_notas_lancadas += 1
-            if nota.nota2 is not None:
-                notas_lancadas_disc += 1
-                total_notas_lancadas += 1
-            if nota.nota3 is not None:
-                notas_lancadas_disc += 1
-                total_notas_lancadas += 1
-            if nota.nota4 is not None:
-                notas_lancadas_disc += 1
-                total_notas_lancadas += 1
-
+        notas_lancadas_disc = sum(_contar_notas_lancadas(n) for n in notas_disciplina)
+        total_notas_lancadas += notas_lancadas_disc
         notas_possiveis_disc = alunos_count * 4
-        disciplinas_detalhadas.append(
-            {
-                "disciplina": disciplina,
-                "alunos_count": alunos_count,
-                "notas_lancadas": notas_lancadas_disc,
-                "notas_possiveis": notas_possiveis_disc,
-                "percentual": int(
-                    (notas_lancadas_disc / notas_possiveis_disc * 100)
-                    if notas_possiveis_disc > 0
-                    else 0
-                ),
-            }
-        )
+
+        disciplinas_detalhadas.append({
+            "disciplina": disciplina,
+            "alunos_count": alunos_count,
+            "notas_lancadas": notas_lancadas_disc,
+            "notas_possiveis": notas_possiveis_disc,
+            "percentual": int(
+                (notas_lancadas_disc / notas_possiveis_disc * 100)
+                if notas_possiveis_disc > 0 else 0
+            ),
+        })
+
+    return total_notas_possiveis, total_notas_lancadas, len(alunos_ids), disciplinas_detalhadas
+
+
+@login_required
+def painel_professor(request):
+    """Exibe o painel principal do professor."""
+    if not hasattr(request.user, "professor"):
+        return redirect("login")
+
+    professor = request.user.professor
+    ano_atual = datetime.now().year
+    disciplinas = Disciplina.objects.filter(
+        professor=professor
+    ).select_related("turma")
+
+    anos_disponiveis = list(
+        Turma.objects.filter(disciplina__professor=professor)
+        .values_list("ano", flat=True).distinct().order_by("-ano")
+    ) or [ano_atual]
+
+    ano_filtro, anos_disponiveis = _get_ano_filtro_professor(
+        request, anos_disponiveis, ano_atual
+    )
+    disciplinas_filtradas = disciplinas.filter(turma__ano=ano_filtro)
+
+    (
+        total_notas_possiveis,
+        total_notas_lancadas,
+        total_alunos,
+        disciplinas_detalhadas,
+    ) = _acumular_notas_professor(disciplinas_filtradas)
 
     return render(
         request,
@@ -879,13 +961,13 @@ def painel_professor(request):
         {
             "professor": professor,
             "nome_exibicao": professor.nome_completo,
-            "total_disciplinas": total_disciplinas,
-            "total_turmas": total_turmas,
+            "total_disciplinas": disciplinas_filtradas.count(),
+            "total_turmas": disciplinas_filtradas.values("turma").distinct().count(),
             "total_alunos": total_alunos,
             "total_notas_lancadas": total_notas_lancadas,
             "total_notas_possiveis": total_notas_possiveis,
             "disciplinas_detalhadas": disciplinas_detalhadas,
-            "foto_perfil_url": foto_perfil_url,
+            "foto_perfil_url": get_foto_perfil(request.user),
             "agora": datetime.now(),
             "calendario": gerar_calendario(),
             "anos_disponiveis": anos_disponiveis,
@@ -902,57 +984,37 @@ def disciplinas_professor(request):
 
     professor = request.user.professor
     foto_perfil_url = get_foto_perfil(request.user)
+    ano_atual = datetime.now().year
 
     turmas_ids = (
         Disciplina.objects.filter(professor=professor)
-        .values_list("turma_id", flat=True)
-        .distinct()
+        .values_list("turma_id", flat=True).distinct()
     )
-
-    anos_disponiveis_qs = (
+    anos_disponiveis = list(
         Turma.objects.filter(id__in=turmas_ids)
-        .values_list("ano", flat=True)
-        .distinct()
-        .order_by("-ano")
+        .values_list("ano", flat=True).distinct().order_by("-ano")
+    ) or [ano_atual]
+
+    ano_filtro, anos_disponiveis = _get_ano_filtro_professor(
+        request, anos_disponiveis, ano_atual
     )
-    anos_disponiveis = list(anos_disponiveis_qs)
-    ano_atual = datetime.now().year
-
-    if not anos_disponiveis:
-        anos_disponiveis = [ano_atual]
-
-    ano_filtro = request.GET.get("ano")
-    if ano_filtro:
-        try:
-            ano_filtro = int(ano_filtro)
-            request.session["ano_filtro_professor"] = ano_filtro
-        except ValueError:
-            ano_filtro = request.session.get("ano_filtro_professor", ano_atual)
-    else:
-        ano_filtro = request.session.get("ano_filtro_professor", ano_atual)
-
-    if ano_filtro not in anos_disponiveis:
-        anos_disponiveis.append(ano_filtro)
-        anos_disponiveis.sort(reverse=True)
-
     turmas = Turma.objects.filter(id__in=turmas_ids, ano=ano_filtro).order_by("nome")
 
     query = request.GET.get("q", "")
     if query:
         turmas = turmas.filter(nome__icontains=query)
 
-    turmas_detalhadas = []
-    for turma in turmas:
-        disciplinas_da_turma = Disciplina.objects.filter(turma=turma, professor=professor)
-        alunos_count = Aluno.objects.filter(turma=turma).count()
-        turmas_detalhadas.append(
-            {
-                "turma": turma,
-                "disciplinas_count": disciplinas_da_turma.count(),
-                "alunos_count": alunos_count,
-                "turno_display": turma.get_turno_display(),
-            }
-        )
+    turmas_detalhadas = [
+        {
+            "turma": turma,
+            "disciplinas_count": Disciplina.objects.filter(
+                turma=turma, professor=professor
+            ).count(),
+            "alunos_count": Aluno.objects.filter(turma=turma).count(),
+            "turno_display": turma.get_turno_display(),
+        }
+        for turma in turmas
+    ]
 
     return render(
         request,
@@ -981,34 +1043,12 @@ def visualizar_grade_professor(request, turma_id):
         messages.error(request, "Você não leciona nenhuma disciplina nesta turma.")
         return redirect("disciplinas_professor")
 
-    turno_key = turma.turno.lower().replace("ã", "a").replace("á", "a")
-    horarios = HORARIOS.get(turno_key, [])
-    grade_formatada = None
-
-    try:
-        grade_obj = GradeHorario.objects.get(turma=turma)
-
-        if horarios and grade_obj.dados:
-            grade_formatada = {}
-            for i, horario in enumerate(horarios):
-                grade_formatada[horario] = {
-                    dia: (
-                        grade_obj.dados.get(dia, [])[i]
-                        if i < len(grade_obj.dados.get(dia, []))
-                        else ""
-                    )
-                    for dia in ["segunda", "terca", "quarta", "quinta", "sexta"]
-                }
-
-    except GradeHorario.DoesNotExist:
-        grade_formatada = None
-
     return render(
         request,
         "professor/visualizar_grade_professor.html",
         {
             "turma": turma,
-            "grade_horario": grade_formatada,
+            "grade_horario": _get_grade_formatada(turma),
             "disciplinas_professor": disciplinas_prof,
         },
     )
@@ -1022,7 +1062,9 @@ def visualizar_grade_professor(request, turma_id):
 def lancar_nota(request, disciplina_id):
     """Lança notas dos alunos em uma disciplina."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
-    alunos = Aluno.objects.filter(turma_id=disciplina.turma_id).order_by("nome_completo")
+    alunos = Aluno.objects.filter(
+        turma_id=disciplina.turma_id
+    ).order_by("nome_completo")
 
     if request.method == "POST":
         for aluno in alunos:
@@ -1051,19 +1093,34 @@ def lancar_nota(request, disciplina_id):
     notas_dict = {
         n.aluno_id: n for n in Nota.objects.filter(disciplina_id=disciplina.id)
     }
-
     return render(
         request,
         "professor/lancar_nota.html",
-        {
-            "disciplina": disciplina,
-            "alunos": alunos,
-            "notas_dict": notas_dict,
-        },
+        {"disciplina": disciplina, "alunos": alunos, "notas_dict": notas_dict},
     )
 
 
 # ======================== PAINEL ALUNO ========================
+def _coletar_notas_aluno(aluno, disciplinas):
+    """Coleta disciplinas com notas e totais para o painel do aluno."""
+    disciplinas_com_notas = []
+    soma_medias = 0
+    total_com_media = 0
+    total_lancadas = 0
+
+    for disciplina in disciplinas:
+        nota = Nota.objects.filter(aluno=aluno, disciplina=disciplina).first()
+        if nota:
+            total_lancadas += _contar_notas_lancadas(nota)
+        disciplinas_com_notas.append({"disciplina": disciplina, "nota": nota})
+        if nota and nota.media is not None:
+            soma_medias += nota.media
+            total_com_media += 1
+
+    media_geral = soma_medias / total_com_media if total_com_media > 0 else None
+    return disciplinas_com_notas, media_geral, total_lancadas
+
+
 @login_required
 def painel_aluno(request):
     """Exibe o painel do aluno com notas e grade horária."""
@@ -1072,91 +1129,14 @@ def painel_aluno(request):
 
     aluno = request.user.aluno
     disciplinas = Disciplina.objects.filter(turma=aluno.turma)
+    total_possiveis = disciplinas.count() * 4
 
-    disciplinas_com_notas = []
-    soma_medias = 0
-    total_disciplinas_com_media = 0
-    total_notas_lancadas = 0
-    total_notas_possiveis = disciplinas.count() * 4
-
-    tem_reprovacao = False
-    tem_recuperacao = False
-    todas_aprovadas = True
-
-    for disciplina in disciplinas:
-        nota = Nota.objects.filter(aluno=aluno, disciplina=disciplina).first()
-
-        if nota:
-            if nota.nota1 is not None:
-                total_notas_lancadas += 1
-            if nota.nota2 is not None:
-                total_notas_lancadas += 1
-            if nota.nota3 is not None:
-                total_notas_lancadas += 1
-            if nota.nota4 is not None:
-                total_notas_lancadas += 1
-
-        disciplinas_com_notas.append({"disciplina": disciplina, "nota": nota})
-
-        if nota and nota.media:
-            soma_medias += nota.media
-            total_disciplinas_com_media += 1
-
-            if nota.media < 4:
-                tem_reprovacao = True
-                todas_aprovadas = False
-            elif nota.media < 6:
-                tem_recuperacao = True
-                todas_aprovadas = False
-        else:
-            todas_aprovadas = False
-
-    media_geral = (
-        soma_medias / total_disciplinas_com_media
-        if total_disciplinas_com_media > 0
-        else None
+    disciplinas_com_notas, media_geral, total_lancadas = _coletar_notas_aluno(
+        aluno, disciplinas
     )
-
-    if total_notas_lancadas == total_notas_possiveis and total_notas_possiveis > 0:
-        if tem_reprovacao:
-            situacao_geral = "Reprovado"
-            situacao_classe = "reprovado"
-        elif tem_recuperacao:
-            situacao_geral = "Recuperação"
-            situacao_classe = "recuperacao"
-        elif todas_aprovadas:
-            situacao_geral = "Aprovado"
-            situacao_classe = "aprovado"
-        else:
-            situacao_geral = "--"
-            situacao_classe = ""
-    else:
-        situacao_geral = "--"
-        situacao_classe = ""
-
-    grade_formatada = None
-    try:
-        grade_obj = GradeHorario.objects.get(turma=aluno.turma)
-        turno_key = aluno.turma.turno.lower().replace("ã", "a").replace("á", "a")
-        horarios = HORARIOS.get(turno_key, [])
-
-        if horarios and grade_obj.dados:
-            grade_formatada = {}
-            for i, horario in enumerate(horarios):
-                grade_formatada[horario] = {
-                    dia: (
-                        grade_obj.dados.get(dia, [])[i]
-                        if i < len(grade_obj.dados.get(dia, []))
-                        else ""
-                    )
-                    for dia in ["segunda", "terca", "quarta", "quinta", "sexta"]
-                }
-
-    except GradeHorario.DoesNotExist:
-        grade_formatada = None
-
-    calendario = gerar_calendario()
-    agora = datetime.now()
+    situacao_geral, situacao_classe = _calcular_situacao_aluno(
+        disciplinas_com_notas, total_lancadas, total_possiveis
+    )
 
     return render(
         request,
@@ -1165,13 +1145,13 @@ def painel_aluno(request):
             "aluno": aluno,
             "disciplinas_com_notas": disciplinas_com_notas,
             "media_geral": media_geral,
-            "total_notas_lancadas": total_notas_lancadas,
-            "total_notas_possiveis": total_notas_possiveis,
+            "total_notas_lancadas": total_lancadas,
+            "total_notas_possiveis": total_possiveis,
             "situacao_geral": situacao_geral,
             "situacao_classe": situacao_classe,
-            "grade_horario": grade_formatada,
-            "calendario": calendario,
-            "agora": agora,
+            "grade_horario": _get_grade_formatada(aluno.turma),
+            "calendario": gerar_calendario(),
+            "agora": datetime.now(),
         },
     )
 
@@ -1183,84 +1163,33 @@ def grade_horaria(request, turma_id):
     turma = get_object_or_404(Turma, id=turma_id)
     grade, _ = GradeHorario.objects.get_or_create(turma=turma)
 
-    dias = ["segunda", "terca", "quarta", "quinta", "sexta"]
-    nomes_dias = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"]
-
-    turno_key = turma.turno.lower().replace("ã", "a").replace("á", "a")
-    horarios = HORARIOS.get(turno_key, [])
-
-    if not horarios:
-        messages.error(request, "Turno inválido nesta turma.")
-        horarios = [""]
+    turno_key = _get_turno_key(turma.turno)
+    horarios = HORARIOS.get(turno_key, []) or [""]
 
     if not grade.dados:
-        grade.dados = {dia: [""] * len(horarios) for dia in dias}
+        grade.dados = {dia: [""] * len(horarios) for dia in DIAS_SEMANA}
         grade.save()
 
     disciplinas_da_turma = Disciplina.objects.filter(turma=turma)
-
-    ocupados = {}
-    outras_grades = GradeHorario.objects.exclude(turma=turma)
-
-    for g in outras_grades:
-        for dia in dias:
-            lista = g.dados.get(dia, [])
-            for idx, nome_disciplina in enumerate(lista):
-                if not nome_disciplina:
-                    continue
-                try:
-                    disc = Disciplina.objects.get(nome=nome_disciplina, turma=g.turma)
-                except Disciplina.DoesNotExist:
-                    continue
-                prof_id = disc.professor_id
-                if prof_id not in ocupados:
-                    ocupados[prof_id] = set()
-                ocupados[prof_id].add((dia, idx))
+    ocupados = _get_ocupados_por_professor(turma)
 
     if request.method == "POST":
-        new_data = {dia: [] for dia in dias}
-        for i in range(len(horarios)):
-            for dia in dias:
-                campo = f"{dia}_{i}"
-                valor = request.POST.get(campo, "")
-                new_data[dia].append(valor)
-
-        grade.dados = new_data
+        grade.dados = {
+            dia: [request.POST.get(f"{dia}_{i}", "") for i in range(len(horarios))]
+            for dia in DIAS_SEMANA
+        }
         grade.save()
         messages.success(request, "Grade horária atualizada com sucesso!")
         return redirect("grade_horaria", turma_id=turma.id)
 
-    rows = []
-    for i, horario in enumerate(horarios):
-        row = {"index": i, "horario": horario, "cols": []}
-
-        for dia in dias:
-            lista = grade.dados.get(dia, [])
-            valor = lista[i] if isinstance(lista, list) and i < len(lista) else ""
-
-            disciplinas_disponiveis = []
-            for d in disciplinas_da_turma:
-                prof_id = d.professor_id
-                if prof_id in ocupados and (dia, i) in ocupados[prof_id]:
-                    continue
-                disciplinas_disponiveis.append(d)
-
-            row["cols"].append(
-                {
-                    "dia": dia,
-                    "valor": valor,
-                    "disciplinas": disciplinas_disponiveis,
-                }
-            )
-
-        rows.append(row)
+    rows = _build_grade_rows(grade, horarios, disciplinas_da_turma, ocupados)
 
     return render(
         request,
         "core/grade_horaria.html",
         {
             "turma": turma,
-            "nomes_dias": nomes_dias,
+            "nomes_dias": NOMES_DIAS,
             "rows": rows,
             "disciplinas": disciplinas_da_turma,
         },
