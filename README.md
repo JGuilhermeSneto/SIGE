@@ -273,7 +273,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Acesse no navegador: **http://127.0.0.1:8000/**
+Acesse no navegador: **http://127.0.0.1:8000/login/**
 
 O painel administrativo está disponível em: **http://127.0.0.1:8000/admin/**
 
