@@ -1,160 +1,335 @@
-# 🏫 SIGE - Sistema de Gestão Escolar
+<div align="center">
 
-![Banner](https://img.shields.io/badge/Django-4.x-green) ![Python](https://img.shields.io/badge/Python-3.11-blue) ![CI/CD](https://img.shields.io/badge/CI/CD-GitHub%20Actions-yellow)
+# 🏫 SIGE
+### Sistema Integrado de Gestão Escolar
 
-O **SIGE** é um sistema completo de gestão escolar desenvolvido em **Django**, com foco em **qualidade de código**, **testes automatizados** e **integração contínua (CI/CD)**.
+<br/>
 
-Este README serve como guia completo para configurar, desenvolver, testar e manter o projeto.
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-4.x-092E20?style=for-the-badge&logo=django&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
+![Flake8](https://img.shields.io/badge/Flake8-10.00%2F10-brightgreen?style=for-the-badge)
+![MyPy](https://img.shields.io/badge/MyPy-typed-blue?style=for-the-badge)
+![License](https://img.shields.io/badge/Licença-MIT-yellow?style=for-the-badge)
+
+<br/>
+
+> **SIGE** é um sistema web completo para gestão escolar, desenvolvido com **Django** e focado em qualidade de código, cobertura de testes e entrega contínua via **GitHub Actions**.
+
+<br/>
+
+[🚀 Instalação](#-instalação-passo-a-passo) · [📂 Estrutura](#-estrutura-do-projeto) · [🧪 Testes](#-testes-e-qualidade-de-código) · [🔄 CI/CD](#-cicd--github-actions) · [📖 Referências](#-referências)
+
+</div>
 
 ---
 
-## 🌐 Tecnologias e Bibliotecas
+## 📌 Sobre o Projeto
 
-| Categoria           | Tecnologias/Bibliotecas | Função                               |
-|--------------------|-----------------------|-------------------------------------|
-| Linguagem           | `Python 3.11`           | Backend                              |
-| Framework           | ``Django 4.x ``           | Estrutura MVC                        |
-| Banco de Dados      | `PostgreSQL / MySQL`    | Armazenamento de dados               |
-| Front-end           | `HTML, CSS, JAVASCRIPT` | Interface do usuário                 |
-| Testes              | `pytest`, `unittest`  | Testes unitários e integração        |
-| Linting             | `flake8`, `pylint`    | Verificação de estilo e qualidade    |
-| Tipagem             | `mypy`                | Verificação estática de tipos        |
-| Controle de Versão  | ``Git, GitHub``           | Versionamento de código              |
-| CI/CD               | ``GitHub Actions``        | Workflow automático                  |
+O **SIGE** (Sistema Integrado de Gestão Escolar) é uma aplicação web construída para facilitar a administração de uma instituição de ensino. Ele centraliza o gerenciamento de **alunos**, **professores**, **turmas**, **disciplinas**, **notas** e **usuários** em um único sistema, com controle de acesso por perfis (Super Admin, Gestor, Professor e Aluno).
+
+### ✨ Principais funcionalidades
+
+| Módulo | Descrição |
+|---|---|
+| 🔐 **Autenticação** | Login, logout e reset de senha por e-mail |
+| 👤 **Perfis de Acesso** | Super Admin, Gestor, Professor e Aluno |
+| 🎓 **Gestão de Alunos** | Cadastro, edição, exclusão e listagem |
+| 👨‍🏫 **Gestão de Professores** | Cadastro com área de atuação, edição e exclusão |
+| 🏛️ **Gestão de Turmas** | Criação de turmas com grade horária |
+| 📚 **Gestão de Disciplinas** | Disciplinas vinculadas a turmas e professores |
+| 📝 **Lançamento de Notas** | Professores lançam notas por disciplina |
+| 🗂️ **Gestão de Gestores** | Cadastro e controle de gestores institucionais |
+| 🖼️ **Foto de Perfil** | Upload e remoção de foto de perfil |
+| 📊 **Painéis por perfil** | Painel personalizado para cada tipo de usuário |
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+```
+SIGE usa um stack moderno e bem definido para garantir qualidade e manutenibilidade.
+```
+
+| Camada | Tecnologia | Versão | Finalidade |
+|---|---|---|---|
+| Linguagem | Python | 3.11 | Backend |
+| Framework | Django | 4.x | MVC / ORM / Auth |
+| Banco de Dados | PostgreSQL / MySQL | — | Persistência |
+| Front-end | HTML + CSS + JavaScript | — | Interface do usuário |
+| Linting de estilo | Flake8 | latest | Conformidade com PEP8 |
+| Análise de qualidade | Pylint | latest | Métricas de código |
+| Tipagem estática | Mypy + django-stubs | latest | Checagem de tipos |
+| Testes | Pytest / Django TestCase | — | Unitários e integração |
+| CI/CD | GitHub Actions | — | Automação de pipeline |
+| Controle de versão | Git + GitHub | — | Versionamento |
 
 ---
 
 ## 📂 Estrutura do Projeto
 
-```text
+```
 SIGE/
-├─ core/                   # Aplicação principal
-│  ├─ admin.py             # Registro de models no admin
-│  ├─ forms.py             # Formulários do Django
-│  ├─ models.py            # Models (Banco de Dados)
-│  ├─ views.py             # Views e lógica de negócio
-│  ├─ urls.py              # Rotas da aplicação
-│  ├─ templatetags/        # Tags customizadas do Django
-│  └─ tests.py             # Testes unitários
-├─ notas/                  # Configurações do Django
-│  ├─ settings.py          # Configurações do projeto
-│  ├─ urls.py              # URLs globais
-│  └─ wsgi.py              # Servidor WSGI
-├─ migrations/             # Migrations do banco
-├─ requirements.txt        # Dependências do projeto
-└─ README.md               # Documentação
+│
+├── core/                        # 🔑 Aplicação principal do sistema
+│   ├── migrations/              # Histórico de alterações no banco
+│   ├── templatetags/            # Tags customizadas para templates
+│   │   ├── get_item.py
+│   │   ├── dict_get.py
+│   │   └── custom_tags.py
+│   ├── admin.py                 # Registro de models no painel admin
+│   ├── apps.py                  # Configuração do app
+│   ├── forms.py                 # Formulários Django
+│   ├── models.py                # Models (entidades do banco)
+│   ├── urls.py                  # Rotas do app core
+│   └── views.py                 # Lógica de negócio e views
+│
+├── notas/                       # ⚙️ Configurações globais do projeto
+│   ├── settings.py              # Configurações gerais
+│   ├── urls.py                  # Roteamento global
+│   ├── wsgi.py                  # Entry point WSGI (produção)
+│   └── asgi.py                  # Entry point ASGI (async)
+│
+├── .github/
+│   └── workflows/               # 🔄 Pipelines de CI/CD
+│
+├── manage.py                    # CLI do Django
+├── requirements.txt             # Dependências do projeto
+├── pyproject.toml               # Configuração de ferramentas (mypy, etc.)
+└── README.md                    # Documentação
 ```
 
+---
 
+## 🔐 Perfis de Acesso
 
-## ⚙️ Configuração do Ambiente
-1️⃣ Clonar o repositório
+O SIGE possui quatro níveis de acesso com permissões distintas:
+
 ```
-git clone https://github.com/SEU_USUARIO/SIGE.git
+┌─────────────────────────────────────────────────────────┐
+│                     HIERARQUIA DE ACESSO                │
+│                                                         │
+│   👑 Super Admin  →  Acesso total ao sistema            │
+│   🏛️  Gestor       →  Gerencia turmas, alunos e profs.  │
+│   👨‍🏫 Professor    →  Lança notas e visualiza turmas     │
+│   🎓 Aluno        →  Consulta notas e grade horária     │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🧪 Testes e Qualidade de Código
+
+O projeto mantém um padrão rigoroso de qualidade. Todos os comandos abaixo podem ser executados localmente ou são disparados automaticamente no CI/CD.
+
+```bash
+# Executa todos os testes Django
+python manage.py test
+
+# Verifica conformidade com PEP8 (nota atual: 10.00/10 ✅)
+flake8 .
+
+# Análise estática de qualidade
+pylint **/*.py
+
+# Verificação de tipos estáticos
+mypy .
+```
+
+> 💡 **Dica:** Sempre rode `flake8 .` e `mypy .` antes de qualquer commit para evitar falhas no pipeline.
+
+---
+
+## 🔄 CI/CD — GitHub Actions
+
+A cada `push` ou `pull request` para a branch `main`, o pipeline é ativado automaticamente:
+
+```
+┌────────────┐     ┌────────────┐     ┌────────────┐     ┌────────────┐
+│  git push  │────▶│  flake8 .  │────▶│  mypy .    │────▶│  pytest    │
+└────────────┘     └────────────┘     └────────────┘     └────────────┘
+                        ✅ PEP8            ✅ Tipos          ✅ Testes
+                        
+                   Se qualquer etapa falhar → ❌ merge bloqueado
+```
+
+Os workflows ficam em `.github/workflows/` e garantem que nenhum código com erros seja integrado à branch principal.
+
+---
+
+## 🚀 Instalação — Passo a Passo
+
+### Pré-requisitos
+
+Antes de começar, certifique-se de ter instalado:
+
+- [Python 3.11+](https://www.python.org/downloads/)
+- [Git](https://git-scm.com/)
+- [PostgreSQL](https://www.postgresql.org/) (ou MySQL)
+
+---
+
+### 1️⃣ Clone o repositório
+
+```bash
+git clone https://github.com/JGuilhermeSneto/SIGE.git
 cd SIGE
 ```
 
-## 2️⃣ Criar ambiente virtual
-# Linux / macOS
+---
 
-```
+### 2️⃣ Crie e ative o ambiente virtual
+
+**Linux / macOS:**
+```bash
 python -m venv venv
 source venv/bin/activate
 ```
-# Windows
-```
+
+**Windows:**
+```bash
 python -m venv venv
 venv\Scripts\activate
 ```
 
-## 3️⃣ Instalar dependências
-```
+---
+
+### 3️⃣ Instale as dependências
+
+```bash
 pip install -r requirements.txt
 ```
 
-## 4️⃣ Configurar banco de dados
+Para as ferramentas de desenvolvimento (linting, tipagem):
 
-Abra settings.py e configure PostgreSQL ou MySQL:
+```bash
+pip install flake8 pylint mypy django-stubs
 ```
+
+---
+
+### 4️⃣ Configure as variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+SECRET_KEY=sua-chave-secreta-aqui
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+# Banco de dados
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=sige_db
+DB_USER=seu_usuario
+DB_PASSWORD=sua_senha
+DB_HOST=localhost
+DB_PORT=5432
+```
+
+---
+
+### 5️⃣ Configure o banco de dados
+
+Abra `notas/settings.py` e ajuste o bloco `DATABASES`:
+
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  # ou mysql
-        'NAME': 'nome_do_banco',
-        'USER': 'usuario',
-        'PASSWORD': 'senha',
+        'NAME': 'sige_db',
+        'USER': 'seu_usuario',
+        'PASSWORD': 'sua_senha',
         'HOST': 'localhost',
-        'PORT': '5432',  # ou 3306 para MySQL
+        'PORT': '5432',  # MySQL: '3306'
     }
 }
 ```
 
-## 5️⃣ Criar migrations e aplicar no banco
-```
+---
+
+### 6️⃣ Execute as migrations
+
+```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
+---
 
-## 6️⃣ Criar superusuário Django
-```
+### 7️⃣ Crie o superusuário
+
+```bash
 python manage.py createsuperuser
 ```
-## 7️⃣ Rodar servidor local
 
-```
+> Siga as instruções no terminal para definir nome de usuário, e-mail e senha.
+
+---
+
+### 8️⃣ Inicie o servidor de desenvolvimento
+
+```bash
 python manage.py runserver
 ```
-Acesse http://127.0.0.1:8000/
- para testar o projeto.
 
- 
-## 🧪 Testes e Comandos Úteis
+Acesse no navegador: **http://127.0.0.1:8000/**
 
-Todos os comandos podem ser executados **localmente no terminal** ou **automaticamente pelo workflow do GitHub Actions**.
+O painel administrativo está disponível em: **http://127.0.0.1:8000/admin/**
 
-| Comando                  | Função                           | Onde Executar       |
-|--------------------------|---------------------------------|------------------|
-| `python manage.py test`  | Executa todos os testes Django  | Local / Workflow CI |
-| `flake8 .`               | Verifica estilo PEP8            | Local / Workflow CI |
-| `pylint **/*.py`         | Análise de qualidade do código  | Local / Workflow CI |
-| `mypy .`                 | Checagem de tipos estáticos     | Local / Workflow CI |
+---
 
-## 💡 Dicas:
+## 📋 Comandos Úteis
 
-Sempre rode flake8 e pylint antes de commitar.
-Testes locais ajudam a detectar problemas antes do CI.
+| Comando | Descrição |
+|---|---|
+| `python manage.py runserver` | Inicia o servidor local |
+| `python manage.py makemigrations` | Gera novas migrations |
+| `python manage.py migrate` | Aplica migrations no banco |
+| `python manage.py createsuperuser` | Cria usuário administrador |
+| `python manage.py test` | Executa os testes |
+| `flake8 .` | Verifica estilo PEP8 |
+| `mypy .` | Checa tipos estáticos |
+| `pylint **/*.py` | Analisa qualidade do código |
 
-## ⚡ Git e GitHub
+---
 
-| Comando | Função |
-|---------|--------|
-| `git status` | Verifica alterações não commitadas |
-| `git add .` | Adiciona alterações para commit |
-| `git commit -m "mensagem"` | Cria commit com mensagem |
-| `git push origin main` | Envia alterações para GitHub |
-| `git pull` | Atualiza branch local com remoto |
+## 🔗 Git — Fluxo de Trabalho
 
-
-## 🔄 Workflow CI/CD - GitHub Actions
-Sempre que uma branch é atualizada ou um pull request é criado, o workflow é ativado.
-O workflow executa:
+```bash
+git status                        # Verifica arquivos alterados
+git add .                         # Adiciona tudo ao stage
+git commit -m "feat: descrição"   # Commita com mensagem clara
+git push origin main              # Envia para o GitHub
+git pull                          # Atualiza branch local
 ```
-flake8 .          # Validação de estilo
-pylint **/*.py    # Qualidade do código
-mypy .            # Checagem de tipos
-python manage.py test  # Execução de testes Django
-```
-Se algum comando falhar, o workflow marca como failed no GitHub, impedindo merge até corrigir.
 
-Visualização do Workflow:
-```
-Push / PR → GitHub Actions → Linting & Tests → Status OK / Failed
-```
+> 💡 Use mensagens de commit no padrão [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `refactor:`, etc.
+
+---
 
 ## 📖 Referências
 
-- [Django Documentation](https://docs.djangoproject.com/)
-- [Flake8](https://flake8.pycqa.org/en/latest/)
-- [Pylint](https://pylint.pycqa.org/en/latest/)
-- [MyPy](https://mypy.readthedocs.io/en/stable/)
-- [GitHub Actions](https://docs.github.com/en/actions)
+- 📘 [Django Documentation](https://docs.djangoproject.com/)
+- 🔍 [Flake8 Docs](https://flake8.pycqa.org/en/latest/)
+- 🔬 [Pylint Docs](https://pylint.pycqa.org/en/latest/)
+- 🔷 [MyPy Docs](https://mypy.readthedocs.io/en/stable/)
+- ⚙️ [GitHub Actions Docs](https://docs.github.com/en/actions)
+- 🐘 [PostgreSQL Docs](https://www.postgresql.org/docs/)
+
+---
+
+## 🎓 Autores
+
+Este projeto foi desenvolvido com dedicação por:
+
+| | Nome |
+|---|---|
+| 👤 | **Suanderson Santos Silva** |
+| 👤 | **João Batista do Nascimento Júnior** |
+| 👤 | **José Guilherme da Silva Neto** |
+| 👤 | **Israel Cipriano Ribeiro Filho** |
+| 👤 | **Pedro Henrique de Oliveira Querino** |
+| 👤 | **Vanessa Gonçalves** |
+
+---
