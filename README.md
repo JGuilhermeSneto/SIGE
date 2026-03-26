@@ -49,7 +49,7 @@ O **SIGE** (Sistema Integrado de Gestão Escolar) é uma aplicação web constru
 ## 🛠️ Tecnologias Utilizadas
 
 ```
-SIGE usa um stack moderno e bem definido para garantir qualidade e manutenibilidade.
+SIGE usa um stack moderno e bem definido para garantir qualidade e manutenção.
 ```
 
 | Camada | Tecnologia | Versão | Finalidade |
