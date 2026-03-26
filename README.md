@@ -7,7 +7,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Django](https://img.shields.io/badge/Django-4.x-092E20?style=for-the-badge&logo=django&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Flake8](https://img.shields.io/badge/Flake8-10.00%2F10-brightgreen?style=for-the-badge)
 ![MyPy](https://img.shields.io/badge/MyPy-typed-blue?style=for-the-badge)
@@ -56,7 +56,7 @@ SIGE usa um stack moderno e bem definido para garantir qualidade e manutenção.
 |---|---|---|---|
 | Linguagem | Python | 3.11 | Backend |
 | Framework | Django | 4.x | MVC / ORM / Auth |
-| Banco de Dados | PostgreSQL / MySQL | — | Persistência |
+| Banco de Dados | MySQL | 8.0 | Persistência |
 | Front-end | HTML + CSS + JavaScript | — | Interface do usuário |
 | Linting de estilo | Flake8 | latest | Conformidade com PEP8 |
 | Análise de qualidade | Pylint | latest | Métricas de código |
@@ -166,7 +166,7 @@ Antes de começar, certifique-se de ter instalado:
 
 - [Python 3.11+](https://www.python.org/downloads/)
 - [Git](https://git-scm.com/)
-- [PostgreSQL](https://www.postgresql.org/) (ou MySQL)
+- [MySQL 8.0+](https://dev.mysql.com/downloads/) (ou MariaDB)
 
 ---
 
@@ -219,12 +219,12 @@ DEBUG=True
 ALLOWED_HOSTS=127.0.0.1,localhost
 
 # Banco de dados
-DB_ENGINE=django.db.backends.postgresql
+DB_ENGINE=django.db.backends.mysql
 DB_NAME=sige_db
 DB_USER=seu_usuario
 DB_PASSWORD=sua_senha
 DB_HOST=localhost
-DB_PORT=5432
+DB_PORT=3306
 ```
 
 ---
@@ -236,12 +236,12 @@ Abra `notas/settings.py` e ajuste o bloco `DATABASES`:
 ```python
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',  # ou mysql
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'sige_db',
         'USER': 'seu_usuario',
         'PASSWORD': 'sua_senha',
         'HOST': 'localhost',
-        'PORT': '5432',  # MySQL: '3306'
+        'PORT': '3306',
     }
 }
 ```
@@ -315,7 +315,7 @@ git pull                          # Atualiza branch local
 - 🔬 [Pylint Docs](https://pylint.pycqa.org/en/latest/)
 - 🔷 [MyPy Docs](https://mypy.readthedocs.io/en/stable/)
 - ⚙️ [GitHub Actions Docs](https://docs.github.com/en/actions)
-- 🐘 [PostgreSQL Docs](https://www.postgresql.org/docs/)
+- 🐬 [MySQL Docs](https://dev.mysql.com/doc/)
 
 ---
 
@@ -333,3 +333,9 @@ Este projeto foi desenvolvido com dedicação por:
 | 👤 | **Vanessa Gonçalves** |
 
 ---
+
+<div align="center">
+
+Fork de [Henrriks/SIGE](https://github.com/Henrriks/SIGE) · Desenvolvido com ❤️ por seus autores
+
+</div>
