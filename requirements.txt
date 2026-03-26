@@ -5,6 +5,8 @@ click==8.3.1
 colorama==0.4.6
 dill==0.4.1
 Django==5.0.5
+django-stubs==6.0.1
+django-stubs-ext==6.0.1
 flake8==7.3.0
 isort==8.0.1
 mccabe==0.7.0
@@ -24,4 +26,6 @@ python-dotenv==1.2.2
 pytokens==0.4.1
 sqlparse==0.5.5
 tomlkit==0.14.0
+types-PyYAML==6.0.12.20250915
+typing_extensions==4.15.0
 tzdata==2025.3
