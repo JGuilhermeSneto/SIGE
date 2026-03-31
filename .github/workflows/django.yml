@@ -30,11 +30,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2️⃣ Instala Python 3.11
+    # 2️⃣ Instala Python 3.12
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     # 3️⃣ Instala dependências do projeto
     - name: Install dependencies
