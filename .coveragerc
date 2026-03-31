@@ -1,0 +1,7 @@
+[run]
+omit =
+    */migrations/*
+    */venv/*
+    manage.py
+    notas/asgi.py
+    notas/wsgi.py

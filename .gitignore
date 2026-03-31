@@ -5,6 +5,11 @@ __pycache__/
 *.pyc
 
 
+# Scripts e arquivos de exportação
+codigo_completo.pdf
+exportar_codigo.py
+codigo_completo.txt
+
 # Python
 __pycache__/
 *.pyc
