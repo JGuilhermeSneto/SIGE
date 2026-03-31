@@ -4,6 +4,12 @@ db.sqlite3
 __pycache__/
 *.pyc
 
+.coverage
+htmlcov/
+.flake8
+.pylintrc
+.coveragerc
+pyproject.toml
 
 # Scripts e arquivos de exportação
 codigo_completo.pdf
