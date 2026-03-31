@@ -1,7 +1,7 @@
 <div align="center">
 
 # 🏫 SIGE
-### Sistema Integrado de Gestão Escolar
+### Sistema Integrado de Gestão Escolar - Em progresso...
 
 <br/>
 
