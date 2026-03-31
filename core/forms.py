@@ -7,21 +7,21 @@ criação/atualização automática do usuário (User) vinculado.
 """
 
 from django import forms
-from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate, get_user_model
-from .models import Professor, Aluno, Gestor
+from django.core.exceptions import ValidationError
+
+from .models import Aluno, Gestor, Professor
 
 User = get_user_model()
 
 
 # ======================= Login =======================
 
+
 class LoginForm(forms.Form):
     """Formulário de autenticação por e-mail e senha."""
 
-    email = forms.EmailField(
-        widget=forms.EmailInput(attrs={"placeholder": "E-mail"})
-    )
+    email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
     )
@@ -55,6 +55,7 @@ class LoginForm(forms.Form):
 
 # ======================= BaseForm com request =======================
 
+
 class BaseModelForm(forms.ModelForm):
     """Form base que aceita o objeto request no __init__."""
 
@@ -66,22 +67,21 @@ class BaseModelForm(forms.ModelForm):
 
 # ======================= Professor =======================
 
+
 class ProfessorForm(forms.ModelForm):
     """Formulário de cadastro e edição de Professor."""
 
     # Campo de e-mail separado pois pertence ao modelo User, não ao Professor
     email = forms.EmailField(
-        required=True,
-        widget=forms.EmailInput(attrs={"placeholder": "E-mail"})
+        required=True, widget=forms.EmailInput(attrs={"placeholder": "E-mail"})
     )
     # Senha e confirmação são opcionais na edição; obrigatórios apenas no cadastro
     senha = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
+        required=False, widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
     )
     senha_confirmacao = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"})
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}),
     )
 
     class Meta:
@@ -89,10 +89,21 @@ class ProfessorForm(forms.ModelForm):
 
         model = Professor
         fields = [
-            "nome_completo", "cpf", "telefone", "data_nascimento",
-            "cep", "bairro", "logradouro", "numero", "complemento",
-            "estado", "cidade", "formacao", "especializacao",
-            "area_atuacao", "foto"
+            "nome_completo",
+            "cpf",
+            "telefone",
+            "data_nascimento",
+            "cep",
+            "bairro",
+            "logradouro",
+            "numero",
+            "complemento",
+            "estado",
+            "cidade",
+            "formacao",
+            "especializacao",
+            "area_atuacao",
+            "foto",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -107,36 +118,20 @@ class ProfessorForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Preencher e-mail se o User vinculado ao Professor já existir
-        if (
-            self.instance.pk
-            and hasattr(self.instance, "user")
-            and self.instance.user
-        ):
+        if self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
             self.fields["email"].initial = self.instance.user.email
 
         # Adiciona placeholders para melhor UX nos campos de dados pessoais/endereço
-        self.fields["cpf"].widget.attrs.update(
-            {"placeholder": "000.000.000-00"}
-        )
-        self.fields["telefone"].widget.attrs.update(
-            {"placeholder": "(00) 00000-0000"}
-        )
-        self.fields["cep"].widget.attrs.update(
-            {"placeholder": "00000-000"}
-        )
-        self.fields["cidade"].widget.attrs.update(
-            {"placeholder": "Digite a cidade"}
-        )
-        self.fields["bairro"].widget.attrs.update(
-            {"placeholder": "Digite o bairro"}
-        )
+        self.fields["cpf"].widget.attrs.update({"placeholder": "000.000.000-00"})
+        self.fields["telefone"].widget.attrs.update({"placeholder": "(00) 00000-0000"})
+        self.fields["cep"].widget.attrs.update({"placeholder": "00000-000"})
+        self.fields["cidade"].widget.attrs.update({"placeholder": "Digite a cidade"})
+        self.fields["bairro"].widget.attrs.update({"placeholder": "Digite o bairro"})
         self.fields["logradouro"].widget.attrs.update(
             {"placeholder": "Digite o logradouro"}
         )
         self.fields["numero"].widget.attrs.update({"placeholder": "Número"})
-        self.fields["complemento"].widget.attrs.update(
-            {"placeholder": "Complemento"}
-        )
+        self.fields["complemento"].widget.attrs.update({"placeholder": "Complemento"})
 
     def clean_email(self):
         """
@@ -149,11 +144,7 @@ class ProfessorForm(forms.ModelForm):
         qs = User.objects.filter(email=email)
 
         # Na edição, ignora o e-mail atual do próprio usuário
-        if (
-            self.instance.pk
-            and hasattr(self.instance, "user")
-            and self.instance.user
-        ):
+        if self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
             qs = qs.exclude(pk=self.instance.user.pk)
 
         if qs.exists():
@@ -179,21 +170,13 @@ class ProfessorForm(forms.ModelForm):
             if senha != senha_conf:
                 raise ValidationError("As senhas não coincidem.")
             if len(senha) < 6:
-                raise ValidationError(
-                    "A senha deve ter ao menos 6 caracteres."
-                )
+                raise ValidationError("A senha deve ter ao menos 6 caracteres.")
             if not any(c.isupper() for c in senha):
-                raise ValidationError(
-                    "A senha deve ter ao menos uma letra maiúscula."
-                )
+                raise ValidationError("A senha deve ter ao menos uma letra maiúscula.")
             if not any(c.islower() for c in senha):
-                raise ValidationError(
-                    "A senha deve ter ao menos uma letra minúscula."
-                )
+                raise ValidationError("A senha deve ter ao menos uma letra minúscula.")
             if not any(c.isdigit() for c in senha):
-                raise ValidationError(
-                    "A senha deve ter ao menos um número."
-                )
+                raise ValidationError("A senha deve ter ao menos um número.")
 
         return cleaned_data
 
@@ -219,9 +202,7 @@ class ProfessorForm(forms.ModelForm):
             # Cria um novo User com username baseado no nome completo
             username = professor.nome_completo.replace(" ", "").lower()
             user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=senha or None
+                username=username, email=email, password=senha or None
             )
             professor.user = user
 
@@ -232,22 +213,21 @@ class ProfessorForm(forms.ModelForm):
 
 # ======================= Aluno =======================
 
+
 class AlunoForm(BaseModelForm):
     """Formulário de cadastro e edição de Aluno."""
 
     # E-mail pertence ao User vinculado, não ao modelo Aluno
     email = forms.EmailField(
-        required=True,
-        widget=forms.EmailInput(attrs={"placeholder": "E-mail"})
+        required=True, widget=forms.EmailInput(attrs={"placeholder": "E-mail"})
     )
     # Senha opcional para permitir edição sem redefinir a senha
     senha = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
+        required=False, widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
     )
     senha_confirmacao = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"})
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}),
     )
 
     class Meta:
@@ -256,20 +236,30 @@ class AlunoForm(BaseModelForm):
         model = Aluno
         fields = [
             # Dados pessoais
-            "nome_completo", "cpf", "data_nascimento", "naturalidade",
+            "nome_completo",
+            "cpf",
+            "data_nascimento",
+            "naturalidade",
             # Contato
             "telefone",
             # Filiação
-            "filiacao1", "filiacao2",
+            "filiacao1",
+            "filiacao2",
             # Escolar
             "turma",
             # Endereço
-            "cep", "estado", "cidade", "bairro",
-            "logradouro", "numero", "complemento",
+            "cep",
+            "estado",
+            "cidade",
+            "bairro",
+            "logradouro",
+            "numero",
+            "complemento",
             # Necessidades especiais
-            "possui_necessidade_especial", "descricao_necessidade",
+            "possui_necessidade_especial",
+            "descricao_necessidade",
             # Outros
-            "foto"
+            "foto",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -284,28 +274,16 @@ class AlunoForm(BaseModelForm):
         super().__init__(*args, **kwargs)
 
         # Preencher e-mail se já existir User vinculado ao Aluno
-        if (
-            self.instance.pk
-            and hasattr(self.instance, "user")
-            and self.instance.user
-        ):
+        if self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
             self.fields["email"].initial = self.instance.user.email
 
         # Placeholders para campos de dados pessoais e endereço
-        self.fields["cpf"].widget.attrs.update(
-            {"placeholder": "000.000.000-00"}
-        )
-        self.fields["telefone"].widget.attrs.update(
-            {"placeholder": "(00) 00000-0000"}
-        )
-        self.fields["cep"].widget.attrs.update(
-            {"placeholder": "00000-000"}
-        )
+        self.fields["cpf"].widget.attrs.update({"placeholder": "000.000.000-00"})
+        self.fields["telefone"].widget.attrs.update({"placeholder": "(00) 00000-0000"})
+        self.fields["cep"].widget.attrs.update({"placeholder": "00000-000"})
         self.fields["cidade"].widget.attrs.update({"placeholder": "Cidade"})
         self.fields["bairro"].widget.attrs.update({"placeholder": "Bairro"})
-        self.fields["logradouro"].widget.attrs.update(
-            {"placeholder": "Rua / Avenida"}
-        )
+        self.fields["logradouro"].widget.attrs.update({"placeholder": "Rua / Avenida"})
         self.fields["numero"].widget.attrs.update({"placeholder": "Número"})
 
     def clean_email(self):
@@ -319,11 +297,7 @@ class AlunoForm(BaseModelForm):
         qs = User.objects.filter(email=email)
 
         # Exclui o próprio usuário ao editar
-        if (
-            self.instance.pk
-            and hasattr(self.instance, "user")
-            and self.instance.user
-        ):
+        if self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
             qs = qs.exclude(pk=self.instance.user.pk)
 
         if qs.exists():
@@ -349,15 +323,11 @@ class AlunoForm(BaseModelForm):
             if senha != senha_conf:
                 raise ValidationError("As senhas não coincidem.")
             if len(senha) < 6:
-                raise ValidationError(
-                    "A senha deve ter no mínimo 6 caracteres."
-                )
+                raise ValidationError("A senha deve ter no mínimo 6 caracteres.")
 
         # Necessidade especial requer descrição detalhada
         if possui_necessidade and not descricao:
-            raise ValidationError(
-                "Descreva a necessidade especial do aluno."
-            )
+            raise ValidationError("Descreva a necessidade especial do aluno.")
 
         return cleaned_data
 
@@ -383,9 +353,7 @@ class AlunoForm(BaseModelForm):
             # Cria novo User com username baseado no nome completo
             username = aluno.nome_completo.replace(" ", "").lower()
             user = User.objects.create_user(
-                username=username,
-                email=email,
-                password=senha or None
+                username=username, email=email, password=senha or None
             )
             aluno.user = user
 
@@ -397,27 +365,24 @@ class AlunoForm(BaseModelForm):
 
 # ======================= Gestor =======================
 
+
 class GestorForm(BaseModelForm):
     """Formulário de cadastro e edição de Gestor."""
 
     # Campos de senha opcionais para não forçar redefinição na edição
     senha = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
+        required=False, widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
     )
     senha_confirmacao = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"})
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}),
     )
 
     class Meta:
         """Configuração de modelo e campos do GestorForm."""
 
         model = Gestor
-        fields = [
-            "nome_completo", "cpf", "cargo",
-            "uf", "cidade", "endereco", "foto"
-        ]
+        fields = ["nome_completo", "cpf", "cargo", "uf", "cidade", "endereco", "foto"]
 
     def clean(self):
         """
@@ -434,9 +399,7 @@ class GestorForm(BaseModelForm):
             if senha != senha_conf:
                 raise ValidationError("As senhas não coincidem.")
             if senha and len(senha) < 6:
-                raise ValidationError(
-                    "A senha deve ter ao menos 6 caracteres."
-                )
+                raise ValidationError("A senha deve ter ao menos 6 caracteres.")
         return cleaned_data
 
     def save(self, commit=True):
@@ -458,9 +421,7 @@ class GestorForm(BaseModelForm):
                 # Cria novo User; e-mail vazio pois Gestor não exige e-mail
                 username = gestor.nome_completo.replace(" ", "").lower()
                 user = User.objects.create_user(
-                    username=username,
-                    email="",
-                    password=senha
+                    username=username, email="", password=senha
                 )
                 gestor.user = user
 
@@ -471,17 +432,12 @@ class GestorForm(BaseModelForm):
 
 # ======================= Editar Perfil =======================
 
+
 class EditarPerfilForm(forms.ModelForm):
     """Formulário para o usuário editar seu próprio perfil (e-mail e senha)."""
 
-    nova_senha = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput()
-    )
-    confirmar_senha = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput()
-    )
+    nova_senha = forms.CharField(required=False, widget=forms.PasswordInput())
+    confirmar_senha = forms.CharField(required=False, widget=forms.PasswordInput())
 
     class Meta:
         """Configuração de modelo e campos do EditarPerfilForm."""
@@ -496,9 +452,7 @@ class EditarPerfilForm(forms.ModelForm):
         Impede que outro usuário já cadastrado utilize o mesmo endereço.
         """
         email = self.cleaned_data.get("email")
-        if User.objects.filter(email=email).exclude(
-            pk=self.instance.pk
-        ).exists():
+        if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise ValidationError("Este e-mail já está em uso.")
         return email
 
@@ -517,8 +471,5 @@ class EditarPerfilForm(forms.ModelForm):
             if nova_senha != confirmar_senha:
                 raise ValidationError("As senhas não coincidem.")
             if nova_senha and len(nova_senha) < 6:
-                raise ValidationError(
-                    "A senha deve ter ao menos 6 caracteres."
-                )
+                raise ValidationError("A senha deve ter ao menos 6 caracteres.")
         return cleaned_data
-    

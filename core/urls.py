@@ -23,7 +23,9 @@ urlpatterns = [
     ),
     # ==================== PROFESSORES ====================
     path("professores/", views.listar_professores, name="listar_professores"),
-    path("professores/cadastrar/", views.cadastrar_professor, name="cadastrar_professor"),
+    path(
+        "professores/cadastrar/", views.cadastrar_professor, name="cadastrar_professor"
+    ),
     path(
         "professores/editar/<int:professor_id>/",
         views.editar_professor,

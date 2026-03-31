@@ -1,4 +1,5 @@
 """Views do módulo core do sistema SIGE."""
+
 import calendar
 from datetime import datetime
 
@@ -8,8 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import (AlunoForm, EditarPerfilForm, GestorForm,
-                    LoginForm, ProfessorForm)
+from .forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm
 from .models import Aluno, Disciplina, Gestor, GradeHorario, Nota, Professor, Turma
 
 # ======================== HORÁRIOS ========================
@@ -135,7 +135,8 @@ def _get_anos_filtro(anos_disponiveis, ano_param, ano_atual):
 def _contar_notas_lancadas(nota):
     """Conta quantas notas bimestrais foram lançadas em um objeto Nota."""
     return sum(
-        1 for campo in (nota.nota1, nota.nota2, nota.nota3, nota.nota4)
+        1
+        for campo in (nota.nota1, nota.nota2, nota.nota3, nota.nota4)
         if campo is not None
     )
 
@@ -241,13 +242,19 @@ def _build_grade_rows(grade, horarios, disciplinas_da_turma, ocupados):
             lista = grade.dados.get(dia, [])
             valor = lista[i] if isinstance(lista, list) and i < len(lista) else ""
             disponiveis = [
-                d for d in disciplinas_da_turma
+                d
+                for d in disciplinas_da_turma
                 if (d.professor_id not in ocupados)
                 or (dia, i) not in ocupados[d.professor_id]
             ]
             cols.append({"dia": dia, "valor": valor, "disciplinas": disponiveis})
         rows.append({"index": i, "horario": horario, "cols": cols})
     return rows
+
+
+def _is_gestor_ou_super(user):
+    """Atalho para verificar se o usuário é superusuário ou gestor."""
+    return user.is_superuser or hasattr(user, "gestor")
 
 
 # ======================== LOGIN / LOGOUT ========================
@@ -294,13 +301,11 @@ def painel_super(request):
             "usuario": request.user,
             "nome_exibicao": get_nome_exibicao(request.user),
             "total_professores": (
-                Professor.objects.filter(
-                    disciplina__turma__in=turmas
-                ).distinct().count()
+                Professor.objects.filter(disciplina__turma__in=turmas)
+                .distinct()
+                .count()
             ),
-            "total_alunos": (
-                Aluno.objects.filter(turma__in=turmas).distinct().count()
-            ),
+            "total_alunos": (Aluno.objects.filter(turma__in=turmas).distinct().count()),
             "total_turmas": turmas.count(),
             "total_disciplinas": (
                 Disciplina.objects.filter(turma__in=turmas).distinct().count()
@@ -517,9 +522,7 @@ def editar_gestor(request, gestor_id):
     user = gestor.user
 
     if request.method == "POST":
-        form = GestorForm(
-            request.POST, request.FILES, instance=gestor, request=request
-        )
+        form = GestorForm(request.POST, request.FILES, instance=gestor, request=request)
         if form.is_valid():
             form.save()
             nova_senha = form.cleaned_data.get("senha")
@@ -594,9 +597,7 @@ def editar_aluno(request, aluno_id):
     else:
         form = AlunoForm(instance=aluno, request=request)
 
-    return render(
-        request, "aluno/cadastrar_aluno.html", {"form": form, "aluno": aluno}
-    )
+    return render(request, "aluno/cadastrar_aluno.html", {"form": form, "aluno": aluno})
 
 
 @login_required
@@ -747,6 +748,7 @@ def visualizar_disciplinas(request, disciplina_id):
             "alunos": alunos,
             "notas": notas,
             "notas_dict": notas_dict,
+            "is_gestor_ou_super": _is_gestor_ou_super(request.user),  # ✅ CORRIGIDO
         },
     )
 
@@ -870,6 +872,7 @@ def disciplinas_turma(request, turma_id):
             "turma": turma,
             "disciplinas_detalhadas": disciplinas_detalhadas,
             "foto_perfil_url": foto_perfil_url,
+            "is_gestor_ou_super": _is_gestor_ou_super(user),  # ✅ CORRIGIDO
         },
     )
 
@@ -912,18 +915,26 @@ def _acumular_notas_professor(disciplinas_filtradas):
         total_notas_lancadas += notas_lancadas_disc
         notas_possiveis_disc = alunos_count * 4
 
-        disciplinas_detalhadas.append({
-            "disciplina": disciplina,
-            "alunos_count": alunos_count,
-            "notas_lancadas": notas_lancadas_disc,
-            "notas_possiveis": notas_possiveis_disc,
-            "percentual": int(
-                (notas_lancadas_disc / notas_possiveis_disc * 100)
-                if notas_possiveis_disc > 0 else 0
-            ),
-        })
+        disciplinas_detalhadas.append(
+            {
+                "disciplina": disciplina,
+                "alunos_count": alunos_count,
+                "notas_lancadas": notas_lancadas_disc,
+                "notas_possiveis": notas_possiveis_disc,
+                "percentual": int(
+                    (notas_lancadas_disc / notas_possiveis_disc * 100)
+                    if notas_possiveis_disc > 0
+                    else 0
+                ),
+            }
+        )
 
-    return total_notas_possiveis, total_notas_lancadas, len(alunos_ids), disciplinas_detalhadas
+    return (
+        total_notas_possiveis,
+        total_notas_lancadas,
+        len(alunos_ids),
+        disciplinas_detalhadas,
+    )
 
 
 @login_required
@@ -934,13 +945,13 @@ def painel_professor(request):
 
     professor = request.user.professor
     ano_atual = datetime.now().year
-    disciplinas = Disciplina.objects.filter(
-        professor=professor
-    ).select_related("turma")
+    disciplinas = Disciplina.objects.filter(professor=professor).select_related("turma")
 
     anos_disponiveis = list(
         Turma.objects.filter(disciplina__professor=professor)
-        .values_list("ano", flat=True).distinct().order_by("-ano")
+        .values_list("ano", flat=True)
+        .distinct()
+        .order_by("-ano")
     ) or [ano_atual]
 
     ano_filtro, anos_disponiveis = _get_ano_filtro_professor(
@@ -988,11 +999,14 @@ def disciplinas_professor(request):
 
     turmas_ids = (
         Disciplina.objects.filter(professor=professor)
-        .values_list("turma_id", flat=True).distinct()
+        .values_list("turma_id", flat=True)
+        .distinct()
     )
     anos_disponiveis = list(
         Turma.objects.filter(id__in=turmas_ids)
-        .values_list("ano", flat=True).distinct().order_by("-ano")
+        .values_list("ano", flat=True)
+        .distinct()
+        .order_by("-ano")
     ) or [ano_atual]
 
     ano_filtro, anos_disponiveis = _get_ano_filtro_professor(
@@ -1062,9 +1076,9 @@ def visualizar_grade_professor(request, turma_id):
 def lancar_nota(request, disciplina_id):
     """Lança notas dos alunos em uma disciplina."""
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
-    alunos = Aluno.objects.filter(
-        turma_id=disciplina.turma_id
-    ).order_by("nome_completo")
+    alunos = Aluno.objects.filter(turma_id=disciplina.turma_id).order_by(
+        "nome_completo"
+    )
 
     if request.method == "POST":
         for aluno in alunos:
@@ -1096,7 +1110,12 @@ def lancar_nota(request, disciplina_id):
     return render(
         request,
         "professor/lancar_nota.html",
-        {"disciplina": disciplina, "alunos": alunos, "notas_dict": notas_dict},
+        {
+            "disciplina": disciplina,
+            "alunos": alunos,
+            "notas_dict": notas_dict,
+            "is_gestor_ou_super": _is_gestor_ou_super(request.user),  # ✅ CORRIGIDO
+        },
     )
 
 
@@ -1192,5 +1211,6 @@ def grade_horaria(request, turma_id):
             "nomes_dias": NOMES_DIAS,
             "rows": rows,
             "disciplinas": disciplinas_da_turma,
+            "is_gestor_ou_super": _is_gestor_ou_super(request.user),  # ✅ CORRIGIDO
         },
     )

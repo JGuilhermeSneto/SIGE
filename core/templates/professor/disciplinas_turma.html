@@ -60,9 +60,10 @@
 
                             <div class="progresso-container">
                                 <div class="progresso-barra">
-                                    <div class="progresso-preenchido" style="width: {{ item.percentual }}%"></div>
+                                    <!-- CORREÇÃO: floatformat:0 evita vírgula decimal em pt-BR -->
+                                    <div class="progresso-preenchido" data-percentual="{{ item.percentual|floatformat:0 }}"></div>
                                 </div>
-                                <span class="progresso-texto">{{ item.percentual }}% completo</span>
+                                <span class="progresso-texto">{{ item.percentual|floatformat:0 }}% completo</span>
                             </div>
 
                             <div class="disciplina-acoes">
@@ -83,5 +84,10 @@
 
     </main>
 </div>
+<script>
+    document.querySelectorAll('.progresso-preenchido').forEach(function(el) {
+        el.style.width = el.getAttribute('data-percentual') + '%';
+    });
+</script>
 
 {% endblock %}

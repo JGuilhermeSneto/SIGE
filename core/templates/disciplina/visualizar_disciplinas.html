@@ -13,14 +13,14 @@
     <div class="header-detalhes">
 
         <!-- BOTÃO VOLTAR -->
-        {% if disciplina and disciplina.turma %}
-        <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
-            <i class="fas fa-arrow-left"></i>
-        </a>
+        {% if is_gestor_ou_super %}
+            <a class="voltar" href="{% url 'listar_turmas' %}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i>
+            </a>
         {% else %}
-        <a class="voltar" href="{% url 'listar_turmas' %}" class="btn-voltar">
-            <i class="fas fa-arrow-left"></i>
-        </a>
+            <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i>
+            </a>
         {% endif %}
 
         <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
@@ -43,14 +43,12 @@
         </div>
 
         <div class="botoes">
-            <!-- Lançar Notas -->
             {% if disciplina.id %}
             <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">Notas</a>
             {% else %}
             <a class="nota" href="#" onclick="alert('Disciplina não definida!'); return false;">Notas</a>
             {% endif %}
 
-            <!-- Frequência (ajuste a URL caso tenha view específica) -->
             <a class="disciplina" href="#">Frequência</a>
         </div>
     </div>
@@ -97,7 +95,6 @@
     </div>
 </main>
 
-<!-- SCRIPT PARA IMPRIMIR -->
 <script>
     document.querySelector('.imprimir').addEventListener('click', e => {
         e.preventDefault();

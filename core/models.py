@@ -11,9 +11,9 @@ Define as entidades principais do sistema escolar:
 - GradeHorario: grade de horários semanais de uma Turma em formato JSON.
 """
 
-from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
+from django.db import models
 
 # Obtém o modelo de User ativo no projeto (respeita AUTH_USER_MODEL)
 # E5142: nunca importar diretamente de django.contrib.auth.models
@@ -24,13 +24,33 @@ User = get_user_model()
 
 # Siglas de todos os estados brasileiros usadas como opções de UF
 UF_CHOICES = [
-    ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
-    ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
-    ("GO", "GO"), ("MA", "MA"), ("MT", "MT"), ("MS", "MS"),
-    ("MG", "MG"), ("PA", "PA"), ("PB", "PB"), ("PR", "PR"),
-    ("PE", "PE"), ("PI", "PI"), ("RJ", "RJ"), ("RN", "RN"),
-    ("RS", "RS"), ("RO", "RO"), ("RR", "RR"), ("SC", "SC"),
-    ("SP", "SP"), ("SE", "SE"), ("TO", "TO"),
+    ("AC", "AC"),
+    ("AL", "AL"),
+    ("AP", "AP"),
+    ("AM", "AM"),
+    ("BA", "BA"),
+    ("CE", "CE"),
+    ("DF", "DF"),
+    ("ES", "ES"),
+    ("GO", "GO"),
+    ("MA", "MA"),
+    ("MT", "MT"),
+    ("MS", "MS"),
+    ("MG", "MG"),
+    ("PA", "PA"),
+    ("PB", "PB"),
+    ("PR", "PR"),
+    ("PE", "PE"),
+    ("PI", "PI"),
+    ("RJ", "RJ"),
+    ("RN", "RN"),
+    ("RS", "RS"),
+    ("RO", "RO"),
+    ("RR", "RR"),
+    ("SC", "SC"),
+    ("SP", "SP"),
+    ("SE", "SE"),
+    ("TO", "TO"),
 ]
 
 # Turnos disponíveis para uma Turma
@@ -51,6 +71,7 @@ CARGO_CHOICES = [
 
 # ===================== MODELS =====================
 
+
 class Turma(models.Model):
     """
     Representa uma turma escolar.
@@ -62,11 +83,7 @@ class Turma(models.Model):
     nome = models.CharField(max_length=100)
 
     # Turno em que a turma estuda; padrão: manhã
-    turno = models.CharField(
-        max_length=20,
-        choices=TURNO_CHOICES,
-        default="manha"
-    )
+    turno = models.CharField(max_length=20, choices=TURNO_CHOICES, default="manha")
 
     # Ano letivo da turma, ex.: 2024
     ano = models.IntegerField()
@@ -86,9 +103,7 @@ class Professor(models.Model):
 
     # Vínculo de autenticação: ao deletar o User, o Professor é removido
     user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="professor"
+        User, on_delete=models.CASCADE, related_name="professor"
     )
 
     # ===== Dados pessoais =====
@@ -117,11 +132,7 @@ class Professor(models.Model):
     area_atuacao = models.CharField(max_length=255, blank=True)
 
     # ===== Foto de perfil =====
-    foto = models.ImageField(
-        upload_to="fotos/professores/",
-        null=True,
-        blank=True
-    )
+    foto = models.ImageField(upload_to="fotos/professores/", null=True, blank=True)
 
     # ===== Auditoria =====
     criado_em = models.DateTimeField(auto_now_add=True)
@@ -141,11 +152,7 @@ class Aluno(models.Model):
     """
 
     # Vínculo de autenticação: ao deletar o User, o Aluno é removido
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="aluno"
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aluno")
 
     # ===== Dados pessoais =====
     nome_completo = models.CharField(max_length=255)
@@ -154,7 +161,7 @@ class Aluno(models.Model):
     cpf = models.CharField(
         max_length=14,
         unique=True,
-        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")]
+        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
     )
     data_nascimento = models.DateField(null=True, blank=True)
 
@@ -168,25 +175,13 @@ class Aluno(models.Model):
 
     # ===== Filiação =====
     # Nome do primeiro responsável legal (pai, mãe ou responsável)
-    filiacao1 = models.CharField(
-        "Nome do responsável 1",
-        max_length=255,
-        blank=True
-    )
+    filiacao1 = models.CharField("Nome do responsável 1", max_length=255, blank=True)
     # Nome do segundo responsável legal (opcional)
-    filiacao2 = models.CharField(
-        "Nome do responsável 2",
-        max_length=255,
-        blank=True
-    )
+    filiacao2 = models.CharField("Nome do responsável 2", max_length=255, blank=True)
 
     # ===== Escolar =====
     # Turma à qual o aluno está matriculado; obrigatório
-    turma = models.ForeignKey(
-        Turma,
-        on_delete=models.CASCADE,
-        related_name="alunos"
-    )
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="alunos")
 
     # ===== Endereço =====
     cep = models.CharField(max_length=9, blank=True)
@@ -205,11 +200,7 @@ class Aluno(models.Model):
     descricao_necessidade = models.TextField(blank=True)
 
     # ===== Outros =====
-    foto = models.ImageField(
-        upload_to="fotos/alunos/",
-        null=True,
-        blank=True
-    )
+    foto = models.ImageField(upload_to="fotos/alunos/", null=True, blank=True)
 
     # ===== Auditoria =====
     criado_em = models.DateTimeField(auto_now_add=True)
@@ -240,16 +231,10 @@ class Disciplina(models.Model):
     nome = models.CharField(max_length=100)
 
     # Professor responsável por ministrar esta disciplina
-    professor = models.ForeignKey(
-        "Professor",
-        on_delete=models.CASCADE
-    )
+    professor = models.ForeignKey("Professor", on_delete=models.CASCADE)
 
     # Turma para a qual a disciplina é ministrada
-    turma = models.ForeignKey(
-        "Turma",
-        on_delete=models.CASCADE
-    )
+    turma = models.ForeignKey("Turma", on_delete=models.CASCADE)
 
     def __str__(self):
         """Retorna nome da disciplina e a turma associada."""
@@ -291,8 +276,7 @@ class Nota(models.Model):
         Retorna None se nenhuma nota tiver sido lançada.
         """
         notas = [
-            n for n in [self.nota1, self.nota2, self.nota3, self.nota4]
-            if n is not None
+            n for n in [self.nota1, self.nota2, self.nota3, self.nota4] if n is not None
         ]
         return sum(notas) / len(notas) if notas else None
 
@@ -309,11 +293,7 @@ class Gestor(models.Model):
     """
 
     # Vínculo de autenticação: ao deletar o User, o Gestor é removido
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="gestor"
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
 
     # ===== Dados pessoais =====
     nome_completo = models.CharField(max_length=150)
@@ -322,7 +302,7 @@ class Gestor(models.Model):
     cpf = models.CharField(
         max_length=14,
         unique=True,
-        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")]
+        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
     )
 
     # Cargo exercido pelo gestor na instituição
@@ -334,11 +314,7 @@ class Gestor(models.Model):
     endereco = models.CharField(max_length=255)
 
     # ===== Foto de perfil =====
-    foto = models.ImageField(
-        upload_to="fotos/gestores/",
-        null=True,
-        blank=True
-    )
+    foto = models.ImageField(upload_to="fotos/gestores/", null=True, blank=True)
 
     # ===== Auditoria =====
     criado_em = models.DateTimeField(auto_now_add=True)
@@ -374,4 +350,3 @@ class GradeHorario(models.Model):
     def __str__(self):
         """Retorna identificação da grade vinculada à turma."""
         return f"Grade Horária - {self.turma}"
-    

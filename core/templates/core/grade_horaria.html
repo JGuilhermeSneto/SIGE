@@ -14,11 +14,20 @@
     <!-- CABEÇALHO -->
     <div class="header-docentes">
 
-        <a href="{% url 'disciplinas_turma' turma.id %}">
-            <button class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </a>
+        <!-- ✅ CORRIGIDO: botão voltar direciona conforme o perfil -->
+        {% if is_gestor_ou_super %}
+            <a href="{% url 'listar_turmas' %}">
+                <button class="btn-voltar">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </a>
+        {% else %}
+            <a href="{% url 'visualizar_grade_professor' turma.id %}">
+                <button class="btn-voltar">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+            </a>
+        {% endif %}
 
         <h1 class="titulo-pagina">
             Grade Horária
