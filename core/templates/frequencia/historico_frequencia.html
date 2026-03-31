@@ -1,0 +1,381 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Histórico de Frequência — {{ disciplina.nome }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .freq-header {
+    background: var(--cor-primaria, #1e3a5f);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .freq-header__left h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: .25rem;
+  }
+
+  .freq-header__left p {
+    font-size: .88rem;
+    opacity: .75;
+  }
+
+  .freq-header__action a {
+    background: rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.3);
+    color: #fff;
+    border-radius: 8px;
+    padding: .5rem 1.1rem;
+    font-size: .84rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    transition: background .2s;
+  }
+
+  .freq-header__action a:hover { background: rgba(255,255,255,.25); }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    font-size: .82rem;
+    color: #6b7280;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumb a { color: #6b7280; text-decoration: none; transition: color .2s; }
+  .breadcrumb a:hover { color: var(--cor-primaria, #1e3a5f); }
+  .breadcrumb i { font-size: .65rem; color: #9ca3af; }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  }
+
+  .stat-card__icon {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; flex-shrink: 0;
+  }
+
+  .stat-card__icon--blue  { background: #eff6ff; color: #2563eb; }
+  .stat-card__icon--green { background: #dcfce7; color: #16a34a; }
+  .stat-card__icon--red   { background: #fee2e2; color: #dc2626; }
+  .stat-card__icon--yellow{ background: #fefce8; color: #ca8a04; }
+
+  .stat-card__val { font-size: 1.5rem; font-weight: 700; color: #111827; line-height: 1; }
+  .stat-card__lbl { font-size: .75rem; color: #6b7280; margin-top: .15rem; }
+
+  /* Tabela de histórico */
+  .hist-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    overflow: hidden;
+  }
+
+  .hist-card__head {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px 100px;
+    align-items: center;
+    padding: .85rem 1.4rem;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    gap: 1rem;
+  }
+
+  .hist-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px 100px;
+    align-items: center;
+    padding: .9rem 1.4rem;
+    border-bottom: 1px solid #f3f4f6;
+    gap: 1rem;
+    transition: background .15s;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .hist-row:last-child { border-bottom: none; }
+  .hist-row:hover { background: #f0f9ff; }
+
+  .hist-row__date {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    font-weight: 600;
+    font-size: .9rem;
+    color: #111827;
+  }
+
+  .hist-row__date i { color: #2563eb; font-size: .85rem; }
+
+  .hist-row__num {
+    font-size: .9rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .hist-row__num--total   { color: #374151; }
+  .hist-row__num--present { color: #16a34a; }
+  .hist-row__num--absent  { color: #dc2626; }
+
+  /* Barra de percentual */
+  .pct-wrap {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+
+  .pct-bar {
+    flex: 1;
+    height: 6px;
+    background: #fee2e2;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .pct-bar__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: #16a34a;
+    transition: width .4s;
+  }
+
+  .pct-val {
+    font-size: .78rem;
+    font-weight: 700;
+    color: #374151;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  /* Vazio */
+  .empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: #9ca3af;
+  }
+
+  .empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: .75rem;
+    display: block;
+    color: #d1d5db;
+  }
+
+  .empty-state p { font-size: .92rem; margin-bottom: 1.1rem; }
+
+  .btn-nova-chamada {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    background: var(--cor-primaria, #1e3a5f);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 9px;
+    padding: .6rem 1.3rem;
+    font-size: .85rem;
+    font-weight: 600;
+    transition: opacity .2s;
+  }
+
+  .btn-nova-chamada:hover { opacity: .85; }
+
+  /* Mensagens */
+  .msg-list { list-style: none; margin-bottom: 1rem; }
+  .msg-list li {
+    padding: .75rem 1rem; border-radius: 8px;
+    font-size: .88rem; font-weight: 500;
+    margin-bottom: .5rem;
+    display: flex; align-items: center; gap: .5rem;
+  }
+  .msg-list li.success { background: #dcfce7; color: #15803d; }
+  .msg-list li.error   { background: #fee2e2; color: #b91c1c; }
+
+  @media (max-width: 600px) {
+    .hist-card__head,
+    .hist-row { grid-template-columns: 1fr 60px 60px; }
+    .hist-card__head .col-total,
+    .hist-row .hist-row__num--total,
+    .hist-card__head .col-pct,
+    .hist-row .pct-wrap { display: none; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="{% url 'disciplinas_professor' %}"><i class="fa-solid fa-house"></i> Início</a>
+  <i class="fa-solid fa-chevron-right"></i>
+  <a href="{% url 'disciplinas_professor' %}">Minhas Turmas</a>
+  <i class="fa-solid fa-chevron-right"></i>
+  <span>Histórico — {{ disciplina.nome }}</span>
+</div>
+
+<!-- Header -->
+<div class="freq-header">
+  <div class="freq-header__left">
+    <h1><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Frequência</h1>
+    <p>{{ disciplina.nome }} &mdash; {{ disciplina.turma }}</p>
+  </div>
+  <div class="freq-header__action">
+    <a href="{% url 'lancar_chamada' disciplina.id %}">
+      <i class="fa-solid fa-plus"></i> Nova chamada
+    </a>
+  </div>
+</div>
+
+<!-- Mensagens -->
+{% if messages %}
+<ul class="msg-list">
+  {% for msg in messages %}
+  <li class="{{ msg.tags }}">
+    <i class="fa-solid {% if msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+    {{ msg }}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<!-- Estatísticas gerais -->
+{% if resumo_por_data %}
+{% with total_aulas=resumo_por_data|length %}
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-card__icon stat-card__icon--blue">
+      <i class="fa-solid fa-calendar-check"></i>
+    </div>
+    <div>
+      <div class="stat-card__val">{{ total_aulas }}</div>
+      <div class="stat-card__lbl">Aulas registradas</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__icon stat-card__icon--green">
+      <i class="fa-solid fa-circle-check"></i>
+    </div>
+    <div>
+      <div class="stat-card__val">
+        {% with total=0 %}
+          {% for r in resumo_por_data %}{{ r.presencas|add:0 }}{% endfor %}
+        {% endwith %}
+        —
+      </div>
+      <div class="stat-card__lbl">Total de presenças</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__icon stat-card__icon--red">
+      <i class="fa-solid fa-circle-xmark"></i>
+    </div>
+    <div>
+      <div class="stat-card__val">—</div>
+      <div class="stat-card__lbl">Total de faltas</div>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card__icon stat-card__icon--yellow">
+      <i class="fa-solid fa-users"></i>
+    </div>
+    <div>
+      <div class="stat-card__val">{{ resumo_por_data.0.total }}</div>
+      <div class="stat-card__lbl">Alunos na turma</div>
+    </div>
+  </div>
+</div>
+{% endwith %}
+
+<!-- Tabela -->
+<div class="hist-card">
+  <div class="hist-card__head">
+    <span>Data da aula</span>
+    <span style="text-align:center;" class="col-total">Total</span>
+    <span style="text-align:center;">Presentes</span>
+    <span style="text-align:center;">Faltas</span>
+    <span class="col-pct">% Presença</span>
+  </div>
+
+  {% for r in resumo_por_data %}
+  {% with pct=r.presencas|floatformat:0 %}
+  <a href="{% url 'lancar_chamada' disciplina.id %}?data={{ r.data|date:'Y-m-d' }}"
+     class="hist-row">
+    <div class="hist-row__date">
+      <i class="fa-solid fa-calendar-day"></i>
+      {{ r.data|date:"d/m/Y" }}
+      {% now "Y-m-d" as hoje %}
+      {% if r.data|date:"Y-m-d" == hoje %}
+        <span style="background:#dbeafe;color:#1d4ed8;font-size:.7rem;
+                     padding:.1rem .45rem;border-radius:999px;font-weight:700;">
+          Hoje
+        </span>
+      {% endif %}
+    </div>
+    <div class="hist-row__num hist-row__num--total">{{ r.total }}</div>
+    <div class="hist-row__num hist-row__num--present">{{ r.presencas }}</div>
+    <div class="hist-row__num hist-row__num--absent">{{ r.faltas }}</div>
+    <div class="pct-wrap">
+      {% if r.total > 0 %}
+        {% widthratio r.presencas r.total 100 as pct_calc %}
+        <div class="pct-bar">
+          <div class="pct-bar__fill" style="width:{{ pct_calc }}%"></div>
+        </div>
+        <span class="pct-val">{{ pct_calc }}%</span>
+      {% else %}
+        <span class="pct-val" style="color:#9ca3af;">—</span>
+      {% endif %}
+    </div>
+  </a>
+  {% endwith %}
+  {% endfor %}
+</div>
+
+{% else %}
+<!-- Estado vazio -->
+<div class="hist-card">
+  <div class="empty-state">
+    <i class="fa-solid fa-calendar-xmark"></i>
+    <p>Nenhuma chamada registrada para esta disciplina ainda.</p>
+    <a href="{% url 'lancar_chamada' disciplina.id %}" class="btn-nova-chamada">
+      <i class="fa-solid fa-plus"></i> Lançar primeira chamada
+    </a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -7,6 +7,7 @@ Define as entidades principais do sistema escolar:
 - Aluno: estudante vinculado a um User, com dados pessoais e escolares.
 - Disciplina: matéria ministrada por um Professor para uma Turma.
 - Nota: avaliações bimestrais de um Aluno em uma Disciplina.
+- Frequencia: presença ou ausência de um Aluno em uma aula de uma Disciplina.
 - Gestor: administrador escolar (diretor, vice, secretário, coordenador).
 - GradeHorario: grade de horários semanais de uma Turma em formato JSON.
 """
@@ -67,6 +68,82 @@ CARGO_CHOICES = [
     ("secretario", "Secretário"),
     ("coordenador", "Coordenador"),
 ]
+
+
+# ===================== MANAGERS =====================
+
+
+class FrequenciaQuerySet(models.QuerySet):
+    """
+    QuerySet customizado para o modelo Frequencia.
+
+    Centraliza filtros e cálculos de presença, evitando repetição
+    de lógica espalhada pela aplicação.
+    """
+
+    def presencas(self):
+        """Retorna apenas os registros em que o aluno esteve presente."""
+        return self.filter(presente=True)
+
+    def faltas(self):
+        """Retorna apenas os registros em que o aluno esteve ausente."""
+        return self.filter(presente=False)
+
+    def faltas_injustificadas(self):
+        """Retorna faltas sem nenhuma justificativa registrada."""
+        return self.filter(presente=False, justificativa="")
+
+    def faltas_justificadas(self):
+        """Retorna faltas que possuem justificativa registrada."""
+        return self.filter(presente=False).exclude(justificativa="")
+
+    def do_aluno(self, aluno):
+        """Filtra registros de um aluno específico."""
+        return self.filter(aluno=aluno)
+
+    def da_disciplina(self, disciplina):
+        """Filtra registros de uma disciplina específica."""
+        return self.filter(disciplina=disciplina)
+
+    def percentual_presenca(self):
+        """
+        Calcula o percentual de presença sobre o queryset atual.
+
+        Retorna None se o queryset estiver vazio.
+        Exemplo de uso:
+            Frequencia.objects.do_aluno(aluno).da_disciplina(disc).percentual_presenca()
+        """
+        total = self.count()
+        if not total:
+            return None
+        presencas = self.presencas().count()
+        return round((presencas / total) * 100, 2)
+
+
+class FrequenciaManager(models.Manager):
+    """Manager padrão do modelo Frequencia, retorna FrequenciaQuerySet."""
+
+    def get_queryset(self):
+        return FrequenciaQuerySet(self.model, using=self._db)
+
+    # Atalhos diretos no manager para conveniência
+    def presencas(self):
+        return self.get_queryset().presencas()
+
+    def faltas(self):
+        return self.get_queryset().faltas()
+
+    def faltas_injustificadas(self):
+        return self.get_queryset().faltas_injustificadas()
+
+    def faltas_justificadas(self):
+        return self.get_queryset().faltas_justificadas()
+
+    def do_aluno(self, aluno):
+        return self.get_queryset().do_aluno(aluno)
+
+    def da_disciplina(self, disciplina):
+        return self.get_queryset().da_disciplina(disciplina)
 
 
 # ===================== MODELS =====================
@@ -283,6 +360,76 @@ class Nota(models.Model):
     def __str__(self):
         """Retorna aluno e disciplina relacionados à nota."""
         return f"{self.aluno} - {self.disciplina}"
+
+
+class Frequencia(models.Model):
+    """
+    Registra a presença ou ausência de um Aluno em uma aula de uma Disciplina.
+
+    Cada registro representa um dia letivo específico. A combinação
+    aluno + disciplina + data é única, evitando duplicidade de chamada.
+
+    A porcentagem de presença é calculada via property a partir de todos
+    os registros do aluno na disciplina — sem necessidade de campo redundante.
+    """
+
+    # Manager customizado com QuerySet encadeável
+    objects = FrequenciaManager()
+
+    # ===== Vínculos =====
+
+    # Aluno cuja frequência está sendo registrada
+    aluno = models.ForeignKey(
+        "Aluno", on_delete=models.CASCADE, related_name="frequencias"
+    )
+
+    # Disciplina em que a chamada foi realizada
+    disciplina = models.ForeignKey(
+        "Disciplina", on_delete=models.CASCADE, related_name="frequencias"
+    )
+
+    # ===== Dados do registro =====
+
+    # Data do dia letivo em que a chamada foi realizada
+    data = models.DateField()
+
+    # True = presente; False = ausente
+    presente = models.BooleanField(default=True)
+
+    # Justificativa opcional para ausências (atestado, declaração etc.)
+    justificativa = models.TextField(blank=True)
+
+    class Meta:
+        """Metadados do modelo Frequencia."""
+
+        verbose_name = "Frequência"
+        verbose_name_plural = "Frequências"
+
+        # Garante que cada aluno tenha apenas um registro por disciplina por dia
+        unique_together = ("aluno", "disciplina", "data")
+
+        # Listagens ordenadas por data decrescente por padrão
+        ordering = ["-data"]
+
+    @property
+    def percentual_presenca(self):
+        """
+        Calcula o percentual de presença do aluno na disciplina.
+
+        Considera todos os registros do aluno nesta disciplina,
+        independentemente do bimestre. Retorna None se não houver
+        nenhum registro ainda.
+        """
+        return (
+            Frequencia.objects.do_aluno(self.aluno)
+            .da_disciplina(self.disciplina)
+            .percentual_presenca()
+        )
+
+    def __str__(self):
+        """Retorna aluno, disciplina, data e situação de presença."""
+        situacao = "Presente" if self.presente else "Ausente"
+        return f"{self.aluno.nome_completo} | {self.disciplina.nome} | {self.data} | {situacao}"
 
 
 class Gestor(models.Model):

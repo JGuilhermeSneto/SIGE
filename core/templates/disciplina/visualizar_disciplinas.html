@@ -14,11 +14,11 @@
 
         <!-- BOTÃO VOLTAR -->
         {% if is_gestor_ou_super %}
-            <a class="voltar" href="{% url 'listar_turmas' %}" class="btn-voltar">
+            <a class="voltar" href="{% url 'listar_turmas' %}">
                 <i class="fas fa-arrow-left"></i>
             </a>
         {% else %}
-            <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" class="btn-voltar">
+            <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}">
                 <i class="fas fa-arrow-left"></i>
             </a>
         {% endif %}
@@ -49,7 +49,7 @@
             <a class="nota" href="#" onclick="alert('Disciplina não definida!'); return false;">Notas</a>
             {% endif %}
 
-            <a class="disciplina" href="#">Frequência</a>
+            <a class="disciplina" href="{% url 'historico_frequencia' disciplina.id %}">Frequência</a>
         </div>
     </div>
 

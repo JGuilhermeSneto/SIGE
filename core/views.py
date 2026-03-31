@@ -1,16 +1,21 @@
 """Views do módulo core do sistema SIGE."""
 
 import calendar
-from datetime import datetime
+from datetime import date, datetime
 
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.db.models import Count, Q
 
+from .models import Frequencia
 from .forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm
-from .models import Aluno, Disciplina, Gestor, GradeHorario, Nota, Professor, Turma
+from .models import Aluno, Disciplina, Frequencia, Gestor, GradeHorario, Nota, Professor, Turma
 
 # ======================== HORÁRIOS ========================
 HORARIOS = {
@@ -748,7 +753,7 @@ def visualizar_disciplinas(request, disciplina_id):
             "alunos": alunos,
             "notas": notas,
             "notas_dict": notas_dict,
-            "is_gestor_ou_super": _is_gestor_ou_super(request.user),  # ✅ CORRIGIDO
+            "is_gestor_ou_super": _is_gestor_ou_super(request.user),
         },
     )
 
@@ -872,7 +877,7 @@ def disciplinas_turma(request, turma_id):
             "turma": turma,
             "disciplinas_detalhadas": disciplinas_detalhadas,
             "foto_perfil_url": foto_perfil_url,
-            "is_gestor_ou_super": _is_gestor_ou_super(user),  # ✅ CORRIGIDO
+            "is_gestor_ou_super": _is_gestor_ou_super(user),
         },
     )
 
@@ -1114,7 +1119,7 @@ def lancar_nota(request, disciplina_id):
             "disciplina": disciplina,
             "alunos": alunos,
             "notas_dict": notas_dict,
-            "is_gestor_ou_super": _is_gestor_ou_super(request.user),  # ✅ CORRIGIDO
+            "is_gestor_ou_super": _is_gestor_ou_super(request.user),
         },
     )
 
@@ -1211,6 +1216,138 @@ def grade_horaria(request, turma_id):
             "nomes_dias": NOMES_DIAS,
             "rows": rows,
             "disciplinas": disciplinas_da_turma,
-            "is_gestor_ou_super": _is_gestor_ou_super(request.user),  # ✅ CORRIGIDO
+            "is_gestor_ou_super": _is_gestor_ou_super(request.user),
         },
     )
+
+
+# ======================== FREQUÊNCIA ========================
+
+@login_required
+def lancar_chamada(request, disciplina_id):
+    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+
+    # Permite superusuário e gestor; para professor, verifica se é dono
+    if not (request.user.is_superuser or hasattr(request.user, "gestor")):
+        if disciplina.professor.user != request.user:
+            messages.error(request, "Você não tem permissão para acessar esta chamada.")
+            return redirect("disciplinas_professor")
+
+    data_str = request.GET.get("data") or request.POST.get("data")
+    try:
+        data_selecionada = date.fromisoformat(data_str) if data_str else date.today()
+    except ValueError:
+        data_selecionada = date.today()
+
+    alunos = disciplina.turma.alunos.order_by("nome_completo")
+
+    frequencias_existentes = {
+        f.aluno_id: f
+        for f in Frequencia.objects.filter(
+            disciplina=disciplina, data=data_selecionada
+        )
+    }
+
+    if request.method == "POST":
+        for aluno in alunos:
+            presente = str(aluno.id) in request.POST.getlist("presentes")
+            justificativa = request.POST.get(f"justificativa_{aluno.id}", "").strip()
+
+            if presente:
+                justificativa = ""
+
+            Frequencia.objects.update_or_create(
+                aluno=aluno,
+                disciplina=disciplina,
+                data=data_selecionada,
+                defaults={
+                    "presente": presente,
+                    "justificativa": justificativa,
+                },
+            )
+
+        messages.success(
+            request,
+            f"Chamada do dia {data_selecionada.strftime('%d/%m/%Y')} salva com sucesso.",
+        )
+        return redirect("lancar_chamada", disciplina_id=disciplina_id)
+
+    context = {
+        "disciplina": disciplina,
+        "alunos": alunos,
+        "data_selecionada": data_selecionada,
+        "frequencias_existentes": frequencias_existentes,
+    }
+    return render(request, "frequencia/lancar_chamada.html", context)
+
+
+@login_required
+def historico_frequencia(request, disciplina_id):
+    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+
+    # Permite superusuário e gestor; para professor, verifica se é dono
+    if not (request.user.is_superuser or hasattr(request.user, "gestor")):
+        if disciplina.professor.user != request.user:
+            messages.error(request, "Você não tem permissão para acessar este histórico.")
+            return redirect("disciplinas_professor")
+
+    datas = (
+        Frequencia.objects.filter(disciplina=disciplina)
+        .values_list("data", flat=True)
+        .distinct()
+        .order_by("-data")
+    )
+
+    resumo_por_data = []
+    for d in datas:
+        registros = Frequencia.objects.filter(disciplina=disciplina, data=d)
+        total = registros.count()
+        presencas = registros.presencas().count()
+        resumo_por_data.append(
+            {
+                "data": d,
+                "total": total,
+                "presencas": presencas,
+                "faltas": total - presencas,
+            }
+        )
+
+    context = {
+        "disciplina": disciplina,
+        "resumo_por_data": resumo_por_data,
+    }
+    return render(request, "frequencia/historico_frequencia.html", context)
+
+
+
+
+@login_required
+def frequencia_aluno(request):
+    """
+    Exibe a frequência do aluno logado, agrupada por disciplina
+    """
+
+    # Garante que o usuário é aluno
+    if not hasattr(request.user, "aluno"):
+        messages.error(request, "Apenas alunos podem acessar a frequência.")
+        return redirect("painel_super")
+
+    aluno = request.user.aluno
+
+    frequencias = (
+        Frequencia.objects.filter(aluno=aluno)
+        .values("disciplina__nome")
+        .annotate(
+            total_aulas=Count("id"),
+            presencas=Count("id", filter=Q(presente=True)),
+            faltas=Count("id", filter=Q(presente=False)),
+        )
+        .order_by("disciplina__nome")
+    )
+
+    context = {
+        "aluno": aluno,
+        "frequencias": frequencias,
+    }
+
+    return render(request, "frequencia/frequencia_aluno.html", context)
