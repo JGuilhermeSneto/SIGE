@@ -4,6 +4,8 @@ db.sqlite3
 __pycache__/
 *.pyc
 
+
+# Arquivos de cobertura de testes
 .coverage
 htmlcov/
 .flake8
