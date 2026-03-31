@@ -1,16 +1,17 @@
 <div align="center">
 
 # 🏫 SIGE
-### Sistema Integrado de Gestão Escolar - Em progresso...
+### Sistema Integrado de Gestão Escolar — Em progresso...
 
 <br/>
 
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=for-the-badge&logo=python&logoColor=white)
-![Django](https://img.shields.io/badge/Django-4.x-092E20?style=for-the-badge&logo=django&logoColor=white)
+![Django](https://img.shields.io/badge/Django-5.2-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white)
 ![Flake8](https://img.shields.io/badge/Flake8-10.00%2F10-brightgreen?style=for-the-badge)
 ![MyPy](https://img.shields.io/badge/MyPy-typed-blue?style=for-the-badge)
+![Coverage](https://img.shields.io/badge/Coverage-coverage.py-orange?style=for-the-badge)
 ![License](https://img.shields.io/badge/Licença-MIT-yellow?style=for-the-badge)
 
 <br/>
@@ -27,7 +28,7 @@
 
 ## 📌 Sobre o Projeto
 
-O **SIGE** (Sistema Integrado de Gestão Escolar) é uma aplicação web construída para facilitar a administração de uma instituição de ensino. Ele centraliza o gerenciamento de **alunos**, **professores**, **turmas**, **disciplinas**, **notas** e **usuários** em um único sistema, com controle de acesso por perfis (Super Admin, Gestor, Professor e Aluno).
+O **SIGE** (Sistema Integrado de Gestão Escolar) é uma aplicação web construída para facilitar a administração de uma instituição de ensino. Ele centraliza o gerenciamento de **alunos**, **professores**, **turmas**, **disciplinas**, **notas**, **frequência** e **usuários** em um único sistema, com controle de acesso por perfis (Super Admin, Gestor, Professor e Aluno).
 
 ### ✨ Principais funcionalidades
 
@@ -37,12 +38,15 @@ O **SIGE** (Sistema Integrado de Gestão Escolar) é uma aplicação web constru
 | 👤 **Perfis de Acesso** | Super Admin, Gestor, Professor e Aluno |
 | 🎓 **Gestão de Alunos** | Cadastro, edição, exclusão e listagem |
 | 👨‍🏫 **Gestão de Professores** | Cadastro com área de atuação, edição e exclusão |
-| 🏛️ **Gestão de Turmas** | Criação de turmas com grade horária |
+| 🏛️ **Gestão de Turmas** | Criação de turmas com grade horária por turno |
 | 📚 **Gestão de Disciplinas** | Disciplinas vinculadas a turmas e professores |
-| 📝 **Lançamento de Notas** | Professores lançam notas por disciplina |
-| 🗂️ **Gestão de Gestores** | Cadastro e controle de gestores institucionais |
+| 📝 **Lançamento de Notas** | Professores e gestores lançam notas por bimestre |
+| ✅ **Frequência** | Chamada diária por disciplina com histórico e percentual de presença |
+| 🗂️ **Gestão de Gestores** | Cadastro e controle de gestores institucionais com cargos |
 | 🖼️ **Foto de Perfil** | Upload e remoção de foto de perfil |
 | 📊 **Painéis por perfil** | Painel personalizado para cada tipo de usuário |
+| 📅 **Grade Horária** | Configuração visual da grade por turma e turno |
+| 📄 **Relatórios** | Geração de relatórios em PDF com ReportLab |
 
 ---
 
@@ -55,13 +59,19 @@ SIGE usa um stack moderno e bem definido para garantir qualidade e manutenção.
 | Camada | Tecnologia | Versão | Finalidade |
 |---|---|---|---|
 | Linguagem | Python | 3.11 | Backend |
-| Framework | Django | 4.x | MVC / ORM / Auth |
+| Framework | Django | 5.2.12 | MVC / ORM / Auth |
 | Banco de Dados | MySQL | 8.0 | Persistência |
+| Driver MySQL | mysqlclient | 2.2.8 | Conexão com o banco |
 | Front-end | HTML + CSS + JavaScript | — | Interface do usuário |
-| Linting de estilo | Flake8 | latest | Conformidade com PEP8 |
-| Análise de qualidade | Pylint | latest | Métricas de código |
-| Tipagem estática | Mypy + django-stubs | latest | Checagem de tipos |
-| Testes | Pytest / Django TestCase | — | Unitários e integração |
+| Imagens | Pillow | 12.1.1 | Upload de fotos de perfil |
+| PDF | ReportLab | 4.4.10 | Geração de relatórios |
+| Variáveis de ambiente | python-decouple / python-dotenv | 3.8 / 1.2.2 | Configuração segura |
+| Linting de estilo | Flake8 | 7.3.0 | Conformidade com PEP8 |
+| Formatação | Black | 26.3.1 | Formatação automática de código |
+| Ordenação de imports | isort | 8.0.1 | Organização de imports |
+| Análise de qualidade | Pylint + pylint-django | 4.0.5 | Métricas de código |
+| Tipagem estática | Mypy + django-stubs | 6.0.1 | Checagem de tipos |
+| Cobertura de testes | coverage.py | 7.13.5 | Relatório de cobertura |
 | CI/CD | GitHub Actions | — | Automação de pipeline |
 | Controle de versão | Git + GitHub | — | Versionamento |
 
@@ -75,9 +85,19 @@ SIGE/
 ├── core/                        # 🔑 Aplicação principal do sistema
 │   ├── migrations/              # Histórico de alterações no banco
 │   ├── templatetags/            # Tags customizadas para templates
-│   │   ├── get_item.py
-│   │   ├── dict_get.py
-│   │   └── custom_tags.py
+│   │   ├── get_item.py          # Filtro para acessar dicts por chave
+│   │   ├── dict_get.py          # Filtro auxiliar de dicionários
+│   │   └── custom_tags.py       # Tags gerais (has_attr, etc.)
+│   ├── templates/               # Templates HTML organizados por módulo
+│   │   ├── auth/                # Login, logout, reset de senha
+│   │   ├── core/                # Base, perfil, grade horária, usuários
+│   │   ├── aluno/               # Painel e CRUD de alunos
+│   │   ├── professor/           # Painel, disciplinas e lançamento de notas
+│   │   ├── gestor/              # CRUD de gestores
+│   │   ├── turma/               # CRUD de turmas
+│   │   ├── disciplina/          # CRUD e visualização de disciplinas
+│   │   ├── superusuario/        # Painel do super admin
+│   │   └── frequencia/          # Chamada, histórico e frequência do aluno
 │   ├── admin.py                 # Registro de models no painel admin
 │   ├── apps.py                  # Configuração do app
 │   ├── forms.py                 # Formulários Django
@@ -91,12 +111,18 @@ SIGE/
 │   ├── wsgi.py                  # Entry point WSGI (produção)
 │   └── asgi.py                  # Entry point ASGI (async)
 │
+├── fotos/                       # 📁 Uploads de fotos de perfil
+│
 ├── .github/
 │   └── workflows/               # 🔄 Pipelines de CI/CD
 │
+├── .coveragerc                  # Configuração de cobertura de testes
+├── .flake8                      # Configuração do Flake8
+├── .pylintrc                    # Configuração do Pylint
 ├── manage.py                    # CLI do Django
 ├── requirements.txt             # Dependências do projeto
-├── pyproject.toml               # Configuração de ferramentas (mypy, etc.)
+├── pyproject.toml               # Configuração de ferramentas (mypy, black, isort)
+├── instruções.md                # Guia interno de contribuição
 └── README.md                    # Documentação
 ```
 
@@ -107,15 +133,32 @@ SIGE/
 O SIGE possui quatro níveis de acesso com permissões distintas:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     HIERARQUIA DE ACESSO                │
-│                                                         │
-│   👑 Super Admin  →  Acesso total ao sistema            │
-│   🏛️  Gestor       →  Gerencia turmas, alunos e profs.  │
-│   👨‍🏫 Professor    →  Lança notas e visualiza turmas     │
-│   🎓 Aluno        →  Consulta notas e grade horária     │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                        HIERARQUIA DE ACESSO                         │
+│                                                                     │
+│   👑 Super Admin  →  Acesso total ao sistema                        │
+│   🏛️  Gestor       →  Gerencia turmas, alunos, professores e notas  │
+│   👨‍🏫 Professor    →  Lança notas, chamada e visualiza suas turmas   │
+│   🎓 Aluno        →  Consulta notas, frequência e grade horária     │
+└─────────────────────────────────────────────────────────────────────┘
 ```
+
+### Permissões detalhadas por perfil
+
+| Funcionalidade | Super Admin | Gestor | Professor | Aluno |
+|---|:---:|:---:|:---:|:---:|
+| Painel de controle | ✅ | ✅ | ✅ | ✅ |
+| Gerenciar alunos | ✅ | ✅ | ❌ | ❌ |
+| Gerenciar professores | ✅ | ✅ | ❌ | ❌ |
+| Gerenciar turmas | ✅ | ✅ | ❌ | ❌ |
+| Gerenciar disciplinas | ✅ | ✅ | ❌ | ❌ |
+| Gerenciar gestores | ✅ | ❌ | ❌ | ❌ |
+| Lançar notas | ✅ | ✅ | ✅ | ❌ |
+| Lançar chamada | ❌ | ❌ | ✅ | ❌ |
+| Ver histórico de frequência | ✅ | ✅ | ✅ | ❌ |
+| Ver própria frequência | ❌ | ❌ | ❌ | ✅ |
+| Editar grade horária | ✅ | ✅ | ❌ | ❌ |
+| Editar perfil próprio | ✅ | ✅ | ✅ | ✅ |
 
 ---
 
@@ -127,8 +170,19 @@ O projeto mantém um padrão rigoroso de qualidade. Todos os comandos abaixo pod
 # Executa todos os testes Django
 python manage.py test
 
+# Executa testes com relatório de cobertura
+coverage run manage.py test
+coverage report
+coverage html  # gera relatório em HTML
+
 # Verifica conformidade com PEP8 (nota atual: 10.00/10 ✅)
 flake8 .
+
+# Formata o código automaticamente
+black .
+
+# Organiza os imports
+isort .
 
 # Análise estática de qualidade
 pylint **/*.py
@@ -137,7 +191,7 @@ pylint **/*.py
 mypy .
 ```
 
-> 💡 **Dica:** Sempre rode `flake8 .` e `mypy .` antes de qualquer commit para evitar falhas no pipeline.
+> 💡 **Dica:** Sempre rode `flake8 .`, `black .` e `mypy .` antes de qualquer commit para evitar falhas no pipeline.
 
 ---
 
@@ -146,11 +200,11 @@ mypy .
 A cada `push` ou `pull request` para a branch `main`, o pipeline é ativado automaticamente:
 
 ```
-┌────────────┐     ┌────────────┐     ┌────────────┐     ┌────────────┐
-│  git push  │────▶│  flake8 .  │────▶│  mypy .    │────▶│  pytest    │
-└────────────┘     └────────────┘     └────────────┘     └────────────┘
-                        ✅ PEP8            ✅ Tipos          ✅ Testes
-                        
+┌────────────┐     ┌────────────┐     ┌────────────┐     ┌────────────┐     ┌────────────┐
+│  git push  │────▶│  flake8 .  │────▶│  mypy .    │────▶│  pylint    │────▶│  coverage  │
+└────────────┘     └────────────┘     └────────────┘     └────────────┘     └────────────┘
+                        ✅ PEP8            ✅ Tipos         ✅ Qualidade       ✅ Cobertura
+
                    Se qualquer etapa falhar → ❌ merge bloqueado
 ```
 
@@ -201,10 +255,23 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-Para as ferramentas de desenvolvimento (linting, tipagem):
+O `requirements.txt` já inclui todas as dependências de produção e desenvolvimento:
 
-```bash
-pip install flake8 pylint mypy django-stubs
+```
+Django==5.2.12          # Framework principal
+mysqlclient==2.2.8      # Driver do banco de dados
+Pillow==12.1.1           # Upload de imagens
+reportlab==4.4.10        # Geração de PDFs
+python-decouple==3.8     # Variáveis de ambiente
+python-dotenv==1.2.2     # Leitura do .env
+coverage==7.13.5         # Cobertura de testes
+flake8==7.3.0            # Linting PEP8
+black==26.3.1            # Formatação de código
+isort==8.0.1             # Organização de imports
+pylint==4.0.5            # Análise de qualidade
+pylint-django==2.7.0     # Plugin Django para Pylint
+mypy==*                  # Tipagem estática
+django-stubs==6.0.1      # Stubs de tipos para Django
 ```
 
 ---
@@ -288,7 +355,12 @@ O painel administrativo está disponível em: **http://127.0.0.1:8000/admin/**
 | `python manage.py migrate` | Aplica migrations no banco |
 | `python manage.py createsuperuser` | Cria usuário administrador |
 | `python manage.py test` | Executa os testes |
+| `coverage run manage.py test` | Testes com medição de cobertura |
+| `coverage report` | Exibe relatório de cobertura no terminal |
+| `coverage html` | Gera relatório de cobertura em HTML |
 | `flake8 .` | Verifica estilo PEP8 |
+| `black .` | Formata o código automaticamente |
+| `isort .` | Organiza os imports |
 | `mypy .` | Checa tipos estáticos |
 | `pylint **/*.py` | Analisa qualidade do código |
 
@@ -312,8 +384,11 @@ git pull                          # Atualiza branch local
 
 - 📘 [Django Documentation](https://docs.djangoproject.com/)
 - 🔍 [Flake8 Docs](https://flake8.pycqa.org/en/latest/)
+- 🖤 [Black Docs](https://black.readthedocs.io/en/stable/)
 - 🔬 [Pylint Docs](https://pylint.pycqa.org/en/latest/)
 - 🔷 [MyPy Docs](https://mypy.readthedocs.io/en/stable/)
+- 📊 [Coverage.py Docs](https://coverage.readthedocs.io/)
+- 📄 [ReportLab Docs](https://docs.reportlab.com/)
 - ⚙️ [GitHub Actions Docs](https://docs.github.com/en/actions)
 - 🐬 [MySQL Docs](https://dev.mysql.com/doc/)
 
