@@ -1,4 +1,5 @@
 from django.test import SimpleTestCase
+
 from core.templatetags.custom_tags import get_item, has_attr
 
 

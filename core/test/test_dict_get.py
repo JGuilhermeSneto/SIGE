@@ -1,4 +1,5 @@
 from django.test import SimpleTestCase
+
 from core.templatetags import dict_get  # importa o módulo
 
 

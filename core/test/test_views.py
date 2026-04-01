@@ -7,19 +7,11 @@ Execute com:
     coverage report
 """
 
-from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.urls import reverse
 
-from core.models import (
-    Aluno,
-    Disciplina,
-    Gestor,
-    GradeHorario,
-    Nota,
-    Professor,
-    Turma,
-)
+from core.models import Aluno, Disciplina, Gestor, GradeHorario, Nota, Professor, Turma
 
 User = get_user_model()
 
@@ -27,6 +19,7 @@ User = get_user_model()
 # ================================================================
 # FACTORIES — criam objetos reutilizáveis nos testes
 # ================================================================
+
 
 def criar_superuser(username="admin", password="123456"):
     return User.objects.create_superuser(
@@ -48,7 +41,9 @@ def criar_professor(username="prof", password="123456", nome="Professor Teste"):
     return professor
 
 
-def criar_gestor(username="gestor", password="123456", nome="Gestor Teste", cargo="diretor"):
+def criar_gestor(
+    username="gestor", password="123456", nome="Gestor Teste", cargo="diretor"
+):
     user = User.objects.create_user(
         username=username, password=password, email=f"{username}@test.com"
     )
@@ -76,6 +71,7 @@ def criar_disciplina(turma, professor, nome="Matemática"):
 # LOGIN / LOGOUT
 # ================================================================
 
+
 class LoginViewTest(TestCase):
 
     def setUp(self):
@@ -94,31 +90,27 @@ class LoginViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_login_post_credenciais_invalidas(self):
-        response = self.client.post(reverse("login"), {
-            "username": "naoexiste",
-            "password": "errada"
-        })
+        response = self.client.post(
+            reverse("login"), {"username": "naoexiste", "password": "errada"}
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_login_post_superuser_redireciona_para_painel_super(self):
-        response = self.client.post(reverse("login"), {
-            "username": "admin",
-            "password": "123456"
-        })
+        response = self.client.post(
+            reverse("login"), {"username": "admin", "password": "123456"}
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_login_post_professor_redireciona_para_painel_professor(self):
-        response = self.client.post(reverse("login"), {
-            "username": "prof",
-            "password": "123456"
-        })
+        response = self.client.post(
+            reverse("login"), {"username": "prof", "password": "123456"}
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_login_post_aluno_redireciona_para_painel_aluno(self):
-        response = self.client.post(reverse("login"), {
-            "username": "aluno",
-            "password": "123456"
-        })
+        response = self.client.post(
+            reverse("login"), {"username": "aluno", "password": "123456"}
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_logout_redireciona_para_login(self):
@@ -130,6 +122,7 @@ class LoginViewTest(TestCase):
 # ================================================================
 # PAINEL SUPER
 # ================================================================
+
 
 class PainelSuperTest(TestCase):
 
@@ -172,6 +165,7 @@ class PainelSuperTest(TestCase):
 # PERFIL
 # ================================================================
 
+
 class EditarPerfilTest(TestCase):
 
     def setUp(self):
@@ -187,20 +181,26 @@ class EditarPerfilTest(TestCase):
 
     def test_post_valido_redireciona(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(reverse("editar_perfil"), {
-            "username": "admin",
-            "email": "admin@test.com",
-            "first_name": "Admin",
-            "last_name": "Teste",
-        })
+        response = self.client.post(
+            reverse("editar_perfil"),
+            {
+                "username": "admin",
+                "email": "admin@test.com",
+                "first_name": "Admin",
+                "last_name": "Teste",
+            },
+        )
         self.assertEqual(response.status_code, 302)
 
     def test_post_invalido_mostra_erro(self):
         self.client.force_login(self.superuser)
         # email inválido deve falhar na validação
-        response = self.client.post(reverse("editar_perfil"), {
-            "email": "email-invalido",
-        })
+        response = self.client.post(
+            reverse("editar_perfil"),
+            {
+                "email": "email-invalido",
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_perfil_professor_tem_foto_atual(self):
@@ -235,6 +235,7 @@ class RemoverFotoPerfilTest(TestCase):
 # ================================================================
 # PROFESSORES
 # ================================================================
+
 
 class ProfessorViewsTest(TestCase):
 
@@ -291,9 +292,7 @@ class ProfessorViewsTest(TestCase):
     def test_excluir_professor(self):
         prof_extra = criar_professor(username="prof2", nome="Extra")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("excluir_professor", args=[prof_extra.id])
-        )
+        response = self.client.get(reverse("excluir_professor", args=[prof_extra.id]))
         self.assertRedirects(response, reverse("listar_professores"))
         self.assertFalse(Professor.objects.filter(id=prof_extra.id).exists())
 
@@ -301,6 +300,7 @@ class ProfessorViewsTest(TestCase):
 # ================================================================
 # GESTORES
 # ================================================================
+
 
 class GestorViewsTest(TestCase):
 
@@ -331,24 +331,18 @@ class GestorViewsTest(TestCase):
 
     def test_editar_get(self):
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("editar_gestor", args=[self.gestor.id])
-        )
+        response = self.client.get(reverse("editar_gestor", args=[self.gestor.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_editar_post_invalido(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(
-            reverse("editar_gestor", args=[self.gestor.id]), {}
-        )
+        response = self.client.post(reverse("editar_gestor", args=[self.gestor.id]), {})
         self.assertEqual(response.status_code, 200)
 
     def test_excluir_gestor(self):
         gestor_extra = criar_gestor(username="gestor2", nome="Gestor Extra")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("excluir_gestor", args=[gestor_extra.id])
-        )
+        response = self.client.get(reverse("excluir_gestor", args=[gestor_extra.id]))
         self.assertRedirects(response, reverse("listar_gestores"))
         self.assertFalse(Gestor.objects.filter(id=gestor_extra.id).exists())
 
@@ -356,6 +350,7 @@ class GestorViewsTest(TestCase):
 # ================================================================
 # ALUNOS
 # ================================================================
+
 
 class AlunoViewsTest(TestCase):
 
@@ -390,24 +385,18 @@ class AlunoViewsTest(TestCase):
 
     def test_editar_get(self):
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("editar_aluno", args=[self.aluno.id])
-        )
+        response = self.client.get(reverse("editar_aluno", args=[self.aluno.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_editar_post_invalido(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(
-            reverse("editar_aluno", args=[self.aluno.id]), {}
-        )
+        response = self.client.post(reverse("editar_aluno", args=[self.aluno.id]), {})
         self.assertEqual(response.status_code, 200)
 
     def test_excluir_aluno(self):
         aluno_extra = criar_aluno(self.turma, username="aluno2", nome="Extra")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("excluir_aluno", args=[aluno_extra.id])
-        )
+        response = self.client.get(reverse("excluir_aluno", args=[aluno_extra.id]))
         self.assertRedirects(response, reverse("listar_alunos"))
         self.assertFalse(Aluno.objects.filter(id=aluno_extra.id).exists())
 
@@ -415,6 +404,7 @@ class AlunoViewsTest(TestCase):
 # ================================================================
 # TURMAS
 # ================================================================
+
 
 class TurmaViewsTest(TestCase):
 
@@ -444,40 +434,52 @@ class TurmaViewsTest(TestCase):
 
     def test_cadastrar_post_valido(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "8B",
-            "turno": "tarde",
-            "ano": "2024",
-        })
+        response = self.client.post(
+            reverse("cadastrar_turma"),
+            {
+                "nome": "8B",
+                "turno": "tarde",
+                "ano": "2024",
+            },
+        )
         self.assertRedirects(response, reverse("listar_turmas"))
         self.assertTrue(Turma.objects.filter(nome="8B").exists())
 
     def test_cadastrar_post_turma_duplicada(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "9A",
-            "turno": "manha",
-            "ano": "2024",
-        })
+        response = self.client.post(
+            reverse("cadastrar_turma"),
+            {
+                "nome": "9A",
+                "turno": "manha",
+                "ano": "2024",
+            },
+        )
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "já existe")
 
     def test_cadastrar_post_ano_invalido(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "7C",
-            "turno": "manha",
-            "ano": "abc",
-        })
+        response = self.client.post(
+            reverse("cadastrar_turma"),
+            {
+                "nome": "7C",
+                "turno": "manha",
+                "ano": "abc",
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_cadastrar_post_ano_fora_do_intervalo(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "7C",
-            "turno": "manha",
-            "ano": "1990",
-        })
+        response = self.client.post(
+            reverse("cadastrar_turma"),
+            {
+                "nome": "7C",
+                "turno": "manha",
+                "ano": "1990",
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_editar_get(self):
@@ -487,22 +489,28 @@ class TurmaViewsTest(TestCase):
 
     def test_editar_post_valido(self):
         self.client.force_login(self.superuser)
-        response = self.client.post(reverse("editar_turma", args=[self.turma.id]), {
-            "nome": "9A Atualizado",
-            "turno": "tarde",
-            "ano": "2024",
-        })
+        response = self.client.post(
+            reverse("editar_turma", args=[self.turma.id]),
+            {
+                "nome": "9A Atualizado",
+                "turno": "tarde",
+                "ano": "2024",
+            },
+        )
         self.assertRedirects(response, reverse("listar_turmas"))
 
     def test_editar_post_nome_duplicado(self):
         outra = criar_turma(nome="9B")
         self.client.force_login(self.superuser)
         # tenta renomear self.turma para o mesmo nome de outra
-        response = self.client.post(reverse("editar_turma", args=[self.turma.id]), {
-            "nome": "9B",
-            "turno": "manha",
-            "ano": str(outra.ano),
-        })
+        response = self.client.post(
+            reverse("editar_turma", args=[self.turma.id]),
+            {
+                "nome": "9B",
+                "turno": "manha",
+                "ano": str(outra.ano),
+            },
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_excluir_turma(self):
@@ -516,6 +524,7 @@ class TurmaViewsTest(TestCase):
 # ================================================================
 # DISCIPLINAS
 # ================================================================
+
 
 class DisciplinaViewsTest(TestCase):
 
@@ -592,9 +601,7 @@ class DisciplinaViewsTest(TestCase):
     def test_excluir_disciplina(self):
         disc_extra = criar_disciplina(self.turma, self.professor, nome="Física")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("excluir_disciplina", args=[disc_extra.id])
-        )
+        response = self.client.get(reverse("excluir_disciplina", args=[disc_extra.id]))
         self.assertRedirects(
             response, reverse("disciplinas_turma", args=[self.turma.id])
         )
@@ -624,38 +631,31 @@ class DisciplinaViewsTest(TestCase):
 
     def test_disciplinas_turma_como_superuser(self):
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("disciplinas_turma", args=[self.turma.id])
-        )
+        response = self.client.get(reverse("disciplinas_turma", args=[self.turma.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_disciplinas_turma_como_professor(self):
         self.client.force_login(self.professor.user)
-        response = self.client.get(
-            reverse("disciplinas_turma", args=[self.turma.id])
-        )
+        response = self.client.get(reverse("disciplinas_turma", args=[self.turma.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_disciplinas_turma_sem_disciplinas_redireciona(self):
         turma_vazia = criar_turma(nome="5A")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("disciplinas_turma", args=[turma_vazia.id])
-        )
+        response = self.client.get(reverse("disciplinas_turma", args=[turma_vazia.id]))
         self.assertEqual(response.status_code, 302)
 
     def test_disciplinas_turma_sem_permissao_redireciona(self):
         user_sem_perfil = criar_user_comum(username="semPerfil")
         self.client.force_login(user_sem_perfil)
-        response = self.client.get(
-            reverse("disciplinas_turma", args=[self.turma.id])
-        )
+        response = self.client.get(reverse("disciplinas_turma", args=[self.turma.id]))
         self.assertRedirects(response, reverse("login"))
 
 
 # ================================================================
 # PAINEL PROFESSOR
 # ================================================================
+
 
 class PainelProfessorTest(TestCase):
 
@@ -722,6 +722,7 @@ class PainelProfessorTest(TestCase):
 # LANÇAR NOTAS
 # ================================================================
 
+
 class LancarNotaTest(TestCase):
 
     def setUp(self):
@@ -733,16 +734,12 @@ class LancarNotaTest(TestCase):
 
     def test_get_retorna_200_como_superuser(self):
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("lancar_nota", args=[self.disciplina.id])
-        )
+        response = self.client.get(reverse("lancar_nota", args=[self.disciplina.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_get_retorna_200_como_professor(self):
         self.client.force_login(self.professor.user)
-        response = self.client.get(
-            reverse("lancar_nota", args=[self.disciplina.id])
-        )
+        response = self.client.get(reverse("lancar_nota", args=[self.disciplina.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_post_notas_validas(self):
@@ -787,6 +784,7 @@ class LancarNotaTest(TestCase):
 # PAINEL ALUNO
 # ================================================================
 
+
 class PainelAlunoTest(TestCase):
 
     def setUp(self):
@@ -824,6 +822,7 @@ class PainelAlunoTest(TestCase):
 # GRADE HORÁRIA
 # ================================================================
 
+
 class GradeHorariaTest(TestCase):
 
     def setUp(self):
@@ -834,9 +833,7 @@ class GradeHorariaTest(TestCase):
 
     def test_get_cria_grade_se_nao_existir(self):
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("grade_horaria", args=[self.turma.id])
-        )
+        response = self.client.get(reverse("grade_horaria", args=[self.turma.id]))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(GradeHorario.objects.filter(turma=self.turma).exists())
 
@@ -850,23 +847,17 @@ class GradeHorariaTest(TestCase):
         response = self.client.post(
             reverse("grade_horaria", args=[self.turma.id]), data
         )
-        self.assertRedirects(
-            response, reverse("grade_horaria", args=[self.turma.id])
-        )
+        self.assertRedirects(response, reverse("grade_horaria", args=[self.turma.id]))
 
     def test_grade_com_turno_tarde(self):
         turma_tarde = criar_turma(nome="8A", turno="tarde")
         criar_disciplina(turma_tarde, self.professor, nome="Física")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("grade_horaria", args=[turma_tarde.id])
-        )
+        response = self.client.get(reverse("grade_horaria", args=[turma_tarde.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_grade_com_turno_noite(self):
         turma_noite = criar_turma(nome="8B", turno="noite")
         self.client.force_login(self.superuser)
-        response = self.client.get(
-            reverse("grade_horaria", args=[turma_noite.id])
-        )
+        response = self.client.get(reverse("grade_horaria", args=[turma_noite.id]))
         self.assertEqual(response.status_code, 200)

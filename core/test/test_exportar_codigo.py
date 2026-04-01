@@ -1,7 +1,8 @@
 import runpy
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
 
 from django.test import SimpleTestCase
+
 import exportar_codigo as ec
 
 
@@ -21,9 +22,7 @@ class ExportarCodigoTest(SimpleTestCase):
     @patch("exportar_codigo.SimpleDocTemplate")
     @patch("exportar_codigo.os.walk")
     def test_collect_code_basico(self, mock_walk, mock_doc):
-        mock_walk.return_value = [
-            ("./", ["venv"], ["arquivo.py", "ignorado.exe"])
-        ]
+        mock_walk.return_value = [("./", ["venv"], ["arquivo.py", "ignorado.exe"])]
 
         mock_instance = mock_doc.return_value
 
@@ -38,9 +37,7 @@ class ExportarCodigoTest(SimpleTestCase):
         dirs = ["venv", "core"]
         files = ["teste.py"]
 
-        mock_walk.return_value = [
-            ("./", dirs, files)
-        ]
+        mock_walk.return_value = [("./", dirs, files)]
 
         with patch("exportar_codigo.SimpleDocTemplate"):
             with patch("builtins.open", mock_open(read_data="code")):
@@ -52,9 +49,7 @@ class ExportarCodigoTest(SimpleTestCase):
     @patch("exportar_codigo.os.walk")
     @patch("exportar_codigo.SimpleDocTemplate")
     def test_erro_leitura(self, mock_doc, mock_walk):
-        mock_walk.return_value = [
-            ("./", [], ["arquivo.py"])
-        ]
+        mock_walk.return_value = [("./", [], ["arquivo.py"])]
 
         with patch("builtins.open", side_effect=Exception("erro")):
             ec.collect_code_to_pdf()
@@ -65,9 +60,7 @@ class ExportarCodigoTest(SimpleTestCase):
     @patch("exportar_codigo.os.walk")
     @patch("exportar_codigo.SimpleDocTemplate")
     def test_relpath(self, mock_doc, mock_walk):
-        mock_walk.return_value = [
-            ("./pasta", [], ["arquivo.py"])
-        ]
+        mock_walk.return_value = [("./pasta", [], ["arquivo.py"])]
 
         with patch("builtins.open", mock_open(read_data="code")):
             ec.collect_code_to_pdf()

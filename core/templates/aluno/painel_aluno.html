@@ -6,6 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_aluno.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 {% endblock %}
 
 {% block content %}
@@ -99,6 +100,30 @@
                                 <span class="nota-label">4º Bimestre</span>
                                 <span class="nota-valor">{{ item.nota.nota4|default:"--" }}</span>
                             </div>
+
+                            <!-- FREQUÊNCIA -->
+                            {% if item.total_aulas > 0 %}
+                            <div class="frequencia-resumo">
+                                <div class="freq-item freq-faltas">
+                                    <span class="freq-label">Faltas</span>
+                                    <span class="freq-valor">{{ item.faltas }}/{{ item.total_aulas }}</span>
+                                </div>
+                                <div class="freq-barra-wrap">
+                                    <div
+                                        class="freq-barra {% if item.percentual_faltas >= 25 %}critica{% elif item.percentual_faltas >= 15 %}alerta{% else %}ok{% endif %}"
+                                        style="width: {{ item.percentual_faltas }}%"
+                                        title="{{ item.percentual_faltas }}% de faltas"
+                                    ></div>
+                                </div>
+                                <span class="freq-percentual {% if item.percentual_faltas >= 25 %}reprovado{% elif item.percentual_faltas >= 15 %}recuperacao{% else %}aprovado{% endif %}">
+                                    {{ item.percentual_faltas }}% de faltas
+                                </span>
+                            </div>
+                            {% else %}
+                            <div class="frequencia-resumo sem-registro">
+                                <span>Nenhuma chamada registrada ainda</span>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                     {% endfor %}
@@ -228,6 +253,8 @@
                         <th>3º Bim</th>
                         <th>4º Bim</th>
                         <th>Média</th>
+                        <th>Faltas</th>
+                        <th>% Faltas</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -239,6 +266,20 @@
                         <td>{{ item.nota.nota3|default:"--" }}</td>
                         <td>{{ item.nota.nota4|default:"--" }}</td>
                         <td><strong>{{ item.nota.media|floatformat:1|default:"--" }}</strong></td>
+                        <td>
+                            {% if item.total_aulas > 0 %}
+                                {{ item.faltas }}/{{ item.total_aulas }}
+                            {% else %}
+                                --
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.total_aulas > 0 %}
+                                {{ item.percentual_faltas }}%
+                            {% else %}
+                                --
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -246,11 +287,13 @@
                     <tr>
                         <td colspan="5"><strong>Média Geral</strong></td>
                         <td><strong>{{ media_geral|floatformat:1|default:"--" }}</strong></td>
+                        <td colspan="2"></td>
                     </tr>
                     {% if situacao_geral != "--" %}
                     <tr>
                         <td colspan="5"><strong>Situação Geral</strong></td>
                         <td><strong>{{ situacao_geral }}</strong></td>
+                        <td colspan="2"></td>
                     </tr>
                     {% endif %}
                 </tfoot>

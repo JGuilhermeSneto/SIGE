@@ -1,4 +1,5 @@
 from django.test import SimpleTestCase
+
 from core.templatetags.get_item import get_item
 
 

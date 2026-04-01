@@ -1,697 +1,642 @@
-/* ============================
-   CONTAINER CENTRALIZADO
-   ============================ */
-.container-centralizado {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-}
+/* ============================================================
+   SIGE — Painel Aluno
+   painel_aluno.css
+============================================================ */
 
-.conteudo-principal {
-    margin-top: 80px;
-}
+/* ── Wrapper ── */
+.container-centralizado { width: 100%; }
+.conteudo-principal      { width: 100%; }
 
-/* ============================
-   HEADER DO PAINEL
-   ============================ */
+/* ── Header ── */
 .header-painel {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 28px;
 }
 
 .saudacao h1 {
-    font-size: 2.5rem;
-    color: #333;
-    margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.2;
 }
-
 .saudacao p {
-    font-size: 1.1rem;
-    color: #666;
-    margin-top: 5px;
+  font-size: .83rem;
+  color: #64748b;
+  margin-top: 3px;
 }
 
 .btn-imprimir {
-    background-color: #4285F4;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .52rem 1.2rem;
+  background: #1a2337;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 10px;
+  color: #94a3b8;
+  font-size: .82rem;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
 }
-
 .btn-imprimir:hover {
-    background-color: #357ae8;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
+  background: #1e2a40;
+  color: #f1f5f9;
+  border-color: rgba(255,255,255,.18);
 }
 
-/* ============================
-   CARDS DE RESUMO
-   ============================ */
+/* ── Cards de resumo ── */
 .cards-resumo {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
 }
 
 .card-info {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.3s ease;
+  background: linear-gradient(145deg, #1a2337 0%, #1e2a40 100%);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  padding: 20px 20px 18px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, border-color .2s;
+  cursor: default;
 }
-
 .card-info:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.13);
 }
+.card-info::before {
+  content: '';
+  position: absolute;
+  top: -24px; right: -24px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  opacity: .09;
+  pointer-events: none;
+}
+.card-info:nth-child(1)::before { background: #06b6d4; }
+.card-info:nth-child(2)::before { background: #6366f1; }
+.card-info:nth-child(3)::before { background: #10b981; }
 
 .card-icon {
-    font-size: 3rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .card-dados p {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0 0 8px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  font-size: .7rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 4px;
 }
 
 .card-dados h3 {
-    font-size: 2rem;
-    color: #333;
-    margin: 0;
-    font-weight: 700;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1;
 }
 
-.card-dados h3.aprovado {
-    color: #16a34a;
-}
+.card-info:nth-child(1) h3 { color: #67e8f9; }
+.card-info:nth-child(2) h3 { color: #818cf8; }
+.card-info:nth-child(3) h3 { color: #6ee7b7; }
 
-.card-dados h3.recuperacao {
-    color: #f59e0b;
-}
+/* situação dentro do card-dados */
+.card-dados h3.aprovado    { color: #6ee7b7; }
+.card-dados h3.recuperacao { color: #fcd34d; }
+.card-dados h3.reprovado   { color: #fda4af; }
 
-.card-dados h3.reprovado {
-    color: #dc2626;
-}
-
-/* ============================
-   CONTEÚDO GERAL - GRID
-   ============================ */
+/* ── Layout geral ── */
 .conteudo-geral {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 20px;
-    margin-bottom: 30px;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: start;
 }
 
-/* ============================
-   SEÇÃO DE DISCIPLINAS
-   ============================ */
-.secao-disciplinas {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
+/* ── Seção de disciplinas ── */
 .secao-disciplinas h2 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 20px;
+  font-size: .85rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: 14px;
 }
 
 .lista-disciplinas {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* ============================
-   CARD DE DISCIPLINA (ACCORDION)
-   ============================ */
+/* Card de disciplina */
 .disciplina-card {
-    border: 1px solid #e5e7eb;
-    border-radius: 10px;
-    overflow: hidden;
-    transition: all 0.3s ease;
+  background: #1a2337;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color .2s;
 }
-
 .disciplina-card:hover {
-    border-color: #4285F4;
+  border-color: rgba(255,255,255,.13);
 }
 
 .disciplina-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    cursor: pointer;
-    background: #f9fafb;
-    transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s;
 }
+.disciplina-header:hover { background: rgba(255,255,255,.03); }
 
-.disciplina-header:hover {
-    background: #f3f4f6;
-}
-
+.disciplina-info { flex: 1; }
 .disciplina-info h3 {
-    font-size: 1.2rem;
-    color: #333;
-    margin: 0 0 5px 0;
+  font-size: .9rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 2px;
 }
-
 .disciplina-info p {
-    font-size: 0.9rem;
-    color: #666;
-    margin: 0;
+  font-size: .75rem;
+  color: #475569;
 }
 
 .disciplina-media {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 52px;
 }
-
 .disciplina-media .label {
-    font-size: 0.75rem;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+  font-size: .62rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: .06em;
 }
-
 .disciplina-media .valor-media {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: #333;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #64748b;
 }
-
-.disciplina-media .valor-media.aprovado {
-    color: #16a34a;
-}
-
-.disciplina-media .valor-media.recuperacao {
-    color: #f59e0b;
-}
-
-.disciplina-media .valor-media.reprovado {
-    color: #dc2626;
-}
+.disciplina-media .valor-media.aprovado    { color: #6ee7b7; }
+.disciplina-media .valor-media.recuperacao { color: #fcd34d; }
+.disciplina-media .valor-media.reprovado   { color: #fda4af; }
 
 .seta {
-    font-size: 1.2rem;
-    color: #666;
-    transition: transform 0.3s ease;
+  color: #334155;
+  font-size: .8rem;
+  transition: transform .25s;
+  flex-shrink: 0;
 }
 
-/* NOTAS (FECHADAS POR PADRÃO) */
+/* Notas expandidas */
 .disciplina-notas {
-    display: none;
-    padding: 20px;
-    background: #fff;
-    border-top: 1px solid #e5e7eb;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+  display: none;
+  padding: 0 18px 16px;
+  border-top: 1px solid rgba(255,255,255,.05);
+  flex-direction: column;
+  gap: 0;
 }
-
 .disciplina-card.aberto .disciplina-notas {
-    display: grid;
+  display: flex;
 }
 
 .nota-item {
-    text-align: center;
-    padding: 15px;
-    background: #f9fafb;
-    border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255,255,255,.04);
 }
+.nota-item:last-of-type { border-bottom: none; }
 
 .nota-label {
-    display: block;
-    font-size: 0.85rem;
-    color: #666;
-    margin-bottom: 8px;
+  font-size: .78rem;
+  color: #64748b;
+  font-weight: 500;
 }
-
 .nota-valor {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #4285F4;
+  font-size: .88rem;
+  font-weight: 700;
+  color: #94a3b8;
 }
 
-/* ============================
-   COLUNA DIREITA
-   ============================ */
+/* ── Frequência dentro do card ── */
+.frequencia-resumo {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255,255,255,.08);
+  flex-wrap: wrap;
+}
+
+.freq-item {
+  display: flex;
+  flex-direction: column;
+  min-width: 64px;
+}
+.freq-label {
+  font-size: .62rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.freq-valor {
+  font-size: .88rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.freq-barra-wrap {
+  flex: 1;
+  min-width: 70px;
+  height: 6px;
+  background: rgba(255,255,255,.07);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.freq-barra {
+  height: 100%;
+  border-radius: 999px;
+  transition: width .45s ease;
+}
+.freq-barra.ok      { background: linear-gradient(90deg, #059669, #6ee7b7); }
+.freq-barra.alerta  { background: linear-gradient(90deg, #b45309, #fcd34d); }
+.freq-barra.critica { background: linear-gradient(90deg, #9f1239, #fda4af); }
+
+.freq-percentual {
+  font-size: .78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.freq-percentual.aprovado    { color: #6ee7b7; }
+.freq-percentual.recuperacao { color: #fcd34d; }
+.freq-percentual.reprovado   { color: #fda4af; }
+
+.frequencia-resumo.sem-registro span {
+  font-size: .75rem;
+  color: #334155;
+  font-style: italic;
+}
+
+/* ── Coluna direita ── */
 .coluna-direita {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* ============================
-   GRÁFICO DE DESEMPENHO
-   ============================ */
+/* Card do gráfico */
 .card-grafico {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(145deg, #1a2337 0%, #1e2a40 100%);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  padding: 20px;
 }
-
 .card-grafico h3 {
-    font-size: 1.3rem;
-    color: #333;
-    margin: 0 0 20px 0;
+  font-size: .78rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: 16px;
 }
 
-/* ============================
-   CALENDÁRIO COMPACTO
-   ============================ */
+/* Calendário */
 .calendario {
-    background: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(145deg, #1a2337 0%, #1e2a40 100%);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 16px;
+  padding: 20px;
 }
 
 .calendario-cabecalho {
-    text-align: center;
-    margin-bottom: 15px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #f0f0f0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
 }
-
 .calendario-cabecalho h2 {
-    color: #4285F4;
-    font-size: 1.2rem;
-    margin-bottom: 3px;
-    font-weight: 600;
+  font-size: .95rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  letter-spacing: .05em;
 }
-
 .calendario-ano {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #888;
+  font-size: .75rem;
+  color: #475569;
+  font-weight: 500;
 }
 
 .calendario-grade {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
 }
 
 .nome-dia {
-    text-align: center;
-    font-weight: 600;
-    color: #4285F4;
-    padding: 6px 0;
-    font-size: 0.75rem;
+  text-align: center;
+  font-size: .6rem;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: .04em;
+  padding-bottom: 5px;
+  text-transform: uppercase;
 }
 
 .dia {
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    font-weight: 500;
-    color: #333;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    font-size: 0.85rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .72rem;
+  font-weight: 500;
+  color: #64748b;
+  border-radius: 6px;
+  cursor: default;
+  transition: background .15s, color .15s;
 }
-
-.dia:not(.vazio):hover {
-    background: #e3f2fd;
-    color: #4285F4;
+.dia:hover:not(.vazio):not(.atual) {
+  background: rgba(255,255,255,.05);
+  color: #94a3b8;
 }
-
+.dia.vazio { visibility: hidden; }
 .dia.atual {
-    background: #4285F4;
-    color: white;
-    font-weight: 700;
-    box-shadow: 0 2px 6px rgba(66, 133, 244, 0.4);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 6px;
 }
 
-.dia.vazio {
-    opacity: 0;
-    cursor: default;
-}
-
-/* ============================
-   GRADE HORÁRIA
-   ============================ */
+/* ── Grade Horária ── */
 .secao-grade {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-top: 4px;
 }
-
 .secao-grade h2 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 20px;
+  font-size: .85rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  margin-bottom: 14px;
 }
 
 .grade-wrapper {
-    overflow-x: auto;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.07);
 }
 
 .grade-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95rem;
-    table-layout: fixed; /* <- trava as colunas */
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+  min-width: 560px;
 }
 
-/* Largura fixa da coluna Horário */
-.grade-table th:first-child,
+.grade-table thead tr {
+  background: #1a2337;
+}
+.grade-table th {
+  padding: 11px 14px;
+  text-align: center;
+  font-size: .68rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+.grade-table th:first-child { text-align: left; }
+
+.grade-table tbody tr {
+  background: #111827;
+  transition: background .15s;
+}
+.grade-table tbody tr:nth-child(even) { background: #0f1623; }
+.grade-table tbody tr:hover { background: #1a2337; }
+
+.grade-table td {
+  padding: 10px 14px;
+  text-align: center;
+  color: #94a3b8;
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  font-size: .8rem;
+}
 .grade-table td.horario-col {
-    width: 180px;          /* ajuste se quiser menor/maior */
-    white-space: nowrap;   /* não quebra linha */
+  text-align: left;
+  color: #475569;
+  font-size: .72rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
-
-
-.grade-table thead th {
-    background: #f3f4f6;
-    padding: 12px;
-    text-align: center;
-    font-weight: 600;
-    color: #334155;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.grade-table tbody td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #e5e7eb;
-    color: #475569;
-}
-
-.grade-table tbody tr:nth-child(even) {
-    background: #f9fafb;
-}
-
-.grade-table .horario-col {
-    font-weight: 600;
-    background: #f3f4f6;
-    text-align: left;
-    padding-left: 15px;
-}
+.grade-table tbody tr:last-child td { border-bottom: none; }
 
 .aviso-grade {
-    text-align: center;
-    color: #666;
-    padding: 30px;
-    font-style: italic;
+  font-size: .83rem;
+  color: #334155;
+  font-style: italic;
+  text-align: center;
+  padding: 2rem;
+  background: #111827;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.05);
 }
 
-/* ============================
-   MODAL DE IMPRESSÃO
-   ============================ */
+/* ── Modal de impressão ── */
 .modal-impressao {
-    display: none;
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    align-items: center;
-    justify-content: center;
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
 }
 
 .modal-conteudo {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    width: 90%;
-    max-width: 900px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+  background: #fff;
+  color: #111;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 760px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
 }
 
 .fechar-modal {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #666;
-    cursor: pointer;
-    transition: color 0.2s;
-    z-index: 10;
+  position: absolute;
+  top: 14px; right: 18px;
+  font-size: 1.6rem;
+  color: #94a3b8;
+  cursor: pointer;
+  line-height: 1;
+  transition: color .2s;
 }
+.fechar-modal:hover { color: #111; }
 
-.fechar-modal:hover {
-    color: #333;
-}
-
-/* BOLETIM PARA IMPRESSÃO */
-.boletim-imprimir {
-    padding: 20px;
-}
-
+/* Boletim (impressão) */
 .boletim-header {
-    text-align: center;
-    margin-bottom: 30px;
-    border-bottom: 3px solid #4285F4;
-    padding-bottom: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e2e8f0;
 }
-
 .boletim-header h1 {
-    font-size: 2rem;
-    color: #333;
-    margin-bottom: 10px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #0d1424;
+  letter-spacing: .06em;
 }
-
-.sistema {
-    color: #666;
-    font-size: 0.9rem;
-    font-style: italic;
+.boletim-header .sistema {
+  font-size: .75rem;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
 .boletim-info-aluno {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #f9fafb;
-    border-radius: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
 }
-
-.info-linha {
-    display: flex;
-    gap: 10px;
-}
-
-.info-linha .label {
-    font-weight: 600;
-    color: #333;
-}
-
-.info-linha .valor {
-    color: #666;
-}
+.info-linha { display: flex; gap: 6px; font-size: .82rem; }
+.info-linha .label { color: #64748b; font-weight: 600; white-space: nowrap; }
+.info-linha .valor { color: #1e293b; }
 
 .boletim-tabela {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .82rem;
+  margin-bottom: 20px;
 }
-
-.boletim-tabela th,
+.boletim-tabela th {
+  background: #0d1424;
+  color: #fff;
+  padding: 9px 12px;
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.boletim-tabela th:first-child { text-align: left; }
 .boletim-tabela td {
-    padding: 12px;
-    text-align: center;
-    border: 1px solid #e5e7eb;
+  padding: 8px 12px;
+  text-align: center;
+  color: #1e293b;
+  border-bottom: 1px solid #e2e8f0;
 }
-
-.boletim-tabela thead th {
-    background: #4285F4;
-    color: white;
-    font-weight: 600;
-}
-
-.boletim-tabela tbody td {
-    color: #333;
-}
-
-.boletim-tabela tfoot {
-    background: #f3f4f6;
-    font-weight: bold;
+.boletim-tabela td:first-child { text-align: left; }
+.boletim-tabela tbody tr:nth-child(even) { background: #f8fafc; }
+.boletim-tabela tfoot td {
+  background: #f1f5f9;
+  font-weight: 700;
+  border-top: 2px solid #e2e8f0;
 }
 
 .boletim-footer {
-    text-align: center;
-    margin-top: 40px;
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e2e8f0;
+  font-size: .8rem;
+  color: #64748b;
 }
-
-.boletim-footer p {
-    margin: 10px 0;
-    color: #666;
+.boletim-footer .assinatura {
+  margin-top: 28px;
+  color: #94a3b8;
 }
-
-.assinatura {
-    margin-top: 60px;
-    font-weight: normal;
-}
-
-.assinatura-texto {
-    margin-top: 5px;
-    font-size: 0.9rem;
-    color: #666;
+.boletim-footer .assinatura-texto {
+  font-size: .72rem;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
 .btn-imprimir-modal {
-    background-color: #4285F4;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-left: auto;
-    margin-right: auto;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 16px auto 0;
+  padding: .6rem 1.6rem;
+  background: #0d1424;
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  font-size: .88rem;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: opacity .2s;
 }
+.btn-imprimir-modal:hover { opacity: .85; }
 
-.btn-imprimir-modal:hover {
-    background-color: #357ae8;
-}
-
-/* ============================
-   IMPRESSÃO (CSS PARA PRINT)
-   ============================ */
+/* ── Print ── */
 @media print {
-    @page {
-        size: A4;
-        margin: 1cm;
-    }
-    
-    body {
-        margin: 0;
-        padding: 0;
-    }
-    
-    * {
-        visibility: hidden;
-    }
-    
-    #boletim-imprimir,
-    #boletim-imprimir * {
-        visibility: visible;
-    }
-    
-    #boletim-imprimir {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .modal-impressao {
-        display: block !important;
-        position: static;
-        background: none;
-    }
-    
-    .modal-conteudo {
-        box-shadow: none;
-        max-height: none;
-        overflow: visible;
-        padding: 0;
-        width: 100%;
-        max-width: none;
-    }
-    
-    .btn-imprimir-modal,
-    .fechar-modal {
-        display: none !important;
-    }
-    
-    .boletim-tabela {
-        page-break-inside: avoid;
-    }
-    
-    .boletim-header,
-    .boletim-info-aluno {
-        page-break-inside: avoid;
-    }
+  body * { visibility: hidden; }
+  .boletim-imprimir,
+  .boletim-imprimir * { visibility: visible; }
+  .boletim-imprimir {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    color: #000;
+    padding: 24px;
+  }
+  .fechar-modal,
+  .btn-imprimir-modal { display: none; }
 }
 
-/* ============================
-   RESPONSIVIDADE
-   ============================ */
-@media (max-width: 1024px) {
-    .conteudo-geral {
-        grid-template-columns: 1fr;
-    }
-    
-    .cards-resumo {
-        grid-template-columns: 1fr;
-    }
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+@media (max-width: 960px) {
+  .conteudo-geral { grid-template-columns: 1fr; }
+  .coluna-direita {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-@media (max-width: 768px) {
-    .container-centralizado {
-        padding: 15px;
-    }
-    
-    .header-painel {
-        flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
-    }
-    
-    .saudacao h1 {
-        font-size: 1.8rem;
-    }
-    
-    .cards-resumo {
-        grid-template-columns: 1fr;
-    }
-    
-    .disciplina-notas {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .boletim-info-aluno {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-conteudo {
-        width: 95%;
-        padding: 20px;
-    }
+@media (max-width: 640px) {
+  .cards-resumo { grid-template-columns: 1fr 1fr; }
+  .coluna-direita { grid-template-columns: 1fr; }
+  .boletim-info-aluno { grid-template-columns: 1fr; }
+  .saudacao h1 { font-size: 1.25rem; }
+}
+
+@media (max-width: 400px) {
+  .cards-resumo { grid-template-columns: 1fr; }
 }

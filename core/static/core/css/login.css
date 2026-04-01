@@ -1,0 +1,331 @@
+/* ============================================================
+   SIGE — Login
+   login.css
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Variáveis globais ── */
+:root {
+  --indigo: #6366f1;
+  --cyan: #06b6d4;
+  --radius-xl: 24px;
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #090e18;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* overflow: hidden removido — impedia scroll em telas pequenas */
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Brilhos decorativos ── */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(99,102,241,.13) 0%, transparent 70%);
+  top: -150px; left: -150px;
+}
+body::after {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(6,182,212,.10) 0%, transparent 70%);
+  bottom: -120px; right: -120px;
+}
+
+/* ── Container ── */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Caixa principal ── */
+.login-box {
+  display: flex;
+  width: 100%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  min-height: 520px;
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+}
+
+/* ── Lado esquerdo — marca ── */
+.logo-area {
+  flex: 1;
+  background: linear-gradient(145deg, #0d1424 0%, #111827 50%, #0f1e30 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grade decorativa sutil */
+.logo-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99,102,241,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Círculo de brilho no centro */
+.logo-area::after {
+  content: '';
+  position: absolute;
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, rgba(99,102,241,.12) 0%, transparent 65%);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.logo {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 0 24px rgba(99,102,241,.35));
+  transition: filter .3s, transform .3s;
+  cursor: default;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 36px rgba(99,102,241,.55));
+  transform: scale(1.03);
+}
+
+.SIGE {
+  position: relative;
+  z-index: 1;
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: .35em;
+  margin-top: 22px;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #818cf8, #67e8f9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitulo {
+  position: relative;
+  z-index: 1;
+  color: #64748b;
+  font-size: .88rem;
+  font-style: italic;
+  letter-spacing: .04em;
+}
+.subtitulo::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--indigo), var(--cyan));
+  margin: 14px auto 0;
+  border-radius: 999px;
+}
+
+/* ── Lado direito — formulário ── */
+.form-area {
+  flex: 0 0 380px;
+  background: #0d1424;
+  border-left: 1px solid rgba(255,255,255,.07);
+  padding: 56px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.form-area h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+  letter-spacing: .01em;
+}
+
+.form-area .form-subtitle {
+  font-size: .82rem;
+  color: #475569;
+  margin-bottom: 36px;
+}
+
+form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  /* gap: 0 removido — desnecessário, inputs usam margin-bottom */
+}
+
+/* ── Inputs ── */
+.input-container {
+  margin-bottom: 18px;
+}
+
+.input-container label {
+  display: block;
+  font-size: .75rem;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/*
+  Wrapper que agrupa input + ícone.
+  O position:relative fica aqui, não no .input-container,
+  evitando que o ícone se desloque quando mensagens de erro
+  aumentam a altura do container pai.
+*/
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 10px;
+  color: #f1f5f9;
+  font-size: .9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .25s, box-shadow .25s, background .25s;
+}
+.input-wrapper input::placeholder { color: #334155; }
+.input-wrapper input:focus {
+  border-color: var(--indigo);
+  background: #131c2e;
+  box-shadow: 0 0 0 3px rgba(99,102,241,.15);
+}
+
+/* Ícone centralizado verticalmente dentro do input */
+.input-wrapper .icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #334155;
+  font-size: .9rem;
+  pointer-events: none;
+  transition: color .25s;
+}
+/* O ícone vem depois do input no DOM, então ~ funciona corretamente */
+.input-wrapper input:focus ~ .icon { color: #818cf8; }
+
+/* Erros de campo */
+.input-container .errorlist {
+  list-style: none;
+  margin-top: 5px;
+}
+.input-container .errorlist li {
+  font-size: .75rem;
+  color: #fda4af;
+}
+
+/* ── Erros gerais do form ── */
+.form-errors {
+  background: rgba(244,63,94,.1);
+  border: 1px solid rgba(244,63,94,.25);
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  margin-bottom: 1.2rem;
+  font-size: .82rem;
+  color: #fda4af;
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+/* ── Botão ── */
+.btn-login {
+  margin-top: 10px;
+  width: 100%;
+  padding: 13px;
+  background: linear-gradient(135deg, var(--indigo) 0%, #8b5cf6 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: .92rem;
+  font-weight: 700;
+  font-family: inherit; /* herda 'Inter' do body — declaração redundante removida */
+  letter-spacing: .03em;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 18px rgba(99,102,241,.3);
+}
+.btn-login:hover {
+  opacity: .92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(99,102,241,.45);
+}
+.btn-login:active { transform: translateY(0); }
+
+/* ── Link esqueceu ── */
+.forgot-link {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: .8rem;
+  color: #475569;
+  text-decoration: none;
+  transition: color .2s;
+}
+.forgot-link:hover { color: #818cf8; }
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+@media (max-width: 860px) {
+  .login-box { flex-direction: column; min-height: auto; }
+
+  .logo-area {
+    padding: 40px 24px;
+    flex: none;
+  }
+  .logo { max-width: 130px; }
+  .SIGE { font-size: 2rem; }
+
+  .form-area {
+    flex: none;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,.07);
+    padding: 40px 28px 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 12px; }
+  .form-area { padding: 32px 20px 44px; }
+}

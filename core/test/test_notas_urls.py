@@ -23,6 +23,7 @@ class NotasUrlsTest(SimpleTestCase):
     @override_settings(DEBUG=True)
     def test_static_urls_debug_true(self):
         import notas.urls
+
         importlib.reload(notas.urls)
 
         patterns = notas.urls.urlpatterns
@@ -37,6 +38,7 @@ class NotasUrlsTest(SimpleTestCase):
     @override_settings(DEBUG=False)
     def test_static_urls_debug_false(self):
         import notas.urls
+
         importlib.reload(notas.urls)
 
         patterns = notas.urls.urlpatterns

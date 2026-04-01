@@ -6,16 +6,23 @@ from datetime import date, datetime
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.db.models import Count, Q
 
-from .models import Frequencia
+from core.models import Frequencia
+
 from .forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm
-from .models import Aluno, Disciplina, Frequencia, Gestor, GradeHorario, Nota, Professor, Turma
+from .models import (
+    Aluno,
+    Disciplina,
+    Frequencia,
+    Gestor,
+    GradeHorario,
+    Nota,
+    Professor,
+    Turma,
+)
 
 # ======================== HORÁRIOS ========================
 HORARIOS = {
@@ -1223,6 +1230,7 @@ def grade_horaria(request, turma_id):
 
 # ======================== FREQUÊNCIA ========================
 
+
 @login_required
 def lancar_chamada(request, disciplina_id):
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
@@ -1243,9 +1251,7 @@ def lancar_chamada(request, disciplina_id):
 
     frequencias_existentes = {
         f.aluno_id: f
-        for f in Frequencia.objects.filter(
-            disciplina=disciplina, data=data_selecionada
-        )
+        for f in Frequencia.objects.filter(disciplina=disciplina, data=data_selecionada)
     }
 
     if request.method == "POST":
@@ -1280,17 +1286,35 @@ def lancar_chamada(request, disciplina_id):
     }
     return render(request, "frequencia/lancar_chamada.html", context)
 
-
 @login_required
 def historico_frequencia(request, disciplina_id):
+    """
+    Exibe o histórico de frequência de uma disciplina específica,
+    agrupando os registros por data.
+
+    Para cada data registrada, são apresentados:
+    - Total de alunos com chamada realizada
+    - Quantidade de presenças
+    - Quantidade de faltas
+
+    Regras de acesso:
+    - Superusuários e gestores têm acesso irrestrito
+    - Professores somente podem visualizar disciplinas sob sua responsabilidade
+    """
+
+    # Recupera a disciplina ou retorna erro 404 caso não exista
     disciplina = get_object_or_404(Disciplina, id=disciplina_id)
 
-    # Permite superusuário e gestor; para professor, verifica se é dono
+    # Verificação de permissão de acesso
     if not (request.user.is_superuser or hasattr(request.user, "gestor")):
         if disciplina.professor.user != request.user:
-            messages.error(request, "Você não tem permissão para acessar este histórico.")
+            messages.error(
+                request,
+                "Você não tem permissão para acessar este histórico."
+            )
             return redirect("disciplinas_professor")
 
+    # Obtém todas as datas distintas nas quais houve chamada para a disciplina
     datas = (
         Frequencia.objects.filter(disciplina=disciplina)
         .values_list("data", flat=True)
@@ -1298,29 +1322,46 @@ def historico_frequencia(request, disciplina_id):
         .order_by("-data")
     )
 
+    # Estrutura que armazenará o resumo de frequência por data
     resumo_por_data = []
-    for d in datas:
-        registros = Frequencia.objects.filter(disciplina=disciplina, data=d)
-        total = registros.count()
-        presencas = registros.presencas().count()
-        resumo_por_data.append(
-            {
-                "data": d,
-                "total": total,
-                "presencas": presencas,
-                "faltas": total - presencas,
-            }
+
+    # Processa cada data individualmente
+    for data in datas:
+        # Registros de frequência da disciplina na data específica
+        registros = Frequencia.objects.filter(
+            disciplina=disciplina,
+            data=data
         )
 
+        # Total de alunos com frequência lançada na data
+        total = registros.count()
+
+        # Total de presenças registradas
+        presencas = registros.filter(presente=True).count()
+
+        # Total de faltas (diferença entre total e presenças)
+        faltas = total - presencas
+
+        # Adiciona o resumo da data à lista final
+        resumo_por_data.append({
+            "data": data,
+            "total": total,
+            "presencas": presencas,
+            "faltas": faltas,
+        })
+
+    # Contexto enviado ao template
     context = {
         "disciplina": disciplina,
         "resumo_por_data": resumo_por_data,
     }
-    return render(request, "frequencia/historico_frequencia.html", context)
 
-
-
-
+    # Renderiza a página de histórico de frequência
+    return render(
+        request,
+        "frequencia/historico_frequencia.html",
+        context
+    )
 @login_required
 def frequencia_aluno(request):
     """
@@ -1351,3 +1392,43 @@ def frequencia_aluno(request):
     }
 
     return render(request, "frequencia/frequencia_aluno.html", context)
+
+
+def _coletar_notas_aluno(aluno, disciplinas):
+    """Coleta disciplinas com notas, frequência e totais para o painel do aluno."""
+    disciplinas_com_notas = []
+    soma_medias = 0
+    total_com_media = 0
+    total_lancadas = 0
+
+    for disciplina in disciplinas:
+        nota = Nota.objects.filter(aluno=aluno, disciplina=disciplina).first()
+        if nota:
+            total_lancadas += _contar_notas_lancadas(nota)
+
+        # Frequência por disciplina
+        freq_qs = Frequencia.objects.filter(aluno=aluno, disciplina=disciplina)
+        total_aulas = freq_qs.count()
+        presencas = freq_qs.filter(presente=True).count()
+        faltas = total_aulas - presencas
+        percentual_faltas = (
+            round((faltas / total_aulas * 100), 1) if total_aulas > 0 else 0
+        )
+
+        disciplinas_com_notas.append(
+            {
+                "disciplina": disciplina,
+                "nota": nota,
+                "total_aulas": total_aulas,
+                "presencas": presencas,
+                "faltas": faltas,
+                "percentual_faltas": percentual_faltas,
+            }
+        )
+
+        if nota and nota.media is not None:
+            soma_medias += nota.media
+            total_com_media += 1
+
+    media_geral = soma_medias / total_com_media if total_com_media > 0 else None
+    return disciplinas_com_notas, media_geral, total_lancadas

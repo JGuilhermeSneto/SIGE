@@ -1,176 +1,143 @@
 {% load static %}
+{% load custom_tags %}
 <!DOCTYPE html>
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>{% block title %}SIGE{% endblock %}</title>
+  <title>{% block title %}SIGE{% endblock %}</title>
 
-    <!-- CSS principal -->
-    <link rel="stylesheet" href="{% static 'core/css/padrao_novo.css' %}">
+  <!-- CSS BASE -->
+  <link rel="stylesheet" href="{% static 'core/css/base.css' %}">
 
-    <!-- Ícones -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+  <!-- FONT AWESOME -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    referrerpolicy="no-referrer"
+  >
 
-    {% block extra_css %}{% endblock %}
+  {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body class="layout-base">
 
-    <!-- 🌟 MENU SUPERIOR FIXO -->
-    <header class="menu-principal">
+  <!-- ═════════ MENU SUPERIOR ═════════ -->
+  <header class="menu-principal">
 
-        {% if request.user.is_authenticated %}
-        {% if request.user.is_superuser %}
+    {% if request.user.is_authenticated %}
+      {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
         {% url 'painel_super' as home_url %}
-        {% elif request.user.gestor %}
-        {% url 'painel_super' as home_url %}
-        {% elif request.user.professor %}
+      {% elif request.user|has_attr:"professor" %}
         {% url 'painel_professor' as home_url %}
-        {% elif request.user.aluno %}
+      {% elif request.user|has_attr:"aluno" %}
         {% url 'painel_aluno' as home_url %}
-        {% else %}
+      {% else %}
         {% url 'login' as home_url %}
-        {% endif %}
-        {% else %}
-        {% url 'login' as home_url %}
-        {% endif %}
-
-        <a href="{{ home_url }}" class="brand-link">
-            <img src="{% static 'core/img/Logo-menu.png' %}" class="logo-menu">
-            <h2>SIGE</h2>
-        </a>
-
-
-
-        <!-- Botão Hamburguer (mobile) -->
-        <i class="fa-solid fa-bars icone-menu hamburguer" id="menu-toggle"></i>
-
-        <!-- Avatar + Menu -->
-        <div class="menu-icones">
-
-            <div class="user-dropdown">
-
-                <!-- AVATAR -->
-                <div class="user-avatar" id="user-avatar">
-                    {% if request.user.is_authenticated %}
-                    {% with u=request.user %}
-
-                    {% if u.professor and u.professor.foto %}
-                    <img src="{{ u.professor.foto.url }}" class="avatar-img">
-
-                    {% elif u.aluno and u.aluno.foto %}
-                    <img src="{{ u.aluno.foto.url }}" class="avatar-img">
-
-                    {% elif u.gestor and u.gestor.foto %}
-                    <img src="{{ u.gestor.foto.url }}" class="avatar-img">
-
-                    {% else %}
-                    <i class="fa-solid fa-user"></i>
-                    {% endif %}
-
-                    {% endwith %}
-                    {% endif %}
-                </div>
-
-                <!-- MENU SUSPENSO -->
-                <div class="dropdown-menu" id="dropdown-menu">
-                    <a href="{% url 'editar_perfil' %}">
-                        <i class="fa-solid fa-user-pen"></i> Editar Perfil
-                    </a>
-
-                    <a href="{% url 'logout' %}">
-                        <i class="fa-solid fa-right-from-bracket"></i> Sair
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-
-    </header>
-
-
-
-    <!-- 🌟 MENU LATERAL FIXO -->
-    {% load custom_tags %}
-
-
-    {% if not request.user.is_authenticated or not request.user|has_attr:"aluno" %}
-    <!-- 🌟 MENU LATERAL FIXO -->
-    <aside class="menu-lateral" id="menu-lateral">
-        <nav class="nav-lateral">
-
-            {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
-            <a href="{% url 'painel_super' %}">
-                <i class="fa-solid fa-house"></i> Início
-            </a>
-
-            <a href="{% url 'listar_turmas' %}">
-                <i class="fa-solid fa-graduation-cap"></i> Turmas
-            </a>
-
-            <a href="{% url 'usuarios' %}">
-                <i class="fa-solid fa-users"></i> Usuários
-            </a>
-
-            {% elif request.user|has_attr:"professor" %}
-            <a href="{% url 'painel_professor' %}">
-                <i class="fa-solid fa-house"></i> Início
-            </a>
-
-            <a href="{% url 'disciplinas_professor' %}">
-                <i class="fa-solid fa-graduation-cap"></i> Minhas Turmas
-            </a>
-            {% endif %}
-
-        </nav>
-    </aside>
+      {% endif %}
+    {% else %}
+      {% url 'login' as home_url %}
     {% endif %}
 
+    <!-- LOGO -->
+    <a href="{{ home_url }}" class="brand-link">
+      <img src="{% static 'core/img/Logo-menu.png' %}" class="logo-menu" alt="SIGE">
+      <span>SIGE</span>
+    </a>
 
+    <!-- BOTÃO MOBILE -->
+    <button class="icone-menu" id="menu-toggle" aria-label="Abrir menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
 
+    <!-- USUÁRIO -->
+    <div class="menu-icones">
+      {% if request.user.is_authenticated %}
+      <div class="user-dropdown">
 
+        <div class="user-avatar" id="user-avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
 
-    <!-- 🌟 ÁREA DE CONTEÚDO -->
-    <main class="area-conteudo">
-        {% block content %}
-        {% endblock %}
-    </main>
+        <nav class="dropdown-menu" id="dropdown-menu">
+          <a href="{% url 'editar_perfil' %}">
+            <i class="fa-solid fa-user-pen"></i> Editar Perfil
+          </a>
+          <a href="{% url 'logout' %}">
+            <i class="fa-solid fa-right-from-bracket"></i> Sair
+          </a>
+        </nav>
 
+      </div>
+      {% endif %}
+    </div>
 
-    <!-- SCRIPT -->
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
+  </header>
 
-            // MENU MOBILE
-            const toggleBtn = document.getElementById("menu-toggle");
-            const menuLateral = document.getElementById("menu-lateral");
+  <!-- ═════════ MENU LATERAL ═════════ -->
+  {% if request.user.is_authenticated and not request.user|has_attr:"aluno" %}
+  <aside class="menu-lateral" id="menu-lateral">
+    <nav class="nav-lateral">
 
-            toggleBtn.addEventListener("click", () => {
-                menuLateral.classList.toggle("ativo");
-            });
+      {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
+      <a href="{% url 'painel_super' %}">
+        <i class="fa-solid fa-house"></i> Início
+      </a>
+      <a href="{% url 'listar_turmas' %}">
+        <i class="fa-solid fa-graduation-cap"></i> Turmas
+      </a>
+      <a href="{% url 'usuarios' %}">
+        <i class="fa-solid fa-users"></i> Usuários
+      </a>
 
-            // DROPDOWN DO AVATAR
-            const avatar = document.getElementById("user-avatar");
-            const menu = document.getElementById("dropdown-menu");
+      {% elif request.user|has_attr:"professor" %}
+      <a href="{% url 'painel_professor' %}">
+        <i class="fa-solid fa-house"></i> Início
+      </a>
+      <a href="{% url 'disciplinas_professor' %}">
+        <i class="fa-solid fa-graduation-cap"></i> Minhas Turmas
+      </a>
+      {% endif %}
 
-            avatar.addEventListener("click", (e) => {
-                e.stopPropagation();
-                menu.style.display = menu.style.display === "block" ? "none" : "block";
-            });
+    </nav>
+  </aside>
+  {% endif %}
 
-            // Fechar ao clicar fora
-            document.addEventListener("click", () => {
-                menu.style.display = "none";
-            });
+  <!-- ═════════ CONTEÚDO ═════════ -->
+  <main class="area-conteudo">
+    {% block content %}{% endblock %}
+  </main>
 
+  <!-- ═════════ JS ═════════ -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggleBtn = document.getElementById("menu-toggle");
+      const menuLateral = document.getElementById("menu-lateral");
+
+      if (toggleBtn && menuLateral) {
+        toggleBtn.addEventListener("click", () => {
+          menuLateral.classList.toggle("ativo");
         });
-    </script>
+      }
 
-    {% block extra_js %}{% endblock %}
+      const avatar = document.getElementById("user-avatar");
+      const dropdown = document.getElementById("dropdown-menu");
+
+      if (avatar && dropdown) {
+        avatar.addEventListener("click", e => {
+          e.stopPropagation();
+          dropdown.classList.toggle("ativo");
+        });
+
+        document.addEventListener("click", () => {
+          dropdown.classList.remove("ativo");
+        });
+      }
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
 </body>
-
 </html>

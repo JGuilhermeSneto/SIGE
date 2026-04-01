@@ -1,94 +1,173 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}Painel do Superusuário{% endblock %}
+{% block title %}Painel — SIGE{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/painel_super.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/painel_superusuario.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<div class="container">
+<section class="painel-sige">
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="conteudo-principal-rolavel">
+  <!-- ═════════ HEADER ═════════ -->
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">SIGE · Painel de Controle</span>
+      <h1>
+        Olá,
+        <span class="nome-destaque">{{ nome_exibicao }}</span>
+      </h1>
+    </div>
 
-        <!-- HEADER COM NOME E FILTRO -->
-        <div class="header-painel">
-            <h1>Olá, {{ nome_exibicao }}</h1>
-            
-            <form method="get" class="filtro-ano-painel">
-                <label>📅 Ano Letivo</label>
-                <select name="ano" onchange="this.form.submit()">
-                    {% for ano in anos_disponiveis %}
-                        <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
-                            {{ ano }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </form>
+    <form method="get" class="filtro-ano-painel">
+      <span class="icone-cal">📅</span>
+      <label for="filtro-select">Ano Letivo</label>
+      <select id="filtro-select" name="ano" onchange="this.form.submit()">
+        {% for ano in anos_disponiveis %}
+          <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+            {{ ano }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </header>
+
+  <!-- ═════════ CONTEÚDO ═════════ -->
+  <div class="conteudo-geral">
+
+    <!-- ───── COLUNA ESQUERDA ───── -->
+    <section class="coluna-esquerda">
+
+      <!-- CARDS -->
+      <section class="cards">
+
+        <article class="card">
+          <div class="card-icone">🏫</div>
+          <p class="card-label">Turmas</p>
+          <h2 class="card-valor">{{ total_turmas }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">🎓</div>
+          <p class="card-label">Alunos</p>
+          <h2 class="card-valor">{{ total_alunos }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">👩‍🏫</div>
+          <p class="card-label">Professores</p>
+          <h2 class="card-valor">{{ total_professores }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">📚</div>
+          <p class="card-label">Disciplinas</p>
+          <h2 class="card-valor">{{ total_disciplinas }}</h2>
+        </article>
+
+      </section>
+
+      <!-- RESUMO -->
+      <section class="resumo-bar">
+        <div class="resumo-item">
+          <p class="resumo-item-label">Ano Letivo</p>
+          <p class="resumo-item-valor">{{ ano_filtro }}</p>
         </div>
 
-        <div class="conteudo-geral">
+        <div class="resumo-item">
+          <p class="resumo-item-label">Média Alunos/Turma</p>
+          <p class="resumo-item-valor">
+            {{ media_alunos_turma|default:"—" }}
+          </p>
+        </div>
 
-            <!-- CARDS -->
-            <section class="cards">
+        <div class="resumo-item">
+          <p class="resumo-item-label">Disc. por Professor</p>
+          <p class="resumo-item-valor">
+            {{ media_disc_professor|default:"—" }}
+          </p>
+        </div>
+      </section>
 
-                <div class="card">
-                    <p>Total de Turmas</p>
-                    <h2>{{ total_turmas }}</h2>
-                </div>
+    </section>
 
-                <div class="card">
-                    <p>Total de Alunos</p>
-                    <h2>{{ total_alunos }}</h2>
-                </div>
+    <!-- ───── COLUNA DIREITA ───── -->
+    <aside class="coluna-direita">
 
-                <div class="card">
-                    <p>Total de Professores</p>
-                    <h2>{{ total_professores }}</h2>
-                </div>
+      <!-- CALENDÁRIO -->
+      <section class="calendario-box">
+        <header class="calendario-cabecalho">
+          <h2>{{ agora|date:"F"|upper }}</h2>
+          <span class="calendario-ano">{{ agora|date:"Y" }}</span>
+        </header>
 
-                <div class="card">
-                    <p>Total de Disciplinas</p>
-                    <h2>{{ total_disciplinas }}</h2>
-                </div>
+        <div class="calendario-grade">
+          <div class="nome-dia">D</div>
+          <div class="nome-dia">S</div>
+          <div class="nome-dia">T</div>
+          <div class="nome-dia">Q</div>
+          <div class="nome-dia">Q</div>
+          <div class="nome-dia">S</div>
+          <div class="nome-dia">S</div>
 
-            </section>
-
-            <!-- CALENDÁRIO -->
-            <div class="calendario-container">
-                <div class="calendario">
-                    <div class="calendario-box">
-                        <div class="calendario-cabecalho">
-                            <h2>{{ agora|date:"F"|upper }}</h2>
-                            <span class="calendario-ano">{{ agora|date:"Y" }}</span>
-                        </div>
-
-
-                        <div class="calendario-grade">
-
-                            <!-- Nome dos dias -->
-                            <div class="nome-dia">DOM</div>
-                            <div class="nome-dia">SEG</div>
-                            <div class="nome-dia">TER</div>
-                            <div class="nome-dia">QUA</div>
-                            <div class="nome-dia">QUI</div>
-                            <div class="nome-dia">SEX</div>
-                            <div class="nome-dia">SAB</div>
-
-                            {% for celula in calendario %}
-                                <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
-                                    {% if not celula.vazio %}{{ celula.numero }}{% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
+          {% for celula in calendario %}
+            <div class="dia
+              {% if celula.hoje %}atual{% endif %}
+              {% if celula.vazio %}vazio{% endif %}
+            ">
+              {% if not celula.vazio %}
+                {{ celula.numero }}
+              {% endif %}
             </div>
-
+          {% endfor %}
         </div>
-    </main>
-</div>
+      </section>
+
+      <!-- INFO RÁPIDA -->
+      <section class="info-rapida">
+        <p class="info-rapida-titulo">Visão Geral</p>
+
+        <ul class="info-rapida-lista">
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-violet)"></span>
+              Turmas ativas
+            </span>
+            <span class="info-item-valor">{{ total_turmas }}</span>
+          </li>
+
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-cyan)"></span>
+              Total de alunos
+            </span>
+            <span class="info-item-valor">{{ total_alunos }}</span>
+          </li>
+
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-emerald)"></span>
+              Professores
+            </span>
+            <span class="info-item-valor">{{ total_professores }}</span>
+          </li>
+
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-amber)"></span>
+              Disciplinas
+            </span>
+            <span class="info-item-valor">{{ total_disciplinas }}</span>
+          </li>
+        </ul>
+      </section>
+
+    </aside>
+
+  </div>
+
+</section>
 
 {% endblock %}
