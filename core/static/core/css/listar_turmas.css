@@ -1,0 +1,356 @@
+/* ============================================================
+   SIGE — Lista de Turmas
+   lista_turmas.css  (alinhado com painel_super.css)
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Container principal ── */
+.conteudo-principal {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 32px 28px 48px;
+  background: var(--bg-base);
+}
+
+/* ── Cabeçalho ── */
+.header-docentes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 36px;
+}
+
+.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+}
+
+/* sublinhado decorativo no título */
+.titulo-pagina::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-violet), transparent);
+  border-radius: 2px;
+}
+
+/* ── Botão Adicionar ── */
+.btn-adicionar {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent-violet);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: .6rem 1.25rem;
+  cursor: pointer;
+  letter-spacing: .03em;
+  transition: background .2s, transform .18s, box-shadow .2s;
+  box-shadow: 0 0 0 rgba(124,111,255,0);
+}
+.btn-adicionar:hover {
+  background: #6a5df0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124,111,255,.35);
+}
+.btn-adicionar:active {
+  transform: translateY(0);
+}
+
+/* ── Card principal (envolve busca + tabela) ── */
+.card-tabela {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  animation: fadeUp .35s .05s ease both;
+}
+
+/* ── Barra de busca + filtro ── */
+.barra-busca-linha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+/* Input de busca */
+.barra-busca {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.barra-busca input[type="text"] {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .875rem;
+  padding: .6rem 2.5rem .6rem 1rem;
+  outline: none;
+  transition: border-color .2s, background .2s;
+}
+.barra-busca input[type="text"]::placeholder {
+  color: var(--text-muted);
+}
+.barra-busca input[type="text"]:focus {
+  border-color: var(--accent-violet);
+  background: var(--bg-hover);
+}
+
+.barra-busca .fa-magnifying-glass {
+  position: absolute;
+  right: .9rem;
+  color: var(--text-muted);
+  font-size: .85rem;
+  pointer-events: none;
+  transition: color .2s;
+}
+.barra-busca input[type="text"]:focus ~ .fa-magnifying-glass {
+  color: var(--accent-violet);
+}
+
+/* Filtro de ano letivo */
+.filtro-ano {
+  display: flex;
+  align-items: center;
+  gap: .7rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: .55rem 1rem .55rem .85rem;
+  transition: border-color .2s;
+}
+.filtro-ano:focus-within {
+  border-color: var(--accent-violet);
+}
+
+.filtro-ano label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  letter-spacing: .04em;
+}
+
+.filtro-ano select {
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-size: .88rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+}
+.filtro-ano select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* ── Tabela ── */
+.container-tabela {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.tabela-docentes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+}
+
+/* Cabeçalho da tabela */
+.tabela-docentes thead tr {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.tabela-docentes thead th {
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 13px 18px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Colunas específicas */
+.coluna-nome  { width: 40%; }
+.coluna-email { width: 20%; }
+.coluna-acoes { width: 20%; text-align: right; }
+
+/* Linhas do corpo */
+.tabela-docentes tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background .15s;
+}
+.tabela-docentes tbody tr:last-child {
+  border-bottom: none;
+}
+.tabela-docentes tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.tabela-docentes tbody td {
+  padding: 14px 18px;
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+/* Primeira coluna (nome) com destaque */
+.tabela-docentes tbody td:first-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Botões de ação ── */
+.coluna-acoes {
+  text-align: right;
+}
+
+/* Wrapper 2×2 aplicado via template ou gerado por CSS no td.coluna-acoes */
+.coluna-acoes td,
+td.coluna-acoes {
+  vertical-align: middle;
+}
+
+/* O td de ações deve conter um wrapper .acoes-grid ou
+   usamos CSS para agrupar os links em grade com display:grid */
+.acoes-grid {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 32px);
+  grid-template-rows: repeat(2, 32px);
+  gap: 4px;
+  justify-content: end;
+}
+
+.acao-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: .82rem;
+  text-decoration: none;
+  transition: background .18s, color .18s, border-color .18s, transform .18s;
+  /* Remove margem individual — o gap do grid controla o espaço */
+  margin: 0;
+}
+.acao-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Cores específicas por ação */
+/* Livro (disciplinas) */
+.acao-btn:has(.fa-book):hover,
+.acao-btn[title="Ver Disciplinas"]:hover {
+  background: rgba(34,211,238,.12);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+/* Tabela (grade horária) */
+.acao-btn:has(.fa-table):hover,
+.acao-btn[title="Grade Horária"]:hover {
+  background: rgba(52,211,153,.12);
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+}
+
+/* Editar */
+.acao-btn:has(.fa-pen):hover,
+.acao-btn[title="Editar Turma"]:hover {
+  background: rgba(124,111,255,.12);
+  border-color: var(--accent-violet);
+  color: var(--accent-violet);
+}
+
+/* Excluir */
+.acao-btn:has(.fa-trash):hover,
+.acao-btn[title*="Excluir"]:hover {
+  background: rgba(248,113,113,.12);
+  border-color: #f87171;
+  color: #f87171;
+}
+
+/* ── Estado vazio ── */
+.tabela-docentes tbody td[colspan] {
+  text-align: center;
+  padding: 32px 18px;
+  color: var(--text-muted);
+  font-size: .875rem;
+}
+
+/* ── Animação de entrada ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.header-docentes { animation: fadeUp .3s ease both; }
+.card-tabela     { animation: fadeUp .35s .05s ease both; }
+
+/* ── Responsivo ── */
+@media (max-width: 820px) {
+  .conteudo-principal { padding: 24px 18px 40px; }
+  .barra-busca-linha  { flex-direction: column; align-items: stretch; }
+  .filtro-ano         { justify-content: space-between; }
+}
+
+@media (max-width: 560px) {
+  .conteudo-principal  { padding: 18px 12px 36px; }
+  .titulo-pagina       { font-size: 1.45rem; }
+  .card-tabela         { padding: 16px 12px; }
+  .tabela-docentes thead th,
+  .tabela-docentes tbody td { padding: 12px 12px; }
+}

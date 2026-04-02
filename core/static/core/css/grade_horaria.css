@@ -1,0 +1,294 @@
+/* ============================================================
+   SIGE — Grade Horária (Edição)
+   grade.css
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Container principal ── */
+.conteudo-principal {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 32px 28px 48px;
+  background: var(--bg-base);
+  animation: fadeUp .35s ease both;
+}
+
+/* ── Header ── */
+.header-docentes {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.header-docentes a {
+  text-decoration: none;
+}
+
+.btn-voltar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background .2s, border-color .2s, color .2s, transform .2s;
+  flex-shrink: 0;
+}
+.btn-voltar:hover {
+  background: var(--bg-elevated);
+  border-color: var(--accent-violet);
+  color: var(--accent-violet);
+  transform: translateX(-2px);
+}
+
+.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  position: relative;
+}
+.titulo-pagina::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-violet), transparent);
+  border-radius: 2px;
+}
+
+/* ── Card ── */
+.card-tabela {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  animation: fadeUp .35s .1s ease both;
+  padding-bottom: 0;
+}
+
+/* Subtítulo da turma */
+.card-tabela > p {
+  padding: 16px 22px 0;
+  margin: 0 0 4px;
+  font-size: .83rem;
+  color: var(--text-secondary) !important;
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 14px;
+}
+
+/* ── Scroll horizontal ── */
+.container-tabela {
+  overflow-x: auto;
+}
+
+/* ── Tabela ── */
+.grade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .84rem;
+}
+
+.grade-table thead tr {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.grade-table thead th {
+  padding: 14px 12px;
+  text-align: center;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+.grade-table thead th:first-child {
+  text-align: left;
+  padding-left: 22px;
+  color: var(--text-secondary);
+}
+
+/* Cores por dia da semana */
+.grade-table thead th:nth-child(2) { color: var(--accent-violet); }
+.grade-table thead th:nth-child(3) { color: var(--accent-cyan); }
+.grade-table thead th:nth-child(4) { color: var(--accent-emerald); }
+.grade-table thead th:nth-child(5) { color: var(--accent-amber); }
+.grade-table thead th:nth-child(6) { color: #f472b6; }
+
+.grade-table tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background .15s;
+}
+.grade-table tbody tr:last-child { border-bottom: none; }
+.grade-table tbody tr:hover { background: var(--bg-hover); }
+
+.grade-table tbody td {
+  padding: 10px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Coluna de horário */
+.horario-col {
+  text-align: left !important;
+  padding-left: 22px !important;
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: .8rem;
+  white-space: nowrap;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border-subtle);
+}
+
+/* ── Selects ── */
+.grade-table tbody td select {
+  width: 100%;
+  min-width: 140px;
+  padding: 7px 10px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .78rem;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237986a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.grade-table tbody td select:focus {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(124,111,255,.15);
+  background-color: var(--bg-hover);
+}
+.grade-table tbody td select:hover:not(:focus) {
+  border-color: rgba(255,255,255,.2);
+}
+.grade-table tbody td select option {
+  background: #131e33;
+  color: var(--text-primary);
+}
+
+/* Cores de foco por coluna */
+.grade-table tbody td:nth-child(2) select:focus {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(124,111,255,.15);
+}
+.grade-table tbody td:nth-child(3) select:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 3px rgba(34,211,238,.15);
+}
+.grade-table tbody td:nth-child(4) select:focus {
+  border-color: var(--accent-emerald);
+  box-shadow: 0 0 0 3px rgba(52,211,153,.15);
+}
+.grade-table tbody td:nth-child(5) select:focus {
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 0 3px rgba(251,191,36,.15);
+}
+.grade-table tbody td:nth-child(6) select:focus {
+  border-color: #f472b6;
+  box-shadow: 0 0 0 3px rgba(244,114,182,.15);
+}
+
+/* ── Ações ── */
+.form-actions-grade {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 22px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+/* inline style override para o div de submit */
+.card-tabela form > div[style] {
+  display: flex !important;
+  justify-content: flex-end !important;
+  padding: 16px 22px !important;
+  margin-top: 0 !important;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+.btn-adicionar {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .6rem 1.6rem;
+  border-radius: var(--radius-md);
+  background: var(--accent-violet);
+  border: none;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: opacity .2s, transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 16px rgba(124,111,255,.3);
+}
+.btn-adicionar:hover {
+  opacity: .9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124,111,255,.4);
+}
+.btn-adicionar:active {
+  transform: translateY(0);
+}
+
+/* ── Animação ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsivo ── */
+@media (max-width: 720px) {
+  .conteudo-principal { padding: 20px 16px 40px; }
+  .titulo-pagina { font-size: 1.2rem; }
+  .grade-table thead th,
+  .grade-table tbody td { padding: 8px 6px; font-size: .72rem; }
+  .grade-table tbody td select { min-width: 110px; font-size: .72rem; }
+}

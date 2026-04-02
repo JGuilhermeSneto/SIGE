@@ -1,0 +1,241 @@
+/* ============================================================
+   SIGE — Cadastro / Edição de Turma
+   cadastros.css  (alinhado com painel_super.css)
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Container principal ── */
+.conteudo-principal {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 32px 28px 48px;
+  background: var(--bg-base);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.conteudo-principal .header-docentes,
+.conteudo-principal .card-tabela {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* ── Cabeçalho ── */
+.header-docentes {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 36px;
+  animation: fadeUp .3s ease both;
+}
+
+.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin: 0;
+  position: relative;
+  display: inline-block;
+}
+.titulo-pagina::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-violet), transparent);
+  border-radius: 2px;
+}
+
+/* ── Botão Voltar ── */
+.btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: .9rem;
+  cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s, transform .18s;
+  flex-shrink: 0;
+}
+.btn-voltar:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-violet);
+  color: var(--accent-violet);
+  transform: translateX(-2px);
+}
+
+/* ── Card do formulário ── */
+.card-tabela {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 32px;
+  animation: fadeUp .35s .05s ease both;
+}
+
+/* ── Mensagem de erro ── */
+.card-tabela p[style*="red"] {
+  color: #f87171 !important;
+  background: rgba(248,113,113,.08);
+  border: 1px solid rgba(248,113,113,.2);
+  border-radius: var(--radius-md);
+  padding: .7rem 1rem;
+  font-size: .85rem;
+  margin-bottom: 20px;
+}
+
+/* ── Formulário ── */
+.form-cadastro {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Grupo de campo ── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+/* Inputs e selects compartilham o mesmo visual */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 400;
+  padding: .7rem 1rem;
+  outline: none;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-group input::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--accent-violet);
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 3px rgba(124,111,255,.12);
+}
+
+/* Select — seta customizada */
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237986a8' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* Input number — remove setas nativas */
+.form-group input[type="number"]::-webkit-inner-spin-button,
+.form-group input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form-group input[type="number"] { -moz-appearance: textfield; }
+
+/* ── Ações do formulário ── */
+.form-actions {
+  margin-top: 8px;
+}
+
+.btn-adicionar {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent-violet);
+  border: none;
+  border-radius: var(--radius-md);
+  padding: .72rem 1.6rem;
+  cursor: pointer;
+  letter-spacing: .03em;
+  transition: background .2s, transform .18s, box-shadow .2s;
+  width: 100%;
+}
+.btn-adicionar:hover {
+  background: #6a5df0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124,111,255,.35);
+}
+.btn-adicionar:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ── Animação de entrada ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Campos entram escalonados */
+.form-group:nth-child(1) { animation: fadeUp .3s .10s ease both; }
+.form-group:nth-child(2) { animation: fadeUp .3s .16s ease both; }
+.form-group:nth-child(3) { animation: fadeUp .3s .22s ease both; }
+.form-actions            { animation: fadeUp .3s .28s ease both; }
+
+/* ── Responsivo ── */
+@media (max-width: 560px) {
+  .conteudo-principal { padding: 18px 12px 36px; }
+  .titulo-pagina      { font-size: 1.45rem; }
+  .card-tabela        { padding: 20px 16px; }
+}
