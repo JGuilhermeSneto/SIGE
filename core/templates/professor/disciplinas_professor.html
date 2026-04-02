@@ -2,8 +2,13 @@
 {% load static %}
 
 {% block title %}Minhas Turmas{% endblock %}
+
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/disciplinas_professor.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/professor_turmas.css' %}">
+<!-- Font Awesome CDN para ícones -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+      integrity="sha512-yz3dY0aT/K7+BxLv1X2i7c1sPTLk1d5lI2ymD+R/ncOIszIo5hzF0nQ0/+cw76W6kNriqv5y2gRtj0Hkv+dk7g==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
 {% endblock %}
 
 {% block content %}
@@ -17,7 +22,7 @@
                 <a href="{% url 'painel_professor' %}" class="btn-voltar">
                     <i class="fas fa-arrow-left"></i> Voltar ao Painel
                 </a>
-                <h1>📚 Minhas Turmas</h1>
+                <h1> Minhas Turmas</h1>
             </div>
 
             <div class="header-acoes">
@@ -94,7 +99,9 @@
                 <i class="fas fa-inbox"></i>
                 <p>Nenhuma turma encontrada para o ano de {{ ano_filtro }}.</p>
                 {% if query %}
-                    <a href="{% url 'disciplinas_professor' %}?ano={{ ano_filtro }}" class="btn-limpar">Limpar busca</a>
+                    <a href="{% url 'disciplinas_professor' %}?ano={{ ano_filtro }}" class="btn-limpar">
+                        Limpar busca
+                    </a>
                 {% endif %}
             </div>
         {% endif %}
