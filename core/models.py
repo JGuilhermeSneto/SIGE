@@ -33,33 +33,13 @@ User = get_user_model()
 
 # Lista de Unidades Federativas utilizadas em campos de endereço
 UF_CHOICES = [
-    ("AC", "AC"),
-    ("AL", "AL"),
-    ("AP", "AP"),
-    ("AM", "AM"),
-    ("BA", "BA"),
-    ("CE", "CE"),
-    ("DF", "DF"),
-    ("ES", "ES"),
-    ("GO", "GO"),
-    ("MA", "MA"),
-    ("MT", "MT"),
-    ("MS", "MS"),
-    ("MG", "MG"),
-    ("PA", "PA"),
-    ("PB", "PB"),
-    ("PR", "PR"),
-    ("PE", "PE"),
-    ("PI", "PI"),
-    ("RJ", "RJ"),
-    ("RN", "RN"),
-    ("RS", "RS"),
-    ("RO", "RO"),
-    ("RR", "RR"),
-    ("SC", "SC"),
-    ("SP", "SP"),
-    ("SE", "SE"),
-    ("TO", "TO"),
+    ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"),
+    ("BA", "BA"), ("CE", "CE"), ("DF", "DF"), ("ES", "ES"),
+    ("GO", "GO"), ("MA", "MA"), ("MT", "MT"), ("MS", "MS"),
+    ("MG", "MG"), ("PA", "PA"), ("PB", "PB"), ("PR", "PR"),
+    ("PE", "PE"), ("PI", "PI"), ("RJ", "RJ"), ("RN", "RN"),
+    ("RS", "RS"), ("RO", "RO"), ("RR", "RR"), ("SC", "SC"),
+    ("SP", "SP"), ("SE", "SE"), ("TO", "TO"),
 ]
 
 # Turnos possíveis para turmas escolares
@@ -81,7 +61,6 @@ CARGO_CHOICES = [
 # ==========================================================
 # MODELOS ACADÊMICOS
 # ==========================================================
-
 
 class Turma(models.Model):
     """
@@ -119,8 +98,6 @@ class Professor(models.Model):
     # ======================================================
     # VÍNCULO COM USUÁRIO DO SISTEMA
     # ======================================================
-
-    # Associação 1:1 com o usuário autenticável
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="professor"
     )
@@ -128,27 +105,18 @@ class Professor(models.Model):
     # ======================================================
     # DADOS PESSOAIS
     # ======================================================
-
-    # Nome completo do professor
     nome_completo = models.CharField(max_length=255)
-
-    # CPF com validação de formato e unicidade
     cpf = models.CharField(
         max_length=14,
         unique=True,
         validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
     )
-
-    # Data de nascimento (opcional)
     data_nascimento = models.DateField(blank=True, null=True)
-
-    # Telefone para contato
     telefone = models.CharField(max_length=20, blank=True)
 
     # ======================================================
     # ENDEREÇO
     # ======================================================
-
     cep = models.CharField(max_length=9, blank=True)
     estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
     cidade = models.CharField(max_length=100, blank=True)
@@ -160,7 +128,6 @@ class Professor(models.Model):
     # ======================================================
     # FORMAÇÃO ACADÊMICA
     # ======================================================
-
     formacao = models.CharField(max_length=255, blank=True)
     especializacao = models.CharField(max_length=255, blank=True)
     area_atuacao = models.CharField(max_length=255, blank=True)
@@ -168,26 +135,18 @@ class Professor(models.Model):
     # ======================================================
     # FOTO
     # ======================================================
-
     foto = models.ImageField(upload_to="fotos/professores/", blank=True, null=True)
 
     # ======================================================
     # AUDITORIA
     # ======================================================
-
-    # Data de criação do registro
     criado_em = models.DateTimeField(auto_now_add=True)
-
-    # Data da última atualização
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["nome_completo"]
 
     def __str__(self):
-        """
-        Retorna o nome do professor para exibição textual.
-        """
         return self.nome_completo
 
 
@@ -195,101 +154,66 @@ class Aluno(models.Model):
     """
     Representa um aluno matriculado na instituição de ensino.
 
-    Este modelo armazena dados pessoais, endereço, filiação,
+    Este modelo armazena dados pessoais, endereço, responsáveis,
     informações educacionais especiais e vínculo com o sistema.
     """
 
     # ======================================================
     # VÍNCULO COM USUÁRIO DO SISTEMA
     # ======================================================
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aluno")
 
     # ======================================================
     # DADOS PESSOAIS
     # ======================================================
-
     nome_completo = models.CharField(max_length=255, verbose_name="Nome completo")
-
     cpf = models.CharField(
         max_length=14,
         unique=True,
         validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
         verbose_name="CPF",
     )
-
-    data_nascimento = models.DateField(
-        blank=True, null=True, verbose_name="Data de nascimento"
-    )
-
-    naturalidade = models.CharField(
-        max_length=100, blank=True, verbose_name="Naturalidade"
-    )
-
+    data_nascimento = models.DateField(blank=True, null=True, verbose_name="Data de nascimento")
+    naturalidade = models.CharField(max_length=100, blank=True, verbose_name="Naturalidade")
     email = models.EmailField(blank=True, null=True, verbose_name="E-mail")
-
     telefone = models.CharField(max_length=20, blank=True, verbose_name="Telefone")
 
     # ======================================================
-    # FILIAÇÃO
+    # RESPONSÁVEIS
     # ======================================================
-
-    filiacao1 = models.CharField(max_length=255, blank=True, verbose_name="Filiação 1")
-
-    filiacao2 = models.CharField(max_length=255, blank=True, verbose_name="Filiação 2")
+    responsavel1 = models.CharField(max_length=255, blank=True, verbose_name="Responsável 1")
+    responsavel2 = models.CharField(max_length=255, blank=True, verbose_name="Responsável 2")
 
     # ======================================================
     # ENDEREÇO
     # ======================================================
-
     cep = models.CharField(max_length=9, blank=True, verbose_name="CEP")
-
-    estado = models.CharField(
-        max_length=2, choices=UF_CHOICES, blank=True, verbose_name="UF"
-    )
-
+    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True, verbose_name="UF")
     cidade = models.CharField(max_length=100, blank=True, verbose_name="Cidade")
-
     bairro = models.CharField(max_length=100, blank=True, verbose_name="Bairro")
-
     logradouro = models.CharField(max_length=255, blank=True, verbose_name="Logradouro")
-
     numero = models.CharField(max_length=10, blank=True, verbose_name="Número")
-
-    complemento = models.CharField(
-        max_length=255, blank=True, verbose_name="Complemento"
-    )
+    complemento = models.CharField(max_length=255, blank=True, verbose_name="Complemento")
 
     # ======================================================
     # NECESSIDADES EDUCACIONAIS ESPECIAIS
     # ======================================================
-
-    possui_necessidade_especial = models.BooleanField(
-        default=False, verbose_name="Possui necessidade especial"
-    )
-
-    descricao_necessidade = models.TextField(
-        blank=True, verbose_name="Descrição da necessidade especial"
-    )
+    possui_necessidade_especial = models.BooleanField(default=False, verbose_name="Possui necessidade especial")
+    descricao_necessidade = models.TextField(blank=True, verbose_name="Descrição da necessidade especial")
 
     # ======================================================
     # VÍNCULO ACADÊMICO
     # ======================================================
-
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="alunos")
 
     # ======================================================
     # FOTO
     # ======================================================
-
-    foto = models.ImageField(
-        upload_to="fotos/alunos/", blank=True, null=True, verbose_name="Foto"
-    )
+    foto = models.ImageField(upload_to="fotos/alunos/", blank=True, null=True, verbose_name="Foto")
 
     # ======================================================
     # AUDITORIA
     # ======================================================
-
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
@@ -299,9 +223,6 @@ class Aluno(models.Model):
         ordering = ["nome_completo"]
 
     def __str__(self):
-        """
-        Retorna a representação textual do aluno.
-        """
         return f"{self.nome_completo} - {self.turma}"
 
 
@@ -310,13 +231,8 @@ class Disciplina(models.Model):
     Representa uma disciplina ministrada em uma turma.
     """
 
-    # Nome da disciplina
     nome = models.CharField(max_length=100)
-
-    # Professor responsável
     professor = models.ForeignKey(Professor, on_delete=models.CASCADE)
-
-    # Turma onde a disciplina é aplicada
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -331,100 +247,49 @@ class Nota(models.Model):
     aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE)
 
-    # Avaliações periódicas
     nota1 = models.FloatField(blank=True, null=True)
     nota2 = models.FloatField(blank=True, null=True)
     nota3 = models.FloatField(blank=True, null=True)
     nota4 = models.FloatField(blank=True, null=True)
 
     class Meta:
-        # Impede duplicidade de notas para o mesmo aluno e disciplina
         unique_together = ("aluno", "disciplina")
 
     @property
     def media(self):
-        """
-        Calcula dinamicamente a média das notas existentes.
-        """
-        notas = [
-            n for n in [self.nota1, self.nota2, self.nota3, self.nota4] if n is not None
-        ]
+        notas = [n for n in [self.nota1, self.nota2, self.nota3, self.nota4] if n is not None]
         return sum(notas) / len(notas) if notas else None
 
 
 # ==========================================================
 # MODELOS ADMINISTRATIVOS
 # ==========================================================
+
 class Gestor(models.Model):
     """
     Representa um gestor escolar da instituição.
-
-    Este modelo armazena informações pessoais, endereço,
-    dados de contato, cargo administrativo e vínculo
-    com o sistema de autenticação do Django.
     """
 
-    # ======================================================
-    # VÍNCULO COM USUÁRIO DO SISTEMA
-    # ======================================================
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
-
-    # ======================================================
-    # DADOS PESSOAIS
-    # ======================================================
-
     nome_completo = models.CharField(max_length=150, verbose_name="Nome completo")
-
     cpf = models.CharField(
         max_length=14,
         unique=True,
         validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
         verbose_name="CPF",
     )
-
-    data_nascimento = models.DateField(
-        blank=True, null=True, verbose_name="Data de nascimento"
-    )
-
+    data_nascimento = models.DateField(blank=True, null=True, verbose_name="Data de nascimento")
     email = models.EmailField(blank=True, verbose_name="E-mail")
-
     telefone = models.CharField(max_length=20, blank=True, verbose_name="Telefone")
 
-    # ======================================================
-    # ENDEREÇO
-    # ======================================================
-
     cep = models.CharField(max_length=9, blank=True, verbose_name="CEP")
-
-    uf = models.CharField(
-        max_length=2, choices=UF_CHOICES, blank=True, verbose_name="UF"
-    )
-
+    uf = models.CharField(max_length=2, choices=UF_CHOICES, blank=True, verbose_name="UF")
     cidade = models.CharField(max_length=100, blank=True, verbose_name="Cidade")
-
     endereco = models.CharField(max_length=255, blank=True, verbose_name="Endereço")
-
-    # ======================================================
-    # CARGO ADMINISTRATIVO
-    # ======================================================
-
     cargo = models.CharField(max_length=20, choices=CARGO_CHOICES, verbose_name="Cargo")
-
-    # ======================================================
-    # FOTO
-    # ======================================================
-
-    foto = models.ImageField(
-        upload_to="fotos/gestores/", blank=True, null=True, verbose_name="Foto"
-    )
-
-    # ======================================================
-    # AUDITORIA
-    # ======================================================
+    foto = models.ImageField(upload_to="fotos/gestores/", blank=True, null=True, verbose_name="Foto")
 
     criado_em = models.DateTimeField(auto_now_add=True, verbose_name="Criado em")
-
     atualizado_em = models.DateTimeField(auto_now=True, verbose_name="Atualizado em")
 
     class Meta:
@@ -433,18 +298,12 @@ class Gestor(models.Model):
         ordering = ["nome_completo"]
 
     def __str__(self):
-        """
-        Retorna a identificação textual do gestor,
-        incluindo nome e cargo exercido.
-        """
         return f"{self.nome_completo} ({self.get_cargo_display()})"
 
 
 class GradeHorario(models.Model):
     """
     Armazena a grade de horários semanal de uma turma.
-
-    Utiliza JSON para permitir flexibilidade na estrutura.
     """
 
     turma = models.OneToOneField(Turma, on_delete=models.CASCADE)
@@ -458,56 +317,35 @@ class GradeHorario(models.Model):
 # FREQUÊNCIA
 # ==========================================================
 
-
 class FrequenciaManager(models.Manager):
     """
-    Manager customizado para facilitar consultas
-    relacionadas à frequência.
+    Manager customizado para facilitar consultas relacionadas à frequência.
     """
 
     def presentes(self):
-        """Retorna apenas registros de presença."""
         return self.filter(presente=True)
 
     def ausentes(self):
-        """Retorna apenas registros de ausência."""
         return self.filter(presente=False)
 
 
 class Frequencia(models.Model):
     """
-    Registra a presença ou ausência de um aluno
-    em uma disciplina em determinada data.
+    Registra a presença ou ausência de um aluno em uma disciplina em determinada data.
     """
 
-    # Manager customizado
     objects = FrequenciaManager()
 
-    # Relações principais
-    aluno = models.ForeignKey(
-        Aluno, on_delete=models.CASCADE, related_name="frequencias"
-    )
-    disciplina = models.ForeignKey(
-        Disciplina, on_delete=models.CASCADE, related_name="frequencias"
-    )
-
-    # Data da aula
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name="frequencias")
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="frequencias")
     data = models.DateField()
-
-    # Indica se o aluno esteve presente
     presente = models.BooleanField(default=True)
-
-    # Justificativa opcional para ausência
     justificativa = models.TextField(blank=True)
 
     class Meta:
-        # Evita duplicidade de frequência para o mesmo dia
         unique_together = ("aluno", "disciplina", "data")
         ordering = ["-data"]
 
     def __str__(self):
-        """
-        Retorna representação textual do registro de frequência.
-        """
         situacao = "Presente" if self.presente else "Ausente"
         return f"{self.aluno.nome_completo} | {self.disciplina.nome} | {self.data} | {situacao}"

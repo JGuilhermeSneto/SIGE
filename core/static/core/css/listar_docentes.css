@@ -1,0 +1,320 @@
+/* ============================================================
+   SIGE — Lista de Docentes
+   lista_docentes.css  ·  design system: painel_super
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── Variáveis ── */
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ============================================================
+   ÁREA PRINCIPAL
+============================================================ */
+.conteudo-principal {
+  padding: 32px 28px 48px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  background: var(--bg-base);
+}
+
+/* ============================================================
+   CABEÇALHO
+============================================================ */
+.header-docentes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  animation: fadeUp .35s ease both;
+}
+
+/* Bloco de texto (cresce para empurrar botão à direita) */
+.header-docentes h1.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  flex: 1;
+  /* sublinhado decorativo na primeira palavra */
+  position: relative;
+  display: inline-block;
+}
+
+/* ── Botão voltar ── */
+.btn-voltar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  color: var(--text-secondary);
+  font-size: .9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, border-color .2s, color .2s, transform .15s;
+  flex-shrink: 0;
+}
+.btn-voltar:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(255,255,255,.2);
+  color: var(--text-primary);
+  transform: translateX(-2px);
+}
+
+/* ── Botão adicionar ── */
+.btn-adicionar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--accent-violet);
+  color: #fff;
+  font-size: .87rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 16px rgba(124,111,255,.3);
+}
+.btn-adicionar:hover {
+  background: #6b5cff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124,111,255,.4);
+}
+.btn-adicionar:active { transform: translateY(0); }
+
+/* ============================================================
+   CARD PRINCIPAL
+============================================================ */
+.card-tabela {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  animation: fadeUp .35s .1s ease both;
+  position: relative;
+}
+
+/* brilho decorativo */
+.card-tabela::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(124,111,255,.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   BARRA DE BUSCA
+============================================================ */
+.barra-busca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  z-index: 1;
+}
+
+.barra-busca input[type="text"] {
+  flex: 1;
+  padding: 11px 16px 11px 42px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: .88rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+.barra-busca input[type="text"]::placeholder { color: var(--text-muted); }
+.barra-busca input[type="text"]:hover {
+  border-color: rgba(255,255,255,.18);
+  background: var(--bg-hover);
+}
+.barra-busca input[type="text"]:focus {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(124,111,255,.15);
+  background: var(--bg-hover);
+}
+
+/* ícone de lupa sobreposto ao input */
+.barra-busca .fa-magnifying-glass {
+  position: absolute;
+  left: 40px;
+  font-size: .82rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* ============================================================
+   CONTAINER DA TABELA
+============================================================ */
+.container-tabela {
+  overflow-x: auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================================
+   TABELA
+============================================================ */
+.tabela-docentes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+/* ── Cabeçalho ── */
+.tabela-docentes thead tr {
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.tabela-docentes thead th {
+  padding: 14px 24px;
+  text-align: left;
+  font-size: .68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* larguras das colunas */
+.tabela-docentes .coluna-nome  { width: 35%; }
+.tabela-docentes .coluna-email { width: 45%; }
+.tabela-docentes .coluna-acoes { width: 20%; text-align: center; }
+
+/* ── Linhas ── */
+.tabela-docentes tbody tr {
+  border-bottom: 1px solid var(--border-subtle);
+  transition: background .15s;
+}
+.tabela-docentes tbody tr:last-child { border-bottom: none; }
+.tabela-docentes tbody tr:hover { background: var(--bg-elevated); }
+
+.tabela-docentes tbody td {
+  padding: 15px 24px;
+  color: var(--text-secondary);
+  vertical-align: middle;
+}
+
+/* nome em destaque */
+.tabela-docentes tbody td:first-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Coluna de ações ── */
+.tabela-docentes .coluna-acoes {
+  text-align: center;
+}
+
+.tabela-docentes .coluna-acoes a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: background .2s, transform .15s;
+  margin: 0 3px;
+}
+
+/* editar */
+.tabela-docentes .coluna-acoes a:has(.acao-editar) {
+  background: rgba(124,111,255,.1);
+}
+.tabela-docentes .coluna-acoes a:has(.acao-editar):hover {
+  background: rgba(124,111,255,.22);
+  transform: translateY(-1px);
+}
+
+/* excluir */
+.tabela-docentes .coluna-acoes a:has(.acao-excluir) {
+  background: rgba(248,113,113,.08);
+}
+.tabela-docentes .coluna-acoes a:has(.acao-excluir):hover {
+  background: rgba(248,113,113,.2);
+  transform: translateY(-1px);
+}
+
+.acao-editar  { color: var(--accent-violet); font-size: .82rem; }
+.acao-excluir { color: #f87171;              font-size: .82rem; }
+
+/* ── Estado vazio ── */
+.tabela-docentes tbody td[colspan] {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text-muted);
+  font-size: .88rem;
+}
+
+/* ============================================================
+   ANIMAÇÃO
+============================================================ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+@media (max-width: 768px) {
+  .conteudo-principal { padding: 20px 16px 40px; }
+
+  .header-docentes { gap: 12px; }
+
+  .header-docentes h1.titulo-pagina { font-size: 1.45rem; }
+
+  .tabela-docentes thead th,
+  .tabela-docentes tbody td { padding: 12px 16px; }
+
+  .barra-busca { padding: 14px 16px; }
+  .barra-busca .fa-magnifying-glass { left: 32px; }
+}
+
+@media (max-width: 480px) {
+  .btn-adicionar span { display: none; } /* esconde texto, mantém ícone se houver */
+
+  .tabela-docentes .coluna-email { display: none; } /* oculta email em telas muito pequenas */
+  .tabela-docentes .coluna-nome  { width: 70%; }
+  .tabela-docentes .coluna-acoes { width: 30%; }
+}

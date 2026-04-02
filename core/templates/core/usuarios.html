@@ -4,42 +4,186 @@
 {% block title %}Painel de Usuários{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/usuarios.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/painel_usuarios.css' %}">
 {% endblock %}
 
 {% block content %}
 
 <main class="conteudo-principal-rolavel">
-
-    <div class="painel-usuarios">
-        <h2 class="titulo-painel">Usuários do Sistema</h2>
-
-        <div class="cards-total">
-
-            <!-- Discentes -->
-            <a href="{% url 'listar_alunos' %}" class="card-usuario">
-                <i class="fas fa-user-graduate icon"></i>
-                <span class="label">Discentes</span>
-            </a>
-
-            <!-- Docentes -->
-            <a href="{% url 'listar_professores' %}" class="card-usuario">
-                <i class="fas fa-chalkboard-teacher icon"></i>
-                <span class="label">Docentes</span>
-            </a>
-
-            <!-- Gestão Escolar -->
-            {% if request.user.is_superuser %}
-            <a href="{% url 'listar_gestores' %}" class="card-usuario">
-                <i class="fas fa-user-tie icon"></i>
-                <span class="label">Gestão Escolar</span>
-            </a>
-            {% endif %}
-
-
-        </div>
+  <div class="topo">
+    <div class="topo-esq">
+      <span class="topo-label">SIGE · Gestão de Acesso</span>
+      <h1>Gerenciar <span>Usuários</span></h1>
     </div>
+    <div class="topo-total">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+      <span>Total de usuários:</span>
+      <strong>{{ total_usuarios }}</strong>
+    </div>
+  </div>
 
+  <div class="barra">
+    <div class="busca-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/>
+        <path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="busca-input" placeholder="Buscar usuários...">
+    </div>
+    <div class="pill-filtros">
+      <div class="pill ativo" data-filtro="todos">Todos</div>
+      <div class="pill" data-filtro="ativos">Ativos</div>
+    </div>
+  </div>
+
+  <div class="grid" id="grid-cards">
+
+    <!-- Discentes -->
+    <a href="{% url 'listar_alunos' %}" class="card" data-cor="amber" data-categoria="discentes">
+      <div class="bg-glow"></div>
+      <div class="card-head">
+        <div class="icone-wrap">
+          <div class="ping"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <div class="badge-count">
+          <span class="badge-num">{{ total_alunos }}</span>
+          <span class="badge-label">usuários</span>
+        </div>
+      </div>
+      <p class="card-nome">Discentes</p>
+      <p class="card-desc">Visualizam notas, frequência e comunicados. Acesso restrito ao próprio perfil.</p>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="stat-val">{{ alunos_ativos }}</div>
+          <div class="stat-lbl">Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ alunos_novos }}</div>
+          <div class="stat-lbl">Novos este mês</div>
+        </div>
+      </div>
+      <div class="card-arrow">
+        <div class="ver-btn">
+          Ver listagem
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Docentes -->
+    <a href="{% url 'listar_professores' %}" class="card" data-cor="emerald" data-categoria="docentes">
+      <div class="bg-glow"></div>
+      <div class="card-head">
+        <div class="icone-wrap">
+          <div class="ping"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+          </svg>
+        </div>
+        <div class="badge-count">
+          <span class="badge-num">{{ total_professores }}</span>
+          <span class="badge-label">usuários</span>
+        </div>
+      </div>
+      <p class="card-nome">Docentes</p>
+      <p class="card-desc">Acesso ao diário de classe, lançamento de notas, frequência e materiais didáticos.</p>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="stat-val">{{ professores_ativos }}</div>
+          <div class="stat-lbl">Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ professores_novos }}</div>
+          <div class="stat-lbl">Novos este mês</div>
+        </div>
+      </div>
+      <div class="card-arrow">
+        <div class="ver-btn">
+          Ver listagem
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    </a>
+
+    <!-- Gestão Escolar (apenas superusuário) -->
+    {% if request.user.is_superuser %}
+    <a href="{% url 'listar_gestores' %}" class="card" data-cor="cyan" data-categoria="gestores">
+      <div class="bg-glow"></div>
+      <div class="card-head">
+        <div class="icone-wrap">
+          <div class="ping"></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+            <line x1="12" y1="12" x2="12" y2="16"/>
+            <line x1="10" y1="14" x2="14" y2="14"/>
+          </svg>
+        </div>
+        <div class="badge-count">
+          <span class="badge-num">{{ total_gestores }}</span>
+          <span class="badge-label">usuários</span>
+        </div>
+      </div>
+      <p class="card-nome">Gestão Escolar</p>
+      <p class="card-desc">Gerenciam equipes, aprovam processos e têm acesso a relatórios consolidados.</p>
+      <div class="card-stats">
+        <div class="stat-item">
+          <div class="stat-val">{{ gestores_ativos }}</div>
+          <div class="stat-lbl">Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ gestores_novos }}</div>
+          <div class="stat-lbl">Novos este mês</div>
+        </div>
+      </div>
+      <div class="card-arrow">
+        <div class="ver-btn">
+          Ver listagem
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-bar"></div>
+        </div>
+      </div>
+    </a>
+    {% endif %}
+
+  </div>
 </main>
+
+{% block extra_js %}
+<script>
+  document.querySelectorAll('.pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(x => x.classList.remove('ativo'));
+      p.classList.add('ativo');
+    });
+  });
+</script>
+{% endblock %}
 
 {% endblock %}

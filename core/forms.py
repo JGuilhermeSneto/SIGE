@@ -9,7 +9,6 @@ criação/atualização automática do usuário (User) vinculado.
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError
-
 from .models import Aluno, Gestor, Professor
 
 User = get_user_model()
@@ -17,16 +16,12 @@ User = get_user_model()
 
 # ======================= Login =======================
 
-
 class LoginForm(forms.Form):
     """Formulário de autenticação por e-mail e senha."""
 
     email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
-    password = forms.CharField(
-        widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
-    )
-    # Armazena o usuário autenticado após validação bem-sucedida
-    user = None
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
+    user = None  # Armazena o usuário autenticado após validação bem-sucedida
 
     def clean(self):
         """Valida as credenciais e autentica o usuário."""
@@ -53,8 +48,7 @@ class LoginForm(forms.Form):
         return self.user
 
 
-# ======================= BaseForm com request =======================
-
+# ======================= BaseModelForm =======================
 
 class BaseModelForm(forms.ModelForm):
     """Form base que aceita o objeto request no __init__."""
@@ -67,125 +61,97 @@ class BaseModelForm(forms.ModelForm):
 
 # ======================= Professor =======================
 
-
-# Obtém o modelo de usuário configurado no projeto
-User = get_user_model()
-
-
 class ProfessorForm(forms.ModelForm):
     """
-    Formulário responsável pelo cadastro e edição de professores.
-
-    Este formulário abstrai a criação e atualização do modelo Professor,
-    incluindo o gerenciamento do usuário autenticável (User) vinculado.
+    Formulário para cadastro e edição de professores,
+    incluindo criação e atualização do usuário vinculado.
     """
 
-    # ======================================================
-    # CAMPOS AUXILIARES (NÃO PERSISTIDOS NO MODEL)
-    # ======================================================
-
+    email = forms.EmailField(
+        label="E-mail",
+        required=True,
+        widget=forms.EmailInput(attrs={"placeholder": "Digite o e-mail"}),
+    )
     senha = forms.CharField(
         label="Senha",
         required=False,
         widget=forms.PasswordInput(attrs={"placeholder": "Digite a senha"}),
-        help_text="Informe uma senha para acesso ao sistema.",
     )
-
     senha_confirmacao = forms.CharField(
         label="Confirmação de senha",
         required=False,
         widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}),
-        help_text="Repita a senha para confirmação.",
     )
 
-    # ======================================================
-    # CONFIGURAÇÃO DO MODELFORM
-    # ======================================================
     class Meta:
-        """
-        Define o modelo base do formulário e os campos expostos
-        para preenchimento pelo usuário.
-        """
-
         model = Professor
         fields = [
-            "nome_completo",
-            "cpf",
-            "data_nascimento",
-            "telefone",
-            "cep",
-            "estado",
-            "cidade",
-            "bairro",
-            "logradouro",
-            "numero",
-            "complemento",
-            "formacao",
-            "especializacao",
-            "area_atuacao",
-            "foto",
+            "nome_completo", "cpf", "data_nascimento", "telefone", "cep", "estado",
+            "cidade", "bairro", "logradouro", "numero", "complemento",
+            "formacao", "especializacao", "area_atuacao", "foto",
         ]
+        widgets = {
+            "data_nascimento": forms.DateInput(attrs={"type": "date"}, format="%d-%m-%Y")
+        }
 
-    # ======================================================
-    # VALIDAÇÕES CUSTOMIZADAS
-    # ======================================================
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        super().__init__(*args, **kwargs)
+
+        if self.instance and getattr(self.instance, "user", None):
+            self.fields["email"].initial = self.instance.user.email
+
+        if self.instance and self.instance.data_nascimento:
+            self.initial["data_nascimento"] = self.instance.data_nascimento.strftime("%Y-%m-%d")
+
     def clean(self):
-        """
-        Realiza validações globais do formulário.
-
-        Regras aplicadas:
-        - Caso uma senha seja informada, a confirmação é obrigatória
-        - As senhas devem ser idênticas
-        - A senha deve possuir no mínimo 6 caracteres
-        """
+        """Valida senha e unicidade do CPF."""
         cleaned_data = super().clean()
-
         senha = cleaned_data.get("senha")
         senha_confirmacao = cleaned_data.get("senha_confirmacao")
+        cpf = cleaned_data.get("cpf")
 
-        # Validação condicional: só valida se houver tentativa de definir senha
         if senha or senha_confirmacao:
             if not senha or not senha_confirmacao:
-                raise ValidationError(
-                    "Para definir uma senha, ambos os campos devem ser preenchidos."
-                )
-
+                raise ValidationError("Para definir uma senha, ambos os campos devem ser preenchidos.")
             if senha != senha_confirmacao:
-                raise ValidationError("As senhas informadas não coincidem.")
-
+                raise ValidationError("As senhas não coincidem.")
             if len(senha) < 6:
                 raise ValidationError("A senha deve conter no mínimo 6 caracteres.")
 
+        if cpf:
+            username = cpf.replace(".", "").replace("-", "")
+            user_qs = User.objects.filter(username=username)
+            if self.instance.pk and getattr(self.instance, "user", None):
+                user_qs = user_qs.exclude(pk=self.instance.user.pk)
+            if user_qs.exists():
+                raise ValidationError("Já existe um usuário cadastrado com este CPF.")
+
         return cleaned_data
 
-    # ======================================================
-    # PERSISTÊNCIA CUSTOMIZADA
-    # ======================================================
     def save(self, commit=True):
-        """
-        Persiste o objeto Professor e gerencia o usuário vinculado.
-
-        Comportamento:
-        - Se o Professor já possui um User, apenas redefine a senha
-        - Caso contrário, cria um novo User automaticamente
-        - O username é derivado do CPF para garantir unicidade
-        """
+        """Cria ou atualiza o usuário vinculado ao professor."""
         professor = super().save(commit=False)
         senha = self.cleaned_data.get("senha")
+        email = self.cleaned_data.get("email")
+        username = professor.cpf.replace(".", "").replace("-", "")
 
-        # Criação ou atualização do usuário somente se senha for informada
-        if senha:
-            if professor.pk and hasattr(professor, "user") and professor.user:
-                # Atualiza senha de usuário existente
-                professor.user.set_password(senha)
-                professor.user.save()
+        if professor.pk and getattr(professor, "user", None):
+            user = professor.user
+            user.username = username
+            user.email = email
+            if senha:
+                user.set_password(senha)
+            user.save()
+        else:
+            if senha:
+                user = User.objects.create_user(username=username, email=email, password=senha)
             else:
-                # Cria novo usuário para o professor
-                username = professor.cpf.replace(".", "").replace("-", "")
-                user = User.objects.create_user(username=username, password=senha)
-                professor.user = user
+                user = User.objects.create_user(username=username, email=email)
+                user.set_unusable_password()
+                user.save()
+            professor.user = user
 
-        # Salva o professor no banco de dados
         if commit:
             professor.save()
 
@@ -194,192 +160,114 @@ class ProfessorForm(forms.ModelForm):
 
 # ======================= Aluno =======================
 
-
 class AlunoForm(BaseModelForm):
     """Formulário de cadastro e edição de Aluno."""
 
-    # E-mail pertence ao User vinculado, não ao modelo Aluno
     email = forms.EmailField(
-        required=True, widget=forms.EmailInput(attrs={"placeholder": "E-mail"})
+        required=True, 
+        widget=forms.EmailInput(attrs={"placeholder": "E-mail", "class": "form-control"})
     )
-    # Senha opcional para permitir edição sem redefinir a senha
     senha = forms.CharField(
-        required=False, widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
+        required=False, 
+        widget=forms.PasswordInput(attrs={"placeholder": "Senha", "class": "form-control"})
     )
     senha_confirmacao = forms.CharField(
         required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}),
+        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha", "class": "form-control"}),
     )
 
     class Meta:
-        """Configuração de modelo e campos do AlunoForm."""
-
         model = Aluno
         fields = [
-            # Dados pessoais
-            "nome_completo",
-            "cpf",
-            "data_nascimento",
-            "naturalidade",
-            # Contato
-            "telefone",
-            # Filiação
-            "filiacao1",
-            "filiacao2",
-            # Escolar
-            "turma",
-            # Endereço
-            "cep",
-            "estado",
-            "cidade",
-            "bairro",
-            "logradouro",
-            "numero",
-            "complemento",
-            # Necessidades especiais
-            "possui_necessidade_especial",
-            "descricao_necessidade",
-            # Outros
-            "foto",
+            "nome_completo", "cpf", "data_nascimento", "naturalidade", "telefone",
+            "responsavel1", "responsavel2", "turma", "cep", "estado", "cidade",
+            "bairro", "logradouro", "numero", "complemento",
+            "possui_necessidade_especial", "descricao_necessidade", "foto",
         ]
+        widgets = {
+            "data_nascimento": forms.DateInput(attrs={"type": "date", "class": "form-control"}),
+            "cpf": forms.TextInput(attrs={"placeholder": "000.000.000-00", "class": "form-control"}),
+            "telefone": forms.TextInput(attrs={"placeholder": "(00) 00000-0000", "class": "form-control"}),
+            "cep": forms.TextInput(attrs={"placeholder": "00000-000", "class": "form-control"}),
+            "cidade": forms.TextInput(attrs={"placeholder": "Cidade", "class": "form-control"}),
+            "bairro": forms.TextInput(attrs={"placeholder": "Bairro", "class": "form-control"}),
+            "logradouro": forms.TextInput(attrs={"placeholder": "Rua / Avenida", "class": "form-control"}),
+            "numero": forms.TextInput(attrs={"placeholder": "Número", "class": "form-control"}),
+            "filiacao_1": forms.TextInput(attrs={"placeholder": "Nome do responsável 1", "class": "form-control"}),
+            "filiacao_2": forms.TextInput(attrs={"placeholder": "Nome do responsável 2", "class": "form-control"}),
+        }
 
     def __init__(self, *args, **kwargs):
-        """
-        Inicializa o formulário.
-
-        - Remove 'request' dos kwargs.
-        - Preenche o e-mail quando o Aluno já possui um User vinculado.
-        - Configura placeholders para todos os campos de endereço e contato.
-        """
         self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
-
-        # Preencher e-mail se já existir User vinculado ao Aluno
-        if self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
+        if self.instance.pk and getattr(self.instance, "user", None):
             self.fields["email"].initial = self.instance.user.email
 
-        # Placeholders para campos de dados pessoais e endereço
-        self.fields["cpf"].widget.attrs.update({"placeholder": "000.000.000-00"})
-        self.fields["telefone"].widget.attrs.update({"placeholder": "(00) 00000-0000"})
-        self.fields["cep"].widget.attrs.update({"placeholder": "00000-000"})
-        self.fields["cidade"].widget.attrs.update({"placeholder": "Cidade"})
-        self.fields["bairro"].widget.attrs.update({"placeholder": "Bairro"})
-        self.fields["logradouro"].widget.attrs.update({"placeholder": "Rua / Avenida"})
-        self.fields["numero"].widget.attrs.update({"placeholder": "Número"})
-
     def clean_email(self):
-        """
-        Valida unicidade do e-mail.
-
-        Na edição, exclui da verificação o e-mail atual do próprio
-        usuário vinculado ao Aluno.
-        """
         email = self.cleaned_data.get("email")
         qs = User.objects.filter(email=email)
-
-        # Exclui o próprio usuário ao editar
-        if self.instance.pk and hasattr(self.instance, "user") and self.instance.user:
+        if self.instance.pk and getattr(self.instance, "user", None):
             qs = qs.exclude(pk=self.instance.user.pk)
-
         if qs.exists():
             raise ValidationError("Este e-mail já está em uso.")
         return email
 
     def clean(self):
-        """
-        Validações gerais do formulário de Aluno.
-
-        - Verifica correspondência e tamanho mínimo da senha.
-        - Exige descrição da necessidade especial quando marcada.
-        """
         cleaned_data = super().clean()
-
         senha = cleaned_data.get("senha")
         senha_conf = cleaned_data.get("senha_confirmacao")
         possui_necessidade = cleaned_data.get("possui_necessidade_especial")
         descricao = cleaned_data.get("descricao_necessidade")
 
-        # Validação de senha: apenas quando ao menos um campo for preenchido
         if senha or senha_conf:
             if senha != senha_conf:
                 raise ValidationError("As senhas não coincidem.")
             if len(senha) < 6:
                 raise ValidationError("A senha deve ter no mínimo 6 caracteres.")
 
-        # Necessidade especial requer descrição detalhada
         if possui_necessidade and not descricao:
             raise ValidationError("Descreva a necessidade especial do aluno.")
 
         return cleaned_data
 
     def save(self, commit=True):
-        """
-        Salva o Aluno e cria ou atualiza o User vinculado.
-
-        - Atualiza e-mail e senha do User existente quando em modo edição.
-        - Cria um novo User com username derivado do nome completo no cadastro.
-        """
         aluno = super().save(commit=False)
         email = self.cleaned_data.get("email")
         senha = self.cleaned_data.get("senha")
 
         if hasattr(aluno, "user") and aluno.user:
-            # Atualiza o User já vinculado ao Aluno
             user = aluno.user
             user.email = email
             if senha:
                 user.set_password(senha)
             user.save()
         else:
-            # Cria novo User com username baseado no nome completo
             username = aluno.nome_completo.replace(" ", "").lower()
-            user = User.objects.create_user(
-                username=username, email=email, password=senha or None
-            )
+            user = User.objects.create_user(username=username, email=email, password=senha or None)
             aluno.user = user
 
         if commit:
             aluno.save()
-
         return aluno
 
 
 # ======================= Gestor =======================
 
-
-User = get_user_model()
-
-
 class GestorForm(BaseModelForm):
     """Formulário de cadastro e edição de Gestor."""
 
-    senha = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Senha"}),
-    )
-    senha_confirmacao = forms.CharField(
-        required=False,
-        widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}),
-    )
+    senha = forms.CharField(required=False, widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
+    senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput(attrs={"placeholder": "Confirme a senha"}))
 
     class Meta:
         model = Gestor
         fields = [
-            "nome_completo",
-            "cpf",
-            "data_nascimento",
-            "telefone",
-            "email",
-            "cep",
-            "uf",
-            "cidade",
-            "endereco",
-            "cargo",
-            "foto",
+            "nome_completo", "cpf", "data_nascimento", "telefone", "email",
+            "cep", "uf", "cidade", "endereco", "cargo", "foto",
         ]
 
     def clean(self):
-        """Valida regras de senha."""
+        """Valida regras de senha do Gestor."""
         cleaned_data = super().clean()
         senha = cleaned_data.get("senha")
         senha_conf = cleaned_data.get("senha_confirmacao")
@@ -387,20 +275,12 @@ class GestorForm(BaseModelForm):
         if senha or senha_conf:
             if senha != senha_conf:
                 raise ValidationError("As senhas não coincidem.")
-
             if len(senha) < 6:
                 raise ValidationError("A senha deve ter no mínimo 6 caracteres.")
-
             if not any(c.isupper() for c in senha):
-                raise ValidationError(
-                    "A senha deve conter ao menos uma letra maiúscula."
-                )
-
+                raise ValidationError("A senha deve conter ao menos uma letra maiúscula.")
             if not any(c.islower() for c in senha):
-                raise ValidationError(
-                    "A senha deve conter ao menos uma letra minúscula."
-                )
-
+                raise ValidationError("A senha deve conter ao menos uma letra minúscula.")
             if not any(c.isdigit() for c in senha):
                 raise ValidationError("A senha deve conter ao menos um número.")
 
@@ -410,34 +290,21 @@ class GestorForm(BaseModelForm):
         """Cria ou atualiza Gestor e User vinculado."""
         gestor = super().save(commit=False)
         senha = self.cleaned_data.get("senha")
-
-        if gestor.pk:
-            user = gestor.user
-        else:
-            user = None
+        user = getattr(gestor, "user", None)
 
         if not user:
-            # Criação de usuário novo
             base_username = gestor.cpf.replace(".", "").replace("-", "")
             username = base_username
-
             contador = 1
             while User.objects.filter(username=username).exists():
                 username = f"{base_username}{contador}"
                 contador += 1
 
-            user = User.objects.create_user(
-                username=username,
-                email=gestor.email,
-                password=senha if senha else None,
-            )
+            user = User.objects.create_user(username=username, email=gestor.email, password=senha if senha else None)
             gestor.user = user
-
         elif senha:
-            # Atualização de senha
             user.set_password(senha)
 
-        # Mantém e-mail sincronizado
         user.email = gestor.email
         user.save()
 
@@ -449,7 +316,6 @@ class GestorForm(BaseModelForm):
 
 # ======================= Editar Perfil =======================
 
-
 class EditarPerfilForm(forms.ModelForm):
     """Formulário para o usuário editar seu próprio perfil (e-mail e senha)."""
 
@@ -457,29 +323,16 @@ class EditarPerfilForm(forms.ModelForm):
     confirmar_senha = forms.CharField(required=False, widget=forms.PasswordInput())
 
     class Meta:
-        """Configuração de modelo e campos do EditarPerfilForm."""
-
         model = User
         fields = ["email"]
 
     def clean_email(self):
-        """
-        Valida unicidade do e-mail excluindo o próprio usuário logado.
-
-        Impede que outro usuário já cadastrado utilize o mesmo endereço.
-        """
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exclude(pk=self.instance.pk).exists():
             raise ValidationError("Este e-mail já está em uso.")
         return email
 
     def clean(self):
-        """
-        Valida os campos de nova senha.
-
-        - Nova senha e confirmação devem ser iguais.
-        - A nova senha deve ter no mínimo 6 caracteres.
-        """
         cleaned_data = super().clean()
         nova_senha = cleaned_data.get("nova_senha")
         confirmar_senha = cleaned_data.get("confirmar_senha")
@@ -489,4 +342,5 @@ class EditarPerfilForm(forms.ModelForm):
                 raise ValidationError("As senhas não coincidem.")
             if nova_senha and len(nova_senha) < 6:
                 raise ValidationError("A senha deve ter ao menos 6 caracteres.")
-        return cleaned_data
+
+        return cleaned_data 

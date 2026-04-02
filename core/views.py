@@ -9,10 +9,12 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.timezone import now
+from datetime import timedelta
 
 from core.models import Frequencia
 
-from .forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm
+from .forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm, User
 from .models import (
     Aluno,
     Disciplina,
@@ -1432,3 +1434,22 @@ def _coletar_notas_aluno(aluno, disciplinas):
 
     media_geral = soma_medias / total_com_media if total_com_media > 0 else None
     return disciplinas_com_notas, media_geral, total_lancadas
+
+
+
+##======================== PAINEL USUÁRIOS ========================
+def painel_usuarios(request):
+    mes_atual = now().date().replace(day=1)
+    context = {
+        'total_usuarios':      User.objects.count(),
+        'total_alunos':        Aluno.objects.count(),
+        'alunos_ativos':       Aluno.objects.filter(ativo=True).count(),
+        'alunos_novos':        Aluno.objects.filter(data_criacao__gte=mes_atual).count(),
+        'total_professores':   Professor.objects.count(),
+        'professores_ativos':  Professor.objects.filter(ativo=True).count(),
+        'professores_novos':   Professor.objects.filter(data_criacao__gte=mes_atual).count(),
+        'total_gestores':      Gestor.objects.count(),
+        'gestores_ativos':     Gestor.objects.filter(ativo=True).count(),
+        'gestores_novos':      Gestor.objects.filter(data_criacao__gte=mes_atual).count(),
+    }
+    return render(request, 'usuarios/usuarios.html', context)
