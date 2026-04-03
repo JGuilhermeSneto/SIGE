@@ -11,9 +11,11 @@ Define formulários para autenticação e cadastro/edição de usuários:
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError
+
 from .models import Aluno, Gestor, Professor
 
 User = get_user_model()
+
 
 # ==========================================================
 # FORMULÁRIO DE LOGIN
@@ -22,8 +24,11 @@ class LoginForm(forms.Form):
     """
     Formulário de login utilizando e-mail e senha.
     """
+
     email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Senha"})
+    )
     user = None  # Armazena o usuário autenticado
 
     def clean(self):
@@ -50,6 +55,7 @@ class LoginForm(forms.Form):
         """Retorna o usuário autenticado após validação bem-sucedida."""
         return self.user
 
+
 # ==========================================================
 # FORMULÁRIO BASE PARA MODELS
 # ==========================================================
@@ -58,9 +64,11 @@ class BaseModelForm(forms.ModelForm):
     Formulário base para os models vinculados a um usuário.
     Permite capturar a request caso seja necessário no formulário.
     """
+
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
+
 
 # ==========================================================
 # FORMULÁRIO PROFESSOR
@@ -71,17 +79,33 @@ class ProfessorForm(BaseModelForm):
     - Campos do modelo Professor
     - Email e senha do usuário vinculado
     """
+
     email = forms.EmailField(required=True, help_text="E-mail do professor")
-    senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Senha do usuário")
-    senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Confirmação de senha")
+    senha = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Senha do usuário"
+    )
+    senha_confirmacao = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Confirmação de senha"
+    )
 
     class Meta:
         model = Professor
         fields = [
-            "nome_completo", "cpf", "data_nascimento", "telefone",
-            "cep", "estado", "cidade", "bairro", "logradouro",
-            "numero", "complemento", "formacao", "especializacao",
-            "area_atuacao", "foto"
+            "nome_completo",
+            "cpf",
+            "data_nascimento",
+            "telefone",
+            "cep",
+            "estado",
+            "cidade",
+            "bairro",
+            "logradouro",
+            "numero",
+            "complemento",
+            "formacao",
+            "especializacao",
+            "area_atuacao",
+            "foto",
         ]
         widgets = {"data_nascimento": forms.DateInput(attrs={"type": "date"})}
 
@@ -155,6 +179,7 @@ class ProfessorForm(BaseModelForm):
             professor.save()
         return professor
 
+
 # ==========================================================
 # FORMULÁRIO ALUNO
 # ==========================================================
@@ -164,18 +189,36 @@ class AlunoForm(BaseModelForm):
     - Campos do modelo Aluno
     - Email e senha do usuário vinculado
     """
+
     email = forms.EmailField(required=True, help_text="E-mail do aluno")
-    senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Senha do usuário")
-    senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Confirmação de senha")
+    senha = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Senha do usuário"
+    )
+    senha_confirmacao = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Confirmação de senha"
+    )
 
     class Meta:
         model = Aluno
         fields = [
-            "nome_completo", "cpf", "data_nascimento", "naturalidade",
-            "telefone", "responsavel1", "responsavel2", "turma",
-            "cep", "estado", "cidade", "bairro", "logradouro",
-            "numero", "complemento", "possui_necessidade_especial",
-            "descricao_necessidade", "foto"
+            "nome_completo",
+            "cpf",
+            "data_nascimento",
+            "naturalidade",
+            "telefone",
+            "responsavel1",
+            "responsavel2",
+            "turma",
+            "cep",
+            "estado",
+            "cidade",
+            "bairro",
+            "logradouro",
+            "numero",
+            "complemento",
+            "possui_necessidade_especial",
+            "descricao_necessidade",
+            "foto",
         ]
         widgets = {"data_nascimento": forms.DateInput(attrs={"type": "date"})}
 
@@ -211,7 +254,9 @@ class AlunoForm(BaseModelForm):
 
         # Validação da necessidade especial
         if possui and not desc:
-            raise ValidationError("É obrigatório descrever a necessidade especial informada.")
+            raise ValidationError(
+                "É obrigatório descrever a necessidade especial informada."
+            )
 
         return cleaned_data
 
@@ -242,6 +287,7 @@ class AlunoForm(BaseModelForm):
             aluno.save()
         return aluno
 
+
 # ==========================================================
 # FORMULÁRIO GESTOR
 # ==========================================================
@@ -251,16 +297,31 @@ class GestorForm(BaseModelForm):
     - Campos do modelo Gestor
     - Email e senha do usuário vinculado
     """
+
     email = forms.EmailField(required=True, help_text="E-mail do gestor")
-    senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Senha do usuário")
-    senha_confirmacao = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Confirmação de senha")
+    senha = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Senha do usuário"
+    )
+    senha_confirmacao = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Confirmação de senha"
+    )
 
     class Meta:
         model = Gestor
         fields = [
-            "nome_completo", "cpf", "data_nascimento", "cargo",
-            "telefone", "cep", "estado", "cidade", "bairro",
-            "logradouro", "numero", "complemento", "foto"
+            "nome_completo",
+            "cpf",
+            "data_nascimento",
+            "cargo",
+            "telefone",
+            "cep",
+            "estado",
+            "cidade",
+            "bairro",
+            "logradouro",
+            "numero",
+            "complemento",
+            "foto",
         ]
         widgets = {"data_nascimento": forms.DateInput(attrs={"type": "date"})}
 
@@ -329,6 +390,7 @@ class GestorForm(BaseModelForm):
             gestor.save()
         return gestor
 
+
 # ==========================================================
 # FORMULÁRIO EDITAR PERFIL
 # ==========================================================
@@ -338,8 +400,15 @@ class EditarPerfilForm(forms.ModelForm):
     - Alteração de e-mail
     - Alteração de senha
     """
-    nova_senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Nova senha")
-    confirmar_senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Confirmação da nova senha")
+
+    nova_senha = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Nova senha"
+    )
+    confirmar_senha = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput(),
+        help_text="Confirmação da nova senha",
+    )
 
     class Meta:
         model = User

@@ -5,6 +5,7 @@ Correções:
   - Professor.objects.create() exige user
   - view 'painel_super' ou alternativa
 """
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -102,8 +103,10 @@ class TestFullFlow(TestCase):
     def _cria_aluno(self, username, cpf):
         user = User.objects.create_user(username=username, password="123")
         return Aluno.objects.create(
-            user=user, nome_completo=f"Aluno {username}",
-            cpf=cpf, turma=self.turma,
+            user=user,
+            nome_completo=f"Aluno {username}",
+            cpf=cpf,
+            turma=self.turma,
         )
 
     def test_editar_aluno_get_200(self):
@@ -142,7 +145,9 @@ class TestFullFlow(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_editar_professor_get_200(self):
-        response = self.client.get(reverse("editar_professor", args=[self.professor.pk]))
+        response = self.client.get(
+            reverse("editar_professor", args=[self.professor.pk])
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_cadastrar_professor_get_200(self):

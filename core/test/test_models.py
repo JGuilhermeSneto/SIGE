@@ -5,16 +5,16 @@ Correções v2:
   - str(gestor)     = "Ana ()"           → usa assertIn
   - str(aluno)      = "Zeka - 3A - Manhã (2026)" → usa assertIn
 """
-from decimal import Decimal
+
 from datetime import date
+from decimal import Decimal
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from core.models import (
-    Aluno, Disciplina, Frequencia, Gestor, GradeHorario, Nota, Professor, Turma,
-)
+from core.models import (Aluno, Disciplina, Frequencia, Gestor, GradeHorario,
+                         Nota, Professor, Turma)
 
 User = get_user_model()
 
@@ -23,8 +23,8 @@ class ModelUnifiedTestCase(TestCase):
 
     def setUp(self):
         self.user_gestor = User.objects.create_user(username="g_test", password="123")
-        self.user_prof   = User.objects.create_user(username="p_test", password="123")
-        self.user_aluno  = User.objects.create_user(username="a_test", password="123")
+        self.user_prof = User.objects.create_user(username="p_test", password="123")
+        self.user_aluno = User.objects.create_user(username="a_test", password="123")
 
         self.turma = Turma.objects.create(nome="3A", turno="manha", ano=2026)
 

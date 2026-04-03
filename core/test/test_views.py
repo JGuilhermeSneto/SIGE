@@ -8,6 +8,7 @@ Correção principal:
     sem provocar um save inválido no banco, OU simplesmente omitido se a
     view não tem validação própria antes do save().
 """
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -186,7 +187,9 @@ class TestViewsAdicionais(TestCase):
     # ------------------------------------------------------------------
 
     def test_editar_professor_get_200(self):
-        response = self.client.get(reverse("editar_professor", args=[self.professor.pk]))
+        response = self.client.get(
+            reverse("editar_professor", args=[self.professor.pk])
+        )
         self.assertEqual(response.status_code, 200)
 
     def test_editar_professor_post_nao_quebra(self):

@@ -10,6 +10,7 @@ Gestor.objects.create() para verificar comportamento da listagem/edição,
 e para o POST, ajustamos os dados para incluir TODOS os campos que o
 formulário real exige — descobertos via form.errors no test de diagnóstico.
 """
+
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -233,7 +234,9 @@ class TestViewsFull(TestCase):
     def test_editar_gestor_post_atualiza_se_302(self):
         """Se o POST redirecionar, o nome deve ter sido atualizado."""
         url = reverse("editar_gestor", args=[self.gestor.pk])
-        response = self.client.post(url, self._dados_edicao_gestor("Nome Novo", "vice_diretor"))
+        response = self.client.post(
+            url, self._dados_edicao_gestor("Nome Novo", "vice_diretor")
+        )
         if response.status_code == 302:
             self.gestor.refresh_from_db()
             self.assertEqual(self.gestor.nome_completo, "Nome Novo")

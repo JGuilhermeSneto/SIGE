@@ -10,10 +10,12 @@ CORREÇÃO APLICADA:
       CPF_B = "111.444.777-35"
       CPF_C = "371.987.616-60"
 """
+
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from core.forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm
+from core.forms import (AlunoForm, EditarPerfilForm, GestorForm, LoginForm,
+                        ProfessorForm)
 from core.models import Aluno, Gestor, Professor, Turma
 
 User = get_user_model()
@@ -65,34 +67,40 @@ class FormsExtraTest(TestCase):
     # ------------------------------------------------------------------
 
     def test_professor_senha_curta(self):
-        form = ProfessorForm(data={
-            "nome_completo": "Teste",
-            "cpf": CPF_A,
-            "email": "a@a.com",
-            "senha": "123",
-            "senha_confirmacao": "123",
-        })
+        form = ProfessorForm(
+            data={
+                "nome_completo": "Teste",
+                "cpf": CPF_A,
+                "email": "a@a.com",
+                "senha": "123",
+                "senha_confirmacao": "123",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_professor_senha_sem_maiuscula(self):
-        form = ProfessorForm(data={
-            "nome_completo": "Teste",
-            "cpf": CPF_A,
-            "email": "a@a.com",
-            "senha": "abcdef1",
-            "senha_confirmacao": "abcdef1",
-        })
+        form = ProfessorForm(
+            data={
+                "nome_completo": "Teste",
+                "cpf": CPF_A,
+                "email": "a@a.com",
+                "senha": "abcdef1",
+                "senha_confirmacao": "abcdef1",
+            }
+        )
         # Válido ou não depende da regra de maiúscula — o form atual não exige,
         # mas se exigir o teste ainda cobre o caminho de rejeição.
         self.assertIsInstance(form.is_valid(), bool)
 
     def test_professor_email_duplicado(self):
         User.objects.create_user(username="dup_f2", email="dup_f2@email.com")
-        form = ProfessorForm(data={
-            "nome_completo": "Teste",
-            "cpf": CPF_A,
-            "email": "dup_f2@email.com",
-        })
+        form = ProfessorForm(
+            data={
+                "nome_completo": "Teste",
+                "cpf": CPF_A,
+                "email": "dup_f2@email.com",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_professor_sem_nome(self):
@@ -110,13 +118,15 @@ class FormsExtraTest(TestCase):
     # ------------------------------------------------------------------
 
     def test_professor_save_cria_user(self):
-        form = ProfessorForm(data={
-            "nome_completo": "Teste Nome",
-            "cpf": CPF_A,
-            "email": "novo_f2@email.com",
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha123",
-        })
+        form = ProfessorForm(
+            data={
+                "nome_completo": "Teste Nome",
+                "cpf": CPF_A,
+                "email": "novo_f2@email.com",
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha123",
+            }
+        )
         if not form.is_valid():
             print(f"\n[DIAGNÓSTICO] ProfessorForm errors: {dict(form.errors)}")
         self.assertTrue(form.is_valid(), f"Erros do form: {form.errors}")
@@ -125,25 +135,29 @@ class FormsExtraTest(TestCase):
         self.assertEqual(obj.user.email, "novo_f2@email.com")
 
     def test_professor_save_persiste(self):
-        form = ProfessorForm(data={
-            "nome_completo": "Prof Banco F2",
-            "cpf": CPF_B,
-            "email": "prof_banco_f2@email.com",
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha123",
-        })
+        form = ProfessorForm(
+            data={
+                "nome_completo": "Prof Banco F2",
+                "cpf": CPF_B,
+                "email": "prof_banco_f2@email.com",
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha123",
+            }
+        )
         if form.is_valid():
             obj = form.save()
             self.assertTrue(Professor.objects.filter(pk=obj.pk).exists())
 
     def test_professor_save_nome_correto(self):
-        form = ProfessorForm(data={
-            "nome_completo": "Prof Correto F2",
-            "cpf": CPF_C,
-            "email": "prof_correto_f2@email.com",
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha123",
-        })
+        form = ProfessorForm(
+            data={
+                "nome_completo": "Prof Correto F2",
+                "cpf": CPF_C,
+                "email": "prof_correto_f2@email.com",
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha123",
+            }
+        )
         if form.is_valid():
             obj = form.save()
             self.assertEqual(obj.nome_completo, "Prof Correto F2")
@@ -153,35 +167,41 @@ class FormsExtraTest(TestCase):
     # ------------------------------------------------------------------
 
     def test_aluno_necessidade_sem_descricao(self):
-        form = AlunoForm(data={
-            "nome_completo": "Aluno",
-            "cpf": CPF_A,
-            "email": "aluno_f2@email.com",
-            "turma": self.turma.id,
-            "possui_necessidade_especial": True,
-            "descricao_necessidade": "",
-        })
+        form = AlunoForm(
+            data={
+                "nome_completo": "Aluno",
+                "cpf": CPF_A,
+                "email": "aluno_f2@email.com",
+                "turma": self.turma.id,
+                "possui_necessidade_especial": True,
+                "descricao_necessidade": "",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_aluno_senha_diferente(self):
-        form = AlunoForm(data={
-            "nome_completo": "Aluno",
-            "cpf": CPF_A,
-            "email": "a_f2@a.com",
-            "turma": self.turma.id,
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha321",
-        })
+        form = AlunoForm(
+            data={
+                "nome_completo": "Aluno",
+                "cpf": CPF_A,
+                "email": "a_f2@a.com",
+                "turma": self.turma.id,
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha321",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_aluno_email_duplicado(self):
         User.objects.create_user(username="dup_al", email="dup_al@email.com")
-        form = AlunoForm(data={
-            "nome_completo": "Aluno Dup",
-            "cpf": CPF_B,
-            "email": "dup_al@email.com",
-            "turma": self.turma.id,
-        })
+        form = AlunoForm(
+            data={
+                "nome_completo": "Aluno Dup",
+                "cpf": CPF_B,
+                "email": "dup_al@email.com",
+                "turma": self.turma.id,
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_aluno_sem_nome(self):
@@ -194,12 +214,14 @@ class FormsExtraTest(TestCase):
     # ------------------------------------------------------------------
 
     def test_aluno_save_cria_user(self):
-        form = AlunoForm(data={
-            "nome_completo": "Aluno Teste F2",
-            "cpf": CPF_A,
-            "email": "aluno2_f2@email.com",
-            "turma": self.turma.id,
-        })
+        form = AlunoForm(
+            data={
+                "nome_completo": "Aluno Teste F2",
+                "cpf": CPF_A,
+                "email": "aluno2_f2@email.com",
+                "turma": self.turma.id,
+            }
+        )
         if not form.is_valid():
             print(f"\n[DIAGNÓSTICO] AlunoForm errors: {dict(form.errors)}")
         self.assertTrue(form.is_valid(), f"Erros do form: {form.errors}")
@@ -207,23 +229,27 @@ class FormsExtraTest(TestCase):
         self.assertIsNotNone(aluno.user)
 
     def test_aluno_save_persiste(self):
-        form = AlunoForm(data={
-            "nome_completo": "Aluno Banco F2",
-            "cpf": CPF_B,
-            "email": "aluno_banco_f2@email.com",
-            "turma": self.turma.id,
-        })
+        form = AlunoForm(
+            data={
+                "nome_completo": "Aluno Banco F2",
+                "cpf": CPF_B,
+                "email": "aluno_banco_f2@email.com",
+                "turma": self.turma.id,
+            }
+        )
         if form.is_valid():
             obj = form.save()
             self.assertTrue(Aluno.objects.filter(pk=obj.pk).exists())
 
     def test_aluno_save_nome_correto(self):
-        form = AlunoForm(data={
-            "nome_completo": "Aluno Nome OK F2",
-            "cpf": CPF_C,
-            "email": "aluno_nome_f2@email.com",
-            "turma": self.turma.id,
-        })
+        form = AlunoForm(
+            data={
+                "nome_completo": "Aluno Nome OK F2",
+                "cpf": CPF_C,
+                "email": "aluno_nome_f2@email.com",
+                "turma": self.turma.id,
+            }
+        )
         if form.is_valid():
             obj = form.save()
             self.assertEqual(obj.nome_completo, "Aluno Nome OK F2")
@@ -233,25 +259,29 @@ class FormsExtraTest(TestCase):
     # ------------------------------------------------------------------
 
     def test_gestor_senha_curta(self):
-        form = GestorForm(data={
-            "nome_completo": "Gestor",
-            "cpf": CPF_A,
-            "email": "gestor_a@email.com",
-            "cargo": "Diretor",
-            "senha": "123",
-            "senha_confirmacao": "123",
-        })
+        form = GestorForm(
+            data={
+                "nome_completo": "Gestor",
+                "cpf": CPF_A,
+                "email": "gestor_a@email.com",
+                "cargo": "Diretor",
+                "senha": "123",
+                "senha_confirmacao": "123",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_gestor_senha_diferente(self):
-        form = GestorForm(data={
-            "nome_completo": "Gestor",
-            "cpf": CPF_A,
-            "email": "gestor_b@email.com",
-            "cargo": "Diretor",
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha321",
-        })
+        form = GestorForm(
+            data={
+                "nome_completo": "Gestor",
+                "cpf": CPF_A,
+                "email": "gestor_b@email.com",
+                "cargo": "Diretor",
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha321",
+            }
+        )
         self.assertFalse(form.is_valid())
 
     def test_gestor_sem_nome(self):
@@ -275,20 +305,26 @@ class FormsExtraTest(TestCase):
 
     def test_editar_senha_diferente(self):
         user = User.objects.create_user(username="u_ep_f2", email="x_f2@x.com")
-        form = EditarPerfilForm(instance=user, data={
-            "email": "x_f2@x.com",
-            "nova_senha": "123456",
-            "confirmar_senha": "654321",
-        })
+        form = EditarPerfilForm(
+            instance=user,
+            data={
+                "email": "x_f2@x.com",
+                "nova_senha": "123456",
+                "confirmar_senha": "654321",
+            },
+        )
         self.assertFalse(form.is_valid())
 
     def test_editar_senha_valida(self):
         user = User.objects.create_user(username="u_ok_f2", email="x_ok_f2@x.com")
-        form = EditarPerfilForm(instance=user, data={
-            "email": "x_ok_f2@x.com",
-            "nova_senha": "123456",
-            "confirmar_senha": "123456",
-        })
+        form = EditarPerfilForm(
+            instance=user,
+            data={
+                "email": "x_ok_f2@x.com",
+                "nova_senha": "123456",
+                "confirmar_senha": "123456",
+            },
+        )
         self.assertTrue(form.is_valid())
 
     def test_editar_so_email(self):

@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from core.forms import AlunoForm, EditarPerfilForm, GestorForm, LoginForm, ProfessorForm
+from core.forms import (AlunoForm, EditarPerfilForm, GestorForm, LoginForm,
+                        ProfessorForm)
 from core.models import Aluno, Gestor, Professor
 
 User = get_user_model()

@@ -7,34 +7,27 @@ Estratégia:
   - Organizado por seção de views (Auth, Perfil, Professores, Gestores, Alunos,
     Turmas, Disciplinas, Notas, Frequência, Grade, Auxiliares)
 """
+
 from datetime import date
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from core.models import (
-    Aluno, Disciplina, Frequencia, Gestor, GradeHorario, Nota, Professor, Turma,
-)
-from core.views import (
-    _calcular_situacao_aluno,
-    _get_anos_filtro,
-    _get_turno_key,
-    gerar_calendario,
-    get_foto_perfil,
-    get_nome_exibicao,
-    get_user_profile,
-    is_super_ou_gestor,
-    redirect_user,
-)
+from core.models import (Aluno, Disciplina, Frequencia, Gestor, GradeHorario,
+                         Nota, Professor, Turma)
+from core.views import (_calcular_situacao_aluno, _get_anos_filtro,
+                        _get_turno_key, gerar_calendario, get_foto_perfil,
+                        get_nome_exibicao, get_user_profile,
+                        is_super_ou_gestor, redirect_user)
 
 User = get_user_model()
 
 # CPFs válidos para uso nos testes
-CPF_PROF   = "529.982.247-25"
-CPF_ALUNO  = "111.444.777-35"
+CPF_PROF = "529.982.247-25"
+CPF_ALUNO = "111.444.777-35"
 CPF_GESTOR = "371.987.616-60"
-CPF_EXTRA  = "632.486.218-29"
+CPF_EXTRA = "632.486.218-29"
 
 
 # =============================================================================
@@ -123,12 +116,24 @@ class AuxiliaresTest(TestCase):
             username="sup2", email="sup2@test.com", password="x"
         )
         turma = Turma.objects.create(nome="T1", turno="tarde", ano=2026)
-        u_prof = User.objects.create_user(username="p1cpf", email="p1@t.com", password="x")
-        self.professor = Professor.objects.create(user=u_prof, nome_completo="P1", cpf="529.982.247-25")
-        u_aluno = User.objects.create_user(username="a1cpf", email="a1@t.com", password="x")
-        self.aluno = Aluno.objects.create(user=u_aluno, nome_completo="A1", cpf="111.444.777-35", turma=turma)
-        u_gestor = User.objects.create_user(username="g1cpf", email="g1@t.com", password="x")
-        self.gestor = Gestor.objects.create(user=u_gestor, nome_completo="G1", cpf="371.987.616-60", cargo="diretor")
+        u_prof = User.objects.create_user(
+            username="p1cpf", email="p1@t.com", password="x"
+        )
+        self.professor = Professor.objects.create(
+            user=u_prof, nome_completo="P1", cpf="529.982.247-25"
+        )
+        u_aluno = User.objects.create_user(
+            username="a1cpf", email="a1@t.com", password="x"
+        )
+        self.aluno = Aluno.objects.create(
+            user=u_aluno, nome_completo="A1", cpf="111.444.777-35", turma=turma
+        )
+        u_gestor = User.objects.create_user(
+            username="g1cpf", email="g1@t.com", password="x"
+        )
+        self.gestor = Gestor.objects.create(
+            user=u_gestor, nome_completo="G1", cpf="371.987.616-60", cargo="diretor"
+        )
 
     def test_get_user_profile_professor(self):
         self.assertEqual(get_user_profile(self.professor.user), self.professor)
@@ -245,19 +250,29 @@ class AuthViewsTest(ViewsBaseTest):
         self.assertEqual(r.status_code, 200)
 
     def test_login_post_valido_super(self):
-        r = self.client.post(reverse("login"), {"email": "super@test.com", "password": "Super123!"})
+        r = self.client.post(
+            reverse("login"), {"email": "super@test.com", "password": "Super123!"}
+        )
         self.assertRedirects(r, reverse("painel_super"), fetch_redirect_response=False)
 
     def test_login_post_valido_professor(self):
-        r = self.client.post(reverse("login"), {"email": "prof@test.com", "password": "Senha123"})
-        self.assertRedirects(r, reverse("painel_professor"), fetch_redirect_response=False)
+        r = self.client.post(
+            reverse("login"), {"email": "prof@test.com", "password": "Senha123"}
+        )
+        self.assertRedirects(
+            r, reverse("painel_professor"), fetch_redirect_response=False
+        )
 
     def test_login_post_valido_aluno(self):
-        r = self.client.post(reverse("login"), {"email": "aluno@test.com", "password": "Senha123"})
+        r = self.client.post(
+            reverse("login"), {"email": "aluno@test.com", "password": "Senha123"}
+        )
         self.assertRedirects(r, reverse("painel_aluno"), fetch_redirect_response=False)
 
     def test_login_post_valido_gestor(self):
-        r = self.client.post(reverse("login"), {"email": "gestor@test.com", "password": "Senha123"})
+        r = self.client.post(
+            reverse("login"), {"email": "gestor@test.com", "password": "Senha123"}
+        )
         self.assertRedirects(r, reverse("painel_gestor"), fetch_redirect_response=False)
 
     def test_login_email_invalido(self):
@@ -265,7 +280,9 @@ class AuthViewsTest(ViewsBaseTest):
         self.assertEqual(r.status_code, 200)
 
     def test_login_senha_errada(self):
-        r = self.client.post(reverse("login"), {"email": "super@test.com", "password": "errada"})
+        r = self.client.post(
+            reverse("login"), {"email": "super@test.com", "password": "errada"}
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_login_ja_autenticado_redireciona(self):
@@ -396,13 +413,16 @@ class ProfessoresCRUDTest(ViewsBaseTest):
 
     def test_cadastrar_professor_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_professor"), {
-            "nome_completo": "Novo Professor",
-            "cpf": CPF_EXTRA,
-            "email": "novo_prof@test.com",
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha123",
-        })
+        r = self.client.post(
+            reverse("cadastrar_professor"),
+            {
+                "nome_completo": "Novo Professor",
+                "cpf": CPF_EXTRA,
+                "email": "novo_prof@test.com",
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha123",
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_cadastrar_professor_post_invalido(self):
@@ -417,11 +437,14 @@ class ProfessoresCRUDTest(ViewsBaseTest):
 
     def test_editar_professor_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("editar_professor", args=[self.professor.id]), {
-            "nome_completo": "Prof Atualizado",
-            "cpf": CPF_PROF,
-            "email": "prof@test.com",
-        })
+        r = self.client.post(
+            reverse("editar_professor", args=[self.professor.id]),
+            {
+                "nome_completo": "Prof Atualizado",
+                "cpf": CPF_PROF,
+                "email": "prof@test.com",
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_editar_professor_post_invalido(self):
@@ -436,8 +459,12 @@ class ProfessoresCRUDTest(ViewsBaseTest):
 
     def test_excluir_professor(self):
         self.login_super()
-        u = User.objects.create_user(username="delprofcpf", email="delp@test.com", password="x")
-        p = Professor.objects.create(user=u, nome_completo="Del Prof", cpf="632.486.218-29")
+        u = User.objects.create_user(
+            username="delprofcpf", email="delp@test.com", password="x"
+        )
+        p = Professor.objects.create(
+            user=u, nome_completo="Del Prof", cpf="632.486.218-29"
+        )
         r = self.client.get(reverse("excluir_professor", args=[p.id]))
         self.assertEqual(r.status_code, 302)
         self.assertFalse(Professor.objects.filter(id=p.id).exists())
@@ -470,14 +497,17 @@ class GestoresCRUDTest(ViewsBaseTest):
 
     def test_cadastrar_gestor_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_gestor"), {
-            "nome_completo": "Novo Gestor",
-            "cpf": CPF_EXTRA,
-            "cargo": "secretario",
-            "email": "novo_gestor@test.com",
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha123",
-        })
+        r = self.client.post(
+            reverse("cadastrar_gestor"),
+            {
+                "nome_completo": "Novo Gestor",
+                "cpf": CPF_EXTRA,
+                "cargo": "secretario",
+                "email": "novo_gestor@test.com",
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha123",
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_cadastrar_gestor_post_invalido(self):
@@ -502,8 +532,12 @@ class GestoresCRUDTest(ViewsBaseTest):
 
     def test_excluir_gestor(self):
         self.login_super()
-        u = User.objects.create_user(username="delgestorcpf", email="delg@test.com", password="x")
-        g = Gestor.objects.create(user=u, nome_completo="Del Gestor", cpf="632.486.218-29", cargo="secretario")
+        u = User.objects.create_user(
+            username="delgestorcpf", email="delg@test.com", password="x"
+        )
+        g = Gestor.objects.create(
+            user=u, nome_completo="Del Gestor", cpf="632.486.218-29", cargo="secretario"
+        )
         r = self.client.get(reverse("excluir_gestor", args=[g.id]))
         self.assertEqual(r.status_code, 302)
         self.assertFalse(Gestor.objects.filter(id=g.id).exists())
@@ -546,14 +580,17 @@ class AlunosCRUDTest(ViewsBaseTest):
 
     def test_cadastrar_aluno_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_aluno"), {
-            "nome_completo": "Novo Aluno",
-            "cpf": CPF_EXTRA,
-            "email": "novo_aluno@test.com",
-            "turma": self.turma.id,
-            "senha": "Senha123",
-            "senha_confirmacao": "Senha123",
-        })
+        r = self.client.post(
+            reverse("cadastrar_aluno"),
+            {
+                "nome_completo": "Novo Aluno",
+                "cpf": CPF_EXTRA,
+                "email": "novo_aluno@test.com",
+                "turma": self.turma.id,
+                "senha": "Senha123",
+                "senha_confirmacao": "Senha123",
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_editar_aluno_get(self):
@@ -568,12 +605,15 @@ class AlunosCRUDTest(ViewsBaseTest):
 
     def test_editar_aluno_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("editar_aluno", args=[self.aluno.id]), {
-            "nome_completo": "Aluno Editado",
-            "cpf": CPF_ALUNO,
-            "email": "aluno@test.com",
-            "turma": self.turma.id,
-        })
+        r = self.client.post(
+            reverse("editar_aluno", args=[self.aluno.id]),
+            {
+                "nome_completo": "Aluno Editado",
+                "cpf": CPF_ALUNO,
+                "email": "aluno@test.com",
+                "turma": self.turma.id,
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_editar_aluno_inexistente(self):
@@ -583,8 +623,12 @@ class AlunosCRUDTest(ViewsBaseTest):
 
     def test_excluir_aluno(self):
         self.login_super()
-        u = User.objects.create_user(username="delalunocpf", email="dela@test.com", password="x")
-        a = Aluno.objects.create(user=u, nome_completo="Del Aluno", cpf="632.486.218-29", turma=self.turma)
+        u = User.objects.create_user(
+            username="delalunocpf", email="dela@test.com", password="x"
+        )
+        a = Aluno.objects.create(
+            user=u, nome_completo="Del Aluno", cpf="632.486.218-29", turma=self.turma
+        )
         r = self.client.get(reverse("excluir_aluno", args=[a.id]))
         self.assertEqual(r.status_code, 302)
         self.assertFalse(Aluno.objects.filter(id=a.id).exists())
@@ -612,31 +656,31 @@ class TurmasCRUDTest(ViewsBaseTest):
 
     def test_cadastrar_turma_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "8B", "turno": "tarde", "ano": "2026"
-        })
+        r = self.client.post(
+            reverse("cadastrar_turma"), {"nome": "8B", "turno": "tarde", "ano": "2026"}
+        )
         self.assertEqual(r.status_code, 302)
         self.assertTrue(Turma.objects.filter(nome="8B", ano=2026).exists())
 
     def test_cadastrar_turma_duplicada(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "9A", "turno": "manha", "ano": "2026"
-        })
+        r = self.client.post(
+            reverse("cadastrar_turma"), {"nome": "9A", "turno": "manha", "ano": "2026"}
+        )
         self.assertEqual(r.status_code, 200)  # Fica na página com erro
 
     def test_cadastrar_turma_ano_invalido(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "7C", "turno": "noite", "ano": "abc"
-        })
+        r = self.client.post(
+            reverse("cadastrar_turma"), {"nome": "7C", "turno": "noite", "ano": "abc"}
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_cadastrar_turma_ano_fora_range(self):
         self.login_super()
-        r = self.client.post(reverse("cadastrar_turma"), {
-            "nome": "6D", "turno": "manha", "ano": "1990"
-        })
+        r = self.client.post(
+            reverse("cadastrar_turma"), {"nome": "6D", "turno": "manha", "ano": "1990"}
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_editar_turma_get(self):
@@ -646,17 +690,19 @@ class TurmasCRUDTest(ViewsBaseTest):
 
     def test_editar_turma_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("editar_turma", args=[self.turma.id]), {
-            "nome": "9A Editada", "turno": "tarde", "ano": "2026"
-        })
+        r = self.client.post(
+            reverse("editar_turma", args=[self.turma.id]),
+            {"nome": "9A Editada", "turno": "tarde", "ano": "2026"},
+        )
         self.assertEqual(r.status_code, 302)
 
     def test_editar_turma_duplicada(self):
         self.login_super()
         Turma.objects.create(nome="9B", turno="tarde", ano=2026)
-        r = self.client.post(reverse("editar_turma", args=[self.turma.id]), {
-            "nome": "9B", "turno": "manha", "ano": "2026"
-        })
+        r = self.client.post(
+            reverse("editar_turma", args=[self.turma.id]),
+            {"nome": "9B", "turno": "manha", "ano": "2026"},
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_excluir_turma_super(self):
@@ -684,7 +730,9 @@ class DisciplinasTest(ViewsBaseTest):
 
     def test_listar_disciplinas_turma_com_busca(self):
         self.login_super()
-        r = self.client.get(reverse("listar_disciplinas_turma", args=[self.turma.id]) + "?q=Mat")
+        r = self.client.get(
+            reverse("listar_disciplinas_turma", args=[self.turma.id]) + "?q=Mat"
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_cadastrar_disciplina_get(self):
@@ -731,19 +779,25 @@ class DisciplinasTest(ViewsBaseTest):
 
     def test_excluir_disciplina(self):
         self.login_super()
-        d = Disciplina.objects.create(nome="Física", professor=self.professor, turma=self.turma)
+        d = Disciplina.objects.create(
+            nome="Física", professor=self.professor, turma=self.turma
+        )
         r = self.client.get(reverse("excluir_disciplina", args=[d.id]))
         self.assertEqual(r.status_code, 302)
         self.assertFalse(Disciplina.objects.filter(id=d.id).exists())
 
     def test_visualizar_disciplina_super(self):
         self.login_super()
-        r = self.client.get(reverse("visualizar_disciplinas", args=[self.disciplina.id]))
+        r = self.client.get(
+            reverse("visualizar_disciplinas", args=[self.disciplina.id])
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_visualizar_disciplina_professor_proprio(self):
         self.login_professor()
-        r = self.client.get(reverse("visualizar_disciplinas", args=[self.disciplina.id]))
+        r = self.client.get(
+            reverse("visualizar_disciplinas", args=[self.disciplina.id])
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_visualizar_disciplina_sem_permissao(self):
@@ -925,25 +979,34 @@ class PerfilTest(ViewsBaseTest):
 
     def test_editar_perfil_post_valido(self):
         self.login_super()
-        r = self.client.post(reverse("editar_perfil"), {
-            "email": "super@test.com",
-        })
+        r = self.client.post(
+            reverse("editar_perfil"),
+            {
+                "email": "super@test.com",
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_editar_perfil_post_nova_senha(self):
         self.login_professor()
-        r = self.client.post(reverse("editar_perfil"), {
-            "email": "prof@test.com",
-            "nova_senha": "NovaSenha9",
-            "confirmar_senha": "NovaSenha9",
-        })
+        r = self.client.post(
+            reverse("editar_perfil"),
+            {
+                "email": "prof@test.com",
+                "nova_senha": "NovaSenha9",
+                "confirmar_senha": "NovaSenha9",
+            },
+        )
         self.assertIn(r.status_code, [200, 302])
 
     def test_editar_perfil_post_invalido(self):
         self.login_super()
-        r = self.client.post(reverse("editar_perfil"), {
-            "email": "invalido",
-        })
+        r = self.client.post(
+            reverse("editar_perfil"),
+            {
+                "email": "invalido",
+            },
+        )
         self.assertEqual(r.status_code, 200)
 
     def test_remover_foto_sem_foto(self):
@@ -1024,7 +1087,9 @@ class GradeHorariaTest(ViewsBaseTest):
     def test_visualizar_grade_professor_sem_disciplinas(self):
         self.login_professor()
         turma_outra = Turma.objects.create(nome="Outra", turno="noite", ano=2025)
-        r = self.client.get(reverse("visualizar_grade_professor", args=[turma_outra.id]))
+        r = self.client.get(
+            reverse("visualizar_grade_professor", args=[turma_outra.id])
+        )
         self.assertEqual(r.status_code, 302)
 
     def test_visualizar_grade_sem_perfil_professor(self):
