@@ -27,10 +27,22 @@
 
     <!-- Indicador de passos -->
     <div class="passos-wrapper">
-        <div class="passo-item ativo" id="passo-1"><div class="passo-num">1</div><div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Dados Pessoais</span></div></div>
-        <div class="passo-item" id="passo-2"><div class="passo-num">2</div><div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Filiação e NE</span></div></div>
-        <div class="passo-item" id="passo-3"><div class="passo-num">3</div><div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Endereço</span></div></div>
-        <div class="passo-item" id="passo-4"><div class="passo-num">4</div><div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Alocação</span></div></div>
+        <div class="passo-item ativo" id="passo-1">
+            <div class="passo-num">1</div>
+            <div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Dados Pessoais</span></div>
+        </div>
+        <div class="passo-item" id="passo-2">
+            <div class="passo-num">2</div>
+            <div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Filiação e NE</span></div>
+        </div>
+        <div class="passo-item" id="passo-3">
+            <div class="passo-num">3</div>
+            <div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Endereço</span></div>
+        </div>
+        <div class="passo-item" id="passo-4">
+            <div class="passo-num">4</div>
+            <div class="passo-info"><span class="passo-label">Etapa</span><span class="passo-nome">Alocação</span></div>
+        </div>
     </div>
 
     <form method="POST" enctype="multipart/form-data" id="form-aluno">
@@ -39,124 +51,159 @@
         <!-- ETAPA 1 -->
         <div class="etapa ativa" id="etapa-1">
             <div class="caixa-texto">
-                {{ form.nome_completo.label_tag }} 
+                <label class="required">{{ form.nome_completo.label }}</label>
                 {{ form.nome_completo|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.cpf.label_tag }}
+                <label class="required">{{ form.cpf.label }}</label>
                 {{ form.cpf|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.email.label_tag }}
+                <label class="required">{{ form.email.label }}</label>
                 {{ form.email|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.telefone.label_tag }}
+                <label>{{ form.telefone.label }}</label>
                 {{ form.telefone|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.data_nascimento.label_tag }}
-                {{ form.data_nascimento|add_class:"form-control" }}
+                <label class="required">{{ form.data_nascimento.label }}</label>
+                {# FIX: força type="date" via widget_tweaks #}
+                {{ form.data_nascimento|attr:"type:date"|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.naturalidade.label_tag }}
+                <label>{{ form.naturalidade.label }}</label>
                 {{ form.naturalidade|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="botoes">
-                <button type="button" class="btn" onclick="validarEtapa(1)">Próximo</button>
+                <span></span>
+                <button type="button" class="btn" onclick="validarEtapa(1)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
 
         <!-- ETAPA 2 -->
         <div class="etapa" id="etapa-2">
             <div class="caixa-texto">
-                {{ form.responsavel1.label_tag }}
+                <label>{{ form.responsavel1.label }}</label>
                 {{ form.responsavel1|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.responsavel2.label_tag }}
+                <label>{{ form.responsavel2.label }}</label>
                 {{ form.responsavel2|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
-
             <div class="caixa-texto">
-                {{ form.possui_necessidade_especial.label_tag }}
+                <label>{{ form.possui_necessidade_especial.label }}</label>
                 {{ form.possui_necessidade_especial|add_class:"checkbox-input" }}
             </div>
-
             <div class="caixa-texto" id="descricao-ne-container" style="display:none;">
-                {{ form.descricao_necessidade.label_tag }}
+                <label>{{ form.descricao_necessidade.label }}</label>
                 {{ form.descricao_necessidade|add_class:"form-control" }}
             </div>
-
             <div class="botoes">
-                <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">Anterior</button>
-                <button type="button" class="btn" onclick="validarEtapa(2)">Próximo</button>
+                <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                <button type="button" class="btn" onclick="validarEtapa(2)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
 
         <!-- ETAPA 3 -->
         <div class="etapa" id="etapa-3">
             <div class="caixa-texto">
-                {{ form.cep.label_tag }}
+                <label class="required">{{ form.cep.label }}</label>
                 {{ form.cep|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.estado.label_tag }}
+                <label class="required">{{ form.estado.label }}</label>
                 {{ form.estado|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.cidade.label_tag }}
+                <label class="required">{{ form.cidade.label }}</label>
                 {{ form.cidade|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.bairro.label_tag }}
+                <label>{{ form.bairro.label }}</label>
                 {{ form.bairro|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.logradouro.label_tag }}
+                <label class="required">{{ form.logradouro.label }}</label>
                 {{ form.logradouro|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.numero.label_tag }}
+                <label class="required">{{ form.numero.label }}</label>
                 {{ form.numero|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="botoes">
-                <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">Anterior</button>
-                <button type="button" class="btn" onclick="validarEtapa(3)">Próximo</button>
+                <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                <button type="button" class="btn" onclick="validarEtapa(3)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
 
         <!-- ETAPA 4 -->
         <div class="etapa" id="etapa-4">
             <div class="caixa-texto">
-                {{ form.turma.label_tag }}
+                <label class="required">{{ form.turma.label }}</label>
                 {{ form.turma|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                {{ form.senha.label_tag }}
+                <label {% if not aluno.pk %}class="required"{% endif %}>
+                    {{ form.senha.label }}
+                    {% if aluno.pk %}<small>(deixe em branco para manter)</small>{% endif %}
+                </label>
                 {{ form.senha|add_class:"form-control" }}
-            </div>
-            <div class="caixa-texto">
-                {{ form.senha_confirmacao.label_tag }}
-                {{ form.senha_confirmacao|add_class:"form-control" }}
+                <small class="erro-inline"></small>
             </div>
 
+            <div class="requisitos-senha" id="requisitos-senha-container" {% if aluno.pk %}style="display:none;"{% endif %}>
+                <div class="requisito" id="req-maiuscula"><i class="fa-solid fa-xmark"></i> Pelo menos 1 letra maiúscula</div>
+                <div class="requisito" id="req-minuscula"><i class="fa-solid fa-xmark"></i> Pelo menos 1 letra minúscula</div>
+                <div class="requisito" id="req-numero"><i class="fa-solid fa-xmark"></i> Pelo menos 1 número</div>
+                <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> Pelo menos 6 caracteres</div>
+            </div>
+
+            <div class="caixa-texto" id="confirmar-senha-container" {% if aluno.pk %}style="display:none;"{% endif %}>
+                <label {% if not aluno.pk %}class="required"{% endif %}>{{ form.senha_confirmacao.label }}</label>
+                {{ form.senha_confirmacao|add_class:"form-control" }}
+                <small class="erro-inline"></small>
+            </div>
+
+            <div class="confirmacao-senha" id="senha-match-msg" style="display:none;"></div>
+
             <div class="caixa-texto upload-foto">
-                {{ form.foto.label_tag }}
+                <label>{{ form.foto.label }}</label>
                 <div class="upload-container">
                     <label class="botao-upload">
                         <i class="fa-solid fa-camera"></i>
                         {{ form.foto }}
                     </label>
                     <div class="preview-foto">
-                        <img id="preview-imagem" style="display:none;">
+                        {% if aluno.pk and aluno.foto %}
+                            <img id="preview-imagem" src="{{ aluno.foto.url }}" alt="Foto atual" style="display:block;">
+                        {% else %}
+                            <img id="preview-imagem" src="" alt="Pré-visualização" style="display:none;">
+                        {% endif %}
                     </div>
                 </div>
             </div>
 
             <div class="botoes">
-                <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(4)">Anterior</button>
-                <button type="submit" class="btn">{{ aluno.pk|yesno:"Atualizar,Salvar" }}</button>
+                <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(4)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                <button type="submit" class="btn salvar">
+                    <i class="fa-solid fa-check"></i> {{ aluno.pk|yesno:"Atualizar,Salvar" }}
+                </button>
             </div>
         </div>
 
@@ -164,53 +211,154 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    let etapaAtual = 1;
-    const totalEtapas = 4;
+document.addEventListener('DOMContentLoaded', function () {
+  const TOTAL_ETAPAS = 4;
 
-    function mostrarEtapa(num) {
-        for (let i = 1; i <= totalEtapas; i++) {
-            document.getElementById(`etapa-${i}`).classList.remove('ativa');
-            document.getElementById(`passo-${i}`).classList.remove('ativo','completo');
-            if(i < num) document.getElementById(`passo-${i}`).classList.add('completo');
-        }
-        document.getElementById(`etapa-${num}`).classList.add('ativa');
-        document.getElementById(`passo-${num}`).classList.add('ativo');
+  /* FIX: atualiza indicadores de passo (ativo / completo) */
+  function atualizarIndicadores(etapaAtiva) {
+    for (let i = 1; i <= TOTAL_ETAPAS; i++) {
+      const el = document.getElementById(`passo-${i}`);
+      el.classList.remove('ativo', 'completo');
+      if (i < etapaAtiva)       el.classList.add('completo');
+      else if (i === etapaAtiva) el.classList.add('ativo');
     }
+  }
 
-    window.validarEtapa = function(num){
-        etapaAtual=num+1;
-        if(etapaAtual>totalEtapas) etapaAtual=totalEtapas;
-        mostrarEtapa(etapaAtual);
-    }
-    window.voltarEtapa = function(num){
-        etapaAtual=num-1;
-        if(etapaAtual<1) etapaAtual=1;
-        mostrarEtapa(etapaAtual);
-    }
-    mostrarEtapa(etapaAtual);
+  /* FIX: validarEtapa agora verifica campos required antes de avançar */
+  window.validarEtapa = function (n) {
+    const etapa  = document.getElementById(`etapa-${n}`);
+    const campos = etapa.querySelectorAll('input[required], select[required]');
+    let valido   = true;
 
-    // Mostrar/ocultar NE
-    const neCheckbox = document.querySelector('input[name="possui_necessidade_especial"]');
-    const neContainer = document.getElementById('descricao-ne-container');
-    if(neCheckbox){
-        neContainer.style.display = neCheckbox.checked ? 'block':'none';
-        neCheckbox.addEventListener('change',()=>{neContainer.style.display=neCheckbox.checked?'block':'none';});
-    }
+    campos.forEach(campo => {
+      const erroEl = campo.parentElement.querySelector('.erro-inline');
+      if (!campo.value.trim()) {
+        campo.style.borderColor = 'red';
+        if (erroEl) { erroEl.textContent = 'Campo obrigatório'; erroEl.style.display = 'block'; }
+        valido = false;
+      } else {
+        campo.style.borderColor = '';
+        if (erroEl) erroEl.style.display = 'none';
+      }
+    });
 
-    // Preview foto
-    const inputFoto = document.querySelector('input[name="foto"]');
-    const previewImg = document.getElementById('preview-imagem');
-    if(inputFoto){
-        inputFoto.addEventListener('change', ()=>{
-            const file = inputFoto.files[0];
-            if(file){
-                const reader = new FileReader();
-                reader.onload = e=>{previewImg.src=e.target.result;previewImg.style.display='block';};
-                reader.readAsDataURL(file);
-            }else{previewImg.style.display='none';}
-        });
+    if (!valido) return;
+
+    /* Avança para próxima etapa */
+    if (n < TOTAL_ETAPAS) {
+      document.getElementById(`etapa-${n}`).classList.remove('ativa');
+      document.getElementById(`etapa-${n + 1}`).classList.add('ativa');
+      atualizarIndicadores(n + 1);
     }
+  };
+
+  window.voltarEtapa = function (n) {
+    if (n > 1) {
+      document.getElementById(`etapa-${n}`).classList.remove('ativa');
+      document.getElementById(`etapa-${n - 1}`).classList.add('ativa');
+      atualizarIndicadores(n - 1);
+    }
+  };
+
+  /* Mostrar/ocultar campo de NE */
+  const neCheckbox   = document.querySelector('input[name="possui_necessidade_especial"]');
+  const neContainer  = document.getElementById('descricao-ne-container');
+  if (neCheckbox && neContainer) {
+    neContainer.style.display = neCheckbox.checked ? 'block' : 'none';
+    neCheckbox.addEventListener('change', () => {
+      neContainer.style.display = neCheckbox.checked ? 'block' : 'none';
+    });
+  }
+
+  /* ── Validação de senha em tempo real ── */
+  const isEdicao            = {{ aluno.pk|yesno:"true,false" }};
+  const senhaInput          = document.getElementById('id_senha');
+  const confirmaInput       = document.getElementById('id_senha_confirmacao');
+  const matchMsg            = document.getElementById('senha-match-msg');
+  const confirmaContainer   = document.getElementById('confirmar-senha-container');
+  const requisitosContainer = document.getElementById('requisitos-senha-container');
+
+  const regras = [
+    { id: 'req-maiuscula', regex: /[A-Z]/ },
+    { id: 'req-minuscula', regex: /[a-z]/ },
+    { id: 'req-numero',    regex: /\d/    },
+    { id: 'req-caractere', regex: /.{6,}/ },
+  ];
+
+  function verificarMatch() {
+    if (!confirmaInput || confirmaInput.value === '') { matchMsg.style.display = 'none'; return; }
+    const ok = senhaInput.value === confirmaInput.value;
+    matchMsg.style.display = 'block';
+    matchMsg.textContent   = ok ? 'Senhas coincidem ✓' : 'As senhas não coincidem';
+    matchMsg.classList.toggle('valid', ok);
+    matchMsg.classList.toggle('invalido', !ok);
+  }
+
+  function senhaValida() {
+    return regras.every(r => r.regex.test(senhaInput.value));
+  }
+
+  if (senhaInput) {
+    senhaInput.addEventListener('input', () => {
+      if (isEdicao) {
+        const mostrar = senhaInput.value.length > 0;
+        confirmaContainer.style.display   = mostrar ? 'block' : 'none';
+        requisitosContainer.style.display = mostrar ? 'block' : 'none';
+        if (!mostrar && confirmaInput) { confirmaInput.value = ''; matchMsg.style.display = 'none'; }
+      }
+      regras.forEach(r => {
+        const el = document.getElementById(r.id);
+        if (!el) return;
+        const ok = r.regex.test(senhaInput.value);
+        el.classList.toggle('valid', ok);
+        el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
+      });
+      verificarMatch();
+    });
+  }
+
+  if (confirmaInput) confirmaInput.addEventListener('input', verificarMatch);
+
+  /* Bloqueia submit se senha preenchida mas inválida ou sem confirmação */
+  document.getElementById('form-aluno').addEventListener('submit', function (e) {
+    if (!senhaInput || senhaInput.value === '') return;
+    if (!senhaValida()) {
+      e.preventDefault();
+      requisitosContainer.style.display = 'block';
+      senhaInput.style.borderColor = 'red';
+      senhaInput.focus();
+      return;
+    }
+    if (senhaInput.value !== confirmaInput.value) {
+      e.preventDefault();
+      matchMsg.style.display = 'block';
+      matchMsg.textContent   = 'As senhas não coincidem';
+      matchMsg.classList.add('invalido');
+      confirmaInput.style.borderColor = 'red';
+      confirmaInput.focus();
+    }
+  });
+
+  /* ── Preview de foto ── */
+  const inputFoto  = document.getElementById('id_foto');
+  const previewImg = document.getElementById('preview-imagem');
+
+  if (inputFoto && previewImg) {
+    inputFoto.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => { previewImg.src = e.target.result; previewImg.style.display = 'block'; };
+        reader.readAsDataURL(file);
+      } else {
+        previewImg.style.display = 'none';
+      }
+    });
+  }
+
+  /* Inicializa indicadores */
+  atualizarIndicadores(1);
 });
 </script>
+
 {% endblock %}

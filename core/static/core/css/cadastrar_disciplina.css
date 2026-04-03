@@ -1,0 +1,281 @@
+/* ============================================================
+   SIGE — Cadastrar / Editar Disciplina
+   cadastrar_disciplina.css  (baseado no painel_super design)
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Página base ── */
+.conteudo-principal {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 32px 28px 48px;
+  background: var(--bg-base);
+}
+
+/* ── Header ── */
+.header-docentes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+  animation: fadeUp .3s ease both;
+}
+
+.header-docentes a {
+  text-decoration: none;
+  color: inherit;
+  display: inline-flex;
+}
+
+.btn-voltar {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-mid);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background .18s, color .18s, border-color .18s, transform .18s;
+  flex-shrink: 0;
+}
+.btn-voltar:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-violet);
+  transform: translateX(-2px);
+}
+
+.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: -.01em;
+}
+
+/* ── Card principal do formulário ── */
+.card-tabela {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  max-width: 560px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp .35s .08s ease both;
+}
+
+/* linha de acento no topo */
+.card-tabela::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 28px; right: 28px;
+  height: 2px;
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+}
+
+/* brilho decorativo de fundo */
+.card-tabela::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; right: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: var(--accent-violet);
+  opacity: .04;
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* ── Mensagens de erro ── */
+.card-tabela p[style] {
+  font-size: .82rem;
+  font-weight: 500;
+  color: #f87171 !important;
+  background: rgba(248,113,113,.08);
+  border: 1px solid rgba(248,113,113,.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+
+/* ── Formulário ── */
+.form-cadastro {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ── Grupos de campo ── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeUp .35s ease both;
+}
+.form-group:nth-child(1) { animation-delay: .12s; }
+.form-group:nth-child(2) { animation-delay: .18s; }
+
+.form-group label {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+/* ── Inputs e selects ── */
+.form-group input[type="text"],
+.form-group select {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 400;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-group input[type="text"]::placeholder {
+  color: var(--text-muted);
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+  border-color: var(--accent-violet);
+  background: var(--bg-hover);
+  box-shadow: 0 0 0 3px rgba(124,111,255,.12);
+}
+
+.form-group input[type="text"]:hover:not(:focus),
+.form-group select:hover:not(:focus) {
+  border-color: var(--border-mid);
+  background: var(--bg-hover);
+}
+
+/* Wrapper para select com seta customizada */
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237986a8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: #131e33;
+  color: var(--text-primary);
+}
+
+.form-group select option[value=""] {
+  color: var(--text-muted);
+}
+
+/* ── Ações do formulário ── */
+.form-actions {
+  margin-top: 6px;
+  animation: fadeUp .35s .24s ease both;
+}
+
+.btn-adicionar {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-violet);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 12px 24px;
+  cursor: pointer;
+  transition: background .2s, transform .18s, box-shadow .2s;
+  letter-spacing: .02em;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-adicionar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.btn-adicionar:hover {
+  background: #9080ff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124,111,255,.35);
+}
+.btn-adicionar:hover::before { opacity: 1; }
+
+.btn-adicionar:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ── Animação de entrada ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsivo ── */
+@media (max-width: 600px) {
+  .conteudo-principal {
+    padding: 20px 16px 40px;
+  }
+
+  .titulo-pagina {
+    font-size: 1.3rem;
+  }
+
+  .card-tabela {
+    padding: 24px 18px;
+  }
+
+  .btn-adicionar {
+    width: 100%;
+    justify-content: center;
+  }
+}

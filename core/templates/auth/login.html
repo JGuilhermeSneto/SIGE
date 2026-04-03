@@ -4,46 +4,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tela de Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{% static 'core/css/login.css' %}" />
+  <title>SIGE — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'core/css/tela_login.css' %}" />
   <link rel="icon" type="image/x-icon" href="{% static 'core/img/favicon.ico' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 </head>
 <body>
-  <div class="container">
-    <div class="login-box">
-      <div class="logo-area">
-        <img src="{% static 'core/img/Logo_Branca.png' %}" alt="Logo" class="logo"/>
-        <h1 class="SIGE">SIGE</h1>
-        <p class="subtitulo">Sua jornada começa aqui</p>
+
+  <!-- SPLASH SCREEN -->
+  <div class="splash" id="splash">
+    <div class="splash-inner">
+      <div class="splash-logo-wrap">
+        <img src="{% static 'core/img/Logo_Branca.png' %}" alt="Logo" class="splash-logo" />
+        <span class="splash-nome">SIGE</span>
       </div>
-
-      <div class="form-area">
-        <h2>Login</h2>
-
-        <form method="post">
-          {% csrf_token %}
-          
-          {% if form.errors %}
-            <p style="color:red; margin-bottom: 10px;">E-mail ou senha inválidos</p>
-          {% endif %}
-
-          <div class="input-container">
-            {{ form.email }}
-            <i class="fas fa-envelope icon"></i>
-          </div>
-
-          <div class="input-container">
-            {{ form.password }}
-            <i class="fas fa-lock icon"></i>
-          </div>
-
-          <button type="submit">ENTRAR</button>
-          <a href="{% url 'password_reset' %}" class="forgot-link">Esqueceu sua senha?</a>
-        </form>
+      <p class="splash-sub">Inicializando o sistema...</p>
+      <div class="splash-progress-track">
+        <div class="splash-progress-bar" id="splashBar"></div>
+      </div>
+      <div class="splash-steps">
+        <span class="step-item" id="s1"><i class="fas fa-circle-notch fa-spin"></i> Carregando módulos</span>
+        <span class="step-item" id="s2"><i class="fas fa-circle-notch fa-spin"></i> Verificando sessão</span>
+        <span class="step-item" id="s3"><i class="fas fa-circle-notch fa-spin"></i> Preparando interface</span>
       </div>
     </div>
   </div>
+
+  <!-- FEEDBACK OVERLAY (sucesso / erro) -->
+  <div class="feedback-overlay" id="feedbackOverlay">
+    <div class="feedback-box" id="feedbackBox">
+      <div class="feedback-icon-wrap">
+        <i class="fas fa-check" id="feedbackIcon"></i>
+      </div>
+      <p class="feedback-msg" id="feedbackMsg">Login realizado!</p>
+    </div>
+  </div>
+
+  <!-- PÁGINA PRINCIPAL -->
+  <!-- data-errors: evita template tag Django dentro do bloco <script> -->
+  <div class="page" id="page" data-errors="{% if form.errors %}1{% else %}0{% endif %}">
+
+    <div class="particle p1"></div>
+    <div class="particle p2"></div>
+    <div class="particle p3"></div>
+    <div class="particle p4"></div>
+
+    <div class="login-card" id="loginCard">
+
+      <!-- LOGO -->
+      <div class="logo-area">
+        <div class="logo-ring">
+          <img src="{% static 'core/img/Logo_Branca.png' %}" alt="Logo" class="logo-img" />
+        </div>
+        <h1 class="brand-name">SIGE</h1>
+        <p class="brand-sub">Sua jornada começa aqui</p>
+      </div>
+
+      <!-- DIVIDER -->
+      <div class="divider">
+        <span class="divider-label">Acesse sua conta</span>
+      </div>
+
+      <!-- FORM -->
+      <form method="post" id="loginForm" novalidate>
+        {% csrf_token %}
+
+        <!-- e-mail -->
+        <div class="field-wrap" id="wrap-email">
+          <label class="field-label">E-mail</label>
+          <div class="field-box">
+            <i class="fas fa-envelope field-icon"></i>
+            {{ form.email }}
+            <span class="field-accent"></span>
+          </div>
+          <span class="field-error" id="err-email"></span>
+        </div>
+
+        <!-- senha -->
+        <div class="field-wrap" id="wrap-password">
+          <label class="field-label">Senha</label>
+          <div class="field-box">
+            <i class="fas fa-lock field-icon"></i>
+            {{ form.password }}
+            <button type="button" class="toggle-pw" id="togglePw" tabindex="-1">
+              <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+            <span class="field-accent"></span>
+          </div>
+          <span class="field-error" id="err-password"></span>
+        </div>
+
+        <!-- erro global Django — renderizado no servidor, sem JS -->
+        {% if form.errors %}
+        <div class="global-error">
+          <i class="fas fa-triangle-exclamation"></i>
+          E-mail ou senha inválidos. Tente novamente.
+        </div>
+        {% endif %}
+
+        <!-- botão -->
+        <button type="submit" class="btn-entrar" id="btnEntrar">
+          <span class="btn-text">ENTRAR</span>
+          <span class="btn-loader"><i class="fas fa-circle-notch fa-spin"></i></span>
+          <span class="btn-shimmer"></span>
+        </button>
+
+        <a href="{% url 'password_reset' %}" class="forgot-link">Esqueceu sua senha?</a>
+      </form>
+
+    </div>
+  </div>
+
+  <script>
+  /* ── SPLASH ── */
+  (function () {
+    var splash = document.getElementById('splash');
+    var bar    = document.getElementById('splashBar');
+    var page   = document.getElementById('page');
+
+    var steps = [
+      { id: 's1', delay: 900  },
+      { id: 's2', delay: 1700 },
+      { id: 's3', delay: 2500 }
+    ];
+
+    steps.forEach(function (s) {
+      setTimeout(function () {
+        var el = document.getElementById(s.id);
+        el.querySelector('i').className = 'fas fa-circle-check';
+        el.classList.add('done');
+      }, s.delay);
+    });
+
+    var pct = 0;
+    var iv = setInterval(function () {
+      pct = Math.min(pct + 1, 100);
+      bar.style.width = pct + '%';
+      if (pct >= 100) clearInterval(iv);
+    }, 28);
+
+    setTimeout(function () {
+      splash.classList.add('splash-out');
+      page.classList.add('page-in');
+      setTimeout(function () { splash.style.display = 'none'; }, 700);
+    }, 3000);
+  }());
+
+  /* ── FEEDBACK DE ERRO via data-attribute (sem template tag dentro do JS) ── */
+  (function () {
+    var page = document.getElementById('page');
+    if (!page || page.dataset.errors !== '1') return;
+
+    var ov  = document.getElementById('feedbackOverlay');
+    var box = document.getElementById('feedbackBox');
+    var ico = document.getElementById('feedbackIcon');
+    var msg = document.getElementById('feedbackMsg');
+
+    ico.className   = 'fas fa-xmark';
+    msg.textContent = 'Credenciais inválidas.';
+    box.classList.add('error');
+    ov.classList.add('show');
+
+    setTimeout(function () { ov.classList.remove('show'); }, 2800);
+  }());
+
+  /* ── TOGGLE SENHA ── */
+  document.getElementById('togglePw').addEventListener('click', function () {
+    var pw  = document.querySelector('#loginForm input[name="password"]');
+    var ico = document.getElementById('eyeIcon');
+    if (!pw) return;
+    if (pw.type === 'password') {
+      pw.type = 'text';
+      ico.className = 'fas fa-eye-slash';
+    } else {
+      pw.type = 'password';
+      ico.className = 'fas fa-eye';
+    }
+  });
+
+  /* ── FOCUS / BLUR ── */
+  document.querySelectorAll('.field-box input').forEach(function (input) {
+    input.addEventListener('focus', function () {
+      input.closest('.field-wrap').classList.add('focused');
+    });
+    input.addEventListener('blur', function () {
+      input.closest('.field-wrap').classList.remove('focused');
+      if (input.value) {
+        input.closest('.field-wrap').classList.add('filled');
+      } else {
+        input.closest('.field-wrap').classList.remove('filled');
+      }
+    });
+    if (input.value) input.closest('.field-wrap').classList.add('filled');
+  });
+
+  /* ── SUBMIT ── */
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    var email = this.querySelector('input[name="email"]');
+    var pw    = this.querySelector('input[name="password"]');
+    var valid = true;
+
+    document.querySelectorAll('.field-wrap').forEach(function (w) {
+      w.classList.remove('error');
+    });
+    document.querySelectorAll('.field-error').forEach(function (el) {
+      el.textContent = '';
+    });
+
+    if (email && !email.value.trim()) {
+      document.getElementById('wrap-email').classList.add('error');
+      document.getElementById('err-email').textContent = 'Informe seu e-mail.';
+      valid = false;
+    }
+    if (pw && !pw.value.trim()) {
+      document.getElementById('wrap-password').classList.add('error');
+      document.getElementById('err-password').textContent = 'Informe sua senha.';
+      valid = false;
+    }
+
+    if (!valid) {
+      e.preventDefault();
+      var card = document.getElementById('loginCard');
+      card.classList.add('shake');
+      setTimeout(function () { card.classList.remove('shake'); }, 600);
+      return;
+    }
+
+    document.getElementById('btnEntrar').classList.add('loading');
+  });
+  </script>
+
 </body>
 </html>

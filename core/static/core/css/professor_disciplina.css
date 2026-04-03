@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Layout base ── */
+.container {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  background: var(--bg-base);
+}
+
+.conteudo-principal {
+  padding: 32px 28px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.header-pagina {
+  margin-bottom: 28px;
+  animation: fadeUp .3s ease both;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: color .2s;
+}
+.btn-voltar:hover { color: var(--accent-violet); }
+.btn-voltar i { font-size: 12px; }
+
+.titulo-container {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.titulo-container h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin: 0;
+}
+
+/* ── Badges ── */
+.badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-size: .68rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 20px;
+}
+
+.badge-ano {
+  background: rgba(124,111,255,.15);
+  color: var(--accent-violet);
+  border: 1px solid rgba(124,111,255,.25);
+}
+
+.badge-turno {
+  background: rgba(34,211,238,.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(34,211,238,.2);
+}
+
+/* ── Botão grade horária ── */
+.secao-grade {
+  margin-bottom: 28px;
+  animation: fadeUp .3s .07s ease both;
+}
+
+.btn-grade-horaria {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .84rem;
+  font-weight: 600;
+  color: var(--accent-emerald);
+  text-decoration: none;
+  padding: .55rem 1.1rem;
+  border: 1px solid rgba(52,211,153,.25);
+  border-radius: var(--radius-md);
+  background: rgba(52,211,153,.07);
+  transition: background .2s, border-color .2s;
+}
+.btn-grade-horaria:hover {
+  background: rgba(52,211,153,.14);
+  border-color: rgba(52,211,153,.45);
+}
+.btn-grade-horaria i { font-size: 13px; }
+
+/* ── Seção de disciplinas ── */
+.secao-disciplinas {
+  animation: fadeUp .3s .1s ease both;
+}
+
+.subtitulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: .05em;
+  margin: 0 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: uppercase;
+}
+.subtitulo i { font-size: 13px; color: var(--text-muted); }
+
+/* ── Grid disciplinas ── */
+.lista-disciplinas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+/* ── Card de disciplina ── */
+.card-disciplina {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 24px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .22s ease, border-color .22s ease, background .22s ease;
+  animation: fadeUp .35s ease both;
+}
+.card-disciplina:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-mid);
+  background: var(--bg-elevated);
+}
+
+/* linha de acento topo */
+.card-disciplina::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 24px; right: 24px;
+  height: 2px;
+  background: var(--accent-violet);
+  border-radius: 0 0 4px 4px;
+  opacity: 0;
+  transition: opacity .22s;
+}
+.card-disciplina:hover::before { opacity: 1; }
+
+.card-disciplina:nth-child(2)::before { background: var(--accent-cyan); }
+.card-disciplina:nth-child(3)::before { background: var(--accent-emerald); }
+.card-disciplina:nth-child(4)::before { background: var(--accent-amber); }
+.card-disciplina:nth-child(5)::before { background: var(--accent-violet); }
+.card-disciplina:nth-child(6)::before { background: var(--accent-cyan); }
+
+/* animações sequenciais */
+.card-disciplina:nth-child(1) { animation-delay: .05s; }
+.card-disciplina:nth-child(2) { animation-delay: .10s; }
+.card-disciplina:nth-child(3) { animation-delay: .15s; }
+.card-disciplina:nth-child(4) { animation-delay: .20s; }
+.card-disciplina:nth-child(5) { animation-delay: .25s; }
+.card-disciplina:nth-child(6) { animation-delay: .30s; }
+
+/* ── Header do card ── */
+.disciplina-header h3 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ── Info items ── */
+.disciplina-info {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.info-item i {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.info-valor {
+  font-size: .8rem;
+  color: var(--text-secondary);
+}
+
+/* ── Barra de progresso ── */
+.progresso-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progresso-barra {
+  width: 100%;
+  height: 4px;
+  background: var(--bg-hover);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progresso-preenchido {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+  border-radius: 4px;
+  transition: width .7s cubic-bezier(.4,0,.2,1);
+}
+
+.progresso-texto {
+  font-size: .72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .04em;
+  text-align: right;
+}
+
+/* ── Ações ── */
+.disciplina-acoes {
+  margin-top: auto;
+  padding-top: 2px;
+}
+
+.btn-ver-detalhes {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--accent-violet);
+  text-decoration: none;
+  padding: .48rem .9rem;
+  border: 1px solid rgba(124,111,255,.3);
+  border-radius: var(--radius-sm);
+  transition: background .2s, border-color .2s;
+}
+.btn-ver-detalhes:hover {
+  background: rgba(124,111,255,.12);
+  border-color: var(--accent-violet);
+}
+.btn-ver-detalhes i { font-size: 12px; }
+
+/* ── Estado vazio ── */
+.mensagem-vazia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+  text-align: center;
+  animation: fadeUp .35s ease both;
+}
+.mensagem-vazia i {
+  font-size: 2.2rem;
+  color: var(--text-muted);
+}
+.mensagem-vazia p {
+  font-size: .95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Animação ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsivo ── */
+@media (max-width: 760px) {
+  .conteudo-principal { padding: 20px 16px 40px; }
+  .titulo-container h1 { font-size: 1.45rem; }
+  .lista-disciplinas { grid-template-columns: 1fr; }
+}

@@ -1,6 +1,5 @@
-  
 /* ============================================================
-   SIGE — Variáveis (mesmas do painel_super.css)
+   SIGE — Cadastrar / Editar Docente
 ============================================================ */
 :root {
   --bg-base:        #090e1a;
@@ -23,6 +22,7 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; }
+a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    ÁREA PRINCIPAL
@@ -89,7 +89,6 @@
 }
 .header-breadcrumb a {
   color: var(--text-secondary);
-  text-decoration: none;
   transition: color .15s;
 }
 .header-breadcrumb a:hover { color: var(--text-primary); }

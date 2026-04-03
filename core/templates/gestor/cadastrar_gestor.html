@@ -1,20 +1,20 @@
 {% extends 'core/base.html' %}
+{% load widget_tweaks %}
 {% load static %}
 
 {% block title %}{{ gestor.pk|yesno:"Editar,Cadastrar" }} Gestor{% endblock %}
 {% block header_title %}{{ gestor.pk|yesno:"Editar,Cadastrar" }} Gestor{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/cadastra_gestor.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/cadastrar_gestores.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
 {% endblock %}
 
 {% block content %}
 <div class="main-area">
 
-  <!-- ── Header ── -->
+  <!-- Header -->
   <div class="header-painel">
     <div class="header-esquerda">
       <span class="header-label">Superusuário · Gestores</span>
@@ -29,7 +29,7 @@
     </div>
   </div>
 
-  <!-- ── Indicadores de passo ── -->
+  <!-- Passos -->
   <div class="passos-wrapper">
     <div class="passo-item ativo" id="passo-1">
       <div class="passo-num">1</div>
@@ -54,9 +54,8 @@
     </div>
   </div>
 
-  <!-- ── Card do formulário ── -->
+  <!-- Formulário -->
   <div class="form-card">
-
     <div class="form-card-titulo">
       <div class="form-card-icone">
         <i class="fa-solid fa-user" id="etapa-icone"></i>
@@ -70,160 +69,103 @@
     <form method="POST" class="formulario" enctype="multipart/form-data" id="form-gestor">
       {% csrf_token %}
 
-      <!-- ══ ETAPA 1 ══ -->
+      <!-- ETAPA 1 -->
       <div class="etapa ativa" id="etapa-1">
-
         <div class="caixa-texto">
           <label class="required">Nome completo</label>
           {{ form.nome_completo }}
-          {% if form.nome_completo.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.nome_completo.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto">
           <label class="required">CPF</label>
           {{ form.cpf }}
-          {% if form.cpf.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.cpf.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto">
           <label class="required">Data de nascimento</label>
-          {% if gestor.pk and gestor.data_nascimento %}
-            <input type="date" name="data_nascimento" value="{{ gestor.data_nascimento|date:'Y-m-d' }}" required id="id_data_nascimento">
-          {% else %}
-            {{ form.data_nascimento }}
-          {% endif %}
-          {% if form.data_nascimento.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.data_nascimento.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          {# FIX: força type="date" via widget_tweaks #}
+          {{ form.data_nascimento|attr:"type:date" }}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto">
           <label class="required">Telefone</label>
           {{ form.telefone }}
-          {% if form.telefone.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.telefone.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto dois">
           <label class="required">E-mail</label>
           {{ form.email }}
-          {% if form.email.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.email.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="botoes">
           <span></span>
-          <button type="button" class="btn" onclick="validarEtapa(1)">
-            Próximo <i class="fa-solid fa-arrow-right"></i>
-          </button>
+          <button type="button" class="btn" onclick="validarEtapa(1)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
 
-      <!-- ══ ETAPA 2 ══ -->
+      <!-- ETAPA 2 -->
       <div class="etapa" id="etapa-2">
-
         <div class="caixa-texto">
           <label class="required">CEP</label>
           {{ form.cep }}
-          {% if form.cep.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.cep.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto">
-          <label class="required">UF</label>
-          {{ form.uf }}
-          {% if form.uf.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.uf.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <label class="required">Estado (UF)</label>
+          {{ form.estado }}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto">
           <label class="required">Cidade</label>
           {{ form.cidade }}
-          {% if form.cidade.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.cidade.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
+        <div class="caixa-texto">
+          <label class="required">Bairro</label>
+          {{ form.bairro }}
+          <small class="erro-inline"></small>
+        </div>
         <div class="caixa-texto full">
-          <label class="required">Endereço</label>
-          {{ form.endereco }}
-          {% if form.endereco.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.endereco.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <label class="required">Logradouro</label>
+          {{ form.logradouro }}
+          <small class="erro-inline"></small>
         </div>
-
+        <div class="caixa-texto">
+          <label class="required">Número</label>
+          {{ form.numero }}
+          <small class="erro-inline"></small>
+        </div>
+        <div class="caixa-texto">
+          <label>Complemento</label>
+          {{ form.complemento }}
+          <small class="erro-inline"></small>
+        </div>
         <div class="botoes">
-          <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">
-            <i class="fa-solid fa-arrow-left"></i> Anterior
-          </button>
-          <button type="button" class="btn" onclick="validarEtapa(2)">
-            Próximo <i class="fa-solid fa-arrow-right"></i>
-          </button>
+          <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+          <button type="button" class="btn" onclick="validarEtapa(2)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
         </div>
       </div>
 
-      <!-- ══ ETAPA 3 ══ -->
+      <!-- ETAPA 3 -->
       <div class="etapa" id="etapa-3">
-
         <div class="caixa-texto">
           <label class="required">Cargo</label>
           {{ form.cargo }}
-          {% if form.cargo.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.cargo.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
-
         <div class="caixa-texto">
           <label {% if not gestor.pk %}class="required"{% endif %}>
-            Senha
-            {% if gestor.pk %}
-              <small style="color: var(--text-muted); font-weight: normal; text-transform: none; letter-spacing: 0;">(deixe em branco para manter)</small>
-            {% endif %}
+            Senha {% if gestor.pk %}<small>(deixe em branco para manter)</small>{% endif %}
           </label>
           {{ form.senha }}
-          {% if form.senha.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.senha.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
 
+        {# FIX: no modo edição o container começa oculto, mas reaparece ao digitar a senha #}
         <div class="caixa-texto" id="confirmar-senha-container" {% if gestor.pk %}style="display:none;"{% endif %}>
           <label {% if not gestor.pk %}class="required"{% endif %}>Confirmar senha</label>
           {{ form.senha_confirmacao }}
-          {% if form.senha_confirmacao.errors %}
-            <small class="erro-inline" style="display:block;">{{ form.senha_confirmacao.errors.0 }}</small>
-          {% else %}
-            <small class="erro-inline"></small>
-          {% endif %}
+          <small class="erro-inline"></small>
         </div>
 
         <div class="requisitos-senha" id="requisitos-senha-container" {% if gestor.pk %}style="display:none;"{% endif %}>
@@ -233,63 +175,46 @@
           <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> Pelo menos 6 caracteres</div>
         </div>
 
-        <div class="confirmacao-senha" id="senha-match-msg" style="display:none;">As senhas não coincidem</div>
+        <div class="confirmacao-senha" id="senha-match-msg" style="display:none;"></div>
 
         <div class="caixa-texto upload-foto">
           <label>Foto de Perfil</label>
-          <div class="upload-container">
-            <label class="botao-upload">
-              <i class="fa-solid fa-camera"></i>
-              <span>Selecionar Imagem</span>
-              {{ form.foto }}
-            </label>
-            <div class="preview-foto">
-              {% if gestor.pk and gestor.foto %}
-                <img id="preview-imagem" src="{{ gestor.foto.url }}" alt="Foto atual" style="display:block;">
-              {% else %}
-                <img id="preview-imagem" src="" alt="Pré-visualização">
-              {% endif %}
-            </div>
+          {{ form.foto }}
+          <div class="preview-foto">
+            {% if gestor.pk and gestor.foto %}
+              <img id="preview-imagem" src="{{ gestor.foto.url }}" alt="Foto atual" style="display:block;">
+            {% else %}
+              <img id="preview-imagem" src="" alt="Pré-visualização" style="display:none;">
+            {% endif %}
           </div>
         </div>
 
-        {% if form.non_field_errors %}
-          <div class="alert-danger">{{ form.non_field_errors.0 }}</div>
-        {% endif %}
-
         <div class="botoes">
-          <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">
-            <i class="fa-solid fa-arrow-left"></i> Anterior
-          </button>
-          <button type="submit" class="btn salvar">
-            <i class="fa-solid fa-check"></i> {{ gestor.pk|yesno:"Atualizar,Salvar" }} Cadastro
-          </button>
+          <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+          <button type="submit" class="btn salvar"><i class="fa-solid fa-check"></i> {{ gestor.pk|yesno:"Atualizar,Salvar" }} Cadastro</button>
         </div>
       </div>
 
     </form>
-  </div><!-- /.form-card -->
-
-</div><!-- /.main-area -->
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 const isEdicao = {{ gestor.pk|yesno:"true,false" }};
 
-/* ── Meta de cada etapa (header dinâmico) ── */
 const etapasMeta = {
   1: { icone: 'fa-user',          titulo: 'Dados Pessoais',  desc: 'Preencha as informações básicas do gestor' },
   2: { icone: 'fa-location-dot',  titulo: 'Endereço',        desc: 'Informe a localização do gestor' },
   3: { icone: 'fa-shield-halved', titulo: 'Cargo & Acesso',  desc: 'Defina o cargo, senha e foto de perfil' },
 };
 
-/* ── Indicadores de passo ── */
 function atualizarIndicadores(etapaAtiva) {
   for (let i = 1; i <= 3; i++) {
     const el = document.getElementById(`passo-${i}`);
     el.classList.remove('ativo', 'completo');
-    if (i < etapaAtiva)       el.classList.add('completo');
+    if (i < etapaAtiva)      el.classList.add('completo');
     else if (i === etapaAtiva) el.classList.add('ativo');
   }
   const meta = etapasMeta[etapaAtiva];
@@ -298,77 +223,12 @@ function atualizarIndicadores(etapaAtiva) {
   document.getElementById('etapa-desc').textContent   = meta.desc;
 }
 
-/* ── Detecta etapa com erro após POST e abre ela ── */
-document.addEventListener('DOMContentLoaded', function () {
-  const etapas = document.querySelectorAll('.etapa');
-  let etapaComErro = null;
-  etapas.forEach((etapa, index) => {
-    if (etapa.querySelector('.erro-inline[style*="display:block"]') ||
-        etapa.querySelector('.alert-danger')) {
-      etapaComErro = index + 1;
-    }
-  });
-  if (etapaComErro) {
-    etapas.forEach(e => e.classList.remove('ativa'));
-    document.getElementById(`etapa-${etapaComErro}`).classList.add('ativa');
-    atualizarIndicadores(etapaComErro);
-  }
-});
-
-/* ── Adiciona IDs e atributos nos campos gerados pelo Django ── */
-document.addEventListener('DOMContentLoaded', function () {
-  const form = document.getElementById('form-gestor');
-
-  const cpfInput = form.querySelector('[name="cpf"]');
-  if (cpfInput) { cpfInput.id = 'cpf'; cpfInput.maxLength = 14; }
-
-  const telInput = form.querySelector('[name="telefone"]');
-  if (telInput) { telInput.id = 'telefone'; telInput.maxLength = 15; }
-
-  const cepInput = form.querySelector('[name="cep"]');
-  if (cepInput) { cepInput.id = 'cep'; cepInput.maxLength = 9; }
-
-  const ufSelect = form.querySelector('[name="uf"]');
-  if (ufSelect) ufSelect.id = 'uf';
-
-  const cidadeInput = form.querySelector('[name="cidade"]');
-  if (cidadeInput) { cidadeInput.id = 'cidade'; cidadeInput.placeholder = 'Cidade (preenchida pelo CEP)'; }
-
-  const senhaInput = form.querySelector('[name="senha"]');
-  if (senhaInput) { senhaInput.id = 'senha'; senhaInput.minLength = 6; }
-
-  const senhaConfirm = form.querySelector('[name="senha_confirmacao"]');
-  if (senhaConfirm) senhaConfirm.id = 'senha_confirmacao';
-
-  const fotoInput = form.querySelector('[name="foto"]');
-  if (fotoInput) {
-    fotoInput.accept = 'image/*';
-    fotoInput.addEventListener('change', function () { previewFoto(this); });
-  }
-});
-
-/* ── Lógica de senha na edição (mostra campos ao digitar) ── */
-document.addEventListener('DOMContentLoaded', function () {
-  if (!isEdicao) return;
-  const senhaInput           = document.getElementById('senha');
-  const requisitosContainer  = document.getElementById('requisitos-senha-container');
-  const confirmarContainer   = document.getElementById('confirmar-senha-container');
-  if (!senhaInput) return;
-  senhaInput.addEventListener('input', function () {
-    const mostrar = this.value.length > 0;
-    requisitosContainer.style.display = mostrar ? 'grid' : 'none';
-    confirmarContainer.style.display  = mostrar ? 'flex'  : 'none';
-  });
-});
-
-/* ── Navegação multi-step ── */
 function validarEtapa(n) {
   const etapa  = document.getElementById(`etapa-${n}`);
   const campos = etapa.querySelectorAll('input[required], select[required]');
   let valido   = true;
 
   campos.forEach(campo => {
-    if (isEdicao && ['senha','senha_confirmacao'].includes(campo.name)) return;
     const erroEl = campo.parentElement.querySelector('.erro-inline');
     if (!campo.value.trim()) {
       campo.classList.add('campo-erro');
@@ -385,59 +245,24 @@ function validarEtapa(n) {
 
 function proximaEtapa(n) {
   document.getElementById(`etapa-${n}`).classList.remove('ativa');
-  document.getElementById(`etapa-${n+1}`).classList.add('ativa');
+  document.getElementById(`etapa-${n + 1}`).classList.add('ativa');
   atualizarIndicadores(n + 1);
 }
 
 function voltarEtapa(n) {
   document.getElementById(`etapa-${n}`).classList.remove('ativa');
-  document.getElementById(`etapa-${n-1}`).classList.add('ativa');
+  document.getElementById(`etapa-${n - 1}`).classList.add('ativa');
   atualizarIndicadores(n - 1);
 }
 
-/* ── Máscaras ── */
 document.addEventListener('DOMContentLoaded', function () {
-  const cpf = document.getElementById('cpf');
-  if (cpf) cpf.addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g,'').slice(0,11);
-    v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
-    e.target.value = v;
-  });
 
-  const tel = document.getElementById('telefone');
-  if (tel) tel.addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g,'').slice(0,11);
-    v = v.length > 10
-      ? v.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3')
-      : v.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3');
-    e.target.value = v;
-  });
-
-  const cepEl = document.getElementById('cep');
-  if (cepEl) {
-    cepEl.addEventListener('input', e => {
-      let v = e.target.value.replace(/\D/g,'').slice(0,8);
-      e.target.value = v.replace(/(\d{5})(\d)/,'$1-$2');
-    });
-    cepEl.addEventListener('blur', function () {
-      const cep = this.value.replace(/\D/g,'');
-      if (cep.length !== 8) return;
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
-        .then(r => r.json())
-        .then(d => {
-          document.getElementById('uf').value     = d.uf         || '';
-          document.getElementById('cidade').value = d.localidade || '';
-        })
-        .catch(() => {});
-    });
-  }
-});
-
-/* ── Validação de senha ── */
-document.addEventListener('DOMContentLoaded', function () {
-  const senha    = document.getElementById('senha');
-  const confirma = document.getElementById('senha_confirmacao');
-  const matchMsg = document.getElementById('senha-match-msg');
+  /* ── FIX: IDs corretos gerados pelo Django (prefixo id_) ── */
+  const senhaInput    = document.getElementById('id_senha');
+  const confirmaInput = document.getElementById('id_senha_confirmacao');
+  const matchMsg      = document.getElementById('senha-match-msg');
+  const confirmaContainer   = document.getElementById('confirmar-senha-container');
+  const requisitosContainer = document.getElementById('requisitos-senha-container');
 
   const regras = [
     { id: 'req-maiuscula', regex: /[A-Z]/ },
@@ -446,36 +271,86 @@ document.addEventListener('DOMContentLoaded', function () {
     { id: 'req-caractere', regex: /.{6,}/ },
   ];
 
-  if (senha) senha.addEventListener('input', () => {
-    regras.forEach(r => {
-      const el = document.getElementById(r.id);
-      if (!el) return;
-      const ok = r.regex.test(senha.value);
-      el.classList.toggle('valid', ok);
-      el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
-    });
-    verificarMatch();
-  });
+  if (senhaInput) {
+    senhaInput.addEventListener('input', () => {
 
-  if (confirma) confirma.addEventListener('input', verificarMatch);
+      /* FIX: no modo edição, exibe confirmação e requisitos ao começar a digitar */
+      if (isEdicao) {
+        const mostrar = senhaInput.value.length > 0;
+        confirmaContainer.style.display   = mostrar ? 'block' : 'none';
+        requisitosContainer.style.display = mostrar ? 'block' : 'none';
+        if (!mostrar && confirmaInput) {
+          confirmaInput.value = '';
+          matchMsg.style.display = 'none';
+        }
+      }
+
+      regras.forEach(r => {
+        const el = document.getElementById(r.id);
+        if (!el) return;
+        const ok = r.regex.test(senhaInput.value);
+        el.classList.toggle('valid', ok);
+        el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
+      });
+
+      verificarMatch();
+    });
+  }
+
+  if (confirmaInput) confirmaInput.addEventListener('input', verificarMatch);
 
   function verificarMatch() {
-    if (!confirma || confirma.value === '') { matchMsg.style.display = 'none'; return; }
-    const ok = senha.value === confirma.value;
+    if (!confirmaInput || confirmaInput.value === '') {
+      matchMsg.style.display = 'none';
+      return;
+    }
+    const ok = senhaInput.value === confirmaInput.value;
     matchMsg.style.display = 'block';
     matchMsg.textContent   = ok ? 'Senhas coincidem ✓' : 'As senhas não coincidem';
     matchMsg.classList.toggle('valid', ok);
+    matchMsg.classList.toggle('invalido', !ok);
+  }
+
+  function senhaValida() {
+    return regras.every(r => r.regex.test(senhaInput.value));
+  }
+
+  /* Bloqueia submit se senha preenchida mas inválida ou sem confirmação */
+  document.getElementById('form-gestor').addEventListener('submit', function (e) {
+    if (!senhaInput || senhaInput.value === '') return;
+    if (!senhaValida()) {
+      e.preventDefault();
+      requisitosContainer.style.display = 'block';
+      senhaInput.style.borderColor = 'red';
+      senhaInput.focus();
+      return;
+    }
+    if (senhaInput.value !== confirmaInput.value) {
+      e.preventDefault();
+      matchMsg.style.display = 'block';
+      matchMsg.textContent   = 'As senhas não coincidem';
+      matchMsg.classList.add('invalido');
+      confirmaInput.style.borderColor = 'red';
+      confirmaInput.focus();
+    }
+  });
+
+  /* ── FIX: preview da foto via event listener (função previewFoto estava sem bind) ── */
+  const inputFoto = document.getElementById('id_foto');
+  const previewImg = document.getElementById('preview-imagem');
+
+  if (inputFoto && previewImg) {
+    inputFoto.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          previewImg.src = e.target.result;
+          previewImg.style.display = 'block';
+        };
+        reader.readAsDataURL(this.files[0]);
+      }
+    });
   }
 });
-
-/* ── Preview de foto ── */
-function previewFoto(input) {
-  const img = document.getElementById('preview-imagem');
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
-    reader.onload = e => { img.src = e.target.result; img.style.display = 'block'; };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
 </script>
 {% endblock %}

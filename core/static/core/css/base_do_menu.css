@@ -1,0 +1,426 @@
+/* ============================================================
+   SIGE — Layout Base Global
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ============================================================
+   VARIÁVEIS
+============================================================ */
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+
+  --menu-height: 64px;
+  --menu-width:  312px;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.25);
+  --shadow-md: 0 8px 24px rgba(0,0,0,.35);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,.45);
+
+  --transition-fast: .15s ease;
+  --transition-mid:  .22s ease;
+  --transition-slow: .35s ease;
+}
+
+/* ============================================================
+   RESET
+============================================================ */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ── Fix global de hyperlinks ── */
+a {
+  text-decoration: none !important;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ============================================================
+   BASE
+============================================================ */
+body.layout-base {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   MENU SUPERIOR
+============================================================ */
+.menu-principal {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--menu-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: rgba(9,14,26,.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-subtle);
+  z-index: 1000;
+}
+
+/* ── Logo / Brand ── */
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: opacity var(--transition-fast);
+}
+.brand-link:hover { opacity: .85; }
+
+.logo-menu {
+  height: 34px;
+  width: auto;
+}
+
+.brand-link h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  color: var(--text-primary);
+}
+
+/* ── Ícones topo ── */
+.menu-icones {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Botão hamburguer mobile ── */
+.icone-menu {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  display: none;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+.icone-menu:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* ============================================================
+   AVATAR / DROPDOWN
+============================================================ */
+.user-dropdown { position: relative; }
+
+.user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  overflow: hidden;
+}
+.user-avatar:hover {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(124,111,255,.15);
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-avatar i {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* ── Dropdown ── */
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  min-width: 190px;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  animation: fadeDown .2s ease both;
+}
+.dropdown-menu.ativo { display: flex; }
+
+.dropdown-menu a {
+  padding: 11px 14px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: background var(--transition-fast), color var(--transition-fast);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.dropdown-menu a:last-child { border-bottom: none; }
+.dropdown-menu a:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.dropdown-menu a i {
+  width: 16px;
+  text-align: center;
+  opacity: .7;
+  font-size: .85rem;
+}
+
+/* ============================================================
+   MENU LATERAL
+============================================================ */
+.menu-lateral {
+  position: fixed;
+  top: var(--menu-height);
+  left: 0;
+  bottom: 0;
+  width: var(--menu-width);
+  padding: 20px 14px 32px;
+  background: linear-gradient(180deg, #0b1224 0%, #090e1a 100%);
+  border-right: 1px solid var(--border-subtle);
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: left var(--transition-slow);
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-hover) transparent;
+}
+.menu-lateral::-webkit-scrollbar { width: 4px; }
+.menu-lateral::-webkit-scrollbar-thumb {
+  background: var(--bg-hover);
+  border-radius: 4px;
+}
+
+/* ── Seção de navegação ── */
+.nav-lateral {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Label de grupo ── */
+.nav-grupo-label {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 20px 14px 8px;
+  margin-top: 4px;
+}
+.nav-grupo-label:first-child { padding-top: 4px; }
+
+/* ── Links do menu ── */
+.nav-lateral a {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  transition:
+    background var(--transition-mid),
+    color var(--transition-mid),
+    transform var(--transition-mid),
+    box-shadow var(--transition-mid);
+}
+
+/* brilho de fundo no hover */
+.nav-lateral a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(124,111,255,.07), transparent);
+  opacity: 0;
+  transition: opacity var(--transition-mid);
+  pointer-events: none;
+}
+
+.nav-lateral a:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  transform: translateX(4px);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+.nav-lateral a:hover::after { opacity: 1; }
+
+/* estado ativo */
+.nav-lateral a.ativo {
+  background: rgba(124,111,255,.13);
+  color: var(--accent-violet);
+  font-weight: 600;
+  box-shadow: inset 0 0 0 1px rgba(124,111,255,.2);
+  transform: translateX(4px);
+}
+.nav-lateral a.ativo::after { opacity: 1; }
+
+/* barra lateral esquerda */
+.nav-lateral a::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 3px;
+  height: 55%;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent-violet);
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+}
+.nav-lateral a.ativo::before,
+.nav-lateral a:hover::before {
+  transform: translateY(-50%) scaleY(1);
+}
+
+/* ícone */
+.nav-lateral a i {
+  width: 22px;
+  text-align: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  opacity: .65;
+  transition:
+    opacity var(--transition-mid),
+    transform var(--transition-mid),
+    color var(--transition-mid);
+}
+.nav-lateral a:hover i {
+  opacity: 1;
+  transform: scale(1.15);
+  color: var(--accent-violet);
+}
+.nav-lateral a.ativo i {
+  opacity: 1;
+  color: var(--accent-violet);
+}
+
+/* entrada escalonada dos links ao carregar */
+.nav-lateral a:nth-child(1)  { animation: slideIn .3s .05s ease both; }
+.nav-lateral a:nth-child(2)  { animation: slideIn .3s .10s ease both; }
+.nav-lateral a:nth-child(3)  { animation: slideIn .3s .15s ease both; }
+.nav-lateral a:nth-child(4)  { animation: slideIn .3s .20s ease both; }
+.nav-lateral a:nth-child(5)  { animation: slideIn .3s .25s ease both; }
+.nav-lateral a:nth-child(6)  { animation: slideIn .3s .30s ease both; }
+.nav-lateral a:nth-child(7)  { animation: slideIn .3s .35s ease both; }
+.nav-lateral a:nth-child(8)  { animation: slideIn .3s .40s ease both; }
+
+/* ── Divisor do menu ── */
+.nav-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 12px 6px;
+}
+
+/* ============================================================
+   ÁREA DE CONTEÚDO
+============================================================ */
+.area-conteudo {
+  margin-left: var(--menu-width);
+  margin-top: var(--menu-height);
+  min-height: calc(100vh - var(--menu-height));
+  background: var(--bg-base);
+}
+
+/* ============================================================
+   ANIMAÇÕES
+============================================================ */
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ============================================================
+   RESPONSIVO
+============================================================ */
+@media (max-width: 1080px) {
+  :root { --menu-width: 273px; }
+}
+
+@media (max-width: 768px) {
+  .icone-menu { display: flex; }
+
+  .menu-lateral {
+    left: -100%;
+    z-index: 999;
+    box-shadow: var(--shadow-lg);
+  }
+  .menu-lateral.ativo { left: 0; }
+
+  .area-conteudo { margin-left: 0; }
+
+  /* overlay ao abrir menu mobile */
+  .menu-lateral.ativo::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    left: var(--menu-width);
+    background: rgba(0,0,0,.5);
+    z-index: -1;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-principal { padding: 0 16px; }
+  .brand-link h2 { display: none; }
+}

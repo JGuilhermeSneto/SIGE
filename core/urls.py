@@ -91,16 +91,14 @@ urlpatterns = [
     path("turmas/<int:turma_id>/grade/", views.grade_horaria, name="grade_horaria"),
     # ==================== GESTORES ====================
     path("gestores/", views.listar_gestores, name="listar_gestores"),
-    path("gestores/cadastrar/", views.cadastrar_gestor, name="cadastrar_gestor"),
-    path(
-        "gestores/excluir/<int:gestor_id>/",
-        views.excluir_gestor,
-        name="excluir_gestor",
-    ),
+    path("gestores/cadastrar/", views.cadastrar_editar_gestor, name="cadastrar_gestor"),
     path(
         "gestores/<int:gestor_id>/editar/",
-        views.editar_gestor,
+        views.cadastrar_editar_gestor,
         name="editar_gestor",
+    ),
+    path(
+        "gestores/excluir/<int:gestor_id>/", views.excluir_gestor, name="excluir_gestor"
     ),
     # ==================== USUÁRIOS ====================
     path("usuarios/", views.usuarios, name="usuarios"),
@@ -115,11 +113,7 @@ urlpatterns = [
         views.historico_frequencia,
         name="historico_frequencia",
     ),
-    path(
-        "frequencia/aluno/",
-        views.frequencia_aluno,
-        name="frequencia_aluno",
-    ),
+    path("frequencia/aluno/", views.frequencia_aluno, name="frequencia_aluno"),
     # ==================== RESET DE SENHA ====================
     path(
         "senha/resetar/",

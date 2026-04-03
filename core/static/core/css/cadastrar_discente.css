@@ -1,5 +1,5 @@
 /* ============================================================
-   Variáveis de cores e estilos
+   Cadastrar / Editar Discente
 ============================================================ */
 :root {
   --bg-base:        #090e1a;
@@ -19,8 +19,8 @@
   --radius-xl: 24px;
 }
 
-/* Reset box-sizing */
 *, *::before, *::after { box-sizing: border-box; }
+a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    ÁREA PRINCIPAL
@@ -87,7 +87,6 @@
 }
 .header-breadcrumb a {
   color: var(--text-secondary);
-  text-decoration: none;
   transition: color .15s;
 }
 .header-breadcrumb a:hover { color: var(--text-primary); }
