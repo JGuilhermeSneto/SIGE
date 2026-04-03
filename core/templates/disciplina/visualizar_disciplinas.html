@@ -1,104 +1,136 @@
+{# ============================================================ #}
+{# template: disciplina/visualizar_disciplinas.html            #}
+{# view   : visualizar_disciplinas                             #}
+{# contexto: disciplina, turma, alunos, notas, notas_dict,     #}
+{#           is_gestor_ou_super                                 #}
+{# Requer templatetag: {% load get_item %}                     #}
+{# FIX: botão voltar contextual (gestor vs professor);         #}
+{#      usa notas_dict|get_item:aluno.id para buscar nota;     #}
+{#      botão Frequência aponta para historico_frequencia.     #}
+{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 {% load get_item %}
 
+{# Título com nome da disciplina; fallback para "Disciplina" se não houver #}
 {% block title %}{{ disciplina.nome|default:"Disciplina" }}{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo da visualização de disciplina #}
 <link rel="stylesheet" href="{% static 'core/css/vizualizar_disciplina.css' %}">
 {% endblock %}
 
 {% block content %}
 <main class="detalhes">
-    <div class="header-detalhes">
 
-        <!-- BOTÃO VOLTAR -->
-        {% if is_gestor_ou_super %}
-            <a class="voltar" href="{% url 'listar_turmas' %}">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-        {% else %}
-            <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-        {% endif %}
+  {# ── Cabeçalho: voltar, título e ações rápidas ── #}
+  <div class="header-detalhes">
 
-        <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
+    {# FIX: gestor/super voltam para listar_turmas;             #}
+    {#      professor volta para as disciplinas da turma        #}
+    {% if is_gestor_ou_super %}
+      <a class="voltar" href="{% url 'listar_disciplinas_turma' disciplina.turma.id %}">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+    {% else %}
+      <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+    {% endif %}
 
-        <!-- BOTÃO IMPRIMIR -->
-        <a href="#" class="imprimir">Imprimir
-            <i class="fas fa-print"></i>
-        </a>
+    {# Nome da disciplina como título da página #}
+    <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
+
+    {# Botão imprimir — aciona window.print() via JS #}
+    <a href="#" class="imprimir">
+      Imprimir <i class="fas fa-print"></i>
+    </a>
+  </div>
+
+  {# ── Informações gerais da disciplina ── #}
+  <div class="prof">
+    <div class="info">
+      {# Turno da turma associada #}
+      <p>Turno: {{ disciplina.turma.get_turno_display|default:"-" }}</p>
+
+      {# Professor: exibe nome se atribuído; caso contrário, avisa #}
+      {% if disciplina.professor %}
+        <p>Professor(a): {{ disciplina.professor.nome_completo }}</p>
+      {% else %}
+        <p><strong>Professor:</strong> Não atribuído</p>
+      {% endif %}
     </div>
 
-    <div class="prof">
-        <div class="info">
-            <p>Turno: {{ disciplina.turma.get_turno_display|default:"-" }}</p>
+    {# ── Botões de ação rápida ── #}
+    <div class="botoes">
+      {# Lançar/editar notas bimestrais #}
+      <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">
+        Notas
+      </a>
 
-            {% if disciplina.professor %}
-            <p>Professor(a): {{ disciplina.professor.nome_completo }}</p>
-            {% else %}
-            <p><strong>Professor:</strong> Não atribuído</p>
-            {% endif %}
-        </div>
-
-        <div class="botoes">
-            {% if disciplina.id %}
-            <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">Notas</a>
-            {% else %}
-            <a class="nota" href="#" onclick="alert('Disciplina não definida!'); return false;">Notas</a>
-            {% endif %}
-
-            <a class="disciplina" href="{% url 'historico_frequencia' disciplina.id %}">Frequência</a>
-        </div>
+      {# FIX: aponta para historico_frequencia (URL correta conforme urls.py) #}
+      <a class="disciplina" href="{% url 'historico_frequencia' disciplina.id %}">
+        Frequência
+      </a>
     </div>
+  </div>
 
-    <!-- TABELA DE NOTAS -->
-    <div class="tabela">
-        <table class="tabela-notas">
-            <thead>
-                <tr>
-                    <th class="nome">Nome</th>
-                    <th class="bim1">1º Bimestre</th>
-                    <th class="bim2">2º Bimestre</th>
-                    <th class="bim3">3º Bimestre</th>
-                    <th class="bim4">4º Bimestre</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for aluno in alunos %}
-                {% with nota=notas_dict|get_item:aluno.id %}
-                <tr>
-                    <td>{{ aluno.nome_completo }}</td>
-                    {% if nota %}
-                    <td>{{ nota.nota1|default_if_none:"-" }}</td>
-                    <td>{{ nota.nota2|default_if_none:"-" }}</td>
-                    <td>{{ nota.nota3|default_if_none:"-" }}</td>
-                    <td>{{ nota.nota4|default_if_none:"-" }}</td>
-                    {% else %}
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>-</td>
-                    {% endif %}
-                </tr>
-                {% endwith %}
-                {% empty %}
-                <tr>
-                    <td colspan="5" style="text-align:center; padding:15px;">
-                        Nenhum aluno cadastrado.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  {# ── Tabela de notas por aluno ── #}
+  <div class="tabela">
+    <table class="tabela-notas">
+      <thead>
+        <tr>
+          <th class="nome">Nome</th>
+          <th class="bim1">1º Bimestre</th>
+          <th class="bim2">2º Bimestre</th>
+          <th class="bim3">3º Bimestre</th>
+          <th class="bim4">4º Bimestre</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for aluno in alunos %}
+        {# Busca o objeto Nota deste aluno usando templatetag get_item #}
+        {% with nota=notas_dict|get_item:aluno.id %}
+        <tr>
+          <td>{{ aluno.nome_completo }}</td>
+
+          {# Exibe cada bimestre ou "-" quando nota não lançada #}
+          {% if nota %}
+            <td>{{ nota.nota1|default_if_none:"-" }}</td>
+            <td>{{ nota.nota2|default_if_none:"-" }}</td>
+            <td>{{ nota.nota3|default_if_none:"-" }}</td>
+            <td>{{ nota.nota4|default_if_none:"-" }}</td>
+          {% else %}
+            {# Aluno sem registro de nota ainda #}
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+            <td>-</td>
+          {% endif %}
+        </tr>
+        {% endwith %}
+
+        {% empty %}
+        {# Estado vazio: nenhum aluno cadastrado na turma #}
+        <tr>
+          <td colspan="5" style="text-align:center; padding:15px;">
+            Nenhum aluno cadastrado.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
 </main>
 
 <script>
-    document.querySelector('.imprimir').addEventListener('click', e => {
-        e.preventDefault();
-        window.print();
-    });
+/* Ativa impressão da página ao clicar no link "Imprimir" */
+document.querySelector('.imprimir').addEventListener('click', function (e) {
+  e.preventDefault(); /* impede navegação */
+  window.print();
+});
 </script>
+
 {% endblock %}

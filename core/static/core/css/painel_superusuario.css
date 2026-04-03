@@ -453,3 +453,20 @@
   .resumo-bar { flex-direction: column; gap: 14px; }
   .resumo-item + .resumo-item::before { display: none; }
 }
+
+  /* Pequeno ajuste para garantir que o grid do calendário funcione */
+  .calendario-grade {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    text-align: center;
+  }
+  .dia.vazio {
+    visibility: hidden;
+  }
+  .dia.atual {
+    background-color: var(--accent-blue, #007bff);
+    color: white;
+    border-radius: 50%;
+    font-weight: bold;
+  }

@@ -9,6 +9,13 @@
 <link rel="stylesheet" href="{% static 'core/css/cadastrar_docente.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
+<style>
+    /* Estilos para as máscaras e validações */
+    .valid { color: #28a745 !important; }
+    .invalido { color: #dc3545 !important; }
+    .erro-inline { color: #dc3545; font-size: 0.85em; display: none; margin-top: 5px; }
+    .requisito i { margin-right: 5px; }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -19,14 +26,13 @@
             <span class="header-label">Acadêmico</span>
             <h1>{{ professor.pk|yesno:"Editar,Cadastrar" }} <span class="destaque">Docente</span></h1>
             <div class="header-breadcrumb">
-                <a href="#">Início</a>
+                <a href="{% url 'painel_super' %}">Início</a>
                 <i class="fas fa-chevron-right"></i>
-                <span>Professores</span>
+                <a href="{% url 'listar_professores' %}">Professores</a>
             </div>
         </div>
     </div>
 
-    <!-- INDICADOR DE ETAPAS -->
     <div class="passos-wrapper">
         <div class="passo-item ativo" id="passo-1">
             <div class="passo-num">1</div>
@@ -51,16 +57,14 @@
         </div>
     </div>
 
-    <!-- CARD DO FORMULÁRIO -->
     <div class="form-card">
-
         <div class="form-card-titulo">
             <div class="form-card-icone">
-                <i class="fas fa-chalkboard-teacher" id="etapa-icone"></i>
+                <i class="fas fa-user" id="etapa-icone"></i>
             </div>
             <div class="form-card-titulo-texto">
                 <h2 id="etapa-titulo">Dados Pessoais</h2>
-                <p id="etapa-desc">Preencha os dados corretamente</p>
+                <p id="etapa-desc">Preencha as informações básicas do professor</p>
             </div>
         </div>
 
@@ -74,30 +78,36 @@
                     {{ form.nome_completo }}
                     <small class="erro-inline"></small>
                 </div>
+
                 <div class="caixa-texto">
                     <label class="required">CPF</label>
-                    {{ form.cpf }}
+                    {{ form.cpf|attr:"placeholder:000.000.000-00" }}
                     <small class="erro-inline"></small>
                 </div>
+
                 <div class="caixa-texto">
                     <label class="required">E-mail</label>
                     {{ form.email }}
                     <small class="erro-inline"></small>
                 </div>
+
                 <div class="caixa-texto">
                     <label class="required">Telefone</label>
-                    {{ form.telefone }}
+                    {{ form.telefone|attr:"placeholder:(00) 00000-0000" }}
                     <small class="erro-inline"></small>
                 </div>
+
                 <div class="caixa-texto">
                     <label class="required">Data de nascimento</label>
-                    {# FIX: força type="date" via widget_tweaks #}
                     {{ form.data_nascimento|attr:"type:date" }}
                     <small class="erro-inline"></small>
                 </div>
+
                 <div class="botoes">
                     <span></span>
-                    <button type="button" class="btn" onclick="validarEtapa(1)">Próximo <i class="fas fa-arrow-right"></i></button>
+                    <button type="button" class="btn" onclick="validarEtapa(1)">
+                        Próximo <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
 
@@ -105,7 +115,7 @@
             <div class="etapa" id="etapa-2">
                 <div class="caixa-texto">
                     <label class="required">CEP</label>
-                    {{ form.cep }}
+                    {{ form.cep|attr:"placeholder:00000-000" }}
                     <small class="erro-inline"></small>
                 </div>
                 <div class="caixa-texto">
@@ -121,7 +131,6 @@
                 <div class="caixa-texto">
                     <label>Bairro</label>
                     {{ form.bairro }}
-                    <small class="erro-inline"></small>
                 </div>
                 <div class="caixa-texto dois">
                     <label class="required">Logradouro</label>
@@ -136,11 +145,15 @@
                 <div class="caixa-texto full">
                     <label>Complemento</label>
                     {{ form.complemento }}
-                    <small class="erro-inline"></small>
                 </div>
+
                 <div class="botoes">
-                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)"><i class="fas fa-arrow-left"></i> Anterior</button>
-                    <button type="button" class="btn" onclick="validarEtapa(2)">Próximo <i class="fas fa-arrow-right"></i></button>
+                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button type="button" class="btn" onclick="validarEtapa(2)">
+                        Próximo <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
             </div>
 
@@ -158,6 +171,7 @@
                     <label>Área de atuação</label>
                     {{ form.area_atuacao }}
                 </div>
+
                 <div class="caixa-texto">
                     <label {% if not professor.pk %}class="required"{% endif %}>
                         Senha {% if professor.pk %}<small>(deixe em branco para manter)</small>{% endif %}
@@ -167,10 +181,10 @@
                 </div>
 
                 <div class="requisitos-senha" id="requisitos-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
-                    <div class="requisito" id="req-maiuscula"><i class="fa-solid fa-xmark"></i> Pelo menos 1 letra maiúscula</div>
-                    <div class="requisito" id="req-minuscula"><i class="fa-solid fa-xmark"></i> Pelo menos 1 letra minúscula</div>
-                    <div class="requisito" id="req-numero"><i class="fa-solid fa-xmark"></i> Pelo menos 1 número</div>
-                    <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> Pelo menos 6 caracteres</div>
+                    <div class="requisito" id="req-maiuscula"><i class="fa-solid fa-xmark"></i> 1 Maiúscula</div>
+                    <div class="requisito" id="req-minuscula"><i class="fa-solid fa-xmark"></i> 1 Minúscula</div>
+                    <div class="requisito" id="req-numero"><i class="fa-solid fa-xmark"></i> 1 Número</div>
+                    <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> 6 caracteres</div>
                 </div>
 
                 <div class="caixa-texto" id="confirmar-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
@@ -178,8 +192,7 @@
                     {{ form.senha_confirmacao }}
                     <small class="erro-inline"></small>
                 </div>
-
-                <div class="confirmacao-senha" id="senha-match-msg" style="display:none;"></div>
+                <div class="confirmacao-senha" id="senha-match-msg" style="display:none; margin-bottom: 15px;"></div>
 
                 <div class="caixa-texto upload-foto">
                     <label>Foto</label>
@@ -189,168 +202,159 @@
                             {{ form.foto }}
                         </label>
                         <div class="preview-foto">
-                            {% if professor.pk and professor.foto %}
-                                <img id="preview-imagem" src="{{ professor.foto.url }}" alt="Foto atual" style="display:block;">
-                            {% else %}
-                                <img id="preview-imagem" src="" alt="Pré-visualização" style="display:none;">
-                            {% endif %}
+                            <img id="preview-imagem" src="{% if professor.foto %}{{ professor.foto.url }}{% endif %}" 
+                                 style="{% if professor.foto %}display:block;{% else %}display:none;{% endif %} width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
                         </div>
                     </div>
                 </div>
 
                 <div class="botoes">
-                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)"><i class="fas fa-arrow-left"></i> Anterior</button>
+                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
                     <button type="submit" class="btn salvar">
                         <i class="fas fa-check"></i> {{ professor.pk|yesno:"Atualizar,Salvar" }}
                     </button>
                 </div>
             </div>
-
         </form>
     </div>
 </div>
 
 <script>
-/* ── Meta de cada etapa ── */
-const etapasMeta = {
-  1: { icone: 'fas fa-user',              titulo: 'Dados Pessoais',  desc: 'Preencha as informações básicas do professor' },
-  2: { icone: 'fas fa-map-marker-alt',    titulo: 'Endereço',        desc: 'Informe a localização do professor' },
-  3: { icone: 'fas fa-chalkboard-teacher',titulo: 'Profissional',    desc: 'Formação, cargo e acesso ao sistema' },
-};
+    // Configurações de Etapa
+    const etapasMeta = {
+        1: { icone: 'fas fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas' },
+        2: { icone: 'fas fa-map-marker-alt', titulo: 'Endereço', desc: 'Informe a localização' },
+        3: { icone: 'fas fa-chalkboard-teacher', titulo: 'Profissional', desc: 'Formação e acesso' }
+    };
 
-/* FIX: atualiza indicadores de passo (ativo / completo) e cabeçalho do card */
-function atualizarIndicadores(etapaAtiva) {
-  for (let i = 1; i <= 3; i++) {
-    const el = document.getElementById(`passo-${i}`);
-    el.classList.remove('ativo', 'completo');
-    if (i < etapaAtiva)       el.classList.add('completo');
-    else if (i === etapaAtiva) el.classList.add('ativo');
-  }
-  const meta = etapasMeta[etapaAtiva];
-  document.getElementById('etapa-icone').className = meta.icone;
-  document.getElementById('etapa-titulo').textContent = meta.titulo;
-  document.getElementById('etapa-desc').textContent   = meta.desc;
-}
-
-/* FIX: validação inline sem alert() + checa required antes de avançar */
-function validarEtapa(n) {
-  const etapa  = document.getElementById(`etapa-${n}`);
-  const campos = etapa.querySelectorAll('input[required], select[required]');
-  let valido   = true;
-
-  campos.forEach(campo => {
-    const erroEl = campo.parentElement.querySelector('.erro-inline');
-    if (!campo.value.trim()) {
-      campo.style.borderColor = 'red';
-      if (erroEl) { erroEl.textContent = 'Campo obrigatório'; erroEl.style.display = 'block'; }
-      valido = false;
-    } else {
-      campo.style.borderColor = '';
-      if (erroEl) erroEl.style.display = 'none';
+    function atualizarIndicadores(etapaAtiva) {
+        for (let i = 1; i <= 3; i++) {
+            let el = document.getElementById('passo-' + i);
+            if (el) {
+                el.classList.remove('ativo', 'completo');
+                if (i < etapaAtiva) el.classList.add('completo');
+                else if (i === etapaAtiva) el.classList.add('ativo');
+            }
+        }
+        const meta = etapasMeta[etapaAtiva];
+        document.getElementById('etapa-icone').className = meta.icone;
+        document.getElementById('etapa-titulo').textContent = meta.titulo;
+        document.getElementById('etapa-desc').textContent = meta.desc;
     }
-  });
 
-  if (!valido) return;
+    function validarEtapa(n) {
+        const etapa = document.getElementById('etapa-' + n);
+        const campos = etapa.querySelectorAll('input[required], select[required]');
+        let valido = true;
 
-  document.getElementById(`etapa-${n}`).classList.remove('ativa');
-  document.getElementById(`etapa-${n + 1}`).classList.add('ativa');
-  atualizarIndicadores(n + 1);
-}
+        campos.forEach(campo => {
+            const erroEl = campo.parentElement.querySelector('.erro-inline');
+            if (!campo.value.trim()) {
+                campo.style.borderColor = '#dc3545';
+                if (erroEl) { erroEl.textContent = 'Campo obrigatório'; erroEl.style.display = 'block'; }
+                valido = false;
+            } else {
+                campo.style.borderColor = '';
+                if (erroEl) erroEl.style.display = 'none';
+            }
+        });
 
-function voltarEtapa(n) {
-  document.getElementById(`etapa-${n}`).classList.remove('ativa');
-  document.getElementById(`etapa-${n - 1}`).classList.add('ativa');
-  atualizarIndicadores(n - 1);
-}
+        if (valido) {
+            document.getElementById('etapa-' + n).classList.remove('ativa');
+            document.getElementById('etapa-' + (n + 1)).classList.add('ativa');
+            atualizarIndicadores(n + 1);
+            window.scrollTo(0, 0);
+        }
+    }
 
-document.addEventListener('DOMContentLoaded', function () {
+    function voltarEtapa(n) {
+        document.getElementById('etapa-' + n).classList.remove('ativa');
+        document.getElementById('etapa-' + (n - 1)).classList.add('ativa');
+        atualizarIndicadores(n - 1);
+    }
 
-  /* ── Validação de senha em tempo real ── */
-  const isEdicao            = {{ professor.pk|yesno:"true,false" }};
-  const senhaInput          = document.getElementById('id_senha');
-  const confirmaInput       = document.getElementById('id_senha_confirmacao');
-  const matchMsg            = document.getElementById('senha-match-msg');
-  const confirmaContainer   = document.getElementById('confirmar-senha-container');
-  const requisitosContainer = document.getElementById('requisitos-senha-container');
+    // Máscaras Automáticas
+    const mascaras = {
+        cpf(value) {
+            return value.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})/, '$1-$2').replace(/(-\d{2})\d+?$/, '$1');
+        },
+        telefone(value) {
+            return value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2').replace(/(-\d{4})\d+?$/, '$1');
+        },
+        cep(value) {
+            return value.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2').replace(/(-\d{3})\d+?$/, '$1');
+        }
+    };
 
-  const regras = [
-    { id: 'req-maiuscula', regex: /[A-Z]/ },
-    { id: 'req-minuscula', regex: /[a-z]/ },
-    { id: 'req-numero',    regex: /\d/    },
-    { id: 'req-caractere', regex: /.{6,}/ },
-  ];
+    document.addEventListener('DOMContentLoaded', function() {
+        // Aplicar máscaras nos eventos de input
+        const inputCpf = document.querySelector('input[name="cpf"]');
+        const inputTel = document.querySelector('input[name="telefone"]');
+        const inputCep = document.querySelector('input[name="cep"]');
 
-  function verificarMatch() {
-    if (!confirmaInput || confirmaInput.value === '') { matchMsg.style.display = 'none'; return; }
-    const ok = senhaInput.value === confirmaInput.value;
-    matchMsg.style.display = 'block';
-    matchMsg.textContent   = ok ? 'Senhas coincidem ✓' : 'As senhas não coincidem';
-    matchMsg.classList.toggle('valid', ok);
-    matchMsg.classList.toggle('invalido', !ok);
-  }
+        if (inputCpf) inputCpf.addEventListener('input', e => e.target.value = mascaras.cpf(e.target.value));
+        if (inputTel) inputTel.addEventListener('input', e => e.target.value = mascaras.telefone(e.target.value));
+        if (inputCep) inputCep.addEventListener('input', e => e.target.value = mascaras.cep(e.target.value));
 
-  function senhaValida() {
-    return regras.every(r => r.regex.test(senhaInput.value));
-  }
+        // Lógica de Senha
+        const senhaInput = document.getElementById('id_senha');
+        const confirmaInput = document.getElementById('id_senha_confirmacao');
+        const matchMsg = document.getElementById('senha-match-msg');
+        
+        const regras = [
+            { id: 'req-maiuscula', regex: /[A-Z]/ },
+            { id: 'req-minuscula', regex: /[a-z]/ },
+            { id: 'req-numero', regex: /\d/ },
+            { id: 'req-caractere', regex: /.{6,}/ }
+        ];
 
-  if (senhaInput) {
-    senhaInput.addEventListener('input', () => {
-      if (isEdicao) {
-        const mostrar = senhaInput.value.length > 0;
-        confirmaContainer.style.display   = mostrar ? 'block' : 'none';
-        requisitosContainer.style.display = mostrar ? 'block' : 'none';
-        if (!mostrar && confirmaInput) { confirmaInput.value = ''; matchMsg.style.display = 'none'; }
-      }
-      regras.forEach(r => {
-        const el = document.getElementById(r.id);
-        if (!el) return;
-        const ok = r.regex.test(senhaInput.value);
-        el.classList.toggle('valid', ok);
-        el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
-      });
-      verificarMatch();
+        if (senhaInput) {
+            senhaInput.addEventListener('input', function() {
+                regras.forEach(r => {
+                    const el = document.getElementById(r.id);
+                    const ok = r.regex.test(this.value);
+                    if (el) {
+                        el.classList.toggle('valid', ok);
+                        el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
+                    }
+                });
+                
+                if (confirmaInput && confirmaInput.value) {
+                    const ok = this.value === confirmaInput.value;
+                    matchMsg.textContent = ok ? 'Senhas coincidem ✓' : 'Senhas não coincidem';
+                    matchMsg.className = 'confirmacao-senha ' + (ok ? 'valid' : 'invalido');
+                    matchMsg.style.display = 'block';
+                }
+            });
+        }
+
+        if (confirmaInput) {
+            confirmaInput.addEventListener('input', function() {
+                const ok = this.value === senhaInput.value;
+                matchMsg.textContent = ok ? 'Senhas coincidem ✓' : 'Senhas não coincidem';
+                matchMsg.className = 'confirmacao-senha ' + (ok ? 'valid' : 'invalido');
+                matchMsg.style.display = 'block';
+            });
+        }
+
+        // Preview Foto
+        const inputFoto = document.getElementById('id_foto');
+        if (inputFoto) {
+            inputFoto.addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        const img = document.getElementById('preview-imagem');
+                        img.src = e.target.result;
+                        img.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
     });
-  }
-
-  if (confirmaInput) confirmaInput.addEventListener('input', verificarMatch);
-
-  /* Bloqueia submit se senha preenchida mas inválida ou sem confirmação */
-  document.getElementById('form-professor').addEventListener('submit', function (e) {
-    if (!senhaInput || senhaInput.value === '') return;
-    if (!senhaValida()) {
-      e.preventDefault();
-      requisitosContainer.style.display = 'block';
-      senhaInput.style.borderColor = 'red';
-      senhaInput.focus();
-      return;
-    }
-    if (senhaInput.value !== confirmaInput.value) {
-      e.preventDefault();
-      matchMsg.style.display = 'block';
-      matchMsg.textContent   = 'As senhas não coincidem';
-      matchMsg.classList.add('invalido');
-      confirmaInput.style.borderColor = 'red';
-      confirmaInput.focus();
-    }
-  });
-
-  /* ── Preview de foto ── */
-  const inputFoto  = document.getElementById('id_foto');
-  const previewImg = document.getElementById('preview-imagem');
-
-  if (inputFoto && previewImg) {
-    inputFoto.addEventListener('change', function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = e => { previewImg.src = e.target.result; previewImg.style.display = 'block'; };
-        reader.readAsDataURL(file);
-      } else {
-        previewImg.style.display = 'none';
-      }
-    });
-  }
-});
 </script>
-
 {% endblock %}

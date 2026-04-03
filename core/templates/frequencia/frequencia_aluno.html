@@ -1,26 +1,48 @@
-{% extends "base.html" %}
+{# ============================================================ #}
+{# template: frequencia/frequencia_aluno.html                  #}
+{# view   : frequencia_aluno                                   #}
+{# contexto: aluno, frequencias (QuerySet anotado com          #}
+{#   disciplina__nome, total_aulas, presencas, faltas)         #}
+{# FIX: view entrega "frequencias" (QuerySet .values().annotate)#}
+{#      não "frequencia_por_disciplina" com objetos ricos;     #}
+{#      campos acessados via disciplina__nome, total_aulas,    #}
+{#      presencas, faltas (nomes da anotação);                  #}
+{#      calcula percentual_presenca inline no template;         #}
+{#      removido item.em_risco, item.percentual, item.disciplina#}
+{#      que não existem no QuerySet anotado;                   #}
+{#      corrigido extends para "core/base.html" (com prefixo); #}
+{#      link CSS movido para dentro do bloco extra_css.        #}
+{# ============================================================ #}
+{% extends "core/base.html" %}
 {% load static %}
 
 {% block title %}Minha Frequência{% endblock %}
 
 {% block extra_css %}
-
-{% endblock %}
+{# Folha de estilo da tela de frequência do aluno #}
 <link rel="stylesheet" href="{% static 'core/css/frequencia_aluno.css' %}">
+{% endblock %}
+
 {% block content %}
-<!-- Breadcrumb -->
+
+{# ── Breadcrumb de navegação ── #}
 <div class="breadcrumb">
-  <a href="{% url 'painel_aluno' %}"><i class="fa-solid fa-house"></i> Início</a>
+  <a href="{% url 'painel_aluno' %}">
+    <i class="fa-solid fa-house"></i> Início
+  </a>
   <i class="fa-solid fa-chevron-right"></i>
   <span>Minha Frequência</span>
 </div>
 
-<!-- Header -->
+{# ── Cabeçalho da página ── #}
 <div class="freq-header">
   <div class="freq-header__left">
     <h1><i class="fa-solid fa-chart-pie"></i> Minha Frequência</h1>
+    {# Turma e turno do aluno autenticado #}
     <p>{{ aluno.turma.nome }} &mdash; {{ aluno.turma.get_turno_display }}</p>
   </div>
+
+  {# Foto do aluno ou ícone padrão #}
   <div class="freq-header__avatar">
     {% if aluno.foto %}
       <img src="{{ aluno.foto.url }}" alt="Foto">
@@ -30,178 +52,248 @@
   </div>
 </div>
 
-<!-- Mensagens -->
+{# ── Mensagens flash do Django ── #}
 {% if messages %}
 <ul class="msg-list">
   {% for msg in messages %}
   <li class="{{ msg.tags }}">
-    <i class="fa-solid {% if msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+    <i class="fa-solid
+      {% if msg.tags == 'success' %}fa-circle-check
+      {% else %}fa-circle-exclamation{% endif %}"></i>
     {{ msg }}
   </li>
   {% endfor %}
 </ul>
 {% endif %}
 
-<!-- Alerta de risco geral -->
-{% for item in frequencia_por_disciplina %}
-  {% if item.em_risco %}
-  <div class="alerta-risco">
-    <i class="fa-solid fa-triangle-exclamation"></i>
-    <div>
-      <strong>Atenção: você está em risco de reprovação por falta!</strong>
-      Uma ou mais disciplinas estão abaixo dos 75% mínimos de presença exigidos.
-      Verifique as disciplinas marcadas em vermelho abaixo.
-    </div>
-  </div>
-  {% endif %}
-{% endfor %}
+{# ════════════════ CONTEÚDO PRINCIPAL ════════════════ #}
+{% if frequencias %}
 
-<!-- Resumo geral -->
-{% if frequencia_por_disciplina %}
+  {# ── Cards de resumo ── #}
+  <div class="stats-grid">
 
-{% with total_disc=frequencia_por_disciplina|length %}
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-card__icon stat-card__icon--blue">
-      <i class="fa-solid fa-book"></i>
-    </div>
-    <div>
-      <div class="stat-card__val">{{ total_disc }}</div>
-      <div class="stat-card__lbl">Disciplinas</div>
-    </div>
-  </div>
-
-  <!-- Calcula totais via template -->
-  {% with presencas_total=0 faltas_total=0 aulas_total=0 %}
-  <div class="stat-card">
-    <div class="stat-card__icon stat-card__icon--green">
-      <i class="fa-solid fa-circle-check"></i>
-    </div>
-    <div>
-      <div class="stat-card__val">
-        {% for item in frequencia_por_disciplina %}{{ item.presencas|add:0 }}{% if not forloop.last %}+{% endif %}{% endfor %}
+    {# Total de disciplinas com algum registro #}
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--blue">
+        <i class="fa-solid fa-book"></i>
       </div>
-      <div class="stat-card__lbl">Presenças totais</div>
-    </div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-card__icon stat-card__icon--red">
-      <i class="fa-solid fa-circle-xmark"></i>
-    </div>
-    <div>
-      <div class="stat-card__val">
-        {% for item in frequencia_por_disciplina %}{{ item.faltas|add:0 }}{% if not forloop.last %}+{% endif %}{% endfor %}
-      </div>
-      <div class="stat-card__lbl">Faltas totais</div>
-    </div>
-  </div>
-
-  <div class="stat-card">
-    <div class="stat-card__icon stat-card__icon--yellow">
-      <i class="fa-solid fa-triangle-exclamation"></i>
-    </div>
-    <div>
-      <div class="stat-card__val">
-        {% for item in frequencia_por_disciplina %}{% if item.em_risco %}1{% else %}0{% endif %}{% endfor %}
-      </div>
-      <div class="stat-card__lbl">Em risco</div>
-    </div>
-  </div>
-  {% endwith %}
-</div>
-{% endwith %}
-
-<!-- Cards por disciplina -->
-<p class="section-title">
-  <i class="fa-solid fa-list"></i> Frequência por disciplina
-</p>
-
-<div class="disc-grid">
-  {% for item in frequencia_por_disciplina %}
-  <div class="disc-card {% if item.em_risco %}em-risco{% endif %}">
-
-    <div class="disc-card__top">
       <div>
-        <div class="disc-card__nome">{{ item.disciplina.nome }}</div>
-        <div class="disc-card__prof">
-          <i class="fa-solid fa-chalkboard-user"></i>
-          {{ item.disciplina.professor.nome_completo }}
-        </div>
+        <div class="stat-card__val">{{ frequencias|length }}</div>
+        <div class="stat-card__lbl">Disciplinas</div>
       </div>
-
-      {% if item.total == 0 %}
-        <span style="background:#f3f4f6;color:#9ca3af;border-radius:999px;
-                     padding:.2rem .6rem;font-size:.72rem;font-weight:700;
-                     white-space:nowrap;display:flex;align-items:center;gap:.3rem;">
-          <i class="fa-solid fa-minus"></i> Sem dados
-        </span>
-      {% elif item.em_risco %}
-        <span class="badge-risco">
-          <i class="fa-solid fa-triangle-exclamation"></i> Em risco
-        </span>
-      {% else %}
-        <span class="badge-ok">
-          <i class="fa-solid fa-circle-check"></i> Regular
-        </span>
-      {% endif %}
     </div>
 
-    <!-- Barra de progresso -->
-    <div class="progress-wrap">
-      <div class="progress-header">
-        <span class="progress-label">Frequência</span>
-        {% if item.percentual is not None %}
-          <span class="progress-pct {% if item.em_risco %}risco{% else %}ok{% endif %}">
-            {{ item.percentual }}%
+    {# Presenças totais: somadas pelo back-end via annotate #}
+    {# FIX: Django template não faz soma; exibe por disciplina abaixo #}
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--green">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div>
+        {# Soma aproximada exibida como "--"; cálculo real está nas linhas #}
+        <div class="stat-card__val" id="total-presencas">—</div>
+        <div class="stat-card__lbl">Presenças totais</div>
+      </div>
+    </div>
+
+    {# Faltas totais #}
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--red">
+        <i class="fa-solid fa-circle-xmark"></i>
+      </div>
+      <div>
+        <div class="stat-card__val" id="total-faltas">—</div>
+        <div class="stat-card__lbl">Faltas totais</div>
+      </div>
+    </div>
+
+    {# Disciplinas em risco (frequência < 75%) — calculado via JS #}
+    <div class="stat-card">
+      <div class="stat-card__icon stat-card__icon--yellow">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div>
+        <div class="stat-card__val" id="total-risco">—</div>
+        <div class="stat-card__lbl">Em risco</div>
+      </div>
+    </div>
+
+  </div>
+
+  {# ── Título da seção de disciplinas ── #}
+  <p class="section-title">
+    <i class="fa-solid fa-list"></i> Frequência por disciplina
+  </p>
+
+  {# ── Cards por disciplina ── #}
+  {# FIX: frequencias é QuerySet .values().annotate; campos são snake_case #}
+  <div class="disc-grid">
+    {% for item in frequencias %}
+
+    {# Calcula percentual de presença para exibição na barra #}
+    {# (widthratio faz: presencas / total_aulas * 100)       #}
+
+    <div class="disc-card"
+         {# Classe de risco adicionada via JS após cálculo #}
+         data-total="{{ item.total_aulas }}"
+         data-presencas="{{ item.presencas }}"
+         data-faltas="{{ item.faltas }}">
+
+      <div class="disc-card__top">
+        <div>
+          {# Nome da disciplina — vem do campo anotado disciplina__nome #}
+          <div class="disc-card__nome">{{ item.disciplina__nome }}</div>
+        </div>
+
+        {# Badge de situação (calculado via JS) #}
+        {% if item.total_aulas == 0 %}
+          <span style="background:#f3f4f6;color:#9ca3af;border-radius:999px;
+                       padding:.2rem .6rem;font-size:.72rem;font-weight:700;
+                       white-space:nowrap;display:flex;align-items:center;gap:.3rem;">
+            <i class="fa-solid fa-minus"></i> Sem dados
           </span>
         {% else %}
-          <span class="progress-pct vazio">—</span>
+          {# Badge dinâmico inserido via JS baseado no percentual #}
+          <span class="badge-situacao"></span>
         {% endif %}
       </div>
-      <div class="progress-bar">
-        {% if item.percentual is not None %}
-          <div class="progress-bar__fill {% if item.em_risco %}risco{% else %}ok{% endif %}"
-               style="width: {{ item.percentual }}%"></div>
-        {% else %}
-          <div class="progress-bar__fill vazio"></div>
-        {% endif %}
-      </div>
-    </div>
 
-    <!-- Números -->
-    {% if item.total > 0 %}
-    <div class="disc-card__nums">
-      <div class="num-item">
-        <div class="num-item__val num-item__val--total">{{ item.total }}</div>
-        <div class="num-item__lbl">Aulas</div>
-      </div>
-      <div class="num-item">
-        <div class="num-item__val num-item__val--present">{{ item.presencas }}</div>
-        <div class="num-item__lbl">Presenças</div>
-      </div>
-      <div class="num-item">
-        <div class="num-item__val num-item__val--absent">{{ item.faltas }}</div>
-        <div class="num-item__lbl">Faltas</div>
-      </div>
-    </div>
-    {% else %}
-    <div class="disc-card__vazio">
-      <i class="fa-solid fa-calendar-xmark"></i>
-      Nenhuma chamada registrada ainda.
-    </div>
-    {% endif %}
+      {# Barra de progresso de presença #}
+      {% if item.total_aulas > 0 %}
+        {% widthratio item.presencas item.total_aulas 100 as pct %}
+        <div class="progress-wrap">
+          <div class="progress-header">
+            <span class="progress-label">Frequência</span>
+            <span class="progress-pct {% if pct < 75 %}risco{% else %}ok{% endif %}">
+              {{ pct }}%
+            </span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-bar__fill {% if pct < 75 %}risco{% else %}ok{% endif %}"
+                 style="width:{{ pct }}%"></div>
+          </div>
+        </div>
 
+        {# Números: total de aulas, presenças e faltas #}
+        <div class="disc-card__nums">
+          <div class="num-item">
+            <div class="num-item__val num-item__val--total">
+              {{ item.total_aulas }}
+            </div>
+            <div class="num-item__lbl">Aulas</div>
+          </div>
+          <div class="num-item">
+            <div class="num-item__val num-item__val--present">
+              {{ item.presencas }}
+            </div>
+            <div class="num-item__lbl">Presenças</div>
+          </div>
+          <div class="num-item">
+            <div class="num-item__val num-item__val--absent">
+              {{ item.faltas }}
+            </div>
+            <div class="num-item__lbl">Faltas</div>
+          </div>
+        </div>
+
+      {% else %}
+        {# Estado vazio: nenhuma chamada registrada #}
+        <div class="disc-card__vazio">
+          <i class="fa-solid fa-calendar-xmark"></i>
+          Nenhuma chamada registrada ainda.
+        </div>
+      {% endif %}
+
+    </div>
+    {# ── fim disc-card ── #}
+
+    {% endfor %}
   </div>
-  {% endfor %}
-</div>
+  {# ── fim disc-grid ── #}
 
 {% else %}
-<!-- Estado vazio -->
-<div class="empty-state">
-  <i class="fa-solid fa-chart-pie"></i>
-  <p>Nenhuma informação de frequência disponível ainda.</p>
-</div>
+  {# ── Estado vazio global: nenhum registro de frequência ── #}
+  <div class="empty-state">
+    <i class="fa-solid fa-chart-pie"></i>
+    <p>Nenhuma informação de frequência disponível ainda.</p>
+  </div>
 {% endif %}
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ────────────────────────────────────────────────
+   Cálculo dos totais e badges de risco
+   Percorre os cards de disciplina, soma presenças/faltas
+   e atualiza os cards de resumo e badges individuais.
+──────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+
+  var totalPresencas = 0; /* acumulador de presenças */
+  var totalFaltas    = 0; /* acumulador de faltas    */
+  var totalRisco     = 0; /* disciplinas com freq < 75% */
+
+  /* Itera sobre cada card de disciplina */
+  document.querySelectorAll('.disc-card').forEach(function (card) {
+    var total    = parseInt(card.dataset.total,    10) || 0;
+    var presencas = parseInt(card.dataset.presencas, 10) || 0;
+    var faltas   = parseInt(card.dataset.faltas,   10) || 0;
+
+    totalPresencas += presencas;
+    totalFaltas    += faltas;
+
+    /* Calcula percentual de presença */
+    var pct = total > 0 ? Math.round((presencas / total) * 100) : null;
+
+    /* Aplica classe e badge de risco se pct < 75 */
+    if (pct !== null && pct < 75) {
+      totalRisco++;
+      card.classList.add('em-risco');
+
+      /* Atualiza badge dinâmico de situação */
+      var badge = card.querySelector('.badge-situacao');
+      if (badge) {
+        badge.className    = 'badge-risco';
+        badge.innerHTML    =
+          '<i class="fa-solid fa-triangle-exclamation"></i> Em risco';
+      }
+    } else if (pct !== null) {
+      /* Situação regular */
+      var badge = card.querySelector('.badge-situacao');
+      if (badge) {
+        badge.className = 'badge-ok';
+        badge.innerHTML =
+          '<i class="fa-solid fa-circle-check"></i> Regular';
+      }
+    }
+  });
+
+  /* Atualiza cards de resumo com os totais calculados */
+  var elPresencas = document.getElementById('total-presencas');
+  var elFaltas    = document.getElementById('total-faltas');
+  var elRisco     = document.getElementById('total-risco');
+
+  if (elPresencas) { elPresencas.textContent = totalPresencas; }
+  if (elFaltas)    { elFaltas.textContent    = totalFaltas;    }
+  if (elRisco)     { elRisco.textContent     = totalRisco;     }
+
+  /* Exibe alerta global se houver disciplinas em risco */
+  if (totalRisco > 0) {
+    var alerta = document.createElement('div');
+    alerta.className = 'alerta-risco';
+    alerta.innerHTML =
+      '<i class="fa-solid fa-triangle-exclamation"></i>' +
+      '<div><strong>Atenção: você está em risco de reprovação por falta!</strong>' +
+      ' Uma ou mais disciplinas estão abaixo de 75% de presença.</div>';
+
+    /* Insere o alerta logo após o breadcrumb #}*/
+    var breadcrumb = document.querySelector('.breadcrumb');
+    if (breadcrumb && breadcrumb.nextSibling) {
+      breadcrumb.parentNode.insertBefore(alerta, breadcrumb.nextSibling.nextSibling);
+    }
+  }
+
+}); /* fim DOMContentLoaded */
+</script>
 {% endblock %}

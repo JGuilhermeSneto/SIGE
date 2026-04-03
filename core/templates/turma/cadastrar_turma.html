@@ -27,7 +27,6 @@
 
     <!-- CABEÇALHO -->
     <div class="header-docentes">
-
         <a href="{% url 'listar_turmas' %}">
             <button class="btn-voltar">
                 <i class="fa-solid fa-arrow-left"></i>
@@ -41,14 +40,13 @@
                 Cadastro de Turma
             {% endif %}
         </h1>
-
     </div>
 
     <!-- CARD -->
     <div class="card-tabela">
 
         {% if erro %}
-            <p style="color:red; margin-bottom:15px;">{{ erro }}</p>
+            <p style="color:red; margin-bottom:15px; font-weight: bold;">{{ erro }}</p>
         {% endif %}
 
         <form method="post" class="form-cadastro">
@@ -57,16 +55,10 @@
             <!-- Nome -->
             <div class="form-group">
                 <label for="nome">Nome da Turma</label>
-                <input
-                    type="text"
-                    id="nome"
-                    name="nome"
-                    required
-                    value="{{ turma.nome|default:'' }}"
-                >
+                <input type="text" id="nome" name="nome" required value="{{ turma.nome|default:'' }}" placeholder="Ex: 1º Ano A">
             </div>
 
-            <!-- Turno -->
+            <!-- Turno (CORRIGIDO: Espaços adicionados nas comparações) -->
             <div class="form-group">
                 <label for="turno">Turno</label>
                 <select id="turno" name="turno" required>
@@ -80,18 +72,8 @@
             <!-- Ano letivo -->
             <div class="form-group">
                 <label for="ano">Ano Letivo</label>
-
-                <input
-                    type="number"
-                    id="ano"
-                    name="ano"
-                    list="lista-anos"
-                    required
-                    min="2010"
-                    max="{{ anos|last }}"
-                    placeholder="Ex: 2025"
-                    value="{{ turma.ano|default:'' }}"
-                >
+                <input type="number" id="ano" name="ano" list="lista-anos" required min="2010" max="{{ anos|last }}"
+                    placeholder="Ex: 2025" value="{{ turma.ano|default:'' }}">
 
                 <datalist id="lista-anos">
                     {% for ano in anos %}
@@ -100,7 +82,7 @@
                 </datalist>
             </div>
 
-            <!-- Botão -->
+            <!-- Botões de Ação -->
             <div class="form-actions">
                 <button type="submit" class="btn-adicionar">
                     {% if turma %}
@@ -109,6 +91,10 @@
                         Cadastrar Turma
                     {% endif %}
                 </button>
+                
+                <a href="{% url 'listar_turmas' %}" class="btn-cancelar" style="text-decoration: none; margin-left: 10px; color: #666;">
+                    Cancelar
+                </a>
             </div>
 
         </form>

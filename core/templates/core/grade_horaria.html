@@ -1,98 +1,170 @@
+{# ============================================================ #}
+{# template: core/grade_horaria.html                           #}
+{# view   : grade_horaria                                      #}
+{# contexto: turma, nomes_dias, rows, disciplinas,             #}
+{#           is_gestor_ou_super                                 #}
+{# Estrutura de "rows" gerada pela view:                       #}
+{#   rows = [{ horario, dias: [{disciplina, id}, ...] }, ...]  #}
+{#   dias segue a ordem de DIAS_SEMANA = [segunda..sexta]      #}
+{# FIX: removidos campos row.cols / row.index / col.disciplinas#}
+{#      que não existiam no contexto;                          #}
+{#      select usa row.dias e DIAS_SEMANA na ordem correta;    #}
+{#      name do select: {dia}_{índice} conforme view espera;   #}
+{#      botão voltar respeita is_gestor_ou_super.               #}
+{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Grade Horária - {{ turma.nome }}{% endblock %}
+{% block title %}Grade Horária — {{ turma.nome }}{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo da grade horária #}
 <link rel="stylesheet" href="{% static 'core/css/grade_horaria.css' %}">
 {% endblock %}
 
 {% block content %}
-
 <main class="conteudo-principal">
 
-    <!-- CABEÇALHO -->
-    <div class="header-docentes">
+  {# ── Cabeçalho com botão voltar contextual ── #}
+  <div class="header-docentes">
 
-        <!-- ✅ CORRIGIDO: botão voltar direciona conforme o perfil -->
-        {% if is_gestor_ou_super %}
-            <a href="{% url 'listar_turmas' %}">
-                <button class="btn-voltar">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-            </a>
-        {% else %}
-            <a href="{% url 'visualizar_grade_professor' turma.id %}">
-                <button class="btn-voltar">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </button>
-            </a>
-        {% endif %}
+    {# FIX: gestores/super voltam para turmas; professores não acessam esta view #}
+    {% if is_gestor_ou_super %}
+      <a href="{% url 'listar_turmas' %}">
+        <button class="btn-voltar">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+      </a>
+    {% else %}
+      {# Fallback: nunca deve ocorrer pois a view exige gestor/super #}
+      <a href="{% url 'listar_turmas' %}">
+        <button class="btn-voltar">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+      </a>
+    {% endif %}
 
-        <h1 class="titulo-pagina">
-            Grade Horária
-        </h1>
+    <h1 class="titulo-pagina">Grade Horária</h1>
+  </div>
 
-    </div>
+  {# ── Card principal com a tabela editável ── #}
+  <div class="card-tabela">
 
-    <!-- CARD -->
-    <div class="card-tabela">
+    {# Identificação da turma e turno #}
+    <p style="text-align:center; margin-bottom:20px; color:#666;">
+      {{ turma.nome }} — {{ turma.get_turno_display }}
+    </p>
 
-        <p style="text-align:center; margin-bottom:20px; color:#666;">
-            {{ turma.nome }} — {{ turma.get_turno_display }}
-        </p>
+    {# Formulário POST salva a grade via GradeHorario.dados (JSONField) #}
+    <form method="post">
+      {% csrf_token %}
 
-        <form method="post">
-            {% csrf_token %}
+      <div class="container-tabela">
+        <table class="grade-table">
+          <thead>
+            <tr>
+              {# Coluna fixa do horário #}
+              <th>Horário</th>
+              {# Colunas dinâmicas: Segunda a Sexta #}
+              {% for nome in nomes_dias %}
+                <th>{{ nome }}</th>
+              {% endfor %}
+            </tr>
+          </thead>
 
-            <div class="container-tabela">
+          <tbody>
+            {# ── Uma linha por slot de horário ── #}
+            {% for row in rows %}
+            <tr>
+              {# Horário do slot (ex.: "07:00 às 07:45") #}
+              <td class="horario-col">{{ row.horario }}</td>
 
-                <table class="grade-table">
-                    <thead>
-                        <tr>
-                            <th>Horário</th>
-                            {% for nome in nomes_dias %}
-                                <th>{{ nome }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
+              {# ── Uma célula por dia da semana (segunda a sexta) ── #}
+              {# FIX: row.dias é uma lista com 5 itens na ordem de DIAS_SEMANA #}
+              {# O name precisa ser "{dia}_{índice}" conforme a view grade_horaria #}
 
-                    <tbody>
-                        {% for row in rows %}
-                        <tr>
-                            <td class="horario-col">{{ row.horario }}</td>
+              {# Segunda-feira — índice 0 da lista DIAS_SEMANA #}
+              <td>
+                <select name="segunda_{{ forloop.counter0 }}">
+                  <option value="">-- Vazio --</option>
+                  {% for d in disciplinas %}
+                    <option value="{{ d.id }}"
+                      {% if row.dias.0.id == d.id %}selected{% endif %}>
+                      {{ d.nome }} — {{ d.professor.nome_completo }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
 
-                            {% for col in row.cols %}
-                            <td>
-                                <select name="{{ col.dia }}_{{ row.index }}">
-                                    <option value="">-- Vazio --</option>
+              {# Terça-feira — índice 1 #}
+              <td>
+                <select name="terca_{{ forloop.counter0 }}">
+                  <option value="">-- Vazio --</option>
+                  {% for d in disciplinas %}
+                    <option value="{{ d.id }}"
+                      {% if row.dias.1.id == d.id %}selected{% endif %}>
+                      {{ d.nome }} — {{ d.professor.nome_completo }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
 
-                                    {% for d in col.disciplinas %}
-                                        <option value="{{ d.nome }}"
-                                            {% if col.valor == d.nome %}selected{% endif %}>
-                                            {{ d.nome }} – {{ d.professor.nome_completo }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+              {# Quarta-feira — índice 2 #}
+              <td>
+                <select name="quarta_{{ forloop.counter0 }}">
+                  <option value="">-- Vazio --</option>
+                  {% for d in disciplinas %}
+                    <option value="{{ d.id }}"
+                      {% if row.dias.2.id == d.id %}selected{% endif %}>
+                      {{ d.nome }} — {{ d.professor.nome_completo }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
 
-            </div>
+              {# Quinta-feira — índice 3 #}
+              <td>
+                <select name="quinta_{{ forloop.counter0 }}">
+                  <option value="">-- Vazio --</option>
+                  {% for d in disciplinas %}
+                    <option value="{{ d.id }}"
+                      {% if row.dias.3.id == d.id %}selected{% endif %}>
+                      {{ d.nome }} — {{ d.professor.nome_completo }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
 
-            <div style="display:flex; justify-content:flex-end; margin-top:20px;">
-                <button type="submit" class="btn-adicionar">
-                    Salvar Grade
-                </button>
-            </div>
+              {# Sexta-feira — índice 4 #}
+              <td>
+                <select name="sexta_{{ forloop.counter0 }}">
+                  <option value="">-- Vazio --</option>
+                  {% for d in disciplinas %}
+                    <option value="{{ d.id }}"
+                      {% if row.dias.4.id == d.id %}selected{% endif %}>
+                      {{ d.nome }} — {{ d.professor.nome_completo }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
 
-        </form>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {# ── fim container-tabela ── #}
 
-    </div>
+      {# Botão de salvar alinhado à direita #}
+      <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+        <button type="submit" class="btn-adicionar">
+          Salvar Grade
+        </button>
+      </div>
+    </form>
+
+  </div>
+  {# ── fim card-tabela ── #}
 
 </main>
-
 {% endblock %}

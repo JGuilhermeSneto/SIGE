@@ -1,18 +1,27 @@
+{# ============================================================ #}
+{# template: superusuario/painel_super.html                    #}
+{# view    : painel_super                                      #}
+{# contexto: nome_exibicao, total_turmas, total_alunos,        #}
+{#           total_professores, total_disciplinas, agora,      #}
+{#           calendario, anos_disponiveis, ano_filtro          #}
+{# ============================================================ #}
 {% extends "core/base.html" %}
 {% load static %}
 
 {% block title %}Painel — SIGE{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo do painel do superusuário/gestor #}
 <link rel="stylesheet" href="{% static 'core/css/painel_superusuario.css' %}">
+
 {% endblock %}
 
 {% block content %}
-
 <section class="painel-sige">
 
-  <!-- ═════════ HEADER ═════════ -->
+  {# ════════════════ HEADER ════════════════ #}
   <header class="header-painel">
+    {# Saudação com nome do usuário autenticado #}
     <div class="header-esquerda">
       <span class="header-label">SIGE · Painel de Controle</span>
       <h1>
@@ -21,6 +30,7 @@
       </h1>
     </div>
 
+    {# Filtro de ano letivo: GET com parâmetro "ano" #}
     <form method="get" class="filtro-ano-painel">
       <span class="icone-cal">📅</span>
       <label for="filtro-select">Ano Letivo</label>
@@ -34,15 +44,14 @@
     </form>
   </header>
 
-  <!-- ═════════ CONTEÚDO ═════════ -->
+  {# ════════════════ CONTEÚDO PRINCIPAL ════════════════ #}
   <div class="conteudo-geral">
 
-    <!-- ───── COLUNA ESQUERDA ───── -->
+    {# ───── COLUNA ESQUERDA ───── #}
     <section class="coluna-esquerda">
 
-      <!-- CARDS -->
+      {# ── Cards de totais por ano filtrado ── #}
       <section class="cards">
-
         <article class="card">
           <div class="card-icone">🏫</div>
           <p class="card-label">Turmas</p>
@@ -66,44 +75,38 @@
           <p class="card-label">Disciplinas</p>
           <h2 class="card-valor">{{ total_disciplinas }}</h2>
         </article>
-
       </section>
 
-      <!-- RESUMO -->
+      {# ── Barra de resumo ── #}
       <section class="resumo-bar">
         <div class="resumo-item">
           <p class="resumo-item-label">Ano Letivo</p>
           <p class="resumo-item-valor">{{ ano_filtro }}</p>
         </div>
-
         <div class="resumo-item">
-          <p class="resumo-item-label">Média Alunos/Turma</p>
-          <p class="resumo-item-valor">
-            {{ media_alunos_turma|default:"—" }}
-          </p>
+          <p class="resumo-item-label">Total de Alunos</p>
+          <p class="resumo-item-valor">{{ total_alunos }}</p>
         </div>
-
         <div class="resumo-item">
-          <p class="resumo-item-label">Disc. por Professor</p>
-          <p class="resumo-item-valor">
-            {{ media_disc_professor|default:"—" }}
-          </p>
+          <p class="resumo-item-label">Total de Turmas</p>
+          <p class="resumo-item-valor">{{ total_turmas }}</p>
         </div>
       </section>
-
     </section>
 
-    <!-- ───── COLUNA DIREITA ───── -->
+    {# ───── COLUNA DIREITA ───── #}
     <aside class="coluna-direita">
 
-      <!-- CALENDÁRIO -->
+      {# ── Calendário do mês atual ── #}
       <section class="calendario-box">
         <header class="calendario-cabecalho">
-          <h2>{{ agora|date:"F"|upper }}</h2>
-          <span class="calendario-ano">{{ agora|date:"Y" }}</span>
+          {# Usando os dados vindos da função gerar_calendario #}
+          <h2>{{ calendario.mes_nome|upper }}</h2>
+          <span class="calendario-ano">{{ calendario.ano }}</span>
         </header>
 
         <div class="calendario-grade">
+          {# Cabeçalho fixo dos dias da semana #}
           <div class="nome-dia">D</div>
           <div class="nome-dia">S</div>
           <div class="nome-dia">T</div>
@@ -112,51 +115,50 @@
           <div class="nome-dia">S</div>
           <div class="nome-dia">S</div>
 
-          {% for celula in calendario %}
-            <div class="dia
-              {% if celula.hoje %}atual{% endif %}
-              {% if celula.vazio %}vazio{% endif %}
-            ">
-              {% if not celula.vazio %}
-                {{ celula.numero }}
-              {% endif %}
-            </div>
+          {# LOOP DUPLO: Percorre as semanas e depois os dias de cada semana #}
+          {% for semana in calendario.semanas %}
+            {% for dia in semana %}
+              <div class="dia 
+                {% if dia == 0 %}vazio{% endif %} 
+                {% if dia == calendario.hoje %}atual{% endif %}">
+                
+                {% if dia != 0 %}
+                  {{ dia }}
+                {% endif %}
+              </div>
+            {% endfor %}
           {% endfor %}
         </div>
       </section>
 
-      <!-- INFO RÁPIDA -->
+      {# ── Visão geral rápida ── #}
       <section class="info-rapida">
         <p class="info-rapida-titulo">Visão Geral</p>
-
         <ul class="info-rapida-lista">
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-violet)"></span>
+              <span class="info-dot" style="background:var(--accent-violet, #8a2be2)"></span>
               Turmas ativas
             </span>
             <span class="info-item-valor">{{ total_turmas }}</span>
           </li>
-
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-cyan)"></span>
+              <span class="info-dot" style="background:var(--accent-cyan, #00ffff)"></span>
               Total de alunos
             </span>
             <span class="info-item-valor">{{ total_alunos }}</span>
           </li>
-
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-emerald)"></span>
+              <span class="info-dot" style="background:var(--accent-emerald, #50c878)"></span>
               Professores
             </span>
             <span class="info-item-valor">{{ total_professores }}</span>
           </li>
-
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-amber)"></span>
+              <span class="info-dot" style="background:var(--accent-amber, #ffbf00)"></span>
               Disciplinas
             </span>
             <span class="info-item-valor">{{ total_disciplinas }}</span>
@@ -167,7 +169,5 @@
     </aside>
 
   </div>
-
 </section>
-
 {% endblock %}

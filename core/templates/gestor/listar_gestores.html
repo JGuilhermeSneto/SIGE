@@ -1,3 +1,14 @@
+{# ============================================================ #}
+{# template: gestor/listar_gestores.html                       #}
+{# view   : listar_gestores                                    #}
+{# contexto: gestores (QuerySet), query (str)                  #}
+{# FIX: removido bloco user_info (inexistente em base.html);   #}
+{#      removida URL inexistente editar_perfil_super;           #}
+{#      proteção de editar/excluir: apenas superusuário        #}
+{#      (conforme @user_passes_test na view);                   #}
+{#      acesso a user.gestor protegido com hasattr antes do    #}
+{#      acesso ao cargo para evitar AttributeError.            #}
+{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 
@@ -5,110 +16,95 @@
 {% block header_title %}Gestores{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo da listagem de gestores #}
 <link rel="stylesheet" href="{% static 'core/css/listar_gestores.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-{% endblock %}
-
-{% block user_info %}
-  <span>Olá,
-    <a href="{% url 'editar_perfil_super' %}">
-      {{ request.user.get_full_name|default:request.user.username }}
-    </a>
-  </span>
-
-  <a href="{% url 'editar_perfil_super' %}">
-      <i class="fas fa-user"></i>
-  </a>
-
-  <a href="{% url 'usuarios' %}" class="btn-voltar">
-      <i class="fas fa-arrow-left"></i>
-  </a>
-
-  <a href="{% url 'logout' %}">
-      <i class="fas fa-power-off"></i>
-  </a>
+{# Font Awesome — ícones dos botões de ação #}
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
-
 <main class="conteudo-principal">
 
-    <!-- CABEÇALHO -->
-    <div class="header-docentes">
+  {# ── Cabeçalho com botão voltar e adicionar ── #}
+  <div class="header-docentes">
 
-        <a href="{% url 'usuarios' %}">
-            <button class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </a>
+    {# Volta para a tela de gerenciar usuários #}
+    <a href="{% url 'usuarios' %}">
+      <button class="btn-voltar">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+    </a>
 
-        <h1 class="titulo-pagina">Gestores</h1>
+    <h1 class="titulo-pagina">Gestores</h1>
 
-        {% if user.is_superuser %}
-        <a href="{% url 'cadastrar_gestor' %}">
-            <button class="btn-adicionar">
-                Adicionar Gestor
-            </button>
-        </a>
-        {% endif %}
+    {# Botão de cadastrar novo gestor — visível apenas para superusuário #}
+    {% if user.is_superuser %}
+      <a href="{% url 'cadastrar_gestor' %}">
+        <button class="btn-adicionar">
+          Adicionar Gestor
+        </button>
+      </a>
+    {% endif %}
+  </div>
+
+  {# ── Card principal com tabela ── #}
+  <div class="card-tabela">
+    <div class="container-tabela">
+      <table class="tabela-docentes">
+        <thead>
+          <tr>
+            <th class="coluna-nome">Nome</th>
+            <th class="coluna-email">Cargo</th>
+            <th class="coluna-email">E-mail</th>
+            <th class="coluna-acoes">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for gestor in gestores %}
+          <tr>
+            {# Dados do gestor #}
+            <td>{{ gestor.nome_completo }}</td>
+            <td>{{ gestor.get_cargo_display }}</td>
+            <td>{{ gestor.user.email }}</td>
+
+            <td class="coluna-acoes">
+              {# FIX: apenas superusuário pode editar/excluir gestores         #}
+              {# A view listar_gestores é protegida por @user_passes_test(is_superuser) #}
+              {# mas o template também deve ocultar botões para outros perfis  #}
+              {% if user.is_superuser %}
+
+                {# Editar gestor #}
+                <a href="{% url 'editar_gestor' gestor.id %}">
+                  <i class="fa-solid fa-pen-to-square acao-editar"></i>
+                </a>
+
+                {# Excluir gestor com confirmação inline #}
+                <a href="{% url 'excluir_gestor' gestor.id %}"
+                   onclick="return confirm('Deseja excluir este gestor?')">
+                  <i class="fa-solid fa-trash acao-excluir"></i>
+                </a>
+
+              {% endif %}
+            </td>
+          </tr>
+
+          {% empty %}
+          {# Estado vazio: nenhum gestor cadastrado #}
+          <tr>
+            <td colspan="4"
+                style="text-align:center; padding:15px;">
+              Nenhum gestor encontrado.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <!-- CARD PRINCIPAL -->
-    <div class="card-tabela">
-
-        <!-- TABELA -->
-        <div class="container-tabela">
-
-            <table class="tabela-docentes">
-                <thead>
-                    <tr>
-                        <th class="coluna-nome">Nome</th>
-                        <th class="coluna-email">Cargo</th>
-                        <th class="coluna-email">Email</th>
-                        <th class="coluna-acoes">Ações</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for gestor in gestores %}
-                    <tr>
-
-                        <td>{{ gestor.nome_completo }}</td>
-                        <td>{{ gestor.get_cargo_display }}</td>
-                        <td>{{ gestor.user.email }}</td>
-
-                        <td class="coluna-acoes">
-
-                            {% if user.is_superuser or user.gestor.cargo == 'diretor' or user.gestor.cargo == 'vice_diretor' %}
-                            
-                            <a href="{% url 'editar_gestor' gestor.id %}">
-                                <i class="fa-solid fa-pen-to-square acao-editar"></i>
-                            </a>
-
-                            <a href="{% url 'excluir_gestor' gestor.id %}"
-                               onclick="return confirm('Deseja excluir este gestor?')">
-                                <i class="fa-solid fa-trash acao-excluir"></i>
-                            </a>
-
-                            {% endif %}
-                        </td>
-
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" style="text-align:center; padding:15px;">
-                            Nenhum gestor encontrado.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-
-        </div>
-
-    </div>
+    {# ── fim container-tabela ── #}
+  </div>
+  {# ── fim card-tabela ── #}
 
 </main>
-
 {% endblock %}

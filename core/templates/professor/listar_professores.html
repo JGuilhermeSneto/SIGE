@@ -1,3 +1,11 @@
+{# ============================================================ #}
+{# template: professor/listar_professores.html                 #}
+{# view   : listar_professores                                 #}
+{# contexto: professores (QuerySet), query (str)               #}
+{# FIX: removido bloco user_info (inexistente em base.html);   #}
+{#      removida URL inexistente editar_perfil_super;           #}
+{#      botão voltar aponta para usuarios.                     #}
+{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 
@@ -5,90 +13,94 @@
 {% block header_title %}Docentes{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo específica da listagem de professores #}
 <link rel="stylesheet" href="{% static 'core/css/listar_docentes.css' %}">
-
 {% endblock %}
 
-
-
 {% block content %}
-
 <main class="conteudo-principal">
 
-    <!-- CABEÇALHO NOVO -->
-    <div class="header-docentes">
+  {# ── Cabeçalho com navegação e título ── #}
+  <div class="header-docentes">
 
-        <a href="{% url 'usuarios' %}">
-            <button class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </a>
+    {# Volta para a tela de gerenciar usuários #}
+    <a href="{% url 'usuarios' %}">
+      <button class="btn-voltar">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+    </a>
 
-        <h1 class="titulo-pagina">Docentes</h1>
+    <h1 class="titulo-pagina">Docentes</h1>
 
-        <a href="{% url 'cadastrar_professor' %}">
-            <button class="btn-adicionar">Adicionar Docente</button>
-        </a>
+    {# Botão cadastrar novo professor #}
+    <a href="{% url 'cadastrar_professor' %}">
+      <button class="btn-adicionar">Adicionar Docente</button>
+    </a>
+  </div>
 
+  {# ── Card principal com busca e tabela ── #}
+  <div class="card-tabela">
+
+    {# Barra de busca: GET com parâmetro "q"; action explícita na URL correta #}
+    <div class="barra-busca">
+      <form method="get"
+            action="{% url 'listar_professores' %}"
+            style="width:100%; display:flex;">
+        <input type="text" name="q"
+               placeholder="Buscar docente..."
+               value="{{ query|default:'' }}">
+      </form>
+      <i class="fa-solid fa-magnifying-glass"></i>
     </div>
 
-    <!-- CARD PRINCIPAL -->
-    <div class="card-tabela">
+    {# ── Tabela de professores ── #}
+    <div class="container-tabela">
+      <table class="tabela-docentes">
+        <thead>
+          <tr>
+            <th class="coluna-nome">Nome</th>
+            <th class="coluna-email">E-mail</th>
+            <th class="coluna-acoes">Ações</th>
+          </tr>
+        </thead>
 
-        <!-- BUSCA -->
-        <div class="barra-busca">
-            <form method="get" action="{% url 'listar_professores' %}" style="width:100%; display:flex;">
-                <input type="text" name="q" placeholder="Buscar docente..." value="{{ query|default:'' }}">
-            </form>
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </div>
+        <tbody>
+          {% for professor in professores %}
+          <tr>
+            {# Dados do professor: nome e e-mail do User vinculado #}
+            <td>{{ professor.nome_completo }}</td>
+            <td>{{ professor.user.email }}</td>
 
-        <!-- TABELA -->
-        <div class="container-tabela">
+            <td class="coluna-acoes">
+              {# Ação editar: abre cadastrar_professor.html com instância #}
+              <a href="{% url 'editar_professor' professor.id %}">
+                <i class="fa-solid fa-pen-to-square acao-editar"></i>
+              </a>
 
-            <table class="tabela-docentes">
-                <thead>
-                    <tr>
-                        <th class="coluna-nome">Nome</th>
-                        <th class="coluna-email">Email</th>
-                        <th class="coluna-acoes">Ações</th>
-                    </tr>
-                </thead>
+              {# Ação excluir: também remove o User Django associado #}
+              <a href="{% url 'excluir_professor' professor.id %}"
+                 onclick="return confirm('Deseja excluir este docente?')">
+                <i class="fa-solid fa-trash acao-excluir"></i>
+              </a>
+            </td>
+          </tr>
 
-                <tbody>
-                    {% for professor in professores %}
-                    <tr>
-                        <td>{{ professor.nome_completo }}</td>
-                        <td>{{ professor.user.email }}</td>
-
-                        <td class="coluna-acoes">
-
-                            <a href="{% url 'editar_professor' professor.id %}">
-                                <i class="fa-solid fa-pen-to-square acao-editar"></i>
-                            </a>
-
-                            <a href="{% url 'excluir_professor' professor.id %}"
-                               onclick="return confirm('Deseja excluir este docente?')">
-                                <i class="fa-solid fa-trash acao-excluir"></i>
-                            </a>
-
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="3" style="text-align:center; padding:15px;">
-                            Nenhum docente encontrado.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-
-        </div>
-
+          {% empty %}
+          {# Estado vazio: nenhum professor cadastrado ou busca sem resultados #}
+          <tr>
+            <td colspan="3"
+                style="text-align:center; padding:15px;">
+              Nenhum docente encontrado.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+    {# ── fim container-tabela ── #}
+
+  </div>
+  {# ── fim card-tabela ── #}
 
 </main>
-
 {% endblock %}

@@ -1,16 +1,29 @@
+{# ============================================================ #}
+{# template: frequencia/lancar_chamada.html                    #}
+{# view   : lancar_chamada                                     #}
+{# contexto: disciplina, alunos, data_selecionada,             #}
+{#           frequencias_existentes                             #}
+{# Requer templatetag: {% load get_item %}                     #}
+{# FIX: campo renomeado de "justificativa_{id}" para           #}
+{#      "observacao_{id}" conforme o model Frequencia e a view;#}
+{#      f.justificativa substituído por f.observacao;          #}
+{#      input hidden name="data" movido para o form correto.   #}
+{# ============================================================ #}
 {% extends "core/base.html" %}
 {% load static %}
 {% load get_item %}
 
+{# Título com nome da disciplina #}
 {% block title %}Chamada — {{ disciplina.nome }}{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo da tela de chamada #}
 <link rel="stylesheet" href="{% static 'core/css/lancar_chamada.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<!-- Breadcrumb -->
+{# ── Breadcrumb de navegação ── #}
 <div class="breadcrumb">
   <a href="{% url 'disciplinas_professor' %}">
     <i class="fa-solid fa-house"></i> Início
@@ -21,36 +34,41 @@
   <span>Chamada — {{ disciplina.nome }}</span>
 </div>
 
-<!-- Header do módulo -->
+{# ── Cabeçalho do módulo ── #}
 <div class="mod-header">
   <div>
     <h1><i class="fa-solid fa-clipboard-list"></i> Lançar Chamada</h1>
     <p>{{ disciplina.nome }} &mdash; {{ disciplina.turma }}</p>
   </div>
+  {# Link para o histórico de chamadas da disciplina #}
   <a href="{% url 'historico_frequencia' disciplina.id %}" class="btn-header">
     <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
   </a>
 </div>
 
-<!-- Mensagens -->
+{# ── Mensagens flash ── #}
 {% if messages %}
 <ul class="msg-list">
   {% for msg in messages %}
   <li class="{{ msg.tags }}">
-    <i class="fa-solid {% if msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+    <i class="fa-solid
+      {% if msg.tags == 'success' %}fa-circle-check
+      {% else %}fa-circle-exclamation{% endif %}"></i>
     {{ msg }}
   </li>
   {% endfor %}
 </ul>
 {% endif %}
 
-<!-- Seletor de data -->
+{# ── Seletor de data: GET com parâmetro "data" ── #}
 <form method="get">
   <div class="date-bar">
     <label for="data">
       <i class="fa-solid fa-calendar-day"></i> Data da aula:
     </label>
-    <input type="date" id="data" name="data"
+    <input type="date"
+           id="data"
+           name="data"
            value="{{ data_selecionada|date:'Y-m-d' }}">
     <button type="submit">
       <i class="fa-solid fa-magnifying-glass"></i> Carregar
@@ -58,116 +76,161 @@
   </div>
 </form>
 
-<!-- Formulário de chamada -->
+{# ── Formulário principal de chamada ── #}
 <form method="post">
   {% csrf_token %}
-  <input type="hidden" name="data" value="{{ data_selecionada|date:'Y-m-d' }}">
+  {# Data selecionada é enviada via hidden para o POST #}
+  <input type="hidden"
+         name="data"
+         value="{{ data_selecionada|date:'Y-m-d' }}">
 
-  <!-- Atalhos -->
+  {# ── Atalhos de marcar todos presente / todos faltantes ── #}
   <div class="marcar-todos">
-    <button type="button" class="btn-marcar btn-marcar--todos" onclick="marcarTodos(true)">
+    <button type="button"
+            class="btn-marcar btn-marcar--todos"
+            onclick="marcarTodos(true)">
       <i class="fa-solid fa-circle-check"></i> Todos presentes
     </button>
-    <button type="button" class="btn-marcar btn-marcar--faltas" onclick="marcarTodos(false)">
+    <button type="button"
+            class="btn-marcar btn-marcar--faltas"
+            onclick="marcarTodos(false)">
       <i class="fa-solid fa-circle-xmark"></i> Todos faltantes
     </button>
   </div>
 
+  {# ── Tabela de chamada ── #}
   <div class="chamada-card">
     <div class="chamada-card__head">
       <span>Aluno</span>
       <span>Presença</span>
-      <span>Justificativa (se falta)</span>
+      {# FIX: campo correto é "observacao", não "justificativa" #}
+      <span>Observação (se falta)</span>
     </div>
 
     {% for aluno in alunos %}
+    {# Busca o registro de frequência existente para este aluno na data #}
     {% with f=frequencias_existentes|get_item:aluno.id %}
     <div class="chamada-row">
 
+      {# Nome do aluno com ícone #}
       <div class="aluno-nome">
         <i class="fa-solid fa-user"></i>
         {{ aluno.nome_completo }}
       </div>
 
+      {# Toggle de presença: checkbox enviado como lista "presentes" #}
       <div class="presenca-toggle">
-        <input
-          type="checkbox"
-          name="presentes"
-          value="{{ aluno.id }}"
-          id="aluno_{{ aluno.id }}"
-          onchange="toggleJustificativa({{ aluno.id }}, this.checked)"
-          {% if f and f.presente %}checked{% endif %}
-        >
+        <input type="checkbox"
+               name="presentes"
+               value="{{ aluno.id }}"
+               id="aluno_{{ aluno.id }}"
+               onchange="toggleObservacao({{ aluno.id }}, this.checked)"
+               {# Pré-marca se há registro de presença #}
+               {% if f and f.presente %}checked{% endif %}>
         <label for="aluno_{{ aluno.id }}">
           <i class="fa-solid fa-check"></i>
-          <span class="status-txt">{% if f and f.presente %}Presente{% else %}Falta{% endif %}</span>
+          <span class="status-txt">
+            {# Texto inicial baseado no registro existente #}
+            {% if f and f.presente %}Presente{% else %}Falta{% endif %}
+          </span>
         </label>
       </div>
 
-      <input
-        type="text"
-        name="justificativa_{{ aluno.id }}"
-        class="justificativa-input"
-        id="just_{{ aluno.id }}"
-        placeholder="Motivo da falta..."
-        value="{% if f %}{{ f.justificativa }}{% endif %}"
-        {% if f and f.presente %}disabled{% endif %}
-      >
+      {# FIX: name="observacao_{id}" conforme Frequencia.observacao e a view #}
+      <input type="text"
+             name="observacao_{{ aluno.id }}"
+             class="observacao-input"
+             id="obs_{{ aluno.id }}"
+             placeholder="Motivo da falta..."
+             {# Pré-popula com observação salva anteriormente #}
+             value="{% if f %}{{ f.observacao }}{% endif %}"
+             {# Desabilita campo se o aluno está presente #}
+             {% if f and f.presente %}disabled{% endif %}>
 
     </div>
     {% endwith %}
     {% empty %}
+    {# Estado vazio: nenhum aluno na turma #}
     <div class="empty-chamada">
       <i class="fa-solid fa-users-slash"></i>
       Nenhum aluno cadastrado nesta turma.
     </div>
     {% endfor %}
   </div>
+  {# ── fim chamada-card ── #}
 
+  {# ── Botões de ação: voltar e salvar ── #}
   <div class="acoes">
-    <a href="{% url 'historico_frequencia' disciplina.id %}" class="btn-voltar">
+    <a href="{% url 'historico_frequencia' disciplina.id %}"
+       class="btn-voltar">
       <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
     <button type="submit" class="btn-salvar">
       <i class="fa-solid fa-floppy-disk"></i> Salvar chamada
     </button>
   </div>
+
 </form>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.presenca-toggle input[type="checkbox"]').forEach(cb => {
-      atualizarEstado(cb);
-    });
-  });
+/* ────────────────────────────────────────────────
+   atualizarEstado
+   Sincroniza texto do label e estado do campo de
+   observação com o checkbox de presença.
+──────────────────────────────────────────────── */
+function atualizarEstado(cb) {
+  var id    = cb.value;
+  /* FIX: ID do input alterado de "just_{id}" para "obs_{id}" */
+  var obs   = document.getElementById('obs_' + id);
+  var lbl   = cb.nextElementSibling
+                ? cb.nextElementSibling.querySelector('.status-txt')
+                : null;
 
-  function atualizarEstado(cb) {
-    const id   = cb.value;
-    const just = document.getElementById(`just_${id}`);
-    const lbl  = cb.nextElementSibling.querySelector('.status-txt');
-    if (cb.checked) {
-      just.disabled = true;
-      just.value    = '';
-      lbl.textContent = 'Presente';
-    } else {
-      just.disabled   = false;
-      lbl.textContent = 'Falta';
-    }
+  if (cb.checked) {
+    /* Presente: desabilita observação e limpa o valor */
+    if (obs) { obs.disabled = true; obs.value = ''; }
+    if (lbl) { lbl.textContent = 'Presente'; }
+  } else {
+    /* Falta: habilita campo de observação */
+    if (obs) { obs.disabled = false; }
+    if (lbl) { lbl.textContent = 'Falta'; }
   }
+}
 
-  function toggleJustificativa(alunoId, presente) {
-    const cb = document.getElementById(`aluno_${alunoId}`);
+/* ────────────────────────────────────────────────
+   toggleObservacao
+   Chamado pelo onchange do checkbox; delega para
+   atualizarEstado para manter lógica centralizada.
+──────────────────────────────────────────────── */
+function toggleObservacao(alunoId, presente) {
+  var cb = document.getElementById('aluno_' + alunoId);
+  if (cb) { atualizarEstado(cb); }
+}
+
+/* ────────────────────────────────────────────────
+   marcarTodos
+   Marca/desmarca todos os checkboxes de presença
+   e atualiza o estado de cada um.
+──────────────────────────────────────────────── */
+function marcarTodos(presente) {
+  document.querySelectorAll(
+    '.presenca-toggle input[type="checkbox"]'
+  ).forEach(function (cb) {
+    cb.checked = presente;
     atualizarEstado(cb);
-  }
+  });
+}
 
-  function marcarTodos(presente) {
-    document.querySelectorAll('.presenca-toggle input[type="checkbox"]').forEach(cb => {
-      cb.checked = presente;
-      atualizarEstado(cb);
-    });
-  }
+/* Inicializa o estado de cada linha ao carregar a página */
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll(
+    '.presenca-toggle input[type="checkbox"]'
+  ).forEach(function (cb) {
+    atualizarEstado(cb);
+  });
+});
 </script>
 {% endblock %}

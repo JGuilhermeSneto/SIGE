@@ -1,15 +1,20 @@
 """
 Módulo de modelos da aplicação core.
+
+Define os modelos principais da aplicação SIGE:
+- Pessoas: Gestor, Professor, Aluno (herdam de PessoaBase)
+- Turma, Disciplina
+- Grade de Horários
+- Frequência e Notas
+
+Inclui validações, relacionamentos e propriedades úteis.
 """
 
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.db import models
-from django.utils import timezone
 
 User = get_user_model()
-
 
 # ==========================================================
 # CONSTANTES E ENUMERAÇÕES
@@ -38,300 +43,298 @@ CARGO_CHOICES = [
     ("coordenador", "Coordenador"),
 ]
 
+# ==========================================================
+# MODELOS BASE
+# ==========================================================
+
+class PessoaBase(models.Model):
+    """
+    Modelo abstrato para armazenar campos comuns de pessoas:
+    - Gestor, Professor e Aluno herdam desta base
+    """
+    nome_completo = models.CharField(
+        max_length=255,
+        help_text="Nome completo da pessoa"
+    )
+    cpf = models.CharField(
+        max_length=14,
+        unique=True,
+        db_index=True,
+        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
+        help_text="CPF no formato XXX.XXX.XXX-XX"
+    )
+    data_nascimento = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Data de nascimento"
+    )
+    telefone = models.CharField(
+        max_length=20,
+        blank=True,
+        help_text="Número de telefone"
+    )
+
+    # Endereço
+    cep = models.CharField(max_length=9, blank=True, help_text="CEP")
+    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True, help_text="Estado (UF)")
+    cidade = models.CharField(max_length=100, blank=True, help_text="Cidade")
+    bairro = models.CharField(max_length=100, blank=True, help_text="Bairro")
+    logradouro = models.CharField(max_length=255, blank=True, help_text="Logradouro")
+    numero = models.CharField(max_length=10, blank=True, help_text="Número do endereço")
+    complemento = models.CharField(max_length=255, blank=True, help_text="Complemento do endereço")
+
+    # Foto de perfil
+    foto = models.ImageField(
+        upload_to="fotos/pessoas/",
+        blank=True,
+        null=True,
+        help_text="Foto da pessoa"
+    )
+
+    # Controle de criação e atualização
+    criado_em = models.DateTimeField(auto_now_add=True, help_text="Data de criação")
+    atualizado_em = models.DateTimeField(auto_now=True, help_text="Data da última atualização")
+
+    class Meta:
+        abstract = True
+        verbose_name = "Pessoa Base"
+        verbose_name_plural = "Pessoas Base"
 
 # ==========================================================
 # MODELOS ACADÊMICOS
 # ==========================================================
 
-
 class Turma(models.Model):
-    """Representa uma turma escolar."""
-
-    nome = models.CharField(max_length=100)
-    turno = models.CharField(max_length=20, choices=TURNO_CHOICES)
-    ano = models.IntegerField()
+    """
+    Representa uma turma escolar.
+    """
+    nome = models.CharField(max_length=100, help_text="Nome da turma")
+    turno = models.CharField(max_length=20, choices=TURNO_CHOICES, help_text="Turno da turma")
+    ano = models.IntegerField(help_text="Ano da turma")
 
     class Meta:
         ordering = ["nome"]
+        verbose_name = "Turma"
+        verbose_name_plural = "Turmas"
 
     def __str__(self):
         return f"{self.nome} - {self.get_turno_display()} ({self.ano})"
 
+class Disciplina(models.Model):
+    """
+    Representa uma disciplina de uma turma, associada a um professor.
+    """
+    nome = models.CharField(max_length=100, help_text="Nome da disciplina")
+    professor = models.ForeignKey(
+        "Professor",
+        on_delete=models.CASCADE,
+        related_name="disciplinas",
+        help_text="Professor responsável pela disciplina"
+    )
+    turma = models.ForeignKey(
+        Turma,
+        on_delete=models.CASCADE,
+        related_name="disciplinas",
+        help_text="Turma associada à disciplina"
+    )
+
+    class Meta:
+        verbose_name = "Disciplina"
+        verbose_name_plural = "Disciplinas"
+
+    def __str__(self):
+        return f"{self.nome} - {self.turma.nome}"
 
 # ==========================================================
 # GESTÃO ADMINISTRATIVA
 # ==========================================================
 
-
-class Gestor(models.Model):
-    """Representa um gestor escolar (diretor, coordenador, etc.)."""
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="gestor")
-    nome_completo = models.CharField(max_length=255)
-
-    cpf = models.CharField(
-        max_length=14,
-        unique=True,
-        db_index=True,
-        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
+class Gestor(PessoaBase):
+    """
+    Representa um gestor escolar (Diretor, Vice-Diretor, Coordenador, Secretário).
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="gestor",
+        help_text="Usuário vinculado ao gestor"
     )
-
-    # FIX: campo ausente no model original — adicionado
-    data_nascimento = models.DateField(blank=True, null=True)
-
-    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES)
-    telefone = models.CharField(max_length=20, blank=True)
-
-    cep = models.CharField(max_length=9, blank=True)
-    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
-    cidade = models.CharField(max_length=100, blank=True)
-    bairro = models.CharField(max_length=100, blank=True)
-    logradouro = models.CharField(max_length=255, blank=True)
-    numero = models.CharField(max_length=10, blank=True)
-    complemento = models.CharField(max_length=255, blank=True)
-
-    foto = models.ImageField(upload_to="fotos/gestores/", blank=True, null=True)
-
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    cargo = models.CharField(max_length=20, choices=CARGO_CHOICES, help_text="Cargo do gestor")
 
     class Meta:
         ordering = ["nome_completo"]
+        verbose_name = "Gestor"
+        verbose_name_plural = "Gestores"
 
     def __str__(self):
         return f"{self.nome_completo} ({self.get_cargo_display()})"
 
-
-class Professor(models.Model):
-    """Representa um professor da instituição."""
-
+class Professor(PessoaBase):
+    """
+    Representa um professor da instituição.
+    """
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="professor"
+        User,
+        on_delete=models.CASCADE,
+        related_name="professor",
+        help_text="Usuário vinculado ao professor"
     )
-    nome_completo = models.CharField(max_length=255)
-
-    cpf = models.CharField(
-        max_length=14,
-        unique=True,
-        db_index=True,
-        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
-    )
-
-    data_nascimento = models.DateField(blank=True, null=True)
-    telefone = models.CharField(max_length=20, blank=True)
-
-    cep = models.CharField(max_length=9, blank=True)
-    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
-    cidade = models.CharField(max_length=100, blank=True)
-    bairro = models.CharField(max_length=100, blank=True)
-    logradouro = models.CharField(max_length=255, blank=True)
-    numero = models.CharField(max_length=10, blank=True)
-    complemento = models.CharField(max_length=255, blank=True)
-
-    formacao = models.CharField(max_length=255, blank=True)
-    especializacao = models.CharField(max_length=255, blank=True)
-    area_atuacao = models.CharField(max_length=255, blank=True)
-
-    foto = models.ImageField(upload_to="fotos/professores/", blank=True, null=True)
-
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    formacao = models.CharField(max_length=255, blank=True, help_text="Formação acadêmica")
+    especializacao = models.CharField(max_length=255, blank=True, help_text="Especialização")
+    area_atuacao = models.CharField(max_length=255, blank=True, help_text="Área de atuação")
 
     class Meta:
         ordering = ["nome_completo"]
+        verbose_name = "Professor"
+        verbose_name_plural = "Professores"
 
     def __str__(self):
         return self.nome_completo
 
-
-class Aluno(models.Model):
-    """Representa um aluno matriculado."""
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="aluno")
-    nome_completo = models.CharField(max_length=255)
-
-    cpf = models.CharField(
-        max_length=14,
-        unique=True,
-        db_index=True,
-        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
+class Aluno(PessoaBase):
+    """
+    Representa um aluno matriculado em uma turma.
+    """
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="aluno",
+        help_text="Usuário vinculado ao aluno"
     )
-
-    data_nascimento = models.DateField(blank=True, null=True)
-    naturalidade = models.CharField(max_length=100, blank=True)
-    telefone = models.CharField(max_length=20, blank=True)
-
-    responsavel1 = models.CharField(max_length=255, blank=True)
-    responsavel2 = models.CharField(max_length=255, blank=True)
-
-    cep = models.CharField(max_length=9, blank=True)
-    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True)
-    cidade = models.CharField(max_length=100, blank=True)
-    bairro = models.CharField(max_length=100, blank=True)
-    logradouro = models.CharField(max_length=255, blank=True)
-    numero = models.CharField(max_length=10, blank=True)
-    complemento = models.CharField(max_length=255, blank=True)
-
-    possui_necessidade_especial = models.BooleanField(default=False)
-    descricao_necessidade = models.TextField(blank=True)
-
-    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="alunos")
-
-    foto = models.ImageField(upload_to="fotos/alunos/", blank=True, null=True)
-
-    criado_em = models.DateTimeField(auto_now_add=True)
-    atualizado_em = models.DateTimeField(auto_now=True)
+    naturalidade = models.CharField(max_length=100, blank=True, help_text="Cidade de origem")
+    responsavel1 = models.CharField(max_length=255, blank=True, help_text="Nome do responsável principal")
+    responsavel2 = models.CharField(max_length=255, blank=True, help_text="Nome do segundo responsável")
+    possui_necessidade_especial = models.BooleanField(default=False, help_text="Indica se possui necessidade especial")
+    descricao_necessidade = models.TextField(blank=True, help_text="Descrição da necessidade especial")
+    turma = models.ForeignKey(
+        Turma,
+        on_delete=models.CASCADE,
+        related_name="alunos",
+        help_text="Turma do aluno"
+    )
 
     class Meta:
         ordering = ["nome_completo"]
+        verbose_name = "Aluno"
+        verbose_name_plural = "Alunos"
 
     def __str__(self):
         return f"{self.nome_completo} - {self.turma}"
-
-
-class Disciplina(models.Model):
-    """Representa uma disciplina escolar."""
-
-    nome = models.CharField(max_length=100)
-    professor = models.ForeignKey(
-        Professor, on_delete=models.CASCADE, related_name="disciplinas"
-    )
-    turma = models.ForeignKey(
-        Turma, on_delete=models.CASCADE, related_name="disciplinas"
-    )
-
-    def __str__(self):
-        return f"{self.nome} - {self.turma.nome}"
-
 
 # ==========================================================
 # GRADE DE HORÁRIOS
 # ==========================================================
 
-
 class GradeHorario(models.Model):
-    """Grade de horários de uma turma."""
-
-    DIAS_SEMANA = [
-        ("segunda", "Segunda-feira"),
-        ("terca", "Terça-feira"),
-        ("quarta", "Quarta-feira"),
-        ("quinta", "Quinta-feira"),
-        ("sexta", "Sexta-feira"),
-    ]
-
-    turma = models.ForeignKey(
-        Turma, on_delete=models.CASCADE, related_name="grade_horarios"
+    """
+    Armazena a grade de horários de uma turma.
+    O campo 'dados' é um JSON que mapeia cada dia da semana para
+    a lista de disciplinas por slot do turno.
+    """
+    turma = models.OneToOneField(
+        Turma,
+        on_delete=models.CASCADE,
+        related_name="grade_horario",
+        help_text="Turma à qual esta grade pertence"
     )
-    disciplina = models.ForeignKey(
-        Disciplina,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="grade_horarios",
+    dados = models.JSONField(
+        default=dict,
+        help_text='Mapa dia → lista de nomes de disciplina por slot do turno.'
     )
-    professor = models.ForeignKey(
-        Professor,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="grade_horarios",
-    )
-
-    dia_semana = models.CharField(max_length=10, choices=DIAS_SEMANA, default="segunda")
-    horario_inicio = models.TimeField(null=True, blank=True)
-    horario_fim = models.TimeField(null=True, blank=True)
-    observacao = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["turma", "dia_semana", "horario_inicio"],
-                name="unique_horario_turma",
-            )
-        ]
-        ordering = ["turma", "dia_semana", "horario_inicio"]
-        verbose_name = "Horário"
-        verbose_name_plural = "Grade de Horários"
-
-    def clean(self):
-        if self.disciplina and self.turma:
-            if self.disciplina.turma != self.turma:
-                raise ValidationError("A disciplina não pertence à turma informada.")
-        if self.professor and self.disciplina:
-            if self.professor != self.disciplina.professor:
-                raise ValidationError("O professor não corresponde à disciplina.")
-        if self.horario_inicio and self.horario_fim:
-            if self.horario_fim <= self.horario_inicio:
-                raise ValidationError("O horário de término deve ser após o início.")
+        verbose_name = "Grade de Horários"
+        verbose_name_plural = "Grades de Horários"
 
     def __str__(self):
-        return f"{self.turma} - {self.get_dia_semana_display()} - {self.horario_inicio}"
-
+        return f"Grade — {self.turma}"
 
 # ==========================================================
 # FREQUÊNCIA
 # ==========================================================
 
-
 class Frequencia(models.Model):
-    """Registra a presença do aluno em determinada disciplina e data."""
-
+    """
+    Registra presença do aluno em determinada disciplina e data.
+    """
     aluno = models.ForeignKey(
-        Aluno, on_delete=models.CASCADE, related_name="frequencias"
+        Aluno,
+        on_delete=models.CASCADE,
+        related_name="frequencias",
+        help_text="Aluno registrado na frequência"
     )
     disciplina = models.ForeignKey(
-        Disciplina, on_delete=models.CASCADE, related_name="frequencias"
+        Disciplina,
+        on_delete=models.CASCADE,
+        related_name="frequencias",
+        help_text="Disciplina da frequência"
     )
-    data = models.DateField()
-    presente = models.BooleanField(default=True)
-
-    # FIX: campo correto é "observacao", não "justificativa"
-    observacao = models.CharField(max_length=255, blank=True)
-
-    criado_em = models.DateTimeField(auto_now_add=True)
+    data = models.DateField(help_text="Data da frequência")
+    presente = models.BooleanField(default=True, help_text="Presença (True) ou Falta (False)")
+    observacao = models.CharField(max_length=255, blank=True, help_text="Observações sobre a frequência")
+    criado_em = models.DateTimeField(auto_now_add=True, help_text="Data de criação do registro")
 
     class Meta:
         unique_together = ("aluno", "disciplina", "data")
         ordering = ["-data"]
+        verbose_name = "Frequência"
+        verbose_name_plural = "Frequências"
 
     def __str__(self):
         status = "Presente" if self.presente else "Falta"
-        return f"{self.aluno} - {self.disciplina} - {self.data} ({status})"
-
+        return f"{self.aluno.nome_completo} - {self.disciplina.nome} - {self.data} ({status})"
 
 # ==========================================================
 # NOTAS
 # ==========================================================
 
-
 class Nota(models.Model):
     """
-    Armazena as notas bimestrais (nota1–nota4) de um aluno por disciplina.
-
-    FIX: modelo original tinha `valor` + `bimestre` (uma linha por bimestre),
-    mas as views esperavam nota1–nota4 numa única linha por (aluno, disciplina).
-    Modelo atualizado para ser consistente com as views e com o painel do aluno.
+    Armazena as notas bimestrais de um aluno por disciplina.
+    Possui quatro notas (nota1–nota4) e uma observação opcional.
     """
-
     aluno = models.ForeignKey(
-        Aluno, on_delete=models.CASCADE, related_name="notas"
+        Aluno,
+        on_delete=models.CASCADE,
+        related_name="notas",
+        help_text="Aluno que recebeu a nota"
     )
     disciplina = models.ForeignKey(
-        Disciplina, on_delete=models.CASCADE, related_name="notas"
+        Disciplina,
+        on_delete=models.CASCADE,
+        related_name="notas",
+        help_text="Disciplina à qual a nota pertence"
     )
 
-    # FIX: campos nota1–nota4 (um por bimestre) com null permitido para lançamento parcial
-    nota1 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    nota2 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    nota3 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    nota4 = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    nota1 = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        help_text="Nota do primeiro bimestre"
+    )
+    nota2 = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        help_text="Nota do segundo bimestre"
+    )
+    nota3 = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        help_text="Nota do terceiro bimestre"
+    )
+    nota4 = models.DecimalField(
+        max_digits=5, decimal_places=2,
+        null=True, blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(10)],
+        help_text="Nota do quarto bimestre"
+    )
 
-    observacao = models.CharField(max_length=255, blank=True)
-    data_lancamento = models.DateField(auto_now_add=True)
+    observacao = models.CharField(max_length=255, blank=True, help_text="Observações adicionais")
+    data_lancamento = models.DateField(auto_now_add=True, help_text="Data de lançamento da nota")
 
     class Meta:
-        # FIX: unique por (aluno, disciplina) — uma linha por par, não por bimestre
         unique_together = ("aluno", "disciplina")
         ordering = ["aluno", "disciplina"]
         verbose_name = "Nota"
@@ -339,11 +342,19 @@ class Nota(models.Model):
 
     @property
     def media(self):
-        """Calcula a média aritmética das notas lançadas. Retorna None se nenhuma foi lançada."""
+        """
+        Calcula a média aritmética das notas lançadas.
+        Retorna None se nenhuma nota foi lançada.
+        """
         valores = [v for v in (self.nota1, self.nota2, self.nota3, self.nota4) if v is not None]
         if not valores:
             return None
         return sum(valores) / len(valores)
 
     def __str__(self):
-        return f"{self.aluno} - {self.disciplina} (média: {self.media})"
+        media = self.media
+        media_str = f"{media:.2f}" if media is not None else "N/A"
+        return f"{self.aluno.nome_completo} - {self.disciplina.nome} (média: {media_str})"
+    
+ # No final do core/models.py
+Presenca = Frequencia   

@@ -4,15 +4,6 @@
 {% block title %}Discentes{% endblock %}
 {% block header_title %}Discentes{% endblock %}
 
-{% block user_info %}
-    <span>Olá, {{ request.user.get_full_name|default:request.user.username }}</span>
-    <a href="{% url 'editar_perfil' %}"><i class="fa-solid fa-user"></i></a>
-    <a href="{% url 'painel_super' %}" class="btn-voltar" title="Voltar">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-    <a href="{% url 'logout' %}" title="Sair"><i class="fas fa-power-off"></i></a>
-{% endblock %}
-
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="{% static 'core/css/listar_discentes.css' %}">
@@ -21,71 +12,68 @@
 {% block content %}
 <main class="conteudo-principal">
 
-    <div class="header-discentes">
-        <a href="{% url 'usuarios' %}" title="Voltar" class="btn-voltar">
-          <i class="fas fa-arrow-left"></i>
-        </a>
+  <div class="header-discentes">
+    {# Botão voltar #}
+    <a href="{% url 'usuarios' %}" title="Voltar" class="btn-voltar">
+      <i class="fas fa-arrow-left"></i>
+    </a>
 
+    <h1 class="titulo-pagina">Discentes</h1>
 
-        <h1 class="titulo-pagina">Discentes</h1>
+    {# Botão cadastrar: Removido o <i> interno para evitar duplicidade com o CSS do btn-adicionar #}
+    <a href="{% url 'cadastrar_aluno' %}">
+      <button class="btn-adicionar">
+        Adicionar Discente
+      </button>
+    </a>
+  </div>
 
-        <a href="{% url 'cadastrar_aluno' %}">
-            <button class="btn-adicionar">
-                <i class="fa-solid fa-plus"></i> Adicionar Discente
-            </button>
-        </a>
+  <div class="card-tabela">
+    {# Barra de busca #}
+    <form method="get" class="barra-busca">
+      <input type="text" name="q" placeholder="Buscar" value="{{ query|default:'' }}">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </form>
+
+    <div class="container-tabela">
+      <table class="tabela-discentes">
+        <thead>
+          <tr>
+            <th class="coluna-nome">Nome</th>
+            <th class="coluna-email">E-mail</th>
+            <th class="coluna-turma">Turma</th>
+            <th class="coluna-acoes">Ações</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for aluno in alunos %}
+          <tr>
+            <td class="tabela-info">{{ aluno.nome_completo }}</td>
+            <td class="tabela-info">{{ aluno.user.email }}</td>
+            <td class="tabela-info">{{ aluno.turma.nome }}</td>
+
+            <td class="coluna-acoes">
+              <a href="{% url 'editar_aluno' aluno.id %}" class="acao-editar" title="Editar">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </a>
+
+              <a href="{% url 'excluir_aluno' aluno.id %}" class="acao-excluir" title="Excluir"
+                 onclick="return confirm('Deseja realmente excluir este discente?')">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="tabela-info" style="text-align:center; padding:15px;">
+              Nenhum aluno encontrado.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
-
-    <!-- Card da Tabela -->
-    <div class="card-tabela">
-
-        <!-- Barra de Busca -->
-        <form method="get" class="barra-busca">
-            <input type="text" name="q" placeholder="Buscar" value="{{ query|default:'' }}">
-            <i class="fa-solid fa-magnifying-glass"></i>
-        </form>
-
-        <!-- Tabela -->
-        <div class="container-tabela">
-            <table class="tabela-discentes">
-                <thead>
-                    <tr>
-                        <th class="coluna-nome">Nome</th>
-                        <th class="coluna-email">Email</th>
-                        <th class="coluna-turma">Turma</th>
-                        <th class="coluna-acoes">Ações</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for aluno in alunos %}
-                    <tr>
-                        <td class="tabela-info">{{ aluno.nome_completo }}</td>
-                        <td class="tabela-info">{{ aluno.user.email }}</td>
-                        <td class="tabela-info">{{ aluno.turma.nome }}</td>
-
-                        <td class="coluna-acoes">
-                            <a href="{% url 'editar_aluno' aluno.id %}" class="acao-editar" title="Editar">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </a>
-
-                            <a href="{% url 'excluir_aluno' aluno.id %}" class="acao-excluir" title="Excluir"
-                               onclick="return confirm('Deseja realmente excluir este discente?')">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="4" class="tabela-info">Nenhum aluno encontrado.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
-        </div>
-
-    </div>
-
+  </div>
 </main>
-{% endblock %}
+{% endblock %}  

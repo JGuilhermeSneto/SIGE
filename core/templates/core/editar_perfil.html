@@ -1,3 +1,14 @@
+{# ============================================================ #}
+{# template: core/editar_perfil.html                           #}
+{# view   : editar_perfil                                      #}
+{# form   : EditarPerfilForm (fields: email, nova_senha,       #}
+{#          confirmar_senha) — SEM campo "senha_atual"         #}
+{# contexto: form, perfil, foto_atual, foto_perfil_url         #}
+{# FIX: removidos form.senha_atual / id_senha_atual que não    #}
+{#      existem em EditarPerfilForm;                           #}
+{#      seção de senha ajustada para nova_senha + confirmar;   #}
+{#      JS corrigido para não referenciar id_senha_atual.      #}
+{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 
@@ -5,413 +16,514 @@
 {% block header_title %}Meu Perfil{% endblock %}
 
 {% block extra_css %}
+{# Folha de estilo da tela de perfil do usuário #}
 <link rel="stylesheet" href="{% static 'core/css/editar_perfil.css' %}">
 {% endblock %}
 
 {% block content %}
-
 <main class="container-perfil">
-    <div class="titulo">
-        <h1>Minhas Informações</h1>
-    </div>
 
-    <div class="div-global">
-        <!-- ÁREA DA FOTO -->
-        <div class="area-imagem">
-            {% if foto_atual %}
-                <img src="{{ foto_atual }}" alt="Foto de Perfil" class="perfil-imagem" id="imagem-perfil">
-            {% else %}
-                <div class="perfil-imagem perfil-sem-foto" id="imagem-perfil">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-            {% endif %}
-            
-            <input type="file" id="upload-imagem" name="foto" accept="image/*" form="perfil-form" style="display: none;">
-            
-            <button type="button" class="btn-foto-acao btn-editar-foto" id="btn-foto-opcoes">
-                <i class="fa-solid fa-camera"></i>
+  <div class="titulo">
+    <h1>Minhas Informações</h1>
+  </div>
+
+  <div class="div-global">
+
+    {# ════════════════ ÁREA DA FOTO ════════════════ #}
+    <div class="area-imagem">
+
+      {# Exibe foto atual ou placeholder com ícone de usuário #}
+      {% if foto_atual %}
+        <img src="{{ foto_atual }}"
+             alt="Foto de Perfil"
+             class="perfil-imagem"
+             id="imagem-perfil">
+      {% else %}
+        <div class="perfil-imagem perfil-sem-foto" id="imagem-perfil">
+          <i class="fa-solid fa-user"></i>
+        </div>
+      {% endif %}
+
+      {# Input de upload oculto; acionado pelo menu de opções #}
+      <input type="file"
+             id="upload-imagem"
+             name="foto"
+             accept="image/*"
+             form="perfil-form"
+             style="display:none;">
+
+      {# Botão de câmera que abre o menu de opções de foto #}
+      <button type="button"
+              class="btn-foto-acao btn-editar-foto"
+              id="btn-foto-opcoes">
+        <i class="fa-solid fa-camera"></i>
+      </button>
+
+      {# Menu flutuante: alterar ou remover foto #}
+      <div class="menu-foto" id="menu-foto">
+
+        {# Opção: trocar foto #}
+        <button type="button" id="opcao-alterar">
+          <i class="fa-solid fa-image"></i> Alterar foto
+        </button>
+
+        {# Opção: remover foto — exibida apenas se houver foto atual #}
+        {% if foto_atual %}
+          <form method="post"
+                action="{% url 'remover_foto_perfil' %}"
+                style="margin:0; padding:0;">
+            {% csrf_token %}
+            <button type="submit"
+                    id="opcao-remover"
+                    style="width:100%; text-align:left;">
+              <i class="fa-solid fa-trash"></i> Remover foto
             </button>
+          </form>
+        {% endif %}
 
-            <div class="menu-foto" id="menu-foto">
-                <button type="button" id="opcao-alterar">
-                    <i class="fa-solid fa-image"></i> Alterar foto
-                </button>
-                {% if foto_atual %}
-                <form method="post" action="{% url 'remover_foto_perfil' %}" style="margin: 0; padding: 0;">
-                    {% csrf_token %}
-                    <button type="submit" id="opcao-remover" style="width: 100%; text-align: left;">
-                        <i class="fa-solid fa-trash"></i> Remover foto
-                    </button>
-                </form>
-                {% endif %}
-            </div>
+      </div>
+    </div>
+    {# ── fim area-imagem ── #}
+
+    <hr>
+
+    {# ════════════════ FORMULÁRIO DE DADOS ════════════════ #}
+    {# FIX: enctype obrigatório para upload de foto funcionar #}
+    <form class="formulario perfil-detalhes-form"
+          id="perfil-form"
+          method="post"
+          enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {# ── Campos de somente leitura: exibidos se perfil existir ── #}
+      {% if perfil %}
+
+        {# Nome completo — desabilitado (não editável aqui) #}
+        <div class="linha-form">
+          <div class="coluna-dado full-width">
+            <label>Nome Completo</label>
+            <input type="text"
+                   value="{{ perfil.nome_completo }}"
+                   disabled>
+          </div>
         </div>
 
-        <hr>
+        {# CPF e E-mail — CPF desabilitado; e-mail editável via EditarPerfilForm #}
+        <div class="linha-form">
+          <div class="coluna-dado">
+            <label>CPF</label>
+            <input type="text"
+                   value="{{ perfil.cpf }}"
+                   disabled>
+          </div>
+          <div class="coluna-dado">
+            <label>E-mail</label>
+            {# Campo editável do form; habilitado pelo botão "Editar" via JS #}
+            {{ form.email }}
+          </div>
+        </div>
 
-        <!-- FORMULÁRIO DE DADOS -->
-        <form class="formulario perfil-detalhes-form" id="perfil-form" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            
-            {% if perfil %}
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label for="nome_completo">Nome Completo</label>
-                    <input type="text" name="nome_completo" value="{{ perfil.nome_completo }}" disabled>
-                </div>
+        {# Data de nascimento e telefone — desabilitados #}
+        {% if perfil.data_nascimento %}
+        <div class="linha-form">
+          <div class="coluna-dado">
+            <label>Data de Nascimento</label>
+            <input type="date"
+                   value="{{ perfil.data_nascimento|date:'Y-m-d' }}"
+                   disabled>
+          </div>
+          {% if perfil.telefone %}
+          <div class="coluna-dado">
+            <label>Telefone</label>
+            <input type="text"
+                   value="{{ perfil.telefone }}"
+                   disabled>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {# Naturalidade — exibida apenas se preenchida #}
+        {% if perfil.naturalidade %}
+        <div class="linha-form">
+          <div class="coluna-dado full-width">
+            <label>Naturalidade</label>
+            <input type="text"
+                   value="{{ perfil.naturalidade }}"
+                   disabled>
+          </div>
+        </div>
+        {% endif %}
+
+        {# Endereço (CEP / Estado / Cidade) — exibido se pelo menos um estiver preenchido #}
+        {% if perfil.cep or perfil.estado or perfil.cidade %}
+        <div class="linha-form">
+          {% if perfil.cep %}
+          <div class="coluna-dado">
+            <label>CEP</label>
+            <input type="text" value="{{ perfil.cep }}" disabled>
+          </div>
+          {% endif %}
+          {% if perfil.estado %}
+          <div class="coluna-dado">
+            <label>Estado</label>
+            <input type="text" value="{{ perfil.estado }}" disabled>
+          </div>
+          {% endif %}
+          {% if perfil.cidade %}
+          <div class="coluna-dado">
+            <label>Cidade</label>
+            <input type="text" value="{{ perfil.cidade }}" disabled>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+
+        {# Turma do aluno — exibida apenas para perfis com turma (Aluno) #}
+        {% if perfil.turma %}
+        <div class="linha-form">
+          <div class="coluna-dado full-width">
+            <label>Turma</label>
+            <input type="text"
+                   value="{{ perfil.turma.nome }}{% if perfil.turma.get_turno_display %} • {{ perfil.turma.get_turno_display }}{% endif %}{% if perfil.turma.ano %} • {{ perfil.turma.ano }}{% endif %}"
+                   disabled>
+          </div>
+        </div>
+        {% endif %}
+
+        {# Responsável 1 — exibido apenas para alunos com responsavel1 preenchido #}
+        {# FIX: campo é responsavel1/responsavel2 no model, não filiacao_1/filiacao_2 #}
+        {% if perfil.responsavel1 %}
+        <div class="linha-form">
+          <div class="coluna-dado full-width">
+            <label>Responsável 1</label>
+            <input type="text"
+                   value="{{ perfil.responsavel1 }}"
+                   disabled>
+          </div>
+        </div>
+        {% endif %}
+
+        {% if perfil.responsavel2 %}
+        <div class="linha-form">
+          <div class="coluna-dado full-width">
+            <label>Responsável 2</label>
+            <input type="text"
+                   value="{{ perfil.responsavel2 }}"
+                   disabled>
+          </div>
+        </div>
+        {% endif %}
+
+      {% else %}
+        {# ── Superusuário sem perfil: exibe apenas o campo e-mail ── #}
+        <div class="linha-form">
+          <div class="coluna-dado full-width">
+            <label>E-mail</label>
+            {{ form.email }}
+          </div>
+        </div>
+      {% endif %}
+
+      {# ════════════════ SEÇÃO DE ALTERAR SENHA ════════════════ #}
+      {# FIX: EditarPerfilForm tem nova_senha e confirmar_senha   #}
+      {#      mas NÃO tem senha_atual — campo removido            #}
+      <div class="secao-senha" id="secao-senha" style="display:none;">
+        <h3 style="margin-bottom:20px; color:#333; font-size:1.2rem;">
+          Alterar Senha
+        </h3>
+
+        {# Nova senha #}
+        <div class="linha-form">
+          <div class="coluna-dado">
+            <label>Nova Senha</label>
+            <div class="input-com-toggle">
+              {{ form.nova_senha }}
+              <span class="toggle-senha"
+                    onclick="toggleSenha('id_nova_senha')">
+                <i class="fa-solid fa-eye"></i>
+              </span>
             </div>
+          </div>
 
-            <div class="linha-form">
-                <div class="coluna-dado">
-                    <label for="cpf">CPF</label>
-                    <input type="text" name="cpf" value="{{ perfil.cpf }}" disabled>
-                </div>
-                <div class="coluna-dado">
-                    <label for="email">E-mail</label>
-                    {{ form.email }}
-                </div>
+          {# Confirmar nova senha #}
+          <div class="coluna-dado">
+            <label>Confirmar Senha</label>
+            <div class="input-com-toggle">
+              {{ form.confirmar_senha }}
+              <span class="toggle-senha"
+                    onclick="toggleSenha('id_confirmar_senha')">
+                <i class="fa-solid fa-eye"></i>
+              </span>
             </div>
+          </div>
+        </div>
+      </div>
+      {# ── fim secao-senha ── #}
 
-            {% if perfil.data_nascimento %}
-            <div class="linha-form">
-                <div class="coluna-dado">
-                    <label for="data_nascimento">Data de Nascimento</label>
-                    <input type="date" name="data_nascimento" value="{{ perfil.data_nascimento|date:'Y-m-d' }}" disabled>
-                </div>
-                {% if perfil.telefone %}
-                <div class="coluna-dado">
-                    <label for="telefone">Telefone</label>
-                    <input type="text" value="{{ perfil.telefone }}" disabled>
-                </div>
-                {% endif %}
-            </div>
-            {% endif %}
+      {# ── Mensagens de erro do formulário ── #}
+      {% if form.errors %}
+      <div class="mensagens-erro">
+        {% for field, errors in form.errors.items %}
+          {% for error in errors %}
+            <p class="erro">{{ error }}</p>
+          {% endfor %}
+        {% endfor %}
+      </div>
+      {% endif %}
 
-            {# ====== NOVOS CAMPOS DE VISUALIZAÇÃO (SÓ LEITURA) ====== #}
+      {# ── Botões de ação ── #}
+      <div class="botoes-crud">
 
-            {% if perfil.naturalidade %}
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label for="naturalidade">Naturalidade</label>
-                    <input type="text" value="{{ perfil.naturalidade }}" disabled>
-                </div>
-            </div>
-            {% endif %}
+        {# Botão alternar seção de senha #}
+        <button type="button" class="btn-acao senha" id="btn-mudar-senha">
+          <i class="fa-solid fa-lock"></i>
+          <span id="texto-btn-senha">Alterar Senha</span>
+        </button>
 
-            {% if perfil.cep or perfil.estado or perfil.cidade %}
-            <div class="linha-form">
-                {% if perfil.cep %}
-                <div class="coluna-dado">
-                    <label for="cep">CEP</label>
-                    <input type="text" value="{{ perfil.cep }}" disabled>
-                </div>
-                {% endif %}
+        {# Botão entrar em modo edição — inicia desabilitado #}
+        <button type="button" class="btn-acao editar" id="btn-editar">
+          <i class="fa-solid fa-pen"></i> Editar
+        </button>
 
-                {% if perfil.estado %}
-                <div class="coluna-dado">
-                    <label for="estado">Estado</label>
-                    <input type="text" value="{{ perfil.estado }}" disabled>
-                </div>
-                {% endif %}
+        {# Botão salvar — oculto até entrar em modo edição #}
+        <button type="submit"
+                class="btn-acao salvar"
+                id="btn-salvar"
+                style="display:none;">
+          <i class="fa-solid fa-check"></i> Salvar
+        </button>
 
-                {% if perfil.cidade %}
-                <div class="coluna-dado">
-                    <label for="cidade">Cidade</label>
-                    <input type="text" value="{{ perfil.cidade }}" disabled>
-                </div>
-                {% endif %}
-            </div>
-            {% endif %}
+        {# Botão cancelar — oculto até entrar em modo edição #}
+        <button type="button"
+                class="btn-acao cancelar"
+                id="btn-cancelar"
+                style="display:none;">
+          <i class="fa-solid fa-xmark"></i> Cancelar
+        </button>
 
-            {% if perfil.turma %}
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label for="turma">Turma</label>
-                    <input type="text" value="{{ perfil.turma.nome }}{% if perfil.turma.get_turno_display %} • {{ perfil.turma.get_turno_display }}{% endif %}{% if perfil.turma.ano %} • {{ perfil.turma.ano }}{% endif %}" disabled>
-                </div>
-            </div>
-            {% endif %}
+      </div>
+    </form>
 
-            {% if perfil.filiacao_1 %}
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label for="filiacao_1">Filiação 1</label>
-                    <input type="text" value="{{ perfil.filiacao_1 }}" disabled>
-                </div>
-            </div>
-            {% endif %}
+  </div>
+  {# ── fim div-global ── #}
 
-            {% if perfil.filiacao_2 %}
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label for="filiacao_2">Filiação 2</label>
-                    <input type="text" value="{{ perfil.filiacao_2 }}" disabled>
-                </div>
-            </div>
-            {% endif %}
-
-            {% else %}
-            <!-- SUPERUSUÁRIO SEM PERFIL -->
-            <div class="linha-form">
-                <div class="coluna-dado full-width">
-                    <label for="email">E-mail</label>
-                    {{ form.email }}
-                </div>
-            </div>
-            {% endif %}
-
-            <!-- CAMPOS DE SENHA (FORM) -->
-            <div class="secao-senha" id="secao-senha" style="display: none;">
-                <h3 style="margin-bottom: 20px; color: #333; font-size: 1.2rem;">Alterar Senha</h3>
-                
-                <div class="linha-form">
-                    <div class="coluna-dado full-width">
-                        <label for="senha_atual">Senha Atual</label>
-                        <div class="input-com-toggle">
-                            {{ form.senha_atual }}
-                            <span class="toggle-senha" onclick="toggleSenha('id_senha_atual')">
-                                <i class="fa-solid fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="linha-form">
-                    <div class="coluna-dado">
-                        <label for="nova_senha">Nova Senha</label>
-                        <div class="input-com-toggle">
-                            {{ form.nova_senha }}
-                            <span class="toggle-senha" onclick="toggleSenha('id_nova_senha')">
-                                <i class="fa-solid fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="coluna-dado">
-                        <label for="confirmar_senha">Confirmar Senha</label>
-                        <div class="input-com-toggle">
-                            {{ form.confirmar_senha }}
-                            <span class="toggle-senha" onclick="toggleSenha('id_confirmar_senha')">
-                                <i class="fa-solid fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MENSAGENS DE ERRO -->
-            {% if form.errors %}
-            <div class="mensagens-erro">
-                {% for field, errors in form.errors.items %}
-                    {% for error in errors %}
-                        <p class="erro">{{ error }}</p>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            <div class="botoes-crud">
-                <button type="button" class="btn-acao senha" id="btn-mudar-senha">
-                    <i class="fa-solid fa-lock"></i> <span id="texto-btn-senha">Alterar Senha</span>
-                </button>
-
-                <!-- NOVO: BOTÃO EDITAR -->
-                <button type="button" class="btn-acao editar" id="btn-editar">
-                    <i class="fa-solid fa-pen"></i> Editar
-                </button>
-
-                <!-- SALVAR AGORA COMEÇA ESCONDIDO -->
-                <button type="submit" class="btn-acao salvar" id="btn-salvar" style="display:none;">
-                    <i class="fa-solid fa-check"></i> Salvar
-                </button>
-
-                <!-- CANCELAR -->
-                <button type="button" class="btn-acao cancelar" id="btn-cancelar" style="display:none;">
-                    <i class="fa-solid fa-xmark"></i> Cancelar
-                </button>
-            </div>
-        </form>
-    </div>
 </main>
 
 <script>
-// ===============================
-// CONTROLE EDITAR / SALVAR / CANCELAR
-// ===============================
-document.addEventListener("DOMContentLoaded", function() {
-    const emailInput = document.getElementById("id_email");
+document.addEventListener('DOMContentLoaded', function () {
 
-    const btnEditar = document.getElementById("btn-editar");
-    const btnSalvar = document.getElementById("btn-salvar");
-    const btnCancelar = document.getElementById("btn-cancelar");
+  /* ── Referências de DOM ── */
+  var emailInput     = document.getElementById('id_email');
+  var btnEditar      = document.getElementById('btn-editar');
+  var btnSalvar      = document.getElementById('btn-salvar');
+  var btnCancelar    = document.getElementById('btn-cancelar');
+  var secaoSenha     = document.getElementById('secao-senha');
+  var btnMudarSenha  = document.getElementById('btn-mudar-senha');
+  var textoBtnSenha  = document.getElementById('texto-btn-senha');
 
-    const secaoSenha = document.getElementById("secao-senha");
-    const btnMudarSenha = document.getElementById("btn-mudar-senha");
-    const textoBtnSenha = document.getElementById("texto-btn-senha");
+  /* Controla se a seção de senha está expandida */
+  var senhaAberta = false;
 
-    let senhaAberta = false;
+  /* Guarda o e-mail original para restaurar ao cancelar */
+  var originalEmail = emailInput ? emailInput.value : '';
 
-    const originalEmail = emailInput ? emailInput.value : "";
+  /* Estado inicial: e-mail travado, salvar/cancelar ocultos */
+  if (emailInput) { emailInput.disabled = true; }
+  btnSalvar.style.display  = 'none';
+  btnCancelar.style.display = 'none';
 
-    // trava o email ao entrar
-    if (emailInput) emailInput.disabled = true;
+  /* ────────────────────────────────────────────────
+     btnEditar.onclick
+     Entra em modo de edição: habilita e-mail,
+     exibe botões Salvar e Cancelar.
+  ──────────────────────────────────────────────── */
+  btnEditar.onclick = function () {
+    if (emailInput) { emailInput.disabled = false; }
 
-    // botões iniciais
-    btnSalvar.style.display = "none";
-    btnCancelar.style.display = "none";
-    btnEditar.style.display = "flex";
+    btnEditar.style.display   = 'none';
+    btnSalvar.style.display   = 'flex';
+    btnCancelar.style.display = 'flex';
 
-    btnEditar.onclick = () => {
-        if (emailInput) emailInput.disabled = false;
+    if (emailInput) { emailInput.focus(); }
+  };
 
-        btnEditar.style.display = "none";
-        btnSalvar.style.display = "flex";
-        btnCancelar.style.display = "flex";
-
-        if (emailInput) emailInput.focus();
-    };
-
-    btnCancelar.onclick = () => {
-        if (emailInput) {
-            emailInput.value = originalEmail;
-            emailInput.disabled = true;
-        }
-
-        // Fecha e limpa senha se estiver aberta
-        if (senhaAberta) {
-            secaoSenha.style.display = "none";
-            textoBtnSenha.textContent = "Alterar Senha";
-            btnMudarSenha.style.backgroundColor = "#e5e7eb";
-            senhaAberta = false;
-
-            document.getElementById("id_senha_atual").value = "";
-            document.getElementById("id_nova_senha").value = "";
-            document.getElementById("id_confirmar_senha").value = "";
-        }
-
-        btnEditar.style.display = "flex";
-        btnSalvar.style.display = "none";
-        btnCancelar.style.display = "none";
-    };
-
-    // ===============================
-    // TOGGLE SEÇÃO DE SENHA
-    // ===============================
-    btnMudarSenha.onclick = () => {
-        // só deixa mexer na senha se estiver em modo edição (Salvar visível)
-        const emEdicao = btnSalvar.style.display === "flex";
-        if (!emEdicao) return;
-
-        senhaAberta = !senhaAberta;
-
-        if (senhaAberta) {
-            secaoSenha.style.display = "block";
-            textoBtnSenha.textContent = "Cancelar Alteração";
-            btnMudarSenha.style.backgroundColor = "#dc2626";
-        } else {
-            secaoSenha.style.display = "none";
-            textoBtnSenha.textContent = "Alterar Senha";
-            btnMudarSenha.style.backgroundColor = "#e5e7eb";
-
-            document.getElementById("id_senha_atual").value = "";
-            document.getElementById("id_nova_senha").value = "";
-            document.getElementById("id_confirmar_senha").value = "";
-        }
-    };
-});
-
-// ===============================
-// MENU FOTO
-// ===============================
-const uploadImagemInput = document.getElementById("upload-imagem");
-const imagemPerfil = document.getElementById("imagem-perfil");
-const btnFotoOpcoes = document.getElementById("btn-foto-opcoes");
-const menuFoto = document.getElementById("menu-foto");
-const opcaoAlterar = document.getElementById("opcao-alterar");
-
-// PREVIEW DE FOTO
-uploadImagemInput.onchange = function() {
-    const file = this.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            if (imagemPerfil.tagName === 'DIV') {
-                const img = document.createElement('img');
-                img.id = 'imagem-perfil';
-                img.className = 'perfil-imagem';
-                img.src = e.target.result;
-                imagemPerfil.replaceWith(img);
-            } else {
-                imagemPerfil.src = e.target.result;
-            }
-        };
-        reader.readAsDataURL(file);
+  /* ────────────────────────────────────────────────
+     btnCancelar.onclick
+     Sai do modo edição sem salvar; restaura valores
+     originais e fecha a seção de senha se aberta.
+  ──────────────────────────────────────────────── */
+  btnCancelar.onclick = function () {
+    /* Restaura e-mail original e trava campo */
+    if (emailInput) {
+      emailInput.value    = originalEmail;
+      emailInput.disabled = true;
     }
-};
 
-btnFotoOpcoes.addEventListener("click", (e) => {
-    e.stopPropagation();
-    menuFoto.style.display = menuFoto.style.display === "flex" ? "none" : "flex";
-});
+    /* Fecha seção de senha e limpa campos se estiver aberta */
+    if (senhaAberta) {
+      secaoSenha.style.display        = 'none';
+      textoBtnSenha.textContent        = 'Alterar Senha';
+      btnMudarSenha.style.backgroundColor = '#e5e7eb';
+      senhaAberta = false;
 
-opcaoAlterar.addEventListener("click", () => {
-    uploadImagemInput.click();
-    menuFoto.style.display = "none";
-});
-
-document.addEventListener("click", (e) => {
-    if (!menuFoto.contains(e.target) && e.target !== btnFotoOpcoes) {
-        menuFoto.style.display = "none";
+      /* Limpa campos de senha para não enviar valores residuais */
+      var novaSenha      = document.getElementById('id_nova_senha');
+      var confirmarSenha = document.getElementById('id_confirmar_senha');
+      if (novaSenha)      { novaSenha.value      = ''; }
+      if (confirmarSenha) { confirmarSenha.value = ''; }
     }
-});
 
-// ===============================
-// TOGGLE SENHA
-// ===============================
-function toggleSenha(inputId) {
-    const input = document.getElementById(inputId);
-    const toggleBtn = input.nextElementSibling;
-    const icon = toggleBtn.querySelector('i');
+    /* Restaura estado inicial dos botões */
+    btnEditar.style.display   = 'flex';
+    btnSalvar.style.display   = 'none';
+    btnCancelar.style.display = 'none';
+  };
 
-    if (input.type === "password") {
-        input.type = "text";
-        icon.classList.remove('fa-eye');
-        icon.classList.add('fa-eye-slash');
+  /* ────────────────────────────────────────────────
+     btnMudarSenha.onclick
+     Expande/recolhe a seção de senha.
+     Só funciona quando o usuário está em modo edição.
+  ──────────────────────────────────────────────── */
+  btnMudarSenha.onclick = function () {
+    /* Só permite alterar senha em modo de edição ativo */
+    var emEdicao = btnSalvar.style.display === 'flex';
+    if (!emEdicao) { return; }
+
+    senhaAberta = !senhaAberta;
+
+    if (senhaAberta) {
+      /* Expande seção de senha #}*/
+      secaoSenha.style.display        = 'block';
+      textoBtnSenha.textContent        = 'Cancelar Alteração';
+      btnMudarSenha.style.backgroundColor = '#dc2626';
     } else {
-        input.type = "password";
-        icon.classList.remove('fa-eye-slash');
-        icon.classList.add('fa-eye');
+      /* Recolhe seção de senha e limpa campos */
+      secaoSenha.style.display        = 'none';
+      textoBtnSenha.textContent        = 'Alterar Senha';
+      btnMudarSenha.style.backgroundColor = '#e5e7eb';
+
+      var novaSenha      = document.getElementById('id_nova_senha');
+      var confirmarSenha = document.getElementById('id_confirmar_senha');
+      if (novaSenha)      { novaSenha.value      = ''; }
+      if (confirmarSenha) { confirmarSenha.value = ''; }
     }
+  };
+
+}); /* fim DOMContentLoaded */
+
+/* ────────────────────────────────────────────────
+   Menu de foto
+   Abre/fecha o menu flutuante de opções de foto.
+──────────────────────────────────────────────── */
+var uploadImagemInput = document.getElementById('upload-imagem');
+var imagemPerfil      = document.getElementById('imagem-perfil');
+var btnFotoOpcoes     = document.getElementById('btn-foto-opcoes');
+var menuFoto          = document.getElementById('menu-foto');
+var opcaoAlterar      = document.getElementById('opcao-alterar');
+
+/* Preview imediato ao selecionar novo arquivo */
+if (uploadImagemInput) {
+  uploadImagemInput.onchange = function () {
+    var file = this.files[0];
+    if (!file) { return; }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      /* Se o elemento é uma div (sem foto), substitui por img */
+      if (imagemPerfil && imagemPerfil.tagName === 'DIV') {
+        var img       = document.createElement('img');
+        img.id        = 'imagem-perfil';
+        img.className = 'perfil-imagem';
+        img.src       = e.target.result;
+        imagemPerfil.replaceWith(img);
+      } else if (imagemPerfil) {
+        imagemPerfil.src = e.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
+  };
 }
 
-// ===============================
-// ESTILIZAR CAMPOS DO FORM
-// ===============================
-document.addEventListener('DOMContentLoaded', function() {
-    const emailInput = document.getElementById('id_email');
-    const senhaAtualInput = document.getElementById('id_senha_atual');
-    const novaSenhaInput = document.getElementById('id_nova_senha');
-    const confirmarSenhaInput = document.getElementById('id_confirmar_senha');
+/* Abre/fecha menu ao clicar no botão de câmera */
+if (btnFotoOpcoes && menuFoto) {
+  btnFotoOpcoes.addEventListener('click', function (e) {
+    e.stopPropagation(); /* impede o click no document fechar o menu */
+    menuFoto.style.display =
+      menuFoto.style.display === 'flex' ? 'none' : 'flex';
+  });
+}
 
-    if (emailInput) {
-        emailInput.style.width = '100%';
-        emailInput.style.padding = '10px 0';
-        emailInput.style.border = 'none';
-        emailInput.style.borderBottom = '2px solid #e5e7eb';
-        emailInput.style.borderRadius = '0';
-        emailInput.style.fontSize = '1rem';
-        emailInput.style.color = '#333';
-        emailInput.style.background = 'transparent';
+/* Clique em "Alterar foto" abre o input de arquivo */
+if (opcaoAlterar) {
+  opcaoAlterar.addEventListener('click', function () {
+    if (uploadImagemInput) { uploadImagemInput.click(); }
+    if (menuFoto) { menuFoto.style.display = 'none'; }
+  });
+}
+
+/* Fecha menu ao clicar fora dele */
+document.addEventListener('click', function (e) {
+  if (menuFoto &&
+      !menuFoto.contains(e.target) &&
+      e.target !== btnFotoOpcoes) {
+    menuFoto.style.display = 'none';
+  }
+});
+
+/* ────────────────────────────────────────────────
+   toggleSenha
+   Alterna visibilidade de campos de senha.
+──────────────────────────────────────────────── */
+function toggleSenha(inputId) {
+  var input     = document.getElementById(inputId);
+  var toggleBtn = input ? input.nextElementSibling : null;
+  var icon      = toggleBtn ? toggleBtn.querySelector('i') : null;
+
+  if (!input || !icon) { return; }
+
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    input.type = 'password';
+    icon.classList.replace('fa-eye-slash', 'fa-eye');
+  }
+}
+
+/* ────────────────────────────────────────────────
+   Estilização dos campos do form via JS
+   (Mantida para retrocompatibilidade com o CSS base)
+──────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function () {
+  var emailInput = document.getElementById('id_email');
+
+  /* Estilos do campo de e-mail */
+  if (emailInput) {
+    emailInput.style.cssText = [
+      'width:100%',
+      'padding:10px 0',
+      'border:none',
+      'border-bottom:2px solid #e5e7eb',
+      'border-radius:0',
+      'font-size:1rem',
+      'color:#333',
+      'background:transparent'
+    ].join(';');
+  }
+
+  /* Estilos dos campos de senha */
+  ['id_nova_senha', 'id_confirmar_senha'].forEach(function (id) {
+    var input = document.getElementById(id);
+    if (input) {
+      input.style.cssText = [
+        'width:100%',
+        'padding:12px 40px 12px 12px',
+        'border:1px solid #d1d5db',
+        'border-radius:8px',
+        'font-size:1rem'
+      ].join(';');
     }
-
-    [senhaAtualInput, novaSenhaInput, confirmarSenhaInput].forEach(input => {
-        if (input) {
-            input.style.width = '100%';
-            input.style.padding = '12px 40px 12px 12px';
-            input.style.border = '1px solid #d1d5db';
-            input.style.borderRadius = '8px';
-            input.style.fontSize = '1rem';
-        }
-    });
+  });
 });
 </script>
 
