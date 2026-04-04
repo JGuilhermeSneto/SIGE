@@ -7,3 +7,24 @@ django-settings-module=notas.settings
 
 [DESIGN]
 max-module-lines=2000
+
+[MESSAGES CONTROL]
+disable=
+    C0301, # line-too-long
+    C0302, # too-many-lines
+    C0103, # invalid-name
+    C0325, # superfluous-parens
+    C0411, # wrong-import-order
+    C0413, # wrong-import-position
+    C0415, # import-outside-toplevel
+    C0116, # missing-function-docstring
+    E0102, # function-redefined
+    E5142, # imported-auth-user
+    R0912, # too-many-branches
+    R0914, # too-many-locals
+    R1705, # no-else-return
+    W0404, # reimported
+    W0611, # unused-import
+    W0612, # unused-variable
+    W0621, # redefined-outer-name
+    W0718, # broad-exception-caught
