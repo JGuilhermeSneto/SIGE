@@ -7,7 +7,7 @@ colorama==0.4.6
 coverage==7.13.5
 dill==0.4.1
 Django==6.0.3
-django-stubs==6.0.1
+django-stubs==6.0.2
 django-stubs-ext==6.0.2
 django-widget-tweaks==1.5.1
 flake8==7.3.0
