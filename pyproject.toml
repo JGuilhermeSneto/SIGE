@@ -3,3 +3,23 @@ plugins = ["mypy_django_plugin.main"]
 
 [tool.django-stubs]
 django_settings_module = "notas.settings"
+
+[tool.pyright]
+include = ["core"]
+exclude = [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.*"
+]
+# Configurações de Ambiente Virtual
+venvPath = "."
+venv = "venv"
+
+# Nível de rigor da análise
+typeCheckingMode = "basic"
+
+# Supressão de erros específicos do Django/Pylance
+reportAttributeAccessIssue = false
+reportArgumentType = false
+reportMissingModuleSource = false
+reportGeneralTypeIssues = false
