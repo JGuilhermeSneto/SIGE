@@ -4,7 +4,7 @@ Módulo de views da aplicação core do sistema SIGE.
 
 import calendar
 from datetime import date, datetime
-
+from django.templatetags.static import static
 from django.contrib import messages
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -212,24 +212,13 @@ def get_user_profile(user):
 
 
 def get_nome_exibicao(user):
-    """Retorna o nome completo do perfil ou o username como fallback."""
-    perfil = get_user_profile(user)
-    return perfil.nome_completo if perfil else user.username
+    for tipo in ["gestor", "professor", "aluno"]:
+        perfil = getattr(user, tipo, None)
+        if perfil and getattr(perfil, "nome_completo", None):
+            return perfil.nome_completo
 
-
-def get_foto_perfil(user):
-    """Retorna a URL da foto de perfil ou uma imagem padrão."""
-    perfil = get_user_profile(user)
-    if perfil and perfil.foto:
-        return perfil.foto.url
-    from django.templatetags.static import static
-
-    return static("core/img/default-user.png")
-
-
-def is_super_ou_gestor(user):
-    """Verifica se o usuário tem permissões administrativas."""
-    return user.is_superuser or hasattr(user, "gestor")
+    nome_auth = f"{user.first_name} {user.last_name}".strip()
+    return nome_auth if nome_auth else user.email
 
 
 def is_super_ou_gestor(user):
@@ -240,32 +229,19 @@ def is_super_ou_gestor(user):
     return user.is_active and (user.is_superuser or hasattr(user, "gestor"))
 
 
+from django.templatetags.static import static
+
 def get_foto_perfil(user):
     """
-    Recupera a URL da foto de perfil independente do tipo de usuário.
-    Adicionado tratamento para garantir que o campo foto não esteja vazio.
-    """
-    for tipo in ["professor", "aluno", "gestor"]:
-        try:
-            perfil = getattr(user, tipo, None)
-            if perfil and perfil.foto:
-                return perfil.foto.url
-        except Exception:
-            continue
-    return None
-
-
-def get_nome_exibicao(user):
-    """
-    Retorna o nome completo do perfil vinculado ou o e-mail como fallback.
+    Retorna a URL da foto de perfil do usuário
+    ou uma imagem padrão caso não exista.
     """
     for tipo in ["gestor", "professor", "aluno"]:
         perfil = getattr(user, tipo, None)
-        if perfil and getattr(perfil, "nome_completo", None):
-            return perfil.nome_completo
+        if perfil and perfil.foto:
+            return perfil.foto.url
 
-    nome_auth = f"{user.first_name} {user.last_name}".strip()
-    return nome_auth if nome_auth else user.email
+    return static("core/img/default-user.png")
 
 
 def redirect_user(user):
@@ -1868,79 +1844,91 @@ def painel_aluno(request):
         },
     )
 
-
 # =====================================================================
-# Views — Grade Horária
+# Views — Grade Horária (VERSÃO CORRIGIDA)
 # =====================================================================
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def grade_horaria(request, turma_id):
-    """
-    Edição e visualização da grade horária de uma turma.
-    Os dados são persistidos no modelo GradeHorario em um JSONField.
-    """
     turma = get_object_or_404(Turma, id=turma_id)
     user = request.user
 
-    # Busca configurações globais
+    # Turno e horários
     turno_key = _get_turno_key(turma.turno)
     horarios = HORARIOS.get(turno_key, [])
 
-    # Importante: select_related para evitar centenas de queries no loop
-    disciplinas_da_turma = Disciplina.objects.filter(turma=turma).select_related(
-        "professor"
+    # Disciplinas da turma
+    disciplinas_da_turma = (
+        Disciplina.objects
+        .filter(turma=turma)
+        .select_related("professor")
     )
 
+    # ============================
+    # POST — SALVAR
+    # ============================
     if request.method == "POST":
-        # Apenas gestores podem salvar alterações na grade
+
         if not is_super_ou_gestor(user):
             messages.error(
                 request, "Você não tem permissão para alterar a grade horária."
             )
             return redirect("grade_horaria", turma_id=turma.id)
 
-        dados_grade = {}
+        GradeHorario.objects.filter(turma=turma).delete()
+
+        registros = []
+
         for dia in DIAS_SEMANA:
-            slots = []
-            for i in range(len(horarios)):
-                # Recupera o ID da disciplina enviado pelo select do template (ex: segunda_0)
+            for i, horario in enumerate(horarios):
                 disciplina_id = request.POST.get(f"{dia}_{i}")
 
-                if disciplina_id:
-                    try:
-                        # Valida se a disciplina realmente pertence a esta turma
-                        disciplina = disciplinas_da_turma.get(id=disciplina_id)
-                        # Armazenamos o ID (ou nome) para persistência
-                        slots.append(str(disciplina.id))
-                    except Disciplina.DoesNotExist:
-                        slots.append("")
-                else:
-                    slots.append("")
+                if not disciplina_id:
+                    continue
 
-            dados_grade[dia] = slots
+                try:
+                    disciplina = disciplinas_da_turma.get(id=disciplina_id)
+                except Disciplina.DoesNotExist:
+                    continue
 
-        # Persistência no modelo GradeHorario
-        GradeHorario.objects.update_or_create(
-            turma=turma,
-            defaults={"dados": dados_grade},
+                registros.append(
+                    GradeHorario(
+                        turma=turma,
+                        disciplina=disciplina,
+                        dia=dia,
+                        horario=horario,
+                    )
+                )
+
+        if registros:
+            GradeHorario.objects.bulk_create(registros)
+
+        messages.success(
+            request,
+            f"Grade horária da turma {turma.nome} atualizada com sucesso!"
         )
-        messages.success(request, f"Grade horária da turma {turma.nome} atualizada!")
         return redirect("grade_horaria", turma_id=turma.id)
 
-    # --- LÓGICA DO GET ---
+    # ============================
+    # GET — EXIBIR GRADE
+    # ============================
 
-    try:
-        grade_obj = GradeHorario.objects.get(turma=turma)
-        grade_dados = grade_obj.dados
-    except GradeHorario.DoesNotExist:
-        grade_dados = {}
+    grades = (
+        GradeHorario.objects
+        .filter(turma=turma)
+        .select_related("disciplina", "disciplina__professor")
+    )
 
-    # Mapeamento ID -> objeto para busca rápida
-    # Usar ID é mais seguro que Nome, pois nomes podem se repetir
-    dict_disciplinas = {str(d.id): d for d in disciplinas_da_turma}
+    # ============================
+    # MAPA BASE
+    # ============================
 
-    # Geramos um mapa de conflitos para TODOS os professores desta turma
-    # Isso permite que o template saiba se o professor X está ocupado no dia Y, hora Z
+    mapa_grade = {(g.dia, g.horario): g for g in grades}
+
+    # ============================
+    # CONFLITOS (GESTOR)
+    # ============================
+
     conflitos_professores = {}
     for disc in disciplinas_da_turma:
         if disc.professor and disc.professor.id not in conflitos_professores:
@@ -1950,35 +1938,62 @@ def grade_horaria(request, turma_id):
                 turma_id_atual=turma.id,
             )
 
+    # ============================
+    # FORMATO AVANÇADO (GESTOR)
+    # ============================
+
     rows = []
+
     for i, horario in enumerate(horarios):
-        row = {"horario": horario, "dias": []}
+        row = {
+            "horario": horario,
+            "dias": []
+        }
+
         for dia in DIAS_SEMANA:
-            slot_list = grade_dados.get(dia, [])
+            grade = mapa_grade.get((dia, horario))
+            disciplina = grade.disciplina if grade else None
 
-            # Pega o ID salvo no JSON
-            id_salvo = slot_list[i] if i < len(slot_list) else ""
-            disciplina = dict_disciplinas.get(id_salvo)
-
-            # Verifica se o professor da disciplina selecionada tem conflito neste slot
             tem_conflito = False
             if disciplina and disciplina.professor:
-                chave_conflito = f"{dia}-{i}"
-                if chave_conflito in conflitos_professores.get(
+                chave = f"{dia}-{i}"
+                if chave in conflitos_professores.get(
                     disciplina.professor.id, set()
                 ):
                     tem_conflito = True
 
-            row["dias"].append(
-                {
-                    "dia_slug": dia,
-                    "slot_index": i,
-                    "disciplina_atual": disciplina,
-                    "id_atual": id_salvo,
-                    "conflito": tem_conflito,
-                }
-            )
+            row["dias"].append({
+                "dia_slug": dia,
+                "slot_index": i,
+                "disciplina_atual": disciplina,
+                "id_atual": disciplina.id if disciplina else "",
+                "conflito": tem_conflito,
+            })
+
         rows.append(row)
+
+    # ============================
+    # FORMATO SIMPLES (ALUNO/PROF)
+    # ============================
+
+    grade_horario = {}
+
+    for horario in horarios:
+        grade_horario[horario] = {
+            "segunda": None,
+            "terca": None,
+            "quarta": None,
+            "quinta": None,
+            "sexta": None,
+        }
+
+    for g in grades:
+        if g.horario in grade_horario:
+            grade_horario[g.horario][g.dia] = g.disciplina.nome
+
+    # ============================
+    # CONTEXT FINAL
+    # ============================
 
     return render(
         request,
@@ -1986,15 +2001,14 @@ def grade_horaria(request, turma_id):
         {
             "turma": turma,
             "nomes_dias": NOMES_DIAS,
-            "rows": rows,
+            "rows": rows,  # gestor
+            "grade_horario": grade_horario,  # aluno/professor
             "disciplinas": disciplinas_da_turma,
             "nome_exibicao": get_nome_exibicao(user),
             "foto_perfil_url": get_foto_perfil(user),
             "is_gestor_ou_super": is_super_ou_gestor(user),
         },
     )
-
-
 # =====================================================================
 # Views — Frequência
 # =====================================================================

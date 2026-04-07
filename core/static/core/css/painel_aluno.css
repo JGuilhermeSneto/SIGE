@@ -3,6 +3,23 @@
    painel_aluno.css
 ============================================================ */
 
+
+
+/* ── Perfil do usuário (foto + saudação) ── */
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.foto-perfil {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,.12);
+  background: #0f1623;
+}
 /* ── Wrapper ── */
 .container-centralizado { width: 100%; }
 .conteudo-principal      { width: 100%; }

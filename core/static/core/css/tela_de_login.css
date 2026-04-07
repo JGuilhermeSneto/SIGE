@@ -1,19 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+/* ============================================================
+   SIGE — Login
+   login.css  v2 (Refinado com Borda Externa Neon na Logo)
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
   --bg-elevated:    #131e33;
   --bg-hover:       #1a2844;
-  --border-subtle:  rgba(255,255,255,.06);
-  --border-mid:     rgba(255,255,255,.11);
+  --border-subtle:  rgba(255, 255, 255, .06);
+  --border-mid:     rgba(255, 255, 255, .11);
   --accent-violet:  #7c6fff;
   --accent-cyan:    #22d3ee;
   --accent-emerald: #34d399;
   --accent-amber:   #fbbf24;
   --accent-red:     #f87171;
   --text-primary:   #eef2ff;
-  --text-secondary: #7986a8;
+  --text-secondary: #8b97bb;
   --text-muted:     #3d4f72;
   --radius-sm:  8px;
   --radius-md:  12px;
@@ -25,17 +30,16 @@
 
 html, body {
   height: 100%;
-  overflow: hidden; /* impede qualquer scroll na página de login */
+  overflow: hidden;
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', system-ui, sans-serif;
   background: var(--bg-base);
   color: var(--text-primary);
 }
-
 /* ════════════════════════════════════════
-   SPLASH SCREEN
+   SPLASH SCREEN — Restaurada e Refinada
 ═════════════════════════════════════════*/
 .splash {
   position: fixed;
@@ -45,12 +49,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity .6s ease, transform .6s ease;
+  transition: opacity .5s ease;
 }
 
 .splash-out {
   opacity: 0;
-  transform: scale(1.04);
   pointer-events: none;
 }
 
@@ -69,31 +72,82 @@ body {
   gap: 14px;
 }
 
+.splash-logo-ring {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.splash-logo-ring svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  /* Garante que o desenho do círculo seja nítido */
+  shape-rendering: geometricPrecision;
+}
+
+.splash-ring-track {
+  fill: none;
+  stroke: rgba(124, 111, 255, .12);
+  stroke-width: 3;
+}
+
+.splash-ring-progress {
+  fill: none;
+  stroke: url(#ringGrad);
+  stroke-width: 3;
+  stroke-linecap: round; /* Pontas arredondadas */
+  stroke-dasharray: 245; 
+  stroke-dashoffset: 245;
+  transition: stroke-dashoffset .06s linear;
+}
+
+/* Propriedade que estava com blur — Corrigida */
+.splash-ring-glow {
+  fill: none;
+  stroke: rgba(124, 111, 255, .4); /* Reduzi a opacidade para compensar a falta do blur */
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 28 217;
+  stroke-dashoffset: 245;
+  transition: stroke-dashoffset .06s linear;
+  filter: none; /* Blur removido permanentemente */
+}
+
 .splash-logo {
-  width: 52px;
-  height: 52px;
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
-  /* sem background, sem borda, sem padrão de grade — logo limpa */
   animation: pulseLogo 2s ease infinite;
+  /* Brilho nítido em vez de desfocado */
+  filter: drop-shadow(0 0 4px rgba(124, 111, 255, .3));
 }
 
 .splash-nome {
-  font-family: 'Syne', sans-serif;
-  font-size: 2.4rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 2.3rem;
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: .04em;
+  letter-spacing: .03em;
 }
 
 .splash-sub {
-  font-size: .78rem;
+  font-size: .75rem;
   color: var(--text-muted);
-  letter-spacing: .1em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   font-weight: 600;
 }
 
-/* barra de progresso splash */
 .splash-progress-track {
   width: 100%;
   height: 3px;
@@ -116,12 +170,12 @@ body {
   content: '';
   position: absolute;
   top: 0; left: 0;
-  width: 40px; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  width: 40px;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .4), transparent);
   animation: shimmerBar 1.2s ease infinite;
 }
 
-/* steps */
 .splash-steps {
   display: flex;
   flex-direction: column;
@@ -158,15 +212,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(9,14,26,.7);
-  backdrop-filter: blur(4px);
+  background: rgba(9, 14, 26, 0); /* Começa transparente */
   opacity: 0;
   pointer-events: none;
-  transition: opacity .3s ease;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease, opacity 0.3s ease;
 }
 
 .feedback-overlay.show {
   opacity: 1;
+  background: rgba(9, 14, 26, .85); /* Aumentei um pouco a opacidade do fundo para compensar a falta do blur */
   pointer-events: all;
 }
 
@@ -179,32 +233,32 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both;
+  animation: popIn .4s cubic-bezier(.34, 1.56, .64, 1) both;
 }
 
 .feedback-icon-wrap {
   width: 68px;
   height: 68px;
   border-radius: 50%;
-  background: rgba(52,211,153,.12);
-  border: 2px solid rgba(52,211,153,.3);
+  background: rgba(52, 211, 153, .12);
+  border: 2px solid rgba(52, 211, 153, .3);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1.8rem;
   color: var(--accent-emerald);
-  animation: iconPop .5s .15s cubic-bezier(.34,1.56,.64,1) both;
+  animation: iconPop .5s .15s cubic-bezier(.34, 1.56, .64, 1) both;
 }
 
 .feedback-box.error .feedback-icon-wrap {
-  background: rgba(248,113,113,.1);
-  border-color: rgba(248,113,113,.3);
+  background: rgba(248, 113, 113, .1);
+  border-color: rgba(248, 113, 113, .3);
   color: var(--accent-red);
   animation: iconShake .5s .1s ease both;
 }
 
 .feedback-msg {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -215,25 +269,25 @@ body {
    PÁGINA PRINCIPAL
 ═════════════════════════════════════════*/
 .page {
-  height: 100%;
+  min-height: 100vh; /* Garante que ocupe a altura toda para centralizar */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 60px 24px; /* Aumentado para garantir respiro no topo e base */
   position: relative;
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity .6s ease, transform .6s ease;
+  visibility: hidden; /* Oculto até a splash terminar */
+  /* Removido transform: translateY para garantir nitidez absoluta */
+  transition: opacity .6s ease;
   background: transparent;
-  overflow: hidden; /* partículas não vazam para fora */
+  overflow-y: auto; /* Permite scroll em telas muito pequenas */
 }
 
 .page-in {
   opacity: 1;
-  transform: translateY(0);
+  visibility: visible;
 }
 
-/* partículas decorativas */
 .particle {
   position: fixed;
   border-radius: 50%;
@@ -242,10 +296,10 @@ body {
   animation: floatParticle linear infinite;
 }
 
-.p1 { width: 6px;  height: 6px;  background: var(--accent-violet);  left: 12%; animation-duration: 14s; animation-delay: 3.2s; }
-.p2 { width: 4px;  height: 4px;  background: var(--accent-cyan);    left: 78%; animation-duration: 18s; animation-delay: 4s;   }
-.p3 { width: 5px;  height: 5px;  background: var(--accent-emerald); left: 55%; animation-duration: 12s; animation-delay: 3.8s; }
-.p4 { width: 3px;  height: 3px;  background: var(--accent-amber);   left: 33%; animation-duration: 16s; animation-delay: 5s;   }
+.p1 { width: 6px; height: 6px; background: var(--accent-violet); left: 12%; animation-duration: 14s; animation-delay: 3.2s; }
+.p2 { width: 4px; height: 4px; background: var(--accent-cyan); left: 78%; animation-duration: 18s; animation-delay: 4s; }
+.p3 { width: 5px; height: 5px; background: var(--accent-emerald); left: 55%; animation-duration: 12s; animation-delay: 3.8s; }
+.p4 { width: 3px; height: 3px; background: var(--accent-amber); left: 33%; animation-duration: 16s; animation-delay: 5s; }
 
 /* ════════════════════════════════════════
    CARD DE LOGIN
@@ -262,7 +316,6 @@ body {
   transition: border-color .3s;
 }
 
-/* linha de acento topo — só aparece no hover, igual cards do painel */
 .login-card::before {
   content: '';
   position: absolute;
@@ -271,12 +324,12 @@ body {
   background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
   border-radius: 0 0 4px 4px;
   opacity: 0;
-  transition: opacity .3s;
+  transition: opacity .3s ease;
 }
+
 .login-card:hover::before { opacity: 1; }
 .login-card:hover { border-color: var(--border-mid); }
 
-/* brilho canto — igual cards do painel */
 .login-card::after {
   content: '';
   position: absolute;
@@ -286,14 +339,12 @@ body {
   background: var(--accent-violet);
   opacity: 0;
   filter: blur(40px);
-  transition: opacity .4s;
+  transition: opacity .4s ease;
   pointer-events: none;
 }
-.login-card:hover::after { opacity: .06; }
 
-.login-card.shake {
-  animation: shakeCard .5s ease;
-}
+.login-card:hover::after { opacity: .06; }
+.login-card.shake { animation: shakeCard .5s ease; }
 
 /* ── Logo area ── */
 .logo-area {
@@ -304,46 +355,74 @@ body {
   margin-bottom: 28px;
 }
 
-/* anel ao redor da logo — fundo sólido, sem grid, sem padrão */
+/* AJUSTE: Anel da logo com efeito de Borda Externa orbitando a logo */
 .logo-ring {
-  width: 72px;
-  height: 72px;
+  width: 80px; /* Aumentado para dar espaço à borda externa */
+  height: 80px;
   border-radius: 50%;
-  background: rgba(124,111,255,.1);
-  border: 1px solid rgba(124,111,255,.2);
+  background: rgba(124, 111, 255, .05); /* Fundo muito sutil */
+  border: 1px solid rgba(124, 111, 255, .15); /* Borda padrão original */
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
+  /* padding: 10px; */ /* Espaço interno para afastar a logo da borda colorida */
+  overflow: hidden; /* Mantém o gradiente giratório dentro do círculo */
   animation: fadeUp .4s .1s ease both;
   transition: background .3s, border-color .3s;
-  /* garante que nenhum background-image seja herdado */
-  background-image: none;
 }
+
+.logo-ring::before {
+  content: '';
+  position: absolute;
+  /* inset: 0; */ /* Ocupa todo o espaço do anel */
+  inset: -10px; /* Expande para garantir que o gradiente cubra a área da borda */
+  background: conic-gradient(from 0deg, transparent, var(--accent-violet), var(--accent-cyan), var(--accent-emerald), transparent);
+  animation: rotateRing 4s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: -1; /* Fica atrás do fundo interno e da logo */
+}
+
+.logo-ring::after {
+  content: '';
+  position: absolute;
+  /* Cria uma 'mascara' interna para que o gradiente apareça apenas na borda */
+  inset: 3px; /* Espessura da borda colorida visível */
+  background: var(--bg-surface); /* Mesma cor de fundo do card para esconder o centro do gradiente */
+  border-radius: 50%;
+  z-index: -1;
+}
+
+.login-card:hover .logo-ring::before { opacity: 1; }
 .login-card:hover .logo-ring {
-  background: rgba(124,111,255,.16);
-  border-color: rgba(124,111,255,.35);
+  border-color: transparent; /* Esconde a borda padrão para mostrar o neon */
+  background: rgba(124, 111, 255, .1); /* Leve realce no fundo interno */
 }
 
 .logo-img {
-  width: 40px;
-  height: 40px;
+  width: 44px; /* Tamanho original preservado */
+  height: 44px;
   object-fit: contain;
   display: block;
+  z-index: 2; /* Fica acima de tudo */
+  /* filter: drop-shadow(0 0 10px rgba(124, 111, 255, 0.5)); */ /* Brilho opcional na logo no hover */
 }
 
 .brand-name {
-  font-family: 'Syne', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 1.7rem;
   font-weight: 800;
   color: var(--text-primary);
-  letter-spacing: .06em;
+  letter-spacing: .05em;
   animation: fadeUp .4s .15s ease both;
 }
 
 .brand-sub {
-  font-size: .75rem;
+  font-size: .73rem;
   color: var(--text-muted);
-  letter-spacing: .1em;
+  letter-spacing: .12em;
   text-transform: uppercase;
   font-weight: 600;
   animation: fadeUp .4s .2s ease both;
@@ -357,13 +436,14 @@ body {
   margin-bottom: 24px;
   animation: fadeUp .4s .22s ease both;
 }
-.divider::before,
-.divider::after {
+
+.divider::before, .divider::after {
   content: '';
   flex: 1;
   height: 1px;
   background: var(--border-subtle);
 }
+
 .divider-label {
   font-size: .68rem;
   font-weight: 600;
@@ -374,12 +454,13 @@ body {
 }
 
 /* ════════════════════════════════════════
-   CAMPOS
+   CAMPOS & ÍCONES DINÂMICOS
 ═════════════════════════════════════════*/
 .field-wrap {
   margin-bottom: 20px;
   animation: fadeUp .4s ease both;
 }
+
 .field-wrap:nth-child(1) { animation-delay: .25s; }
 .field-wrap:nth-child(2) { animation-delay: .30s; }
 
@@ -389,7 +470,7 @@ body {
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: .1em;
+  letter-spacing: .11em;
   margin-bottom: 7px;
   transition: color .2s;
 }
@@ -408,7 +489,6 @@ body {
   transition: border-color .25s, background .25s;
 }
 
-/* acento inferior — cresce no foco, igual ao efeito dos cards */
 .field-accent {
   position: absolute;
   bottom: 0; left: 0;
@@ -418,9 +498,9 @@ body {
   pointer-events: none;
 }
 
-.field-wrap.focused .field-box    { border-color: rgba(124,111,255,.35); background: var(--bg-hover); }
+.field-wrap.focused .field-box    { border-color: rgba(124, 111, 255, .35); background: var(--bg-hover); }
 .field-wrap.focused .field-accent { width: 100%; }
-.field-wrap.error   .field-box    { border-color: rgba(248,113,113,.4); }
+.field-wrap.error   .field-box    { border-color: rgba(248, 113, 113, .4); }
 .field-wrap.error   .field-accent { width: 100%; background: var(--accent-red); }
 
 .field-icon {
@@ -429,10 +509,25 @@ body {
   padding: 0 0 0 14px;
   pointer-events: none;
   flex-shrink: 0;
-  transition: color .2s;
+  transition: color .25s, transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
-.field-wrap.focused .field-icon { color: var(--accent-violet); }
-.field-wrap.error   .field-icon { color: var(--accent-red); }
+
+/* Animação do Ícone de E-mail (Abre ao focar) */
+.field-wrap.focused #icon-email {
+  color: var(--accent-violet);
+  transform: scale(1.25);
+}
+
+/* Animação do Cadeado (Idle Balançando / Focado Abre) */
+#icon-password {
+    animation: lockJiggle 4s infinite ease-in-out;
+}
+
+.field-wrap.focused #icon-password {
+    animation: none;
+    color: var(--accent-cyan);
+    transform: translateY(-1px) scale(1.2);
+}
 
 .field-box input {
   flex: 1;
@@ -440,12 +535,15 @@ body {
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-size: .92rem;
+  font-weight: 400;
   padding: 12px 12px 12px 10px;
   width: 100%;
 }
+
 .field-box input::placeholder { color: var(--text-muted); }
+
 .field-box input:-webkit-autofill,
 .field-box input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 100px var(--bg-elevated) inset;
@@ -462,6 +560,7 @@ body {
   transition: color .2s;
   flex-shrink: 0;
 }
+
 .toggle-pw:hover { color: var(--accent-violet); }
 
 .field-error {
@@ -474,8 +573,8 @@ body {
 
 /* erro global Django */
 .global-error {
-  background: rgba(248,113,113,.08);
-  border: 1px solid rgba(248,113,113,.2);
+  background: rgba(248, 113, 113, .08);
+  border: 1px solid rgba(248, 113, 113, .2);
   border-radius: var(--radius-sm);
   color: var(--accent-red);
   font-size: .82rem;
@@ -485,7 +584,6 @@ body {
   gap: 8px;
   margin-bottom: 16px;
 }
-.global-error i { font-size: 13px; flex-shrink: 0; }
 
 /* ════════════════════════════════════════
    BOTÃO ENTRAR
@@ -497,7 +595,7 @@ body {
   border: none;
   border-radius: var(--radius-md);
   color: #fff;
-  font-family: 'Syne', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: .88rem;
   font-weight: 700;
   letter-spacing: .12em;
@@ -517,37 +615,23 @@ body {
 .btn-entrar:hover {
   background: #9b8fff;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(124,111,255,.3);
-}
-
-.btn-entrar:active {
-  transform: translateY(0);
-  box-shadow: none;
+  box-shadow: 0 8px 24px rgba(124, 111, 255, .32);
 }
 
 .btn-shimmer {
   position: absolute;
   top: 0; left: -100%;
   width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .18), transparent);
   transform: skewX(-20deg);
   pointer-events: none;
 }
-.btn-entrar:hover .btn-shimmer {
-  animation: shimmerBtn .6s ease forwards;
-}
+
+.btn-entrar:hover .btn-shimmer { animation: shimmerBtn .6s ease forwards; }
 
 .btn-loader { display: none; }
 .btn-entrar.loading .btn-text   { display: none; }
 .btn-entrar.loading .btn-loader { display: flex; }
-.btn-entrar.loading {
-  background: var(--bg-elevated);
-  color: var(--text-secondary);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-  border: 1px solid var(--border-mid);
-}
 
 .forgot-link {
   display: block;
@@ -559,68 +643,77 @@ body {
   letter-spacing: .02em;
   animation: fadeUp .4s .4s ease both;
 }
-.forgot-link:hover { color: var(--accent-violet); }
 
 /* ════════════════════════════════════════
-   KEYFRAMES
+   KEYFRAMES (ORIGINAIS PRESERVADOS)
 ═════════════════════════════════════════*/
+@keyframes rotateRing {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes lockJiggle {
+  0%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(-6deg); }
+  20%, 40% { transform: rotate(6deg); }
+  50% { transform: rotate(0deg); }
+}
+
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pulseLogo {
-  0%, 100% { opacity: 1;  transform: scale(1);   }
-  50%       { opacity: .7; transform: scale(.93); }
+  0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 6px rgba(124,111,255,.45)); }
+  50% { opacity: .82; transform: scale(.91); filter: drop-shadow(0 0 14px rgba(124,111,255,.8)); }
 }
 
 @keyframes shimmerBar {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(500%);  }
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(500%); }
 }
 
 @keyframes shimmerBtn {
-  0%   { left: -100%; }
-  100% { left: 150%;  }
+  0% { left: -100%; }
+  100% { left: 150%; }
 }
 
 @keyframes popIn {
-  from { opacity: 0; transform: scale(.8);  }
-  to   { opacity: 1; transform: scale(1);   }
+  from { opacity: 0; transform: scale(.82); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes iconPop {
   from { transform: scale(0) rotate(-20deg); }
-  to   { transform: scale(1) rotate(0);      }
+  to   { transform: scale(1) rotate(0); }
 }
 
 @keyframes iconShake {
-  0%, 100% { transform: translateX(0);   }
-  20%       { transform: translateX(-8px); }
-  40%       { transform: translateX(8px);  }
-  60%       { transform: translateX(-5px); }
-  80%       { transform: translateX(5px);  }
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
 }
 
 @keyframes shakeCard {
-  0%, 100% { transform: translateX(0);    }
-  20%       { transform: translateX(-10px); }
-  40%       { transform: translateX(10px);  }
-  60%       { transform: translateX(-6px);  }
-  80%       { transform: translateX(6px);   }
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
 }
 
 @keyframes floatParticle {
-  0%   { opacity: 0;  bottom: -10px;  }
+  0%   { opacity: 0;  bottom: -10px; }
   10%  { opacity: .6; }
   90%  { opacity: .3; }
   100% { opacity: 0;  bottom: 110vh; }
 }
 
-/* ════════════════════════════════════════
-   RESPONSIVO
-═════════════════════════════════════════*/
 @media (max-width: 480px) {
-  .login-card  { padding: 32px 22px 28px; }
-  .brand-name  { font-size: 1.45rem; }
+  .login-card { padding: 32px 22px 28px; }
+  .brand-name { font-size: 1.45rem; }
 }
+
+

@@ -1,7 +1,9 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load l10n %}
 
 {% block title %}Painel do Professor{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_do_professor.css' %}">
 {% endblock %}
@@ -10,13 +12,12 @@
 
 <div class="container">
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <main class="conteudo-principal-rolavel">
 
-        <!-- HEADER COM NOME E FILTRO -->
+        <!-- HEADER -->
         <div class="header-painel">
             <h1>Olá, {{ nome_exibicao }}</h1>
-            
+
             <form method="get" class="filtro-ano-painel">
                 <label>📅 Ano Letivo</label>
                 <select name="ano" onchange="this.form.submit()">
@@ -31,9 +32,8 @@
 
         <div class="conteudo-geral">
 
-            <!-- CARDS DE ESTATÍSTICAS -->
+            <!-- CARDS -->
             <section class="cards">
-
                 <div class="card">
                     <p>Disciplinas</p>
                     <h2>{{ total_disciplinas }}</h2>
@@ -51,41 +51,45 @@
 
                 <div class="card card-notas">
                     <p>Notas Lançadas</p>
-                    <h2>{{ total_notas_lancadas }}<span class="texto-pequeno">/{{ total_notas_possiveis }}</span></h2>
+                    <h2>
+                        {{ total_notas_lancadas }}
+                        <span class="texto-pequeno">/{{ total_notas_possiveis }}</span>
+                    </h2>
                 </div>
-
             </section>
 
             <!-- CALENDÁRIO -->
-            <div class="calendario-container">
-                <div class="calendario">
-                    <div class="calendario-box">
-                        <div class="calendario-cabecalho">
-                            <h2>{{ agora|date:"F"|upper }}</h2>
-                            <span class="calendario-ano">{{ agora|date:"Y" }}</span>
-                        </div>
+            <div class="calendario">
 
-                        <div class="calendario-grade">
-                            <!-- Nome dos dias -->
-                            <div class="nome-dia">DOM</div>
-                            <div class="nome-dia">SEG</div>
-                            <div class="nome-dia">TER</div>
-                            <div class="nome-dia">QUA</div>
-                            <div class="nome-dia">QUI</div>
-                            <div class="nome-dia">SEX</div>
-                            <div class="nome-dia">SAB</div>
-
-                            {% for celula in calendario %}
-                                <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
-                                    {% if not celula.vazio %}{{ celula.numero }}{% endif %}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+                <div class="calendario-cabecalho">
+                    <h2>{{ agora|date:"F"|upper }}</h2>
+                    <span class="calendario-ano">{{ agora|date:"Y" }}</span>
                 </div>
+
+                <div class="calendario-grade">
+                    <!-- Dias da semana (PADRÃO DO SISTEMA) -->
+                    <div class="nome-dia">D</div>
+                    <div class="nome-dia">S</div>
+                    <div class="nome-dia">T</div>
+                    <div class="nome-dia">Q</div>
+                    <div class="nome-dia">Q</div>
+                    <div class="nome-dia">S</div>
+                    <div class="nome-dia">S</div>
+
+                    {% for celula in calendario %}
+                        <div class="dia
+                            {% if celula.hoje %}atual{% endif %}
+                            {% if celula.vazio %}vazio{% endif %}">
+                            {% if not celula.vazio %}
+                                {{ celula.numero }}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
             </div>
 
-        </div>  
+        </div>
 
     </main>
 </div>

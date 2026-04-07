@@ -279,33 +279,53 @@ class Aluno(PessoaBase):
 # GRADE DE HORÁRIOS
 # ==========================================================
 
+# ==========================================================
+# GRADE DE HORÁRIOS (CORRETA)
+# ==========================================================
 
 class GradeHorario(models.Model):
-    """
-    Armazena a grade de horários de uma turma.
-    O campo 'dados' é um JSON que mapeia cada dia da semana para
-    a lista de disciplinas por slot do turno.
-    """
-
-    turma = models.OneToOneField(
+    turma = models.ForeignKey(
         Turma,
         on_delete=models.CASCADE,
-        related_name="grade_horario",
-        help_text="Turma à qual esta grade pertence",
+        related_name="grades"
     )
-    dados = models.JSONField(
-        default=dict,
-        help_text="Mapa dia → lista de nomes de disciplina por slot do turno.",
+
+    disciplina = models.ForeignKey(
+        Disciplina,
+        on_delete=models.CASCADE,
+        related_name="grades"
+    )
+
+    DIA_CHOICES = [
+        ("segunda", "Segunda-feira"),
+        ("terca", "Terça-feira"),
+        ("quarta", "Quarta-feira"),
+        ("quinta", "Quinta-feira"),
+        ("sexta", "Sexta-feira"),
+    ]
+
+    dia = models.CharField(
+        max_length=10,
+        choices=DIA_CHOICES
+    )
+
+    horario = models.CharField(
+        max_length=20,
+        help_text="Ex: 07:00 - 07:50"
     )
 
     class Meta:
-        verbose_name = "Grade de Horários"
+        verbose_name = "Grade de Horário"
         verbose_name_plural = "Grades de Horários"
+        unique_together = ("turma", "dia", "horario")
+        ordering = ["horario", "dia"]
 
     def __str__(self):
-        return f"Grade — {self.turma}"
-
-
+        return f"{self.turma} | {self.dia} | {self.horario} | {self.disciplina}"
+    
+    
+    
+    
 # ==========================================================
 # FREQUÊNCIA
 # ==========================================================
