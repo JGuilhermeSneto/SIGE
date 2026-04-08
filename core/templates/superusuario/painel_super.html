@@ -1,9 +1,5 @@
 {# ============================================================ #}
 {# template: superusuario/painel_super.html                    #}
-{# view    : painel_super                                      #}
-{# contexto: nome_exibicao, total_turmas, total_alunos,        #}
-{#           total_professores, total_disciplinas, agora,      #}
-{#           calendario, anos_disponiveis, ano_filtro          #}
 {# ============================================================ #}
 {% extends "core/base.html" %}
 {% load static %}
@@ -11,9 +7,7 @@
 {% block title %}Painel — SIGE{% endblock %}
 
 {% block extra_css %}
-{# Folha de estilo do painel do superusuário/gestor #}
-<link rel="stylesheet" href="{% static 'core/css/painel_superusuario.css' %}">
-
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -21,7 +15,6 @@
 
   {# ════════════════ HEADER ════════════════ #}
   <header class="header-painel">
-    {# Saudação com nome do usuário autenticado #}
     <div class="header-esquerda">
       <span class="header-label">SIGE · Painel de Controle</span>
       <h1>
@@ -30,7 +23,6 @@
       </h1>
     </div>
 
-    {# Filtro de ano letivo: GET com parâmetro "ano" #}
     <form method="get" class="filtro-ano-painel">
       <span class="icone-cal">📅</span>
       <label for="filtro-select">Ano Letivo</label>
@@ -50,28 +42,36 @@
     {# ───── COLUNA ESQUERDA ───── #}
     <section class="coluna-esquerda">
 
-      {# ── Cards de totais por ano filtrado ── #}
+      {# ── Cards de totais ── #}
       <section class="cards">
         <article class="card">
-          <div class="card-icone">🏫</div>
+          <div class="card-icone">
+            <i class="fa-solid fa-users-rectangle"></i>
+          </div>
           <p class="card-label">Turmas</p>
           <h2 class="card-valor">{{ total_turmas }}</h2>
         </article>
 
         <article class="card">
-          <div class="card-icone">🎓</div>
+          <div class="card-icone">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
           <p class="card-label">Alunos</p>
           <h2 class="card-valor">{{ total_alunos }}</h2>
         </article>
 
         <article class="card">
-          <div class="card-icone">👩‍🏫</div>
+          <div class="card-icone">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
           <p class="card-label">Professores</p>
           <h2 class="card-valor">{{ total_professores }}</h2>
         </article>
 
         <article class="card">
-          <div class="card-icone">📚</div>
+          <div class="card-icone">
+            <i class="fa-solid fa-book"></i>
+          </div>
           <p class="card-label">Disciplinas</p>
           <h2 class="card-valor">{{ total_disciplinas }}</h2>
         </article>
@@ -97,16 +97,13 @@
     {# ───── COLUNA DIREITA ───── #}
     <aside class="coluna-direita">
 
-      {# ── Calendário do mês atual ── #}
+      {# ── Calendário ── #}
       <section class="calendario-box">
         <header class="calendario-cabecalho">
-          {# Usando os dados vindos da função gerar_calendario #}
-          <h2>{{ calendario.mes_nome|upper }}</h2>
-          <span class="calendario-ano">{{ calendario.ano }}</span>
+          <h2 id="cal-mes-nome"></h2>
+          <span class="calendario-ano" id="cal-ano"></span>
         </header>
-
-        <div class="calendario-grade">
-          {# Cabeçalho fixo dos dias da semana #}
+        <div class="calendario-grade" id="cal-grade">
           <div class="nome-dia">D</div>
           <div class="nome-dia">S</div>
           <div class="nome-dia">T</div>
@@ -114,20 +111,6 @@
           <div class="nome-dia">Q</div>
           <div class="nome-dia">S</div>
           <div class="nome-dia">S</div>
-
-          {# LOOP DUPLO: Percorre as semanas e depois os dias de cada semana #}
-          {% for semana in calendario.semanas %}
-            {% for dia in semana %}
-              <div class="dia 
-                {% if dia == 0 %}vazio{% endif %} 
-                {% if dia == calendario.hoje %}atual{% endif %}">
-                
-                {% if dia != 0 %}
-                  {{ dia }}
-                {% endif %}
-              </div>
-            {% endfor %}
-          {% endfor %}
         </div>
       </section>
 
@@ -137,28 +120,28 @@
         <ul class="info-rapida-lista">
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-violet, #8a2be2)"></span>
+              <span class="info-dot" style="background:var(--accent-violet)"></span>
               Turmas ativas
             </span>
             <span class="info-item-valor">{{ total_turmas }}</span>
           </li>
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-cyan, #00ffff)"></span>
+              <span class="info-dot" style="background:var(--accent-cyan)"></span>
               Total de alunos
             </span>
             <span class="info-item-valor">{{ total_alunos }}</span>
           </li>
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-emerald, #50c878)"></span>
+              <span class="info-dot" style="background:var(--accent-emerald)"></span>
               Professores
             </span>
             <span class="info-item-valor">{{ total_professores }}</span>
           </li>
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-amber, #ffbf00)"></span>
+              <span class="info-dot" style="background:var(--accent-amber)"></span>
               Disciplinas
             </span>
             <span class="info-item-valor">{{ total_disciplinas }}</span>
@@ -170,4 +153,37 @@
 
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const MESES = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO',
+                 'JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+  const hoje   = new Date();
+  const ano    = hoje.getFullYear();
+  const mes    = hoje.getMonth();
+  const diaHj  = hoje.getDate();
+
+  document.getElementById('cal-mes-nome').textContent = MESES[mes];
+  document.getElementById('cal-ano').textContent      = ano;
+
+  const grade     = document.getElementById('cal-grade');
+  const primDia   = new Date(ano, mes, 1).getDay();
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+  for (let i = 0; i < primDia; i++) {
+    const v = document.createElement('div');
+    v.className = 'dia vazio';
+    grade.appendChild(v);
+  }
+
+  for (let d = 1; d <= totalDias; d++) {
+    const c = document.createElement('div');
+    c.className   = d === diaHj ? 'dia atual' : 'dia';
+    c.textContent = d;
+    grade.appendChild(c);
+  }
+})();
+</script>
 {% endblock %}

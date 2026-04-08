@@ -10,7 +10,7 @@
   <title>{% block title %}SIGE{% endblock %}</title>
 
   <!-- CSS BASE -->
-  <link rel="stylesheet" href="{% static 'core/css/base_menu.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/base_do_menu.css' %}">
 
   <!-- FONT AWESOME -->
   <link
@@ -89,11 +89,19 @@
 
         <!-- DROPDOWN -->
         <nav class="dropdown-menu" id="dropdown-menu">
-          <a href="{% url 'editar_perfil' %}">
-            <i class="fa-solid fa-user-pen"></i> Editar Perfil
+          {# Classe link-editar ativa a animação de caneta #}
+          <a href="{% url 'editar_perfil' %}" class="link-editar">
+            <span class="dd-icon">
+              <i class="fa-solid fa-user-pen"></i>
+            </span>
+            Editar Perfil
           </a>
-          <a href="{% url 'logout' %}">
-            <i class="fa-solid fa-right-from-bracket"></i> Sair
+          {# Classe link-sair ativa a animação de porta/seta #}
+          <a href="{% url 'logout' %}" class="link-sair">
+            <span class="dd-icon">
+              <i class="fa-solid fa-right-from-bracket"></i>
+            </span>
+            Sair
           </a>
         </nav>
 

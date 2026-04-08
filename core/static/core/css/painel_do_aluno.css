@@ -1,7 +1,8 @@
 /* ============================================================
    SIGE — Painel Aluno
-   painel_aluno.css  v3
-   Ícones CSS animados + layout centralizado + micro-interações
+   painel_aluno.css  v4
+   Ícones CSS animados temáticos + harmonização com o sistema
+   Disciplina · Estrela/Desempenho · Frequência/Escudo
 ============================================================ */
 
 /* ── Perfil do usuário ── */
@@ -25,7 +26,7 @@
   border-color: rgba(124,111,255,.45);
 }
 
-/* ── Wrapper centralizado — integra com area-conteudo ── */
+/* ── Wrapper centralizado ── */
 .container-centralizado {
   width: 100%;
   display: block;
@@ -128,58 +129,102 @@
   to   { width: var(--barra-largura, 100%); }
 }
 
-/* ── Livro abrindo ── */
+/* ════════════════════════════════════════
+   ANIMAÇÕES TEMÁTICAS DOS ÍCONES
+═════════════════════════════════════════*/
+
+/* ── CARD 1 / LIVRO: página virando ── */
 @keyframes bookPageTurn {
   0%, 20%, 80%, 100% { transform: perspective(80px) rotateY(0deg); opacity: 1; }
   50%                { transform: perspective(80px) rotateY(-32deg); opacity: .7; }
 }
 
-/* ── Estrela pulsando com brilho ── */
-@keyframes starPulse {
-  0%, 100% { transform: scale(1) rotate(0deg);   filter: drop-shadow(0 0 4px rgba(129,140,248,.5)); }
-  25%      { transform: scale(1.12) rotate(12deg); filter: drop-shadow(0 0 14px rgba(129,140,248,.9)); }
-  75%      { transform: scale(1.06) rotate(-5deg); filter: drop-shadow(0 0 8px rgba(129,140,248,.7)); }
+/* ── CARD 1 / LIVRO: capa balança levemente ── */
+@keyframes bookCoverBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-2px) rotate(.5deg); }
 }
 
-/* ── Brilho girando ao redor da estrela ── */
+/* ── CARD 2 / ESTRELA: pulsa com brilho ── */
+@keyframes starPulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(129,140,248,.5));
+  }
+  25% {
+    transform: scale(1.12) rotate(12deg);
+    filter: drop-shadow(0 0 14px rgba(129,140,248,.9));
+  }
+  75% {
+    transform: scale(1.06) rotate(-5deg);
+    filter: drop-shadow(0 0 8px rgba(129,140,248,.7));
+  }
+}
+
+/* ── CARD 2 / ESTRELA: brilho orbital ── */
 @keyframes shineOrbit {
   0%   { transform: rotate(0deg)   translateX(12px) scale(1);   opacity: .9; }
   50%  { transform: rotate(180deg) translateX(12px) scale(1.4); opacity: .5; }
   100% { transform: rotate(360deg) translateX(12px) scale(1);   opacity: .9; }
 }
 
-/* ── Escudo com brilho de pulso ── */
+/* ── CARD 3 / ESCUDO: brilho de pulso ── */
 @keyframes shieldGlow {
   0%, 100% { filter: drop-shadow(0 0 3px rgba(110,231,183,.3)); }
   50%      { filter: drop-shadow(0 0 12px rgba(110,231,183,.75)); }
 }
 
-/* ── Calendário virando folha ── */
+/* ── ESCUDO: check cresce ao hover ── */
+@keyframes checkGrow {
+  from { transform: rotate(-45deg) scale(0); opacity: 0; }
+  to   { transform: rotate(-45deg) scale(1); opacity: 1; }
+}
+
+/* ── CALENDÁRIO: folha virando ── */
 @keyframes calFlip {
   0%, 25%, 75%, 100% { transform: perspective(60px) rotateX(0deg) scaleY(1); }
   50%                { transform: perspective(60px) rotateX(-18deg) scaleY(.85); }
 }
 
-/* ── Relógio — ponteiro de minuto ── */
+/* ── RELÓGIO: ponteiro de minuto ── */
 @keyframes clockMinute {
   from { transform: translateX(-50%) rotate(0deg); }
   to   { transform: translateX(-50%) rotate(360deg); }
 }
 
-/* ── Relógio — ponteiro de hora ── */
+/* ── RELÓGIO: ponteiro de hora ── */
 @keyframes clockHour {
   0%   { transform: translateX(-50%) rotate(0deg); }
   100% { transform: translateX(-50%) rotate(30deg); }
 }
 
-/* ── Barras do gráfico ── */
+/* ── GRÁFICO: barras subindo ── */
 @keyframes barChart {
-  0%   { transform: scaleY(0) translateY(0); }
-  100% { transform: scaleY(1) translateY(0); }
+  0%   { transform: scaleY(0); }
+  100% { transform: scaleY(1); }
 }
 
-/* ── Pulse genérico de ícone ── */
+/* ── GRÁFICO: barras pulsando no hover ── */
+@keyframes barPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .6; }
+}
+
+/* ── MINI LIVRO DISCIPLINA: animação ── */
+@keyframes disciplineBookOpen {
+  0%, 30%, 70%, 100% { transform: perspective(60px) rotateY(0deg); }
+  50%                { transform: perspective(60px) rotateY(-20deg); }
+}
+
+/* ── Pulse genérico ── */
 @keyframes iconPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(124,111,255,.4); }
+  60%  { box-shadow: 0 0 0 6px rgba(124,111,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(124,111,255,0); }
+}
+
+/* ── Dia atual no calendário ── */
+@keyframes diaAtualPulse {
   0%   { box-shadow: 0 0 0 0 rgba(124,111,255,.4); }
   60%  { box-shadow: 0 0 0 6px rgba(124,111,255,0); }
   100% { box-shadow: 0 0 0 0 rgba(124,111,255,0); }
@@ -235,37 +280,56 @@
   transition: transform .4s ease, opacity .3s ease;
 }
 
-.card-info:hover::before   { transform: scale(1.4); opacity: .16; }
+.card-info:hover::before   { transform: scale(1.4); opacity: .18; }
 .card-info:nth-child(1)::before { background: #06b6d4; }
 .card-info:nth-child(2)::before { background: #6366f1; }
 .card-info:nth-child(3)::before { background: #10b981; }
 
-/* ============================================================
-   ÍCONES CSS ANIMADOS — sem emoji
-   Cada .card-icon usa ::before + ::after para montar o ícone
-============================================================ */
+/* Linha de acento no topo (harmonização com painel_super) */
+.card-info::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 20px; right: 20px;
+  height: 2px;
+  border-radius: 0 0 4px 4px;
+  opacity: 0;
+  transition: opacity .3s ease;
+  pointer-events: none;
+}
 
-/* Variáveis de cor por card */
-.card-info:nth-child(1) { --ic: #67e8f9; --ic-dim: #22d3ee; --ic-bg: rgba(103,232,249,.12); }
-.card-info:nth-child(2) { --ic: #818cf8; --ic-dim: #6366f1; --ic-bg: rgba(129,140,248,.12); }
-.card-info:nth-child(3) { --ic: #6ee7b7; --ic-dim: #34d399; --ic-bg: rgba(110,231,183,.12); }
+.card-info:hover::after { opacity: 1; }
+.card-info:nth-child(1)::after { background: #67e8f9; }
+.card-info:nth-child(2)::after { background: #818cf8; }
+.card-info:nth-child(3)::after { background: #6ee7b7; }
 
-/* Contenedor do ícone — substitui emoji */
+/* ════════════════════════════════════════
+   ÍCONES CSS ANIMADOS — CARDS DE RESUMO
+   Variáveis de cor por card
+═════════════════════════════════════════*/
+.card-info:nth-child(1) { --ic: #67e8f9; --ic-dim: #22d3ee; --ic-bg: rgba(103,232,249,.12); --ic-glow: rgba(103,232,249,.5); }
+.card-info:nth-child(2) { --ic: #818cf8; --ic-dim: #6366f1; --ic-bg: rgba(129,140,248,.12); --ic-glow: rgba(129,140,248,.6); }
+.card-info:nth-child(3) { --ic: #6ee7b7; --ic-dim: #34d399; --ic-bg: rgba(110,231,183,.12); --ic-glow: rgba(110,231,183,.5); }
+
+/* Contenedor do ícone */
 .card-info .card-icon {
-  font-size: 0;          /* oculta qualquer emoji */
+  font-size: 0;
   color: transparent;
   line-height: 1;
   flex-shrink: 0;
-  width: 52px;
-  height: 52px;
+  width: 52px; height: 52px;
   position: relative;
   transition: transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 
 .card-info:hover .card-icon { transform: scale(1.1); }
 
-/* ── CARD 1 — ÍCONE DE LIVRO ABRINDO ── */
-/* Capa esquerda + lombada */
+/* ════════════════════════════════════════
+   CARD 1 — ÍCONE DE LIVRO/DISCIPLINAS
+   Capa + página virando + lombada
+   Animação: página vira ritmicamente
+═════════════════════════════════════════*/
+
+/* Capa esquerda */
 .card-info:nth-child(1) .card-icon::before {
   content: '';
   position: absolute;
@@ -273,24 +337,23 @@
   width: 19px; height: 31px;
   background: var(--ic);
   border-radius: 3px 1px 1px 3px;
-  /* lombada via box-shadow direito */
-  box-shadow: 19px 0 0 3px var(--ic-dim);
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:
+    19px 0 0 3px var(--ic-dim),         /* lombada */
+    0 0 10px rgba(103,232,249,.25);     /* brilho sutil */
+  animation: bookCoverBob 3s ease-in-out infinite;
 }
 
-/* Página direita — roda como livro abrindo */
+/* Página direita — vira */
 .card-info:nth-child(1) .card-icon::after {
   content: '';
   position: absolute;
   left: 26px; top: 9px;
   width: 20px; height: 31px;
-  background: var(--ic-bg);
   border: 2px solid var(--ic);
   border-left: none;
   border-radius: 0 3px 3px 0;
   transform-origin: 0 50%;
   animation: bookPageTurn 4.5s ease-in-out infinite;
-  /* linhas de texto via gradiente */
   background-image:
     linear-gradient(transparent 26%, rgba(103,232,249,.55) 26%, rgba(103,232,249,.55) 33%, transparent 33%),
     linear-gradient(transparent 48%, rgba(103,232,249,.45) 48%, rgba(103,232,249,.45) 55%, transparent 55%),
@@ -298,8 +361,13 @@
   background-color: rgba(103,232,249,.08);
 }
 
-/* ── CARD 2 — ÍCONE DE ESTRELA COM BRILHO ORBITAL ── */
-/* Estrela clip-path */
+/* ════════════════════════════════════════
+   CARD 2 — ÍCONE DE ESTRELA/DESEMPENHO
+   Estrela com clip-path + brilho orbital
+   Animação: pulsa + ponto orbitando
+═════════════════════════════════════════*/
+
+/* Estrela */
 .card-info:nth-child(2) .card-icon::before {
   content: '';
   position: absolute;
@@ -310,20 +378,25 @@
   animation: starPulse 3.5s ease-in-out infinite;
 }
 
-/* Ponto de brilho orbitando a estrela */
+/* Ponto de brilho orbitando */
 .card-info:nth-child(2) .card-icon::after {
   content: '';
   position: absolute;
   width: 7px; height: 7px;
-  top: 18px; left: 18px; /* centro da estrela */
+  top: 18px; left: 18px;
   background: white;
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(255,255,255,.8);
+  box-shadow: 0 0 6px rgba(255,255,255,.8), 0 0 14px var(--ic-glow);
   transform-origin: 50% 50%;
   animation: shineOrbit 2.8s linear infinite;
 }
 
-/* ── CARD 3 — ÍCONE DE ESCUDO COM CHECKMARK ── */
+/* ════════════════════════════════════════
+   CARD 3 — ÍCONE DE ESCUDO/FREQUÊNCIA
+   Escudo hexagonal + checkmark interno
+   Animação: brilho pulsante + check surge
+═════════════════════════════════════════*/
+
 /* Escudo */
 .card-info:nth-child(3) .card-icon::before {
   content: '';
@@ -347,11 +420,13 @@
   border-bottom: 2.5px solid var(--ic);
   border-radius: 0 0 0 1px;
   transform: rotate(-45deg);
+  filter: drop-shadow(0 0 2px var(--ic-glow));
   transition: transform .25s cubic-bezier(.34,1.56,.64,1);
 }
 
 .card-info:nth-child(3):hover .card-icon::after {
-  transform: rotate(-45deg) scale(1.12);
+  transform: rotate(-45deg) scale(1.15);
+  filter: drop-shadow(0 0 5px var(--ic-glow));
 }
 
 /* ── Dados do card ── */
@@ -459,10 +534,13 @@
 }
 
 .disciplina-card:hover .disciplina-info h3 { color: #fff; }
-
 .disciplina-info p { font-size: .75rem; color: #475569; }
 
-/* ── Ícone de disciplina — mini livro animado ── */
+/* ════════════════════════════════════════
+   ÍCONE DE DISCIPLINA — MINI LIVRO
+   Cada disciplina tem seu mini-livro
+   com cor temática e animação própria
+═════════════════════════════════════════*/
 .disciplina-icon {
   width: 36px; height: 36px;
   position: relative;
@@ -476,9 +554,11 @@
   position: absolute;
   left: 2px; top: 4px;
   width: 13px; height: 22px;
-  background: rgba(124,111,255,.6);
+  background: rgba(124,111,255,.65);
   border-radius: 2px 0 0 2px;
-  box-shadow: 13px 0 0 2px rgba(124,111,255,.8);
+  box-shadow:
+    13px 0 0 2px rgba(124,111,255,.85),   /* lombada */
+    0 0 8px rgba(124,111,255,.2);          /* brilho sutil */
   transition: background .2s, box-shadow .2s;
 }
 
@@ -500,13 +580,65 @@
   transition: transform .3s cubic-bezier(.34,1.56,.64,1);
 }
 
+/* Hover: livro abre + brilha */
 .disciplina-card:hover .disciplina-icon::before {
-  background: rgba(124,111,255,.8);
-  box-shadow: 13px 0 0 2px rgba(99,102,241,.9);
+  background: rgba(124,111,255,.85);
+  box-shadow:
+    13px 0 0 2px rgba(99,102,241,.95),
+    0 0 12px rgba(124,111,255,.35);
 }
 
 .disciplina-card:hover .disciplina-icon::after {
-  transform: perspective(60px) rotateY(-20deg);
+  transform: perspective(60px) rotateY(-22deg);
+}
+
+/* ── Variação de cor por posição de disciplina ── */
+.disciplina-card:nth-child(2) .disciplina-icon::before {
+  background: rgba(34,211,238,.6);
+  box-shadow: 13px 0 0 2px rgba(34,211,238,.8), 0 0 8px rgba(34,211,238,.15);
+}
+.disciplina-card:nth-child(2) .disciplina-icon::after {
+  border-color: rgba(34,211,238,.5);
+  background-image:
+    linear-gradient(transparent 27%, rgba(34,211,238,.5) 27%, rgba(34,211,238,.5) 35%, transparent 35%),
+    linear-gradient(transparent 52%, rgba(34,211,238,.4) 52%, rgba(34,211,238,.4) 60%, transparent 60%),
+    linear-gradient(transparent 77%, rgba(34,211,238,.3) 77%, rgba(34,211,238,.3) 85%, transparent 85%);
+  background-color: rgba(34,211,238,.06);
+}
+
+.disciplina-card:nth-child(3) .disciplina-icon::before {
+  background: rgba(52,211,153,.6);
+  box-shadow: 13px 0 0 2px rgba(52,211,153,.8), 0 0 8px rgba(52,211,153,.15);
+}
+.disciplina-card:nth-child(3) .disciplina-icon::after {
+  border-color: rgba(52,211,153,.5);
+  background-image:
+    linear-gradient(transparent 27%, rgba(52,211,153,.5) 27%, rgba(52,211,153,.5) 35%, transparent 35%),
+    linear-gradient(transparent 52%, rgba(52,211,153,.4) 52%, rgba(52,211,153,.4) 60%, transparent 60%),
+    linear-gradient(transparent 77%, rgba(52,211,153,.3) 77%, rgba(52,211,153,.3) 85%, transparent 85%);
+  background-color: rgba(52,211,153,.06);
+}
+
+.disciplina-card:nth-child(4) .disciplina-icon::before {
+  background: rgba(251,191,36,.6);
+  box-shadow: 13px 0 0 2px rgba(251,191,36,.8), 0 0 8px rgba(251,191,36,.15);
+}
+.disciplina-card:nth-child(4) .disciplina-icon::after {
+  border-color: rgba(251,191,36,.5);
+  background-image:
+    linear-gradient(transparent 27%, rgba(251,191,36,.5) 27%, rgba(251,191,36,.5) 35%, transparent 35%),
+    linear-gradient(transparent 52%, rgba(251,191,36,.4) 52%, rgba(251,191,36,.4) 60%, transparent 60%),
+    linear-gradient(transparent 77%, rgba(251,191,36,.3) 77%, rgba(251,191,36,.3) 85%, transparent 85%);
+  background-color: rgba(251,191,36,.06);
+}
+
+.disciplina-card:nth-child(5) .disciplina-icon::before {
+  background: rgba(248,113,113,.6);
+  box-shadow: 13px 0 0 2px rgba(248,113,113,.8), 0 0 8px rgba(248,113,113,.15);
+}
+.disciplina-card:nth-child(6) .disciplina-icon::before {
+  background: rgba(167,139,250,.6);
+  box-shadow: 13px 0 0 2px rgba(167,139,250,.8), 0 0 8px rgba(167,139,250,.15);
 }
 
 /* ── Média ── */
@@ -652,7 +784,10 @@
   animation: painelFadeUp .4s .18s ease both;
 }
 
-/* ── Card do gráfico ── */
+/* ════════════════════════════════════════
+   CARD DO GRÁFICO
+   Ícone: barras animadas temáticas
+═════════════════════════════════════════*/
 .card-grafico {
   background: linear-gradient(145deg, #1a2337 0%, #1e2a40 100%);
   border: 1px solid rgba(255,255,255,.07);
@@ -663,7 +798,7 @@
   overflow: hidden;
 }
 
-.card-grafico::after {
+.card-grafico::before {
   content: '';
   position: absolute;
   top: -30px; right: -30px;
@@ -673,16 +808,16 @@
   transition: transform .4s ease;
 }
 
-.card-grafico:hover::after { transform: scale(1.5); }
+.card-grafico:hover::before { transform: scale(1.6); }
 
 .card-grafico:hover {
   border-color: rgba(255,255,255,.12);
   box-shadow: 0 4px 20px rgba(0,0,0,.25);
 }
 
-/* Ícone de gráfico de barras animado */
+/* Ícone de gráfico de barras animado — aprimorado */
 .card-grafico-icon {
-  width: 32px; height: 24px;
+  width: 36px; height: 26px;
   position: relative;
   display: inline-flex;
   align-items: flex-end;
@@ -701,8 +836,18 @@
 
 .card-grafico-icon span:nth-child(1) { height: 14px; animation-delay: .1s; opacity: .5; }
 .card-grafico-icon span:nth-child(2) { height: 20px; animation-delay: .2s; opacity: .7; }
-.card-grafico-icon span:nth-child(3) { height: 24px; animation-delay: .3s; opacity: 1;  background: #818cf8; }
+.card-grafico-icon span:nth-child(3) { height: 26px; animation-delay: .3s; opacity: 1; background: #818cf8; }
 .card-grafico-icon span:nth-child(4) { height: 18px; animation-delay: .4s; opacity: .8; }
+
+/* Linha base do gráfico */
+.card-grafico-icon::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0; right: 0;
+  height: 1px;
+  background: rgba(99,102,241,.4);
+  border-radius: 1px;
+}
 
 .card-grafico h3 {
   font-size: .78rem;
@@ -713,7 +858,10 @@
   margin-bottom: 16px;
 }
 
-/* ── Calendário ── */
+/* ════════════════════════════════════════
+   CALENDÁRIO
+   Ícone CSS animado harmonizado
+═════════════════════════════════════════*/
 .calendario {
   background: linear-gradient(145deg, #1a2337 0%, #1e2a40 100%);
   border: 1px solid rgba(255,255,255,.07);
@@ -737,7 +885,6 @@
   vertical-align: middle;
 }
 
-/* Corpo do calendário */
 .calendario-icon::before {
   content: '';
   position: absolute;
@@ -749,7 +896,6 @@
   transform-origin: center top;
 }
 
-/* Encadernação do topo */
 .calendario-icon::after {
   content: '';
   position: absolute;
@@ -826,14 +972,9 @@
   animation: diaAtualPulse 3s ease-out infinite;
 }
 
-@keyframes diaAtualPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(124,111,255,.4); }
-  60%  { box-shadow: 0 0 0 6px rgba(124,111,255,0); }
-  100% { box-shadow: 0 0 0 0 rgba(124,111,255,0); }
-}
-
 /* ============================================================
    GRADE HORÁRIA
+   Ícone de relógio aprimorado com dois ponteiros
 ============================================================ */
 .secao-grade {
   margin-top: 4px;
@@ -849,7 +990,7 @@
   margin-bottom: 14px;
 }
 
-/* Ícone de relógio animado para "grade horária" */
+/* Ícone de relógio aprimorado */
 .grade-clock-icon {
   width: 20px; height: 20px;
   display: inline-block;
@@ -857,6 +998,7 @@
   vertical-align: middle;
   margin-right: 8px;
   font-size: 0;
+  top: -1px;
 }
 
 /* Esfera do relógio */
@@ -866,7 +1008,9 @@
   inset: 0;
   border: 2px solid #64748b;
   border-radius: 50%;
-  background: transparent;
+  background: rgba(100,116,139,.05);
+  /* Centro do relógio */
+  box-shadow: inset 0 0 0 1.5px rgba(100,116,139,.15);
 }
 
 /* Ponteiro de minuto */
@@ -880,6 +1024,19 @@
   background: #94a3b8;
   border-radius: 1px;
   animation: clockMinute 10s linear infinite;
+}
+
+/* Ponteiro de hora — via box-shadow no ponteiro de minuto */
+/* (implementado via segundo span se disponível no HTML) */
+.grade-clock-hour {
+  position: absolute;
+  width: 2px; height: 5px;
+  bottom: 50%; left: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(90deg);
+  background: #64748b;
+  border-radius: 1px;
+  animation: clockHour 120s linear infinite;
 }
 
 .grade-wrapper {
@@ -917,11 +1074,7 @@
 }
 
 .grade-table tbody tr:nth-child(even) { background: #0f1623; }
-
-.grade-table tbody tr:hover {
-  background: #1a2337;
-}
-
+.grade-table tbody tr:hover { background: #1a2337; }
 .grade-table tbody tr:hover td { color: #f1f5f9; }
 
 .grade-table td {
@@ -1008,7 +1161,6 @@
   transform: scale(1.15) rotate(90deg);
 }
 
-/* Boletim */
 .boletim-header {
   text-align: center;
   margin-bottom: 20px;
@@ -1088,7 +1240,7 @@
   color: #64748b;
 }
 
-.boletim-footer .assinatura     { margin-top: 28px; color: #94a3b8; }
+.boletim-footer .assinatura       { margin-top: 28px; color: #94a3b8; }
 .boletim-footer .assinatura-texto { font-size: .72rem; color: #94a3b8; margin-top: 4px; }
 
 .btn-imprimir-modal {
@@ -1143,12 +1295,10 @@
 
 @media (max-width: 768px) {
   .conteudo-principal { padding: 20px 16px 32px; }
-
   .cards-resumo {
     grid-template-columns: repeat(3, 1fr);
     gap: 12px;
   }
-
   .card-info { padding: 16px 14px 14px; gap: 12px; }
   .card-dados h3 { font-size: 1.5rem; }
   .saudacao h1   { font-size: 1.3rem; }
@@ -1156,12 +1306,10 @@
 
 @media (max-width: 640px) {
   .conteudo-principal { padding: 16px 14px 28px; }
-
   .cards-resumo {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
-
   .coluna-direita { grid-template-columns: 1fr; }
   .boletim-info-aluno { grid-template-columns: 1fr; }
   .saudacao h1 { font-size: 1.2rem; }

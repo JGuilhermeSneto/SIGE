@@ -1,6 +1,6 @@
 /* ============================================================
    SIGE — Login
-   login.css  v2 (Refinado com Borda Externa Neon na Logo)
+   login.css  v3 — Ícones animados aprimorados + partículas neon
 ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
@@ -38,8 +38,9 @@ body {
   background: var(--bg-base);
   color: var(--text-primary);
 }
+
 /* ════════════════════════════════════════
-   SPLASH SCREEN — Restaurada e Refinada
+   SPLASH SCREEN
 ═════════════════════════════════════════*/
 .splash {
   position: fixed;
@@ -88,7 +89,6 @@ body {
   width: 100%;
   height: 100%;
   transform: rotate(-90deg);
-  /* Garante que o desenho do círculo seja nítido */
   shape-rendering: geometricPrecision;
 }
 
@@ -102,25 +102,25 @@ body {
   fill: none;
   stroke: url(#ringGrad);
   stroke-width: 3;
-  stroke-linecap: round; /* Pontas arredondadas */
-  stroke-dasharray: 245; 
+  stroke-linecap: round;
+  stroke-dasharray: 245;
   stroke-dashoffset: 245;
   transition: stroke-dashoffset .06s linear;
 }
 
-/* Propriedade que estava com blur — Corrigida */
 .splash-ring-glow {
   fill: none;
-  stroke: rgba(124, 111, 255, .4); /* Reduzi a opacidade para compensar a falta do blur */
+  stroke: rgba(124, 111, 255, .4);
   stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-dasharray: 28 217;
   stroke-dashoffset: 245;
   transition: stroke-dashoffset .06s linear;
-  filter: none; /* Blur removido permanentemente */
+  filter: none;
 }
 
+/* ── Ícone de escola animado na splash ── */
 .splash-logo {
   position: relative;
   z-index: 1;
@@ -128,8 +128,40 @@ body {
   height: 46px;
   object-fit: contain;
   animation: pulseLogo 2s ease infinite;
-  /* Brilho nítido em vez de desfocado */
   filter: drop-shadow(0 0 4px rgba(124, 111, 255, .3));
+}
+
+/* Caso não haja imagem: ícone CSS de chapéu de formatura */
+.splash-logo-css {
+  position: relative;
+  z-index: 1;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  animation: pulseLogo 2s ease infinite;
+}
+
+/* Aba do chapéu */
+.splash-logo-css::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 14px;
+  width: 46px; height: 10px;
+  background: var(--accent-violet);
+  border-radius: 3px;
+  box-shadow: 0 0 12px rgba(124, 111, 255, .6);
+}
+
+/* Topo do chapéu (pirâmide) */
+.splash-logo-css::after {
+  content: '';
+  position: absolute;
+  left: 10px; top: 2px;
+  width: 26px; height: 14px;
+  background: var(--accent-cyan);
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  box-shadow: 0 0 10px rgba(34, 211, 238, .5);
+  animation: capGlow 2.5s ease-in-out infinite;
 }
 
 .splash-nome {
@@ -212,15 +244,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(9, 14, 26, 0); /* Começa transparente */
+  background: rgba(9, 14, 26, 0);
   opacity: 0;
   pointer-events: none;
-  transition: background 0.3s ease, backdrop-filter 0.3s ease, opacity 0.3s ease;
+  transition: background 0.3s ease, opacity 0.3s ease;
 }
 
 .feedback-overlay.show {
   opacity: 1;
-  background: rgba(9, 14, 26, .85); /* Aumentei um pouco a opacidade do fundo para compensar a falta do blur */
+  background: rgba(9, 14, 26, .85);
   pointer-events: all;
 }
 
@@ -266,28 +298,8 @@ body {
 }
 
 /* ════════════════════════════════════════
-   PÁGINA PRINCIPAL
+   PARTÍCULAS NEON APRIMORADAS
 ═════════════════════════════════════════*/
-.page {
-  min-height: 100vh; /* Garante que ocupe a altura toda para centralizar */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 24px; /* Aumentado para garantir respiro no topo e base */
-  position: relative;
-  opacity: 0;
-  visibility: hidden; /* Oculto até a splash terminar */
-  /* Removido transform: translateY para garantir nitidez absoluta */
-  transition: opacity .6s ease;
-  background: transparent;
-  overflow-y: auto; /* Permite scroll em telas muito pequenas */
-}
-
-.page-in {
-  opacity: 1;
-  visibility: visible;
-}
-
 .particle {
   position: fixed;
   border-radius: 50%;
@@ -296,10 +308,62 @@ body {
   animation: floatParticle linear infinite;
 }
 
-.p1 { width: 6px; height: 6px; background: var(--accent-violet); left: 12%; animation-duration: 14s; animation-delay: 3.2s; }
-.p2 { width: 4px; height: 4px; background: var(--accent-cyan); left: 78%; animation-duration: 18s; animation-delay: 4s; }
-.p3 { width: 5px; height: 5px; background: var(--accent-emerald); left: 55%; animation-duration: 12s; animation-delay: 3.8s; }
-.p4 { width: 3px; height: 3px; background: var(--accent-amber); left: 33%; animation-duration: 16s; animation-delay: 5s; }
+/* Partículas com brilho neon */
+.p1 { width: 6px; height: 6px; background: var(--accent-violet); left: 12%; animation-duration: 14s; animation-delay: 3.2s; box-shadow: 0 0 8px var(--accent-violet); }
+.p2 { width: 4px; height: 4px; background: var(--accent-cyan); left: 78%; animation-duration: 18s; animation-delay: 4s; box-shadow: 0 0 6px var(--accent-cyan); }
+.p3 { width: 5px; height: 5px; background: var(--accent-emerald); left: 55%; animation-duration: 12s; animation-delay: 3.8s; box-shadow: 0 0 7px var(--accent-emerald); }
+.p4 { width: 3px; height: 3px; background: var(--accent-amber); left: 33%; animation-duration: 16s; animation-delay: 5s; box-shadow: 0 0 5px var(--accent-amber); }
+/* Partículas extras */
+.p5 { width: 4px; height: 4px; background: var(--accent-violet); left: 68%; animation-duration: 20s; animation-delay: 6s; box-shadow: 0 0 6px var(--accent-violet); }
+.p6 { width: 5px; height: 5px; background: var(--accent-cyan); left: 22%; animation-duration: 15s; animation-delay: 7s; box-shadow: 0 0 7px var(--accent-cyan); }
+.p7 { width: 3px; height: 3px; background: var(--accent-emerald); left: 88%; animation-duration: 11s; animation-delay: 2s; box-shadow: 0 0 5px var(--accent-emerald); }
+
+/* Traços de luz cruzando o fundo */
+.page::before {
+  content: '';
+  position: fixed;
+  top: 20%;
+  left: -10%;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(124,111,255,.08), transparent);
+  animation: sweepLine 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.page::after {
+  content: '';
+  position: fixed;
+  bottom: 30%;
+  right: -10%;
+  width: 35%;
+  height: 1px;
+  background: linear-gradient(270deg, transparent, rgba(34,211,238,.07), transparent);
+  animation: sweepLine 11s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+/* ════════════════════════════════════════
+   PÁGINA PRINCIPAL
+═════════════════════════════════════════*/
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .6s ease;
+  background: transparent;
+  overflow-y: auto;
+}
+
+.page-in {
+  opacity: 1;
+  visibility: visible;
+}
 
 /* ════════════════════════════════════════
    CARD DE LOGIN
@@ -355,20 +419,19 @@ body {
   margin-bottom: 28px;
 }
 
-/* AJUSTE: Anel da logo com efeito de Borda Externa orbitando a logo */
+/* ── Anel neon com gradiente cônico girando ── */
 .logo-ring {
-  width: 80px; /* Aumentado para dar espaço à borda externa */
+  width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: rgba(124, 111, 255, .05); /* Fundo muito sutil */
-  border: 1px solid rgba(124, 111, 255, .15); /* Borda padrão original */
+  background: rgba(124, 111, 255, .05);
+  border: 1px solid rgba(124, 111, 255, .15);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 1;
-  /* padding: 10px; */ /* Espaço interno para afastar a logo da borda colorida */
-  overflow: hidden; /* Mantém o gradiente giratório dentro do círculo */
+  overflow: hidden;
   animation: fadeUp .4s .1s ease both;
   transition: background .3s, border-color .3s;
 }
@@ -376,38 +439,80 @@ body {
 .logo-ring::before {
   content: '';
   position: absolute;
-  /* inset: 0; */ /* Ocupa todo o espaço do anel */
-  inset: -10px; /* Expande para garantir que o gradiente cubra a área da borda */
+  inset: -10px;
   background: conic-gradient(from 0deg, transparent, var(--accent-violet), var(--accent-cyan), var(--accent-emerald), transparent);
   animation: rotateRing 4s linear infinite;
   opacity: 0;
   transition: opacity 0.3s;
-  z-index: -1; /* Fica atrás do fundo interno e da logo */
+  z-index: -1;
 }
 
 .logo-ring::after {
   content: '';
   position: absolute;
-  /* Cria uma 'mascara' interna para que o gradiente apareça apenas na borda */
-  inset: 3px; /* Espessura da borda colorida visível */
-  background: var(--bg-surface); /* Mesma cor de fundo do card para esconder o centro do gradiente */
+  inset: 3px;
+  background: var(--bg-surface);
   border-radius: 50%;
   z-index: -1;
 }
 
 .login-card:hover .logo-ring::before { opacity: 1; }
 .login-card:hover .logo-ring {
-  border-color: transparent; /* Esconde a borda padrão para mostrar o neon */
-  background: rgba(124, 111, 255, .1); /* Leve realce no fundo interno */
+  border-color: transparent;
+  background: rgba(124, 111, 255, .1);
 }
 
 .logo-img {
-  width: 44px; /* Tamanho original preservado */
+  width: 44px;
   height: 44px;
   object-fit: contain;
   display: block;
-  z-index: 2; /* Fica acima de tudo */
-  /* filter: drop-shadow(0 0 10px rgba(124, 111, 255, 0.5)); */ /* Brilho opcional na logo no hover */
+  z-index: 2;
+}
+
+/* ════════════════════════════════════════
+   ÍCONE CSS DE ESCOLA (substituto quando sem img)
+   Chapéu de formatura com diploma orbitando
+═════════════════════════════════════════*/
+.logo-icon-css {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  z-index: 2;
+  font-size: 0;
+}
+
+/* Aba do chapéu (mortarboard) */
+.logo-icon-css::before {
+  content: '';
+  position: absolute;
+  left: 2px; top: 16px;
+  width: 40px; height: 8px;
+  background: var(--accent-violet);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(124, 111, 255, .5);
+}
+
+/* Topo do chapéu */
+.logo-icon-css::after {
+  content: '';
+  position: absolute;
+  left: 12px; top: 4px;
+  width: 20px; height: 14px;
+  background: var(--accent-cyan);
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  animation: capBob 3s ease-in-out infinite;
+}
+
+/* Borla do chapéu — elemento span extra se existir */
+.logo-icon-css .borla {
+  position: absolute;
+  right: 5px; top: 3px;
+  width: 6px; height: 14px;
+  background: var(--accent-amber);
+  border-radius: 0 0 3px 3px;
+  transform-origin: top center;
+  animation: borlaPendulum 2s ease-in-out infinite;
 }
 
 .brand-name {
@@ -454,7 +559,7 @@ body {
 }
 
 /* ════════════════════════════════════════
-   CAMPOS & ÍCONES DINÂMICOS
+   CAMPOS & ÍCONES DINÂMICOS APRIMORADOS
 ═════════════════════════════════════════*/
 .field-wrap {
   margin-bottom: 20px;
@@ -503,6 +608,7 @@ body {
 .field-wrap.error   .field-box    { border-color: rgba(248, 113, 113, .4); }
 .field-wrap.error   .field-accent { width: 100%; background: var(--accent-red); }
 
+/* ── Ícone de e-mail: envelope abre ao focar ── */
 .field-icon {
   font-size: 13px;
   color: var(--text-muted);
@@ -512,21 +618,21 @@ body {
   transition: color .25s, transform .3s cubic-bezier(.34, 1.56, .64, 1);
 }
 
-/* Animação do Ícone de E-mail (Abre ao focar) */
 .field-wrap.focused #icon-email {
   color: var(--accent-violet);
-  transform: scale(1.25);
+  transform: scale(1.25) rotate(-5deg);
+  filter: drop-shadow(0 0 4px rgba(124,111,255,.6));
 }
 
-/* Animação do Cadeado (Idle Balançando / Focado Abre) */
+/* ── Ícone de cadeado: balança quando idle, abre ao focar ── */
 #icon-password {
-    animation: lockJiggle 4s infinite ease-in-out;
+  animation: lockJiggle 4s infinite ease-in-out;
 }
 
 .field-wrap.focused #icon-password {
-    animation: none;
-    color: var(--accent-cyan);
-    transform: translateY(-1px) scale(1.2);
+  animation: lockOpen .4s cubic-bezier(.34,1.56,.64,1) forwards;
+  color: var(--accent-cyan);
+  filter: drop-shadow(0 0 4px rgba(34,211,238,.5));
 }
 
 .field-box input {
@@ -571,7 +677,6 @@ body {
   min-height: 1em;
 }
 
-/* erro global Django */
 .global-error {
   background: rgba(248, 113, 113, .08);
   border: 1px solid rgba(248, 113, 113, .2);
@@ -618,6 +723,11 @@ body {
   box-shadow: 0 8px 24px rgba(124, 111, 255, .32);
 }
 
+/* Ícone de seta dentro do botão anima ao hover */
+.btn-entrar:hover .btn-icon {
+  animation: arrowShoot .4s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
 .btn-shimmer {
   position: absolute;
   top: 0; left: -100%;
@@ -644,8 +754,10 @@ body {
   animation: fadeUp .4s .4s ease both;
 }
 
+.forgot-link:hover { color: var(--accent-violet); }
+
 /* ════════════════════════════════════════
-   KEYFRAMES (ORIGINAIS PRESERVADOS)
+   KEYFRAMES
 ═════════════════════════════════════════*/
 @keyframes rotateRing {
   to { transform: rotate(360deg); }
@@ -655,7 +767,44 @@ body {
   0%, 100% { transform: rotate(0deg); }
   10%, 30% { transform: rotate(-6deg); }
   20%, 40% { transform: rotate(6deg); }
-  50% { transform: rotate(0deg); }
+  50%      { transform: rotate(0deg); }
+}
+
+/* Cadeado "abre" ao focar — sobe levemente e escala */
+@keyframes lockOpen {
+  0%   { transform: translateY(0) scale(1) rotate(0deg); }
+  40%  { transform: translateY(-3px) scale(1.3) rotate(-8deg); }
+  70%  { transform: translateY(-2px) scale(1.2) rotate(4deg); }
+  100% { transform: translateY(-2px) scale(1.2) rotate(0deg); }
+}
+
+@keyframes arrowShoot {
+  0%   { transform: translateX(0); }
+  40%  { transform: translateX(6px); }
+  70%  { transform: translateX(-2px); }
+  100% { transform: translateX(4px); }
+}
+
+@keyframes capGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(34,211,238,.4)); }
+  50%      { filter: drop-shadow(0 0 12px rgba(34,211,238,.9)); }
+}
+
+@keyframes capBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes borlaPendulum {
+  0%, 100% { transform: rotate(-15deg); }
+  50%      { transform: rotate(15deg); }
+}
+
+@keyframes sweepLine {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: .5; }
+  100% { transform: translateX(200%); opacity: 0; }
 }
 
 @keyframes fadeUp {
@@ -665,16 +814,16 @@ body {
 
 @keyframes pulseLogo {
   0%, 100% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 6px rgba(124,111,255,.45)); }
-  50% { opacity: .82; transform: scale(.91); filter: drop-shadow(0 0 14px rgba(124,111,255,.8)); }
+  50%      { opacity: .82; transform: scale(.91); filter: drop-shadow(0 0 14px rgba(124,111,255,.8)); }
 }
 
 @keyframes shimmerBar {
-  0% { transform: translateX(-100%); }
+  0%   { transform: translateX(-100%); }
   100% { transform: translateX(500%); }
 }
 
 @keyframes shimmerBtn {
-  0% { left: -100%; }
+  0%   { left: -100%; }
   100% { left: 150%; }
 }
 
@@ -690,18 +839,18 @@ body {
 
 @keyframes iconShake {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-8px); }
-  40% { transform: translateX(8px); }
-  60% { transform: translateX(-5px); }
-  80% { transform: translateX(5px); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
 }
 
 @keyframes shakeCard {
   0%, 100% { transform: translateX(0); }
-  20% { transform: translateX(-10px); }
-  40% { transform: translateX(10px); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(6px); }
+  20%      { transform: translateX(-10px); }
+  40%      { transform: translateX(10px); }
+  60%      { transform: translateX(-6px); }
+  80%      { transform: translateX(6px); }
 }
 
 @keyframes floatParticle {
@@ -715,5 +864,3 @@ body {
   .login-card { padding: 32px 22px 28px; }
   .brand-name { font-size: 1.45rem; }
 }
-
-
