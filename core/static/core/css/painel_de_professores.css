@@ -1,7 +1,7 @@
 /* ============================================================
-   SIGE — Painel Professor
-   painel_do_professor.css  v7 — Hard-sync com Superusuário
-   Acento primário: --accent-cyan (#22d3ee)
+   SIGE — Painel do Professor
+   painel_do_professor.css  — NUCLEAR HARD-SYNC (Clone do Super)
+   v6 — Espelhamento bit-a-bit para consistência absoluta
 ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
@@ -13,7 +13,7 @@
   --bg-hover:       #1a2844;
   --border-subtle:  rgba(255, 255, 255, .06);
   --border-mid:     rgba(255, 255, 255, .11);
-  --accent-violet:  #7c6fff;
+  --accent-violet:  #22d3ee; /* CLONE: Usando Ciano como sotaque do Professor */
   --accent-cyan:    #22d3ee;
   --accent-emerald: #34d399;
   --accent-amber:   #fbbf24;
@@ -34,7 +34,7 @@
   min-height: 100vh;
   padding: 28px 24px 44px;
   background: var(--bg-base);
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   width: 100%;
 }
@@ -59,11 +59,8 @@
   font-size: .66rem;
   font-weight: 600;
   letter-spacing: .15em;
-  color: var(--accent-cyan);
+  color: var(--accent-violet);
   text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 6px;
 }
 
 .header-painel h1 {
@@ -79,7 +76,7 @@
 .header-painel h1 .nome-destaque {
   position: relative;
   display: inline-block;
-  color: var(--accent-cyan);
+  color: var(--accent-violet);
 }
 
 .header-painel h1 .nome-destaque::after {
@@ -88,7 +85,7 @@
   bottom: -3px; left: 0;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, var(--accent-cyan), transparent);
+  background: linear-gradient(90deg, var(--accent-violet), transparent);
   border-radius: 2px;
 }
 
@@ -105,7 +102,7 @@
 }
 
 .filtro-ano-painel:focus-within {
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-violet);
   background: var(--bg-elevated);
 }
 
@@ -150,9 +147,7 @@
   gap: 20px;
 }
 
-/* ════════════════════════════════════════
-   CARDS
- ═════════════════════════════════════════*/
+/* ── Cards ── */
 .cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -187,12 +182,11 @@
 }
 
 .card:hover::before { opacity: 1; }
-.card:nth-child(1)::before { background: var(--accent-cyan); }
+.card:nth-child(1)::before { background: var(--accent-amber); }
 .card:nth-child(2)::before { background: var(--accent-emerald); }
-.card:nth-child(3)::before { background: var(--accent-violet); }
-.card:nth-child(4)::before { background: var(--accent-amber); }
+.card:nth-child(3)::before { background: var(--accent-cyan); }
+.card:nth-child(4)::before { background: #f87171; }
 
-/* ── Container do ícone ── */
 .card-icone {
   width: 44px;
   height: 44px;
@@ -208,62 +202,32 @@
 
 .card:hover .card-icone { transform: scale(1.07) translateY(-1px); }
 
-/* Fundos e bordas por card */
-.card:nth-child(1) .card-icone { background: rgba(34,211,238,.1);  border: 1px solid rgba(34,211,238,.2); }
+.card:nth-child(1) .card-icone { background: rgba(251,191,36,.1);  border: 1px solid rgba(251,191,36,.2); }
 .card:nth-child(2) .card-icone { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.2); }
-.card:nth-child(3) .card-icone { background: rgba(124,111,255,.1); border: 1px solid rgba(124,111,255,.2); }
-.card:nth-child(4) .card-icone { background: rgba(251,191,36,.1);  border: 1px solid rgba(251,191,36,.2); }
+.card:nth-child(3) .card-icone { background: rgba(34,211,238,.1);  border: 1px solid rgba(34,211,238,.2); }
+.card:nth-child(4) .card-icone { background: rgba(248,113,113,.1); border: 1px solid rgba(248,113,113,.2); }
 
-/* ── Ícone base (estado normal) ── */
 .card-icone i {
   font-size: 1.25rem;
-  transition:
-    color .25s ease,
-    transform .3s cubic-bezier(.34,1.56,.64,1),
-    filter .3s ease;
+  transition: color .25s ease, transform .3s cubic-bezier(.34,1.56,.64,1), filter .3s ease;
 }
 
-/* Cores padrão (sem hover) — ligeiramente apagadas */
-.card:nth-child(1) .card-icone i { color: rgba(34,211,238,.55); }
+.card:nth-child(1) .card-icone i { color: rgba(251,191,36,.55); }
 .card:nth-child(2) .card-icone i { color: rgba(52,211,153,.55); }
-.card:nth-child(3) .card-icone i { color: rgba(124,111,255,.55); }
-.card:nth-child(4) .card-icone i { color: rgba(251,191,36,.55); }
+.card:nth-child(3) .card-icone i { color: rgba(34,211,238,.55); }
+.card:nth-child(4) .card-icone i { color: rgba(248,113,113,.55); }
 
-/* ── Cores e animações no hover do card ── */
-.card:nth-child(1):hover .card-icone i {
-  color: var(--accent-cyan);
-  animation: iconFloat 2.6s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(34,211,238,.55));
-}
+.card:nth-child(1):hover .card-icone i { color: var(--accent-amber); animation: iconFloat 2.6s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(251,191,36,.55)); }
+.card:nth-child(2):hover .card-icone i { color: var(--accent-emerald); animation: iconFloat 2.8s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(52,211,153,.55)); }
+.card:nth-child(3):hover .card-icone i { color: var(--accent-cyan); animation: iconFloat 3s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(34,211,238,.55)); }
+.card:nth-child(4):hover .card-icone i { color: #f87171; animation: iconFloat 2.5s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(248,113,113,.55)); }
 
-.card:nth-child(2):hover .card-icone i {
-  color: var(--accent-emerald);
-  animation: iconFloat 2.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(52,211,153,.55));
-}
-
-.card:nth-child(3):hover .card-icone i {
-  color: var(--accent-violet);
-  animation: iconFloat 3s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(124,111,255,.55));
-}
-
-.card:nth-child(4):hover .card-icone i {
-  color: var(--accent-amber);
-  animation: iconFloat 2.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(251,191,36,.55));
-}
-
-/* Animação compartilhada — flutuação suave */
 @keyframes iconFloat {
   0%, 100% { transform: translateY(0) scale(1); }
   40%       { transform: translateY(-3px) scale(1.05); }
   70%       { transform: translateY(-1px) scale(1.02); }
 }
 
-/* ════════════════════════════════════════
-   DADOS DO CARD
- ═════════════════════════════════════════*/
 .card-label {
   font-size: .67rem;
   font-weight: 600;
@@ -284,34 +248,10 @@
 
 .card:hover .card-valor { transform: scale(1.03); }
 
-.card:nth-child(1) .card-valor { color: var(--accent-cyan); }
+.card:nth-child(1) .card-valor { color: var(--accent-amber); }
 .card:nth-child(2) .card-valor { color: var(--accent-emerald); }
-.card:nth-child(3) .card-valor { color: var(--accent-violet); }
-.card:nth-child(4) .card-valor { color: var(--accent-amber); }
-
-/* Específicos para o card de Notas (Professor) */
-.card-notas .card-valor { font-size: 1.8rem; }
-.card-notas .texto-pequeno {
-  font-size: .78rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  margin-left: 2px;
-}
-
-.prog-track {
-  height: 5px;
-  background: var(--border-subtle);
-  border-radius: 999px;
-  margin-top: 14px;
-  overflow: hidden;
-}
-
-.prog-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));
-  transition: width .8s cubic-bezier(.22, 1, .36, 1);
-}
+.card:nth-child(3) .card-valor { color: var(--accent-cyan); }
+.card:nth-child(4) .card-valor { color: #f87171; }
 
 /* ── Barra de resumo ── */
 .resumo-bar {
@@ -357,18 +297,14 @@
   color: var(--text-primary);
 }
 
-/* ════════════════════════════════════════
-   COLUNA DIREITA
- ═════════════════════════════════════════*/
+/* ── Coluna Direita ── */
 .coluna-direita {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* ════════════════════════════════════════
-   CALENDÁRIO
- ═════════════════════════════════════════*/
+/* ── Calendário ── */
 .calendario-box {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -406,7 +342,6 @@
   padding: 2px 8px;
 }
 
-/* Grade 7 colunas fixas */
 .calendario-grade {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -437,27 +372,21 @@
   line-height: 1;
 }
 
-.dia:hover:not(.vazio):not(.atual) {
-  background: var(--bg-hover);
-  color: var(--text-primary);
-  transform: scale(1.1);
-}
-
+.dia:hover:not(.vazio):not(.atual) { background: var(--bg-hover); color: var(--text-primary); transform: scale(1.1); }
 .dia.vazio { visibility: hidden; pointer-events: none; }
-
 .dia.atual {
-  background: var(--accent-cyan);
-  color: #04111a;
+  background: var(--accent-violet);
+  color: #fff;
   font-weight: 700;
   border-radius: 4px;
-  box-shadow: 0 0 10px rgba(34,211,238,.4);
+  box-shadow: 0 0 10px rgba(124,111,255,.4);
   animation: diaAtualPulse 3s ease-out infinite;
 }
 
 @keyframes diaAtualPulse {
-  0%   { box-shadow: 0 0 0 0 rgba(34,211,238,.4); }
-  60%  { box-shadow: 0 0 0 5px rgba(34,211,238,0); }
-  100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(124,111,255,.4); }
+  60%  { box-shadow: 0 0 0 5px rgba(124,111,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(124,111,255,0); }
 }
 
 /* ── Info rápida ── */
@@ -502,21 +431,10 @@
   color: var(--text-secondary);
 }
 
-.info-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
+.info-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.info-item-valor { font-weight: 600; color: var(--text-primary); font-size: .8rem; }
 
-.info-item-valor {
-  font-weight: 600;
-  color: var(--text-primary);
-  font-size: .8rem;
-}
-
-/* ════════════════════════════════════════
-   ANIMAÇÕES DE ENTRADA
- ═════════════════════════════════════════*/
+/* ── Animações ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -532,18 +450,12 @@
 .calendario-box { animation: fadeUp .38s .07s ease both; }
 .info-rapida    { animation: fadeUp .38s .15s ease both; }
 
-/* ════════════════════════════════════════
-   RESPONSIVO
- ═════════════════════════════════════════*/
-@media (max-width: 1080px) {
-  .conteudo-geral { grid-template-columns: 1fr 240px; }
-}
-
+/* ── Responsivo ── */
+@media (max-width: 1080px) { .conteudo-geral { grid-template-columns: 1fr 240px; } }
 @media (max-width: 820px) {
   .conteudo-geral { grid-template-columns: 1fr; }
   .coluna-direita { display: grid; grid-template-columns: 1fr 1fr; }
 }
-
 @media (max-width: 560px) {
   .painel-sige      { padding: 18px 14px 36px; }
   .cards            { grid-template-columns: 1fr; }

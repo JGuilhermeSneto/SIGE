@@ -3,42 +3,55 @@
 
 {% block title %}Grade Horária - {{ turma.nome }}{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/grade_professor.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/grade_horaria_dos_professores.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 {% endblock %}
 
 {% block content %}
 
-<section class="painel-sige">
+<div class="main-area">
 
-  {# ════════════════ HEADER ════════════════ #}
-  <div class="header-pagina">
-    <a href="{% url 'disciplinas_turma' turma.id %}" class="btn-voltar">
-      <i class="fas fa-arrow-left"></i> Voltar
-    </a>
-    <div class="titulo-container">
-      <h1><i class="fa-solid fa-calendar-days"></i> Grade Horária</h1>
-      <div class="badges">
-        <span class="badge badge-turma">{{ turma.nome }}</span>
-        <span class="badge badge-ano">{{ turma.ano }}</span>
-        <span class="badge badge-turno">{{ turma.get_turno_display }}</span>
+  {# ════════════════ HEADER (Registration Style) ════════════════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">Visualização</span>
+      <h1>Grade <span class="destaque">Horária</span></h1>
+      <div class="header-breadcrumb">
+        <a href="{% url 'painel_professor' %}">Início</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="{% url 'disciplinas_professor' %}">Minhas Turmas</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>{{ turma.nome }}</span>
       </div>
     </div>
-  </div>
+  </header>
 
-  {# ════════════════ MINHAS DISCIPLINAS ════════════════ #}
-  <div class="info-disciplinas">
-    <h3>Minhas disciplinas nesta turma</h3>
-    <div class="lista-disciplinas-info">
-      {% for disc in disciplinas_professor %}
-        <span class="badge-disciplina">{{ disc.nome }}</span>
-      {% endfor %}
+  {# ════════════════ GRADE CARD (Registration Style) ════════════════ #}
+  <div class="form-card">
+    
+    <div class="form-card-titulo">
+      <div class="form-card-icone">
+        <i class="fa-solid fa-calendar-week"></i>
+      </div>
+      <div class="form-card-titulo-texto">
+        <h2>{{ turma.nome }}</h2>
+        <p>Grade semanal de aulas para o turno {{ turma.get_turno_display }} ({{ turma.ano }})</p>
+      </div>
     </div>
-  </div>
 
-  {# ════════════════ GRADE HORÁRIA ════════════════ #}
-  {% if grade_horario %}
-    <div class="grade-container">
-      <div class="container-tabela">
+    {# ── Minhas Disciplinas ── #}
+    <div class="info-disciplinas">
+      <h3>Minhas disciplinas nesta turma</h3>
+      <div class="lista-disciplinas-info">
+        {% for disc in disciplinas_professor %}
+          <span class="badge-disciplina">{{ disc.nome }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# ── Tabela de Grade ── #}
+    {% if grade_horario %}
+      <div class="tabela-wrapper">
         <table class="tabela-grade">
           <thead>
             <tr>
@@ -54,19 +67,19 @@
             {% for horario, dias in grade_horario.items %}
               <tr>
                 <td class="celula-horario">{{ horario }}</td>
-                <td class="celula-disciplina {% for disc in disciplinas_professor %}{% if disc.nome == dias.segunda %}minha-disciplina{% endif %}{% endfor %}">
+                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.segunda %}minha-disciplina{% endif %}{% endfor %}">
                   {{ dias.segunda|default:"—" }}
                 </td>
-                <td class="celula-disciplina {% for disc in disciplinas_professor %}{% if disc.nome == dias.terca %}minha-disciplina{% endif %}{% endfor %}">
+                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.terca %}minha-disciplina{% endif %}{% endfor %}">
                   {{ dias.terca|default:"—" }}
                 </td>
-                <td class="celula-disciplina {% for disc in disciplinas_professor %}{% if disc.nome == dias.quarta %}minha-disciplina{% endif %}{% endfor %}">
+                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.quarta %}minha-disciplina{% endif %}{% endfor %}">
                   {{ dias.quarta|default:"—" }}
                 </td>
-                <td class="celula-disciplina {% for disc in disciplinas_professor %}{% if disc.nome == dias.quinta %}minha-disciplina{% endif %}{% endfor %}">
+                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.quinta %}minha-disciplina{% endif %}{% endfor %}">
                   {{ dias.quinta|default:"—" }}
                 </td>
-                <td class="celula-disciplina {% for disc in disciplinas_professor %}{% if disc.nome == dias.sexta %}minha-disciplina{% endif %}{% endfor %}">
+                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.sexta %}minha-disciplina{% endif %}{% endfor %}">
                   {{ dias.sexta|default:"—" }}
                 </td>
               </tr>
@@ -77,22 +90,23 @@
 
       <div class="legenda">
         <div class="legenda-item">
-          <span class="cor-destaque"></span>
-          <span>Disciplinas que você leciona</span>
+          <span class="legenda-cor destaque"></span>
+          <span>Suas disciplinas</span>
         </div>
         <div class="legenda-item">
-          <span class="cor-normal"></span>
-          <span>Outras disciplinas</span>
+          <span class="legenda-cor normal"></span>
+          <span>Outras matérias</span>
         </div>
       </div>
-    </div>
-  {% else %}
-    <div class="mensagem-vazia">
-      <i class="fas fa-calendar-times"></i>
-      <p>Grade horária ainda não foi definida para esta turma.</p>
-    </div>
-  {% endif %}
 
-</section>
+    {% else %}
+      <div class="mensagem-vazia">
+        <i class="fas fa-calendar-times"></i>
+        <p>A grade horária ainda não foi definida para esta turma.</p>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
 
 {% endblock %}

@@ -1,0 +1,263 @@
+/* ============================================================
+   SIGE — Visualizar Grade Horária (Estilo Registration)
+   grade_horaria_professor.css  v3
+   Tema: Indigo / #818cf8
+============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255, 255, 255, .06);
+  --border-mid:     rgba(255, 255, 255, .11);
+
+  /* Tema Indigo para Grade */
+  --theme-primary:      #818cf8;
+  --theme-primary-rgb:  129, 140, 248;
+
+  --text-primary:   #eef2ff;
+  --text-secondary: #8b97bb;
+  --text-muted:     #3d4f72;
+
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ── Área Principal ── */
+.main-area {
+  padding: 32px 28px 48px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-base);
+}
+
+/* ════════════════════════════════════════
+   HEADER (Estilo Registration)
+═════════════════════════════════════════*/
+.header-painel {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 32px;
+  animation: fadeUp .35s ease both;
+}
+
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+
+.header-label {
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  color: var(--theme-primary);
+  text-transform: uppercase;
+}
+
+.header-painel h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.header-painel h1 .destaque {
+  position: relative;
+  display: inline-block;
+  color: var(--theme-primary);
+}
+
+.header-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.header-breadcrumb a { color: var(--text-secondary); transition: color .1s; }
+.header-breadcrumb a:hover { color: var(--text-primary); }
+.header-breadcrumb i { font-size: .6rem; }
+
+/* ════════════════════════════════════════
+   CARD DA GRADE (Estilo Registration)
+═════════════════════════════════════════*/
+.form-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  animation: fadeUp .35s .15s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(var(--theme-primary-rgb), .06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.form-card-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.form-card-icone {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(var(--theme-primary-rgb), .12);
+  border: 1px solid rgba(var(--theme-primary-rgb), .2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--theme-primary);
+}
+
+.form-card-titulo-texto h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.form-card-titulo-texto p {
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+}
+
+/* ════════════════════════════════════════
+   INFOS E BADGES
+═════════════════════════════════════════*/
+.info-disciplinas {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.info-disciplinas h3 {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 12px;
+}
+
+.lista-disciplinas-info { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.badge-disciplina {
+  padding: 5px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: .78rem;
+  font-weight: 500;
+  transition: all .2s;
+}
+.badge-disciplina:hover { border-color: var(--theme-primary); color: var(--theme-primary); }
+
+/* ════════════════════════════════════════
+   TABELA DE GRADE (PREMIUM)
+═════════════════════════════════════════*/
+.tabela-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+}
+
+.tabela-grade {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--bg-surface);
+}
+
+.tabela-grade thead th {
+  padding: 14px 10px;
+  background: var(--bg-elevated);
+  font-size: .65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.tabela-grade tbody td {
+  padding: 14px 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: .82rem;
+  color: var(--text-secondary);
+  transition: background .2s;
+}
+
+.tabela-grade tbody tr:hover td { background: var(--bg-hover); }
+
+.celula-horario {
+  background: var(--bg-elevated);
+  color: var(--theme-primary) !important;
+  font-weight: 600;
+  font-size: .75rem !important;
+  border-right: 1px solid var(--border-subtle);
+}
+
+.minha-disciplina {
+  background: rgba(var(--theme-primary-rgb), .08);
+  color: var(--theme-primary) !important;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  position: relative;
+}
+
+/* ── Legenda ── */
+.legenda {
+  margin-top: 20px;
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+.legenda-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+
+.legenda-cor { width: 12px; height: 12px; border-radius: 3px; }
+.legenda-cor.destaque { background: var(--theme-primary); opacity: .4; }
+.legenda-cor.normal { background: var(--bg-elevated); border: 1px solid var(--border-mid); }
+
+/* ── Animações ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .main-area { padding: 20px 16px; }
+  .form-card { padding: 24px 18px; }
+  .tabela-grade thead th, .tabela-grade tbody td { font-size: .7rem; padding: 10px 6px; }
+}

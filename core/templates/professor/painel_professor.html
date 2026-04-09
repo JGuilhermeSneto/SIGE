@@ -1,6 +1,7 @@
 {# ============================================================ #}
 {# template: professor/painel_professor.html                   #}
-{# HARD-SYNC com superusuario/painel_super.html               #}
+{# NUCLEAR HARD-SYNC: Clone estrutural do painel_super.html    #}
+{# v2 — Mirror total para consistência absoluta                #}
 {# ============================================================ #}
 {% extends "core/base.html" %}
 {% load static %}
@@ -8,7 +9,7 @@
 {% block title %}Painel do Professor — SIGE{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/painel_do_professor.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/painel_de_professores.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -47,14 +48,6 @@
       <section class="cards">
         <article class="card">
           <div class="card-icone">
-            <i class="fa-solid fa-book"></i>
-          </div>
-          <p class="card-label">Disciplinas</p>
-          <h2 class="card-valor">{{ total_disciplinas }}</h2>
-        </article>
-
-        <article class="card">
-          <div class="card-icone">
             <i class="fa-solid fa-users-rectangle"></i>
           </div>
           <p class="card-label">Turmas</p>
@@ -69,22 +62,27 @@
           <h2 class="card-valor">{{ total_alunos }}</h2>
         </article>
 
-        <article class="card card-notas">
+        <article class="card">
           <div class="card-icone">
-            <i class="fa-solid fa-pen-to-square"></i>
+            <i class="fa-solid fa-book"></i>
           </div>
-          <p class="card-label">Notas Lançadas</p>
+          <p class="card-label">Disciplinas</p>
+          <h2 class="card-valor">{{ total_disciplinas }}</h2>
+        </article>
+
+        {# Card 4: Progresso de Notas (Substitui 'Professores' do Super) #}
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-file-signature"></i>
+          </div>
+          <p class="card-label">Progresso de Notas</p>
           <h2 class="card-valor">
-            {{ total_notas_lancadas }}
-            <span class="texto-pequeno">/{{ total_notas_possiveis }}</span>
+            {% if total_notas_possiveis > 0 %}
+              {% widthratio total_notas_lancadas total_notas_possiveis 100 %}%
+            {% else %}
+              0%
+            {% endif %}
           </h2>
-          {% if total_notas_possiveis > 0 %}
-          <div class="prog-track">
-            <div class="prog-fill"
-                 style="width:{% widthratio total_notas_lancadas total_notas_possiveis 100 %}%">
-            </div>
-          </div>
-          {% endif %}
         </article>
       </section>
 
@@ -95,12 +93,12 @@
           <p class="resumo-item-valor">{{ ano_filtro }}</p>
         </div>
         <div class="resumo-item">
-          <p class="resumo-item-label">Total de Alunos</p>
-          <p class="resumo-item-valor">{{ total_alunos }}</p>
+          <p class="resumo-item-label">Suas Disciplinas</p>
+          <p class="resumo-item-valor">{{ total_disciplinas }}</p>
         </div>
         <div class="resumo-item">
-          <p class="resumo-item-label">Notas Lançadas</p>
-          <p class="resumo-item-valor">{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</p>
+          <p class="resumo-item-label">Suas Turmas</p>
+          <p class="resumo-item-valor">{{ total_turmas }}</p>
         </div>
       </section>
     </section>
@@ -131,37 +129,31 @@
         <ul class="info-rapida-lista">
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-cyan)"></span>
-              Disciplinas
-            </span>
-            <span class="info-item-valor">{{ total_disciplinas }}</span>
-          </li>
-          <li class="info-item">
-            <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-emerald)"></span>
+              <span class="info-dot" style="background:var(--accent-violet)"></span>
               Turmas ativas
             </span>
             <span class="info-item-valor">{{ total_turmas }}</span>
           </li>
           <li class="info-item">
             <span class="info-item-nome">
-              <span class="info-dot" style="background:var(--accent-violet)"></span>
+              <span class="info-dot" style="background:var(--accent-cyan)"></span>
               Total de alunos
             </span>
             <span class="info-item-valor">{{ total_alunos }}</span>
           </li>
           <li class="info-item">
             <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-emerald)"></span>
+              Disciplinas
+            </span>
+            <span class="info-item-valor">{{ total_disciplinas }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
               <span class="info-dot" style="background:var(--accent-amber)"></span>
-              Progresso de notas
+              Notas Lançadas
             </span>
-            <span class="info-item-valor">
-              {% if total_notas_possiveis > 0 %}
-                {% widthratio total_notas_lancadas total_notas_possiveis 100 %}%
-              {% else %}
-                —
-              {% endif %}
-            </span>
+            <span class="info-item-valor">{{ total_notas_lancadas }}</span>
           </li>
         </ul>
       </section>
