@@ -194,9 +194,12 @@ O projeto está em constante evolução. Nossos próximos passos são:
 
 ## 👥 Equipe Desenvolvedora
 
-| João Batista | José Guilherme | Suanderson Santos | Israel Cipriano | Pedro Henrique | Vanessa Gonçalves |
-| :---: | :---: | :---: | :---: | :---: | :---: |
-| 🎓 UI/UX | 🏗️ Backend | 🧪 QA | 📂 Database | ⚖️ Legal | 📊 Testing |
+*   **João Batista** — [@JBatista](https://github.com/JBatista)
+*   **José Guilherme** — [@JGuilhermeSneto](https://github.com/JGuilhermeSneto)
+*   **Suanderson Santos** — [@Suanderson](https://github.com/Suanderson)
+*   **Israel Cipriano** — [@Israel](https://github.com/Israel)
+*   **Pedro Henrique** — [@Pedro](https://github.com/Pedro)
+*   **Vanessa Gonçalves** — [@Vanessa](https://github.com/Vanessa)
 
 <br/>
 
