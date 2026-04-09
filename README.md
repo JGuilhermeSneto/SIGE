@@ -196,10 +196,10 @@ O projeto está em constante evolução. Nossos próximos passos são:
 
 *   **João Batista** — [@JBatista](https://github.com/JBatista)
 *   **José Guilherme** — [@JGuilhermeSneto](https://github.com/JGuilhermeSneto)
-*   **Suanderson Santos** — [@Suanderson](https://github.com/Suanderson)
-*   **Israel Cipriano** — [@Israel](https://github.com/Israel)
-*   **Pedro Henrique** — [@Pedro](https://github.com/Pedro)
-*   **Vanessa Gonçalves** — [@Vanessa](https://github.com/Vanessa)
+*   **Suanderson Santos** — [@JuniorNascimento2](https://github.com/JuniorNascimento2)
+*   **Israel Cipriano** — [@Israelf1lho](https://github.com/Israelf1lho)
+*   **Pedro Henrique** — [@Henrriks](https://github.com/Henrriks)
+*   **Vanessa Gonçalves** — [@vangoncalves](https://github.com/vangoncalves)
 
 <br/>
 
