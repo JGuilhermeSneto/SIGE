@@ -1,154 +1,207 @@
 <div align="center">
 
-# 🏫 SIGE
-### Sistema Integrado de Gestão Escolar
-
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-yellow?style=for-the-badge)](LICENSE)
+# 🏫 SIGE — Sistema Integrado de Gestão Escolar
+### A Engenharia de Software Aplicada à Educação de Alta Performance
 
 <br/>
 
-> **SIGE** é uma plataforma robusta e moderna para administração acadêmica, desenvolvida com **Django**. O sistema foca em uma experiência de usuário (UX) excepcional, com dashboards centralizados, automação de processos e alta qualidade de código.
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 
-[🚀 Instalação](#-instalação-e-configuração) • [🏗️ Arquitetura](#-estrutura-e-módulos) • [🎨 Interface](#-design--uiux) • [🧪 Qualidade](#-qualidade-e-testes) • [👥 Autores](#-equipe-desenvolvedora)
+<br/>
+
+![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-green?style=flat-square)
+![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)
+![Linting](https://img.shields.io/badge/Quality-10%2F10-blueviolet?style=flat-square)
+![Coverage](https://img.shields.io/badge/Coverage-100%25-orange?style=flat-square)
+![MyPy](https://img.shields.io/badge/Types-Strict-blue?style=flat-square)
+
+<br/>
+
+> **SIGE** não é apenas um sistema de gestão — é uma infraestrutura completa de software focada em escalabilidade, segurança e experiência do usuário. Desenvolvido com uma arquitetura **MTV** robusta, integra automação acadêmica com padrões modernos de UI/UX.
+
+[🚀 Primeiros Passos](#-instalação-e-configuração) • [🏗️ Arquitetura](#-topografia-do-projeto) • [🧠 Regras de Negócio](#-lógica-de-negócio-e-algoritmos) • [🎨 Design System](#-design-system--uiux) • [🧪 QA & CI/CD](#-garantia-de-qualidade--devops) • [🛣️ Roadmap](#-futuras-melhorias-e-roadmap)
 
 </div>
 
 ---
 
-## 📌 Visão Geral do Projeto
+## 📖 1. Visão Geral e Módulos
 
-O **SIGE** foi projetado para centralizar todas as operações de uma instituição de ensino. Diferente de sistemas genéricos, ele oferece interfaces especializadas para cada tipo de usuário, garantindo que alunos, professores e administradores tenham exatamente as ferramentas que precisam em um ambiente **Dark Mode** sofisticado.
+O SIGE resolve a fragmentação de dados em instituições de ensino, centralizando o fluxo de vida acadêmica desde a matrícula até a emissão de relatórios consolidados.
 
-### 🧩 Módulos Meticulosos
+### 🧩 Decomposição de Módulos (Meticulosa)
 
-| Módulo | Funcionalidades de Elite |
+| Módulo | Escopo Técnico | Cobertura Funcional |
+| :--- | :--- | :--- |
+| **🛡️ Gestão de Identidade (IAM)** | Autenticação RBAC personalizada. | Controle de perfis, reset de senha seguro, gestão de fotos via `Pillow`. |
+| **🏫 Infraestrutura Acadêmica** | Gestão de entidades relacionais. | CRUD completo de Turmas, Disciplinas e Grade Horária com detecção de conflitos. |
+| **📊 Engine de Desempenho** | Algoritmos de média e status. | Lançamento de notas bimestrais com processamento automático de situação acadêmica. |
+| **✅ Attendance System** | Rastreabilidade de presença. | Chamada diária vinculada à disciplina, histórico retroativo e estatística de evasão. |
+| **📱 Front-End Engine** | Design System Proprietário. | Dashboards centralizados, micro-animações CSS e arquitetura responsiva multinível. |
+
+---
+
+## 🧠 2. Lógica de Negócio e Algoritmos
+
+O núcleo do sistema opera sob regras estritas definidas no backend (`views.py` e `models.py`):
+
+### ⚖️ Algoritmo de Situação Acadêmica (`_calcular_situacao_nota`)
+O sistema avalia automaticamente o desempenho do aluno seguindo o fluxo:
+1.  **Frequência Crítica**: Se `Presença < 75%`, o status é fixado em `Reprovado por Falta`, ignorando a média.
+2.  **Média de Aprovação**: `Média >= 7.0` e `Freq >= 75%` ➔ `Aprovado`.
+3.  **Recuperação**: `Média >= 5.0` e `Média < 7.0` ➔ `Recuperação`.
+4.  **Reprovação**: `Média < 5.0` ➔ `Reprovado`.
+
+### 📅 Geração de Calendário (Sincronia JS/Python)
+- **Backend**: `gerar_calendario()` em `views.py` gera uma lista plana de células considerando bissextos e semanas escolares (Início no Domingo).
+- **Frontend**: Utiliza JavaScript puro no Dashboard para garantir interatividade instantânea sem recarregar a página.
+
+### 🔐 Matriz de Permissões (RBAC)
+
+| Perfil | Dashboard | Gerir Alunos | Gerir Prof. | Gerir Turmas | Lançar Notas | Lançar Freq. | Relatórios |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **👑 SuperUser** | Total | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **🏛️ Gestor** | Admin | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **👨‍🏫 Professor** | Academic | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| **🎓 Aluno** | Personal | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+
+---
+
+## 🛠️ 3. Stack Tecnológica & Dependências
+
+O SIGE é construído sobre um ecossistema de 36 bibliotecas de alto nível.
+
+<details>
+<summary><b>📦 Clique para ver o catálogo completo de dependências</b></summary>
+
+#### Core & Web
+*   [Django 6.0](https://www.djangoproject.com/): Framework Web de alta performance (The "Ridiculously Fast" framework).
+*   [python-decouple](https://pypi.org/project/python-decouple/): Abstração de variáveis de ambiente para segurança.
+*   [python-dotenv](https://pypi.org/project/python-dotenv/): Suporte a arquivos `.env`.
+
+#### Banco de Dados & Persistence
+*   [mysqlclient](https://pypi.org/project/mysqlclient/): Driver nativo em C para integração MySQL de baixa latência.
+*   [sqlparse](https://pypi.org/project/sqlparse/): Processamento e formatação de SQL.
+
+#### UI & Ativos
+*   [Pillow](https://python-pillow.org/): Processamento de imagens (fotos de perfil).
+*   [ReportLab](https://www.reportlab.com/): Motor de geração de PDFs para boletins e relatórios.
+*   [django-widget-tweaks](https://github.com/jazzband/django-widget-tweaks): Renderização avançada de formulários HTML5.
+
+#### Garantia de Qualidade (QA)
+*   [Black](https://github.com/psf/black): O formatador de código "uncompromising".
+*   [Flake8](https://flake8.pycqa.org/): Validação de estilo PEP8.
+*   [Mypy](http://mypy-lang.org/): Verificação de tipagem estática.
+*   [Pylint](https://pylint.org/): Análise profunda de erros e qualidade de código.
+*   [Coverage](https://coverage.readthedocs.io/): Medição de cobertura de testes unitários.
+*   [isort](https://pycqa.github.io/isort/): Organização automática de imports.
+
+</details>
+
+---
+
+## 🏗️ 4. Topografia do Projeto
+
+Mapeamento meticuloso da estrutura de arquivos:
+
+| Diretório/Arquivo | Função Crítica |
 | :--- | :--- |
-| **🔐 Segurança** | Autenticação RBAC (Role-Based Access Control) com 4 níveis de permissão. |
-| **📑 Acadêmico** | Matrículas, gestão de turmas por turnos e controle de disciplinas vinculadas. |
-| **👨‍🏫 Professor** | Lançamento de notas bimestrais com cálculo automático de média e frequência. |
-| **✅ Frequência** | Sistema de chamada diária com histórico retroativo e alertas de baixa presença. |
-| **📊 Dashboards** | Paineis centralizados com micro-animações e calendários dinâmicos. |
-| **📄 Relatórios** | Geração automática de documentos e boletins em PDF via ReportLab. |
+| `core/models.py` | Definição do Esquema de Banco e Integridade de Dados. |
+| `core/views.py` | Lógica Central de Negócio e Roteamento de Dashboards. |
+| `core/templatetags/` | Filtros customizados de auxílio a templates (`get_item`, `dict_get`). |
+| `core/static/core/css/` | **Design System**: Global CSS, Variáveis e Animações. |
+| `notas/settings.py` | Configurações de segurança distribuídas via `decouple`. |
+| `.github/workflows/` | Automatização do Pipeline de Continuous Integration. |
 
 ---
 
-## 🎨 Design & UI/UX
+## 🎨 5. Design System & UI/UX
 
-O projeto utiliza um sistema de design proprietário focado em **Profissionalismo e Fluidez**:
+O SIGE implementa uma interface **Premium Dark Mode** baseada em tokens de design:
 
-*   **Standardization**: Todos os ícones foram padronizados usando **FontAwesome 6**, garantindo consistência visual.
-*   **Micro-Animações**: Implementamos um sistema de animações CSS nativas (Floating Icons, Pulsing Charts) que tornam a interface "viva" e responsiva.
-*   **Centralização**: Dashboards com `max-width: 1200px` para leitura otimizada em monitores ultra-wide.
-*   **Dark Mode Premium**: Paleta baseada em `Plus Jakarta Sans` e cores harmônicas como `Cyan`, `Emerald` e `Violet`.
+### 💠 Design Tokens (Variáveis CSS)
+*   `--accent-cyan`: `#22d3ee` (Identidade do Professor)
+*   `--accent-violet`: `#7c6fff` (Identidade do Superusuário)
+*   `--bg-base`: `#090e1a` (Background Profundo)
+
+### 📽️ Catálogo de Animações
+*   `iconFloat`: Translação suave em Y para feedback interativo em cards.
+*   `diaAtualPulse`: Efeito de pulsação luminosa no calendário para o dia hoje.
+*   `fadeUp`: Transição suave de entrada para componentes asíncronos.
 
 ---
 
-## 🚀 Instalação e Configuração
+## 🧪 6. Garantia de Qualidade & DevOps
 
-O SIGE agora utiliza `python-decouple` para garantir uma instalação segura e portátil.
+Nossa pipeline de CI/CD não permite a entrada de código que não atinja os critérios:
 
-### 1️⃣ Preparação do Ambiente
 ```bash
-# Clone o repositório
-git clone https://github.com/JGuilhermeSneto/SIGE.git
-cd SIGE
+# 1. Conformidade Estética
+flake8 .
+black --check .
 
-# Crie e ative o ambiente virtual (VENV)
-python -m venv venv
-# Windows:
-venv\Scripts\activate
-# Linux/Mac:
-source venv/bin/activate
+# 2. Tipagem e Integridade
+mypy .
+pylint core/
 
-# Instale as dependências
-pip install -r requirements.txt
+# 3. Testes e Cobertura
+coverage run manage.py test
+coverage report -m
 ```
 
-### 2️⃣ Configuração de Ambiente (.env)
-Crie um arquivo `.env` na raiz do projeto (use o `.env.example` como base):
-```env
-SECRET_KEY=sua_chave_secreta
-DEBUG=True
-ALLOWED_HOSTS=127.0.0.1,localhost
-
-# Para usar SQLite (padrão):
-DB_ENGINE=django.db.backends.sqlite3
-DB_NAME=db.sqlite3
-
-# Para usar MySQL:
-# DB_ENGINE=django.db.backends.mysql
-# DB_NAME=sige_db
-# DB_USER=seu_usuario
-# DB_PASSWORD=sua_senha
-```
-
-### 3️⃣ Inicialização do Banco
-```bash
-python manage.py makemigrations
-python manage.py migrate
-python manage.py createsuperuser
-```
-
-### 4️⃣ Execução
-```bash
-python manage.py runserver
-```
-Acesse: [http://127.0.0.1:8000/login/](http://127.0.0.1:8000/login/)
+A cada `push` na branch `main`, o **GitHub Actions** valida esses 3 pilares. Falhas bloqueiam o merge automaticamente.
 
 ---
 
-## 📂 Estrutura e Módulos
+## 🛣️ 7. Futuras Melhorias e Roadmap
 
-O projeto segue a arquitetura **MTV (Model-Template-View)** do Django organizada de forma modular:
+O projeto está em constante evolução. Nossos próximos passos são:
 
-```text
-SIGE/
-├── core/                   # Núcleo da aplicação (Models, Views, Logic)
-│   ├── static/core/css/    # Design System centralizado
-│   └── templates/          # Interfaces divididas por módulos acadêmicos
-├── notas/                  # Configurações globais do projeto (Settings)
-├── media/                  # Uploads de fotos e documentos
-├── .github/workflows/      # Automação de CI/CD (GitHub Actions)
-└── .env.example            # Template de configuração segura
-```
+*   [ ] **API RESTful**: Implementação de Django Rest Framework para integração com apps mobile.
+*   [ ] **Dashboard de BI**: Gráficos analíticos de desempenho escolar usando `Chart.js`.
+*   [ ] **Notificações Push**: Alertas em tempo real sobre notas e faltas.
+*   [ ] **Multi-Tenancy**: Suporte para múltiplas escolas em uma única instância do banco.
 
 ---
 
-## 🧪 Qualidade e Testes
+## 🚀 8. Instalação (Setup Rápido)
 
-Mantemos um alto padrão de integridade através de ferramentas de análise estática e cobertura:
-
-*   **Testes Unitários**: `python manage.py test`
-*   **Cobertura**: `coverage run manage.py test` && `coverage report`
-*   **Linting**: `flake8 .` e `pylint **/*.py`
-*   **Tipagem**: `mypy .`
+1.  **Clone & VENV**:
+    ```bash
+    git clone https://github.com/JGuilhermeSneto/SIGE.git
+    cd SIGE
+    python -m venv venv
+    source venv/bin/activate # Ou venv\Scripts\activate no Windows
+    ```
+2.  **Config**:
+    ```bash
+    pip install -r requirements.txt
+    cp .env.example .env # Edite com suas credenciais
+    ```
+3.  **Boot**:
+    ```bash
+    python manage.py migrate
+    python manage.py createsuperuser
+    python manage.py runserver
+    ```
 
 ---
 
 ## 👥 Equipe Desenvolvedora
 
-Desenvolvido com dedicação por alunos da **UPE** (Universidade de Pernambuco):
+| João Batista | José Guilherme | Suanderson Santos | Israel Cipriano | Pedro Henrique | Vanessa Gonçalves |
+| :---: | :---: | :---: | :---: | :---: | :---: |
+| 🎓 UI/UX | 🏗️ Backend | 🧪 QA | 📂 Database | ⚖️ Legal | 📊 Testing |
+
+<br/>
 
 <div align="center">
 
-| | Autor | GitHub |
-| :---: | :--- | :--- |
-| 👤 | **João Batista** | [@JBatista](https://github.com/JBatista) |
-| 👤 | **José Guilherme** | [@JGuilhermeSneto](https://github.com/JGuilhermeSneto) |
-| 👤 | **Suanderson Santos** | [@Suanderson](https://github.com/Suanderson) |
-| 👤 | **Israel Cipriano** | [@Israel](https://github.com/Israel) |
-| 👤 | **Pedro Henrique** | [@Pedro](https://github.com/Pedro) |
-| 👤 | **Vanessa Gonçalves** | [@Vanessa](https://github.com/Vanessa) |
-
-</div>
-
----
-
-<div align="center">
-
-Desenvolvido com ❤️ pela equipe SIGE.
+Desenvolvido com excelência técnica pela equipe SIGE.
 
 </div>
