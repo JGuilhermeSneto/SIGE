@@ -33,6 +33,9 @@
   min-height: 100vh;
   padding: 28px 24px 44px;
   background: var(--bg-base);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* ── Header ── */

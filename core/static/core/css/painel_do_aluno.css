@@ -44,6 +44,14 @@
   letter-spacing: .15em;
   color: var(--accent-violet);
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-label i {
+  animation: icon-float 3s ease-in-out infinite;
+  display: inline-block;
 }
 
 .header-painel h1 {
@@ -161,9 +169,17 @@
 
 .card-info:hover .card-icon { transform: scale(1.07) translateY(-1px); }
 
-.card-info:nth-child(1) .card-icon { background: rgba(34,211,238,.1);  border: 1px solid rgba(34,211,238,.2); }
-.card-info:nth-child(2) .card-icon { background: rgba(124,111,255,.1); border: 1px solid rgba(124,111,255,.2); }
-.card-info:nth-child(3) .card-icon { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.2); }
+.card-info:nth-child(1) .card-icon { background: rgba(34,211,238,.1);  border: 1px solid rgba(34,211,238,.2); color: var(--accent-cyan); }
+.card-info:nth-child(2) .card-icon { background: rgba(124,111,255,.1); border: 1px solid rgba(124,111,255,.2); color: var(--accent-violet); }
+.card-info:nth-child(3) .card-icon { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.2); color: var(--accent-emerald); }
+
+.card-info:nth-child(1) .card-icon i { animation: book-open 5s ease-in-out infinite; }
+.card-info:nth-child(2) .card-icon i { animation: chart-pulse 4s ease-in-out infinite; }
+.card-info:nth-child(3) .card-icon i { animation: check-bounce 6s ease-in-out infinite; }
+
+.card-info:hover:nth-child(1) .card-icon i { animation: book-open 0.8s ease-in-out infinite; }
+.card-info:hover:nth-child(2) .card-icon i { animation: chart-pulse 1s ease-in-out infinite; }
+.card-info:hover:nth-child(3) .card-icon i { animation: check-bounce 0.6s ease-in-out; }
 
 /* Dados do card */
 .card-dados p {
@@ -787,6 +803,26 @@
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes icon-float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-3px) rotate(5deg); }
+}
+
+@keyframes book-open {
+  0%, 100% { transform: scale(1) rotate(0); }
+  50% { transform: scale(1.1) rotate(-3deg) skewX(2deg); }
+}
+
+@keyframes chart-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+@keyframes check-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2) translateY(-2px); }
 }
 
 /* ════════════════════════════════════════

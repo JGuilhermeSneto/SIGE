@@ -1,18 +1,45 @@
 /* ============================================================
    SIGE — Painel Professor
-   painel_do_professor.css  v6
-   Todas as variáveis e reset vêm do base_do_menu_core.css.
+   painel_do_professor.css  v7 — Hard-sync com Superusuário
    Acento primário: --accent-cyan (#22d3ee)
 ============================================================ */
 
-/* ── Wrapper ── */
-.painel-sige {
-  padding: 28px 24px 44px;
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255, 255, 255, .06);
+  --border-mid:     rgba(255, 255, 255, .11);
+  --accent-violet:  #7c6fff;
+  --accent-cyan:    #22d3ee;
+  --accent-emerald: #34d399;
+  --accent-amber:   #fbbf24;
+  --text-primary:   #eef2ff;
+  --text-secondary: #8b97bb;
+  --text-muted:     #3d4f72;
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  16px;
+  --radius-xl:  22px;
 }
 
-/* ════════════════════════════════════════
-   HEADER
-═════════════════════════════════════════*/
+*, *::before, *::after { box-sizing: border-box; }
+
+.painel-sige {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 28px 24px 44px;
+  background: var(--bg-base);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Header ── */
 .header-painel {
   display: flex;
   align-items: flex-start;
@@ -20,7 +47,6 @@
   flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 30px;
-  animation: fadeUp .35s ease both;
 }
 
 .header-esquerda {
@@ -35,6 +61,9 @@
   letter-spacing: .15em;
   color: var(--accent-cyan);
   text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .header-painel h1 {
@@ -107,9 +136,7 @@
   color: var(--text-primary);
 }
 
-/* ════════════════════════════════════════
-   LAYOUT PRINCIPAL
-═════════════════════════════════════════*/
+/* ── Layout principal ── */
 .conteudo-geral {
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -125,7 +152,7 @@
 
 /* ════════════════════════════════════════
    CARDS
-═════════════════════════════════════════*/
+ ═════════════════════════════════════════*/
 .cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -141,7 +168,6 @@
   overflow: hidden;
   transition: transform .22s ease, border-color .22s ease, background .22s ease;
   cursor: default;
-  animation: fadeUp .38s ease both;
 }
 
 .card:hover {
@@ -161,19 +187,15 @@
 }
 
 .card:hover::before { opacity: 1; }
-.card:nth-child(1)::before { background: var(--accent-cyan);    }
+.card:nth-child(1)::before { background: var(--accent-cyan); }
 .card:nth-child(2)::before { background: var(--accent-emerald); }
-.card:nth-child(3)::before { background: var(--accent-violet);  }
-.card:nth-child(4)::before { background: var(--accent-amber);   }
+.card:nth-child(3)::before { background: var(--accent-violet); }
+.card:nth-child(4)::before { background: var(--accent-amber); }
 
-.card:nth-child(1) { animation-delay: .05s; }
-.card:nth-child(2) { animation-delay: .10s; }
-.card:nth-child(3) { animation-delay: .15s; }
-.card:nth-child(4) { animation-delay: .20s; }
-
-/* ── Ícone ── */
+/* ── Container do ícone ── */
 .card-icone {
-  width: 44px; height: 44px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-sm);
   position: relative;
   margin-bottom: 14px;
@@ -186,33 +208,62 @@
 
 .card:hover .card-icone { transform: scale(1.07) translateY(-1px); }
 
+/* Fundos e bordas por card */
 .card:nth-child(1) .card-icone { background: rgba(34,211,238,.1);  border: 1px solid rgba(34,211,238,.2); }
 .card:nth-child(2) .card-icone { background: rgba(52,211,153,.1);  border: 1px solid rgba(52,211,153,.2); }
 .card:nth-child(3) .card-icone { background: rgba(124,111,255,.1); border: 1px solid rgba(124,111,255,.2); }
 .card:nth-child(4) .card-icone { background: rgba(251,191,36,.1);  border: 1px solid rgba(251,191,36,.2); }
 
+/* ── Ícone base (estado normal) ── */
 .card-icone i {
   font-size: 1.25rem;
-  transition: color .25s ease, transform .3s cubic-bezier(.34,1.56,.64,1), filter .3s ease;
+  transition:
+    color .25s ease,
+    transform .3s cubic-bezier(.34,1.56,.64,1),
+    filter .3s ease;
 }
 
-.card:nth-child(1) .card-icone i { color: rgba(34,211,238,.55);  }
-.card:nth-child(2) .card-icone i { color: rgba(52,211,153,.55);  }
+/* Cores padrão (sem hover) — ligeiramente apagadas */
+.card:nth-child(1) .card-icone i { color: rgba(34,211,238,.55); }
+.card:nth-child(2) .card-icone i { color: rgba(52,211,153,.55); }
 .card:nth-child(3) .card-icone i { color: rgba(124,111,255,.55); }
-.card:nth-child(4) .card-icone i { color: rgba(251,191,36,.55);  }
+.card:nth-child(4) .card-icone i { color: rgba(251,191,36,.55); }
 
-.card:nth-child(1):hover .card-icone i { color: var(--accent-cyan);    animation: iconFloat 2.6s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(34,211,238,.55));   }
-.card:nth-child(2):hover .card-icone i { color: var(--accent-emerald); animation: iconFloat 2.8s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(52,211,153,.55));   }
-.card:nth-child(3):hover .card-icone i { color: var(--accent-violet);  animation: iconFloat 3s   ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(124,111,255,.55));  }
-.card:nth-child(4):hover .card-icone i { color: var(--accent-amber);   animation: iconFloat 2.5s ease-in-out infinite; filter: drop-shadow(0 0 6px rgba(251,191,36,.55));   }
+/* ── Cores e animações no hover do card ── */
+.card:nth-child(1):hover .card-icone i {
+  color: var(--accent-cyan);
+  animation: iconFloat 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(34,211,238,.55));
+}
 
+.card:nth-child(2):hover .card-icone i {
+  color: var(--accent-emerald);
+  animation: iconFloat 2.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(52,211,153,.55));
+}
+
+.card:nth-child(3):hover .card-icone i {
+  color: var(--accent-violet);
+  animation: iconFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(124,111,255,.55));
+}
+
+.card:nth-child(4):hover .card-icone i {
+  color: var(--accent-amber);
+  animation: iconFloat 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(251,191,36,.55));
+}
+
+/* Animação compartilhada — flutuação suave */
 @keyframes iconFloat {
   0%, 100% { transform: translateY(0) scale(1); }
   40%       { transform: translateY(-3px) scale(1.05); }
   70%       { transform: translateY(-1px) scale(1.02); }
 }
 
-/* ── Dados ── */
+/* ════════════════════════════════════════
+   DADOS DO CARD
+ ═════════════════════════════════════════*/
 .card-label {
   font-size: .67rem;
   font-weight: 600;
@@ -233,13 +284,13 @@
 
 .card:hover .card-valor { transform: scale(1.03); }
 
-.card:nth-child(1) .card-valor { color: var(--accent-cyan);    }
+.card:nth-child(1) .card-valor { color: var(--accent-cyan); }
 .card:nth-child(2) .card-valor { color: var(--accent-emerald); }
-.card:nth-child(3) .card-valor { color: var(--accent-violet);  }
-.card:nth-child(4) .card-valor { color: var(--accent-amber);   }
+.card:nth-child(3) .card-valor { color: var(--accent-violet); }
+.card:nth-child(4) .card-valor { color: var(--accent-amber); }
 
+/* Específicos para o card de Notas (Professor) */
 .card-notas .card-valor { font-size: 1.8rem; }
-
 .card-notas .texto-pequeno {
   font-size: .78rem;
   font-weight: 500;
@@ -262,7 +313,7 @@
   transition: width .8s cubic-bezier(.22, 1, .36, 1);
 }
 
-/* ── Resumo bar ── */
+/* ── Barra de resumo ── */
 .resumo-bar {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -271,7 +322,6 @@
   display: flex;
   align-items: center;
   transition: border-color .22s;
-  animation: fadeUp .38s .25s ease both;
 }
 
 .resumo-bar:hover { border-color: var(--border-mid); }
@@ -309,14 +359,16 @@
 
 /* ════════════════════════════════════════
    COLUNA DIREITA
-═════════════════════════════════════════*/
+ ═════════════════════════════════════════*/
 .coluna-direita {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
-/* ── Calendário ── */
+/* ════════════════════════════════════════
+   CALENDÁRIO
+ ═════════════════════════════════════════*/
 .calendario-box {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -324,7 +376,6 @@
   padding: 18px;
   overflow: hidden;
   transition: border-color .22s;
-  animation: fadeUp .38s .07s ease both;
 }
 
 .calendario-box:hover { border-color: var(--border-mid); }
@@ -355,6 +406,7 @@
   padding: 2px 8px;
 }
 
+/* Grade 7 colunas fixas */
 .calendario-grade {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -398,7 +450,7 @@
   color: #04111a;
   font-weight: 700;
   border-radius: 4px;
-  box-shadow: 0 0 10px rgba(34,211,238,.35);
+  box-shadow: 0 0 10px rgba(34,211,238,.4);
   animation: diaAtualPulse 3s ease-out infinite;
 }
 
@@ -408,14 +460,13 @@
   100% { box-shadow: 0 0 0 0 rgba(34,211,238,0); }
 }
 
-/* ── Visão Geral ── */
+/* ── Info rápida ── */
 .info-rapida {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 16px 18px;
   transition: border-color .22s;
-  animation: fadeUp .38s .15s ease both;
 }
 
 .info-rapida:hover { border-color: var(--border-mid); }
@@ -464,8 +515,26 @@
 }
 
 /* ════════════════════════════════════════
+   ANIMAÇÕES DE ENTRADA
+ ═════════════════════════════════════════*/
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card              { animation: fadeUp .38s ease both; }
+.card:nth-child(1) { animation-delay: .05s; }
+.card:nth-child(2) { animation-delay: .1s; }
+.card:nth-child(3) { animation-delay: .15s; }
+.card:nth-child(4) { animation-delay: .2s; }
+
+.resumo-bar     { animation: fadeUp .38s .25s ease both; }
+.calendario-box { animation: fadeUp .38s .07s ease both; }
+.info-rapida    { animation: fadeUp .38s .15s ease both; }
+
+/* ════════════════════════════════════════
    RESPONSIVO
-═════════════════════════════════════════*/
+ ═════════════════════════════════════════*/
 @media (max-width: 1080px) {
   .conteudo-geral { grid-template-columns: 1fr 240px; }
 }

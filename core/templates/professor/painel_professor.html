@@ -1,10 +1,6 @@
 {# ============================================================ #}
 {# template: professor/painel_professor.html                   #}
-{# Baseado no padrão do painel_super.html                     #}
-{# Contexto: nome_exibicao, total_disciplinas, total_turmas,  #}
-{#           total_alunos, total_notas_lancadas,              #}
-{#           total_notas_possiveis, disciplinas_detalhadas,   #}
-{#           anos_disponiveis, ano_filtro, calendario         #}
+{# HARD-SYNC com superusuario/painel_super.html               #}
 {# ============================================================ #}
 {% extends "core/base.html" %}
 {% load static %}
@@ -29,7 +25,7 @@
     </div>
 
     <form method="get" class="filtro-ano-painel">
-      <span class="icone-cal">📅</span>
+      <span class="icone-cal"><i class="fa-solid fa-calendar-days"></i></span>
       <label for="filtro-select">Ano Letivo</label>
       <select id="filtro-select" name="ano" onchange="this.form.submit()">
         {% for ano in anos_disponiveis %}
@@ -92,7 +88,6 @@
         </article>
       </section>
 
-
       {# ── Barra de resumo ── #}
       <section class="resumo-bar">
         <div class="resumo-item">
@@ -108,7 +103,6 @@
           <p class="resumo-item-valor">{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</p>
         </div>
       </section>
-
     </section>
 
     {# ───── COLUNA DIREITA ───── #}
@@ -117,10 +111,10 @@
       {# ── Calendário ── #}
       <section class="calendario-box">
         <header class="calendario-cabecalho">
-          <h2>{{ agora|date:"F"|upper }}</h2>
-          <span class="calendario-ano">{{ agora|date:"Y" }}</span>
+          <h2 id="cal-mes-nome"></h2>
+          <span class="calendario-ano" id="cal-ano"></span>
         </header>
-        <div class="calendario-grade">
+        <div class="calendario-grade" id="cal-grade">
           <div class="nome-dia">D</div>
           <div class="nome-dia">S</div>
           <div class="nome-dia">T</div>
@@ -128,11 +122,6 @@
           <div class="nome-dia">Q</div>
           <div class="nome-dia">S</div>
           <div class="nome-dia">S</div>
-          {% for celula in calendario %}
-            <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
-              {% if not celula.vazio %}{{ celula.numero }}{% endif %}
-            </div>
-          {% endfor %}
         </div>
       </section>
 
@@ -181,4 +170,37 @@
 
   </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  const MESES = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO',
+                 'JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
+  const hoje   = new Date();
+  const ano    = hoje.getFullYear();
+  const mes    = hoje.getMonth();
+  const diaHj  = hoje.getDate();
+
+  document.getElementById('cal-mes-nome').textContent = MESES[mes];
+  document.getElementById('cal-ano').textContent      = ano;
+
+  const grade     = document.getElementById('cal-grade');
+  const primDia   = new Date(ano, mes, 1).getDay();
+  const totalDias = new Date(ano, mes + 1, 0).getDate();
+
+  for (let i = 0; i < primDia; i++) {
+    const v = document.createElement('div');
+    v.className = 'dia vazio';
+    grade.appendChild(v);
+  }
+
+  for (let d = 1; d <= totalDias; d++) {
+    const c = document.createElement('div');
+    c.className   = d === diaHj ? 'dia atual' : 'dia';
+    c.textContent = d;
+    grade.appendChild(c);
+  }
+})();
+</script>
 {% endblock %}

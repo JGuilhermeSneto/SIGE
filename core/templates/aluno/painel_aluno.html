@@ -16,7 +16,7 @@
     {# ════════════════ HEADER ════════════════ #}
     <div class="header-painel">
         <div class="header-esquerda">
-            <span class="header-label">SIGE · Painel do Aluno</span>
+            <span class="header-label"><i class="fa-solid fa-graduation-cap"></i> SIGE · Painel do Aluno</span>
             <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋</h1>
             <p class="header-sub">{{ aluno.turma.nome }} · {{ aluno.turma.get_turno_display }}</p>
         </div>
@@ -28,7 +28,7 @@
     {# ════════════════ CARDS DE RESUMO ════════════════ #}
     <section class="cards-resumo">
         <div class="card-info">
-            <div class="card-icon">📚</div>
+            <div class="card-icon"><i class="fa-solid fa-book"></i></div>
             <div class="card-dados">
                 <p>Disciplinas</p>
                 <h3>{{ disciplinas_com_notas|length }}</h3>
@@ -36,7 +36,7 @@
         </div>
 
         <div class="card-info">
-            <div class="card-icon">📊</div>
+            <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
             <div class="card-dados">
                 <p>Média Geral</p>
                 <h3>{{ media_geral|floatformat:1|default:"--" }}</h3>
@@ -44,7 +44,7 @@
         </div>
 
         <div class="card-info">
-            <div class="card-icon">🎯</div>
+            <div class="card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
             <div class="card-dados">
                 {% if situacao_geral != "--" %}
                     <p>Situação Geral</p>
