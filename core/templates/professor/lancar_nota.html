@@ -1,112 +1,131 @@
-{# ============================================================ #}
-{# template: professor/lancar_nota.html                        #}
-{# view   : lancar_nota                                        #}
-{# contexto: disciplina, alunos, notas_dict, is_gestor_ou_super#}
-{# Requer templatetag: {% load get_item %} e {% load l10n %}   #}
-{# FIX: nota.media pode ser None — protegido com "is not None";#}
-{#      valor das notas renderizados com |unlocalize para evitar#}
-{#      vírgula decimal quebrando o input[type=number];         #}
-{#      botão voltar aponta para visualizar_disciplinas.        #}
-{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 {% load get_item %}
 {% load l10n %}
 
-{# Título com nome da disciplina #}
 {% block title %}Lançar Notas — {{ disciplina.nome }}{% endblock %}
 {% block header_title %}Lançar Notas{% endblock %}
 
 {% block extra_css %}
-{# Folha de estilo da tela de lançamento de notas #}
-<link rel="stylesheet" href="{% static 'core/css/lancar_nota.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/lancar_notas_dos_alunos.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Syne:wght@600;700&display=swap"
+  rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<main class="conteudo-principal">
+<div class="main-area">
 
-  {# ── Cabeçalho com botão voltar e título da disciplina/turma ── #}
-  <div class="header-docentes">
-
-    {# Volta para a visualização da disciplina #}
-    <a href="{% url 'visualizar_disciplinas' disciplina.id %}">
-      <button class="btn-voltar">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-    </a>
-
-    <h1 class="titulo-pagina">
-      {{ disciplina.nome }} — Turma {{ disciplina.turma.nome }}
-    </h1>
+  <div class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">Acadêmico</span>
+      <h1>Lançar <span class="destaque">Notas</span></h1>
+      <div class="header-breadcrumb">
+        <a href="{% url 'painel_professor' %}">Home</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="{% url 'disciplinas_professor' %}">Minhas Disciplinas</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>{{ disciplina.nome }}</span>
+      </div>
+    </div>
+    <div class="header-direita">
+      <a href="{% url 'visualizar_disciplinas' disciplina.id %}" class="btn-voltar-tab">
+        <i class="fa-solid fa-arrow-left-long"></i> Voltar
+      </a>
+    </div>
   </div>
 
-  {# ── Card da tabela de notas ── #}
-  <div class="card-tabela">
+  <div class="passos-wrapper">
+    <div class="passo-item ativo" id="passo-1">
+      <div class="passo-num">1</div>
+      <div class="passo-info">
+        <span class="passo-label">Etapa 1</span>
+        <span class="passo-nome">Lançamento de Médias</span>
+      </div>
+    </div>
+  </div>
 
-    {# Formulário POST: notas enviadas como nota{1..4}_{aluno_id} #}
+  <div class="form-card">
+    <div class="form-card-titulo">
+      <div class="form-card-icone">
+        <i class="fa-solid fa-pen-to-square fa-beat" style="--fa-animation-duration: 2s;"></i>
+      </div>
+      <div class="form-card-titulo-texto">
+        <h2>Avaliação por Bimestre</h2>
+        <p>{{ disciplina.nome }} — Turma {{ disciplina.turma.nome }}</p>
+      </div>
+    </div>
+
     <form method="post">
       {% csrf_token %}
 
       <div class="container-tabela">
-        <table class="tabela-notas">
+        <table class="tabela-moderna">
           <thead>
             <tr>
-              <th class="col-aluno">Aluno</th>
-              <th>1º Bim</th>
-              <th>2º Bim</th>
-              <th>3º Bim</th>
-              <th>4º Bim</th>
-              <th>Média</th>
+              <th class="col-aluno">Estudante</th>
+              <th>1º Bimestre</th>
+              <th>2º Bimestre</th>
+              <th>3º Bimestre</th>
+              <th>4º Bimestre</th>
+              <th class="col-media">Média Final</th>
             </tr>
           </thead>
-
           <tbody>
             {% for aluno in alunos %}
-            {# Busca o objeto Nota deste aluno usando templatetag get_item #}
             {% with nota=notas_dict|get_item:aluno.id %}
             <tr>
-              <td class="col-aluno">{{ aluno.nome_completo }}</td>
-
-              {# ── 1º Bimestre ── #}
-              {# FIX: |unlocalize evita que o Django exiba "7,5" no input number #}
-              <td>
-                <input type="number" step="0.1" min="0" max="10"
-                       name="nota1_{{ aluno.id }}"
-                       value="{% if nota and nota.nota1 is not None %}{{ nota.nota1|unlocalize }}{% endif %}"
-                       class="nota-input">
+              <td class="col-aluno">
+                <div class="aluno-info">
+                  <div class="aluno-avatar">
+                    {{ aluno.nome_completo|slice:":1" }}
+                  </div>
+                  <div class="aluno-detalhes">
+                    <span class="aluno-nome">{{ aluno.nome_completo }}</span>
+                    <span class="aluno-sub">Matriculado</span>
+                  </div>
+                </div>
               </td>
 
-              {# ── 2º Bimestre ── #}
               <td>
-                <input type="number" step="0.1" min="0" max="10"
-                       name="nota2_{{ aluno.id }}"
-                       value="{% if nota and nota.nota2 is not None %}{{ nota.nota2|unlocalize }}{% endif %}"
-                       class="nota-input">
+                <div class="caixa-input-nota">
+                  <input type="number" step="0.1" min="0" max="10" name="nota1_{{ aluno.id }}"
+                    value="{% if nota and nota.nota1 is not None %}{{ nota.nota1|unlocalize }}{% endif %}"
+                    class="nota-input b1">
+                </div>
               </td>
 
-              {# ── 3º Bimestre ── #}
               <td>
-                <input type="number" step="0.1" min="0" max="10"
-                       name="nota3_{{ aluno.id }}"
-                       value="{% if nota and nota.nota3 is not None %}{{ nota.nota3|unlocalize }}{% endif %}"
-                       class="nota-input">
+                <div class="caixa-input-nota">
+                  <input type="number" step="0.1" min="0" max="10" name="nota2_{{ aluno.id }}"
+                    value="{% if nota and nota.nota2 is not None %}{{ nota.nota2|unlocalize }}{% endif %}"
+                    class="nota-input b2">
+                </div>
               </td>
 
-              {# ── 4º Bimestre ── #}
               <td>
-                <input type="number" step="0.1" min="0" max="10"
-                       name="nota4_{{ aluno.id }}"
-                       value="{% if nota and nota.nota4 is not None %}{{ nota.nota4|unlocalize }}{% endif %}"
-                       class="nota-input">
+                <div class="caixa-input-nota">
+                  <input type="number" step="0.1" min="0" max="10" name="nota3_{{ aluno.id }}"
+                    value="{% if nota and nota.nota3 is not None %}{{ nota.nota3|unlocalize }}{% endif %}"
+                    class="nota-input b3">
+                </div>
               </td>
 
-              {# ── Média calculada pela property Nota.media ── #}
-              {# FIX: media pode ser None (nenhuma nota lançada); exibe "—" #}
-              <td class="media">
+              <td>
+                <div class="caixa-input-nota">
+                  <input type="number" step="0.1" min="0" max="10" name="nota4_{{ aluno.id }}"
+                    value="{% if nota and nota.nota4 is not None %}{{ nota.nota4|unlocalize }}{% endif %}"
+                    class="nota-input b4">
+                </div>
+              </td>
+
+              <td class="col-media">
                 {% if nota and nota.media is not None %}
-                  {{ nota.media|floatformat:2 }}
+                <span class="media-valor {% if nota.media >= 6 %}aprovado{% else %}reprovado{% endif %}">
+                  {{ nota.media|floatformat:1 }}
+                </span>
                 {% else %}
-                  <span class="media-vazia">—</span>
+                <span class="media-vazia">—</span>
                 {% endif %}
               </td>
             </tr>
@@ -115,18 +134,17 @@
           </tbody>
         </table>
       </div>
-      {# ── fim container-tabela ── #}
 
-      {# Botão de salvar alinhado à direita #}
-      <div class="form-actions">
-        <button type="submit" class="btn-adicionar">
-          Salvar Notas
+      <div class="botoes">
+        <div class="info-legenda">
+          <i class="fa-solid fa-circle-info fa-fade" style="color: var(--theme-primary);"></i>
+          <span>Preencha as notas e clique em salvar para processar as médias.</span>
+        </div>
+        <button type="submit" class="btn salvar">
+          <i class="fa-solid fa-cloud-arrow-up fa-bounce" style="--fa-animation-duration: 2s;"></i> Salvar Notas
         </button>
       </div>
-
     </form>
   </div>
-  {# ── fim card-tabela ── #}
-
-</main>
+</div>
 {% endblock %}
