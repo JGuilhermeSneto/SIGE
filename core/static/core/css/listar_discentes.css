@@ -13,9 +13,9 @@
   --hover:       #1a2844;
   --border:      rgba(255,255,255,.07);
   --border-mid:  rgba(255,255,255,.13);
-  --accent:      #34d399;       /* emerald — cor dos discentes */
-  --accent-dim:  rgba(52,211,153,.12);
-  --accent-glow: rgba(52,211,153,.18);
+  --accent:      #fbbf24;       /* emerald — cor dos discentes */
+  --accent-dim:  rgba(251,191,36,.12);
+  --accent-glow: rgba(251,191,36,.18);
   --violet:      #7c6fff;
   --cyan:        #22d3ee;
   --amber:       #fbbf24;
@@ -121,8 +121,8 @@
 }
 
 .btn-adicionar:hover {
-  background: rgba(52,211,153,.22);
-  box-shadow: 0 0 20px rgba(52,211,153,.15);
+  background: rgba(251,191,36,.22);
+  box-shadow: 0 0 20px rgba(251,191,36,.15);
   transform: translateY(-1px);
 }
 
@@ -172,7 +172,7 @@
 
 .barra-busca input[type="text"]:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(52,211,153,.15);
+  box-shadow: 0 0 0 3px rgba(251,191,36,.15);
   background: var(--hover);
 }
 

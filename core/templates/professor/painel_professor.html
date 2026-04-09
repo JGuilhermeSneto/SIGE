@@ -1,97 +1,184 @@
+{# ============================================================ #}
+{# template: professor/painel_professor.html                   #}
+{# Baseado no padrão do painel_super.html                     #}
+{# Contexto: nome_exibicao, total_disciplinas, total_turmas,  #}
+{#           total_alunos, total_notas_lancadas,              #}
+{#           total_notas_possiveis, disciplinas_detalhadas,   #}
+{#           anos_disponiveis, ano_filtro, calendario         #}
+{# ============================================================ #}
 {% extends "core/base.html" %}
 {% load static %}
-{% load l10n %}
 
-{% block title %}Painel do Professor{% endblock %}
+{% block title %}Painel do Professor — SIGE{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_do_professor.css' %}">
 {% endblock %}
 
 {% block content %}
+<section class="painel-sige">
 
-<div class="container">
+  {# ════════════════ HEADER ════════════════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">SIGE · Painel do Professor</span>
+      <h1>
+        Olá,
+        <span class="nome-destaque">{{ nome_exibicao }}</span>
+      </h1>
+    </div>
 
-    <main class="conteudo-principal-rolavel">
+    <form method="get" class="filtro-ano-painel">
+      <span class="icone-cal">📅</span>
+      <label for="filtro-select">Ano Letivo</label>
+      <select id="filtro-select" name="ano" onchange="this.form.submit()">
+        {% for ano in anos_disponiveis %}
+          <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+            {{ ano }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </header>
 
-        <!-- HEADER -->
-        <div class="header-painel">
-            <h1>Olá, {{ nome_exibicao }}</h1>
+  {# ════════════════ CONTEÚDO PRINCIPAL ════════════════ #}
+  <div class="conteudo-geral">
 
-            <form method="get" class="filtro-ano-painel">
-                <label>📅 Ano Letivo</label>
-                <select name="ano" onchange="this.form.submit()">
-                    {% for ano in anos_disponiveis %}
-                        <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
-                            {{ ano }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </form>
-        </div>
+    {# ───── COLUNA ESQUERDA ───── #}
+    <section class="coluna-esquerda">
 
-        <div class="conteudo-geral">
+      {# ── Cards de totais ── #}
+      <section class="cards">
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <p class="card-label">Disciplinas</p>
+          <h2 class="card-valor">{{ total_disciplinas }}</h2>
+        </article>
 
-            <!-- CARDS -->
-            <section class="cards">
-                <div class="card">
-                    <p>Disciplinas</p>
-                    <h2>{{ total_disciplinas }}</h2>
-                </div>
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-users-rectangle"></i>
+          </div>
+          <p class="card-label">Turmas</p>
+          <h2 class="card-valor">{{ total_turmas }}</h2>
+        </article>
 
-                <div class="card">
-                    <p>Turmas</p>
-                    <h2>{{ total_turmas }}</h2>
-                </div>
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <p class="card-label">Alunos</p>
+          <h2 class="card-valor">{{ total_alunos }}</h2>
+        </article>
 
-                <div class="card">
-                    <p>Total de Alunos</p>
-                    <h2>{{ total_alunos }}</h2>
-                </div>
-
-                <div class="card card-notas">
-                    <p>Notas Lançadas</p>
-                    <h2>
-                        {{ total_notas_lancadas }}
-                        <span class="texto-pequeno">/{{ total_notas_possiveis }}</span>
-                    </h2>
-                </div>
-            </section>
-
-            <!-- CALENDÁRIO -->
-            <div class="calendario">
-
-                <div class="calendario-cabecalho">
-                    <h2>{{ agora|date:"F"|upper }}</h2>
-                    <span class="calendario-ano">{{ agora|date:"Y" }}</span>
-                </div>
-
-                <div class="calendario-grade">
-                    <!-- Dias da semana (PADRÃO DO SISTEMA) -->
-                    <div class="nome-dia">D</div>
-                    <div class="nome-dia">S</div>
-                    <div class="nome-dia">T</div>
-                    <div class="nome-dia">Q</div>
-                    <div class="nome-dia">Q</div>
-                    <div class="nome-dia">S</div>
-                    <div class="nome-dia">S</div>
-
-                    {% for celula in calendario %}
-                        <div class="dia
-                            {% if celula.hoje %}atual{% endif %}
-                            {% if celula.vazio %}vazio{% endif %}">
-                            {% if not celula.vazio %}
-                                {{ celula.numero }}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-
+        <article class="card card-notas">
+          <div class="card-icone">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </div>
+          <p class="card-label">Notas Lançadas</p>
+          <h2 class="card-valor">
+            {{ total_notas_lancadas }}
+            <span class="texto-pequeno">/{{ total_notas_possiveis }}</span>
+          </h2>
+          {% if total_notas_possiveis > 0 %}
+          <div class="prog-track">
+            <div class="prog-fill"
+                 style="width:{% widthratio total_notas_lancadas total_notas_possiveis 100 %}%">
             </div>
+          </div>
+          {% endif %}
+        </article>
+      </section>
 
+
+      {# ── Barra de resumo ── #}
+      <section class="resumo-bar">
+        <div class="resumo-item">
+          <p class="resumo-item-label">Ano Letivo</p>
+          <p class="resumo-item-valor">{{ ano_filtro }}</p>
         </div>
+        <div class="resumo-item">
+          <p class="resumo-item-label">Total de Alunos</p>
+          <p class="resumo-item-valor">{{ total_alunos }}</p>
+        </div>
+        <div class="resumo-item">
+          <p class="resumo-item-label">Notas Lançadas</p>
+          <p class="resumo-item-valor">{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</p>
+        </div>
+      </section>
 
-    </main>
-</div>
+    </section>
 
+    {# ───── COLUNA DIREITA ───── #}
+    <aside class="coluna-direita">
+
+      {# ── Calendário ── #}
+      <section class="calendario-box">
+        <header class="calendario-cabecalho">
+          <h2>{{ agora|date:"F"|upper }}</h2>
+          <span class="calendario-ano">{{ agora|date:"Y" }}</span>
+        </header>
+        <div class="calendario-grade">
+          <div class="nome-dia">D</div>
+          <div class="nome-dia">S</div>
+          <div class="nome-dia">T</div>
+          <div class="nome-dia">Q</div>
+          <div class="nome-dia">Q</div>
+          <div class="nome-dia">S</div>
+          <div class="nome-dia">S</div>
+          {% for celula in calendario %}
+            <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
+              {% if not celula.vazio %}{{ celula.numero }}{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      {# ── Visão geral rápida ── #}
+      <section class="info-rapida">
+        <p class="info-rapida-titulo">Visão Geral</p>
+        <ul class="info-rapida-lista">
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-cyan)"></span>
+              Disciplinas
+            </span>
+            <span class="info-item-valor">{{ total_disciplinas }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-emerald)"></span>
+              Turmas ativas
+            </span>
+            <span class="info-item-valor">{{ total_turmas }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-violet)"></span>
+              Total de alunos
+            </span>
+            <span class="info-item-valor">{{ total_alunos }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-amber)"></span>
+              Progresso de notas
+            </span>
+            <span class="info-item-valor">
+              {% if total_notas_possiveis > 0 %}
+                {% widthratio total_notas_lancadas total_notas_possiveis 100 %}%
+              {% else %}
+                —
+              {% endif %}
+            </span>
+          </li>
+        </ul>
+      </section>
+
+    </aside>
+
+  </div>
+</section>
 {% endblock %}

@@ -1,157 +1,363 @@
 /* ============================================================
-   SIGE — Disciplinas da Turma
-   lista_disciplinas.css  (alinhado com cadastros.css)
+   SIGE — Lista de Disciplinas
+   lista_Disciplinas.css
+   Coerente com painel_usuarios.css
 ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg-base:        #090e1a;
-  --bg-surface:     #0f1729;
-  --bg-elevated:    #131e33;
-  --bg-hover:       #1a2844;
-  --border-subtle:  rgba(255,255,255,.06);
-  --border-mid:     rgba(255,255,255,.11);
-  --accent-violet:  #7c6fff;
-  --accent-cyan:    #22d3ee;
-  --accent-emerald: #34d399;
-  --accent-amber:   #fbbf24;
-  --text-primary:   #eef2ff;
-  --text-secondary: #7986a8;
-  --text-muted:     #3d4f72;
-  --radius-sm:  8px;
-  --radius-md:  12px;
-  --radius-lg:  18px;
-  --radius-xl:  24px;
+  --bg:          #090e1a;
+  --surface:     #0f1729;
+  --elevated:    #131e33;
+  --hover:       #1a2844;
+  --border:      rgba(255,255,255,.07);
+  --border-mid:  rgba(255,255,255,.13);
+  --accent:      #fb7185;       /* cyan — cor dos Disciplinas */
+  --accent-dim:  rgba(251,113,133,.12);
+  --accent-glow: rgba(251,113,133,.18);
+  --violet:      #7c6fff;
+  --emerald:     #34d399;
+  --amber:       #fbbf24;
+  --rose:        #fb7185;
+  --text:        #eef2ff;
+  --muted:       #7986a8;
+  --dim:         #3d4f72;
+  --r-sm:        8px;
+  --r-md:        14px;
+  --r-lg:        20px;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+/* ── Reset base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-/* ── Container principal ── */
+/* ── Conteúdo principal ── */
 .conteudo-principal {
   font-family: 'DM Sans', sans-serif;
-  color: var(--text-primary);
+  color: var(--text);
   min-height: 100vh;
-  padding: 32px 28px 48px;
-  background: var(--bg-base);
+  padding: 36px 32px 60px;
+  background: var(--bg);
 }
 
-/* ── Cabeçalho ── */
+/* ══════════════════════════════════════
+   CABEÇALHO
+══════════════════════════════════════ */
 .header-docentes {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
+  gap: 16px;
   margin-bottom: 36px;
-  animation: fadeUp .3s ease both;
+  flex-wrap: wrap;
 }
 
-.titulo-pagina {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.85rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.15;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  position: relative;
-}
-.titulo-pagina::after {
-  content: '';
-  position: absolute;
-  bottom: -5px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent-violet), transparent);
-  border-radius: 2px;
-}
-
-/* Subtítulo com nome e turno da turma */
-.subtitulo-turma {
-  font-family: 'DM Sans', sans-serif;
-  font-size: .8rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  letter-spacing: .03em;
-}
-
-/* ── Botão Voltar ── */
+/* botão voltar */
 .btn-voltar {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  background: var(--bg-surface);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
   border: 1px solid var(--border-mid);
-  border-radius: var(--radius-md);
-  color: var(--text-secondary);
-  font-size: .9rem;
+  color: var(--muted);
+  font-size: .95rem;
   cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s, transform .2s;
   flex-shrink: 0;
-  transition: background .18s, color .18s, border-color .18s, transform .18s;
 }
+
 .btn-voltar:hover {
-  background: var(--bg-hover);
-  border-color: var(--accent-violet);
-  color: var(--accent-violet);
+  background: var(--hover);
+  color: var(--text);
+  border-color: var(--accent);
   transform: translateX(-2px);
 }
 
-/* ── Botões de cabeçalho (editar/excluir turma) ── */
+/* título */
+.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.titulo-pagina::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
+}
+
+/* botão adicionar */
 .btn-adicionar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-md);
+  color: var(--accent);
   font-family: 'DM Sans', sans-serif;
-  font-size: .85rem;
+  font-size: .82rem;
   font-weight: 600;
-  color: #fff;
-  background: var(--accent-violet);
-  border: none;
-  border-radius: var(--radius-md);
+  letter-spacing: .04em;
   padding: .55rem 1.1rem;
   cursor: pointer;
-  letter-spacing: .03em;
-  transition: filter .2s, transform .18s, box-shadow .2s;
+  transition: background .2s, box-shadow .2s, transform .2s;
+  white-space: nowrap;
 }
+
 .btn-adicionar:hover {
-  filter: brightness(1.15);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(0,0,0,.25);
-}
-.btn-adicionar:active { transform: translateY(0); }
-
-.btn-grade {
-  font-family: 'DM Sans', sans-serif;
-  font-size: .85rem;
-  font-weight: 600;
-  color: var(--accent-emerald);
-  background: rgba(52,211,153,.1);
-  border: 1px solid rgba(52,211,153,.25);
-  border-radius: var(--radius-md);
-  padding: .55rem 1.1rem;
-  cursor: pointer;
-  letter-spacing: .03em;
-  transition: background .2s, border-color .2s, transform .18s;
-}
-.btn-grade:hover {
-  background: rgba(52,211,153,.18);
-  border-color: var(--accent-emerald);
-  transform: translateY(-2px);
+  background: rgba(251,113,133,.22);
+  box-shadow: 0 0 20px rgba(251,113,133,.15);
+  transform: translateY(-1px);
 }
 
-/* ── Card principal ── */
+.btn-adicionar::before {
+  content: '+';
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════
+   CARD / TABELA
+══════════════════════════════════════ */
 .card-tabela {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  padding: 24px;
-  animation: fadeUp .35s .05s ease both;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  animation: fadeUp .4s ease both;
 }
 
-/* ── Barra busca + ações ── */
+/* barra de acento no topo do card */
+.card-tabela::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 70%);
+}
+
+.container-tabela {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Tabela ── */
+.tabela-docentes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+}
+
+/* cabeçalho */
+.tabela-docentes thead tr {
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.tabela-docentes thead th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  background: var(--surface);
+}
+
+/* linhas do body */
+.tabela-docentes tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .18s;
+}
+
+.tabela-docentes tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabela-docentes tbody tr:hover {
+  background: var(--hover);
+}
+
+.tabela-docentes tbody td {
+  padding: 15px 20px;
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+/* coluna nome — destaque */
+.tabela-docentes tbody td:first-child {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* coluna cargo — badge */
+.tabela-docentes tbody td:nth-child(2) {
+  color: var(--accent);
+}
+
+/* linha vazia */
+.tabela-docentes tbody td[colspan] {
+  text-align: center;
+  color: var(--dim);
+  padding: 48px 20px;
+  font-size: .85rem;
+  letter-spacing: .04em;
+}
+
+/* ── Colunas ── */
+.coluna-nome  { width: 30%; }
+.coluna-email { width: 25%; }
+.coluna-acoes { width: 12%; text-align: center; }
+
+.tabela-docentes tbody .coluna-acoes {
+  text-align: center;
+}
+
+/* ══════════════════════════════════════
+   AÇÕES (editar / excluir)
+══════════════════════════════════════ */
+.coluna-acoes a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--elevated);
+  transition: background .18s, border-color .18s, transform .18s;
+  margin: 0 3px;
+}
+
+.coluna-acoes a:hover {
+  transform: translateY(-2px);
+}
+
+/* editar */
+.acao-editar {
+  color: var(--accent);
+  font-size: .8rem;
+}
+
+.coluna-acoes a:has(.acao-editar):hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+/* excluir */
+.acao-excluir {
+  color: var(--rose);
+  font-size: .8rem;
+}
+
+.coluna-acoes a:has(.acao-excluir):hover {
+  background: rgba(251,113,133,.12);
+  border-color: var(--rose);
+}
+
+/* ══════════════════════════════════════
+   ANIMAÇÕES
+══════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVO
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .conteudo-principal {
+    padding: 24px 16px 48px;
+  }
+
+  .titulo-pagina {
+    font-size: 1.35rem;
+  }
+
+  .tabela-docentes thead th,
+  .tabela-docentes tbody td {
+    padding: 12px 14px;
+    font-size: .8rem;
+  }
+
+  /* esconde cargo e email em telas muito pequenas */
+  @media (max-width: 480px) {
+    .coluna-email { display: none; }
+  }
+}
+/* --------------------------------------
+   BARRA DE BUSCA
+-------------------------------------- */
+.barra-busca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.barra-busca form {
+  width: 100%;
+  display: flex;
+}
+
+.barra-busca input[type="text"] {
+  flex: 1;
+  padding: 11px 16px 11px 42px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-mid);
+  background: var(--elevated);
+  color: var(--text);
+  font-size: .88rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.barra-busca input[type="text"]::placeholder { color: var(--dim); }
+
+.barra-busca input[type="text"]:hover {
+  border-color: rgba(255,255,255,.18);
+  background: var(--hover);
+}
+
+.barra-busca input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--hover);
+}
+
+.barra-busca .fa-magnifying-glass {
+  position: absolute;
+  left: 40px;
+  font-size: .82rem;
+  color: var(--dim);
+  pointer-events: none;
+}
+
+
+/* ============================================================
+   BARRA DE BUSCA EM LINHA (Filtros extras)
+============================================================ */
 .barra-busca-linha {
   display: flex;
   align-items: center;
@@ -160,152 +366,52 @@
   flex-wrap: wrap;
 }
 
-.barra-busca {
-  flex: 1;
-  min-width: 200px;
-  position: relative;
+/* -- Bot�o Grade Hor�ria -- */
+.btn-grade {
   display: flex;
   align-items: center;
-}
-.barra-busca input[type="text"] {
-  width: 100%;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-mid);
+  gap: 8px;
+  background: rgba(56,189,248,.12);
+  border: 1px solid #38bdf8;
   border-radius: var(--radius-md);
-  color: var(--text-primary);
+  color: #38bdf8;
   font-family: 'DM Sans', sans-serif;
-  font-size: .875rem;
-  padding: .6rem 2.5rem .6rem 1rem;
-  outline: none;
-  transition: border-color .2s, background .2s;
-}
-.barra-busca input::placeholder { color: var(--text-muted); }
-.barra-busca input:focus {
-  border-color: var(--accent-violet);
-  background: var(--bg-hover);
-}
-.barra-busca .fa-magnifying-glass {
-  position: absolute;
-  right: .9rem;
-  color: var(--text-muted);
   font-size: .85rem;
-  pointer-events: none;
-  transition: color .2s;
-}
-.barra-busca input:focus ~ .fa-magnifying-glass {
-  color: var(--accent-violet);
-}
-
-/* ── Tabela ── */
-.container-tabela {
-  overflow-x: auto;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-subtle);
-}
-
-.tabela-docentes {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: .875rem;
-}
-
-.tabela-docentes thead tr {
-  background: var(--bg-elevated);
-  border-bottom: 1px solid var(--border-mid);
-}
-.tabela-docentes thead th {
-  font-size: .68rem;
   font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  padding: 13px 18px;
-  text-align: left;
+  letter-spacing: .03em;
+  padding: .55rem 1.1rem;
+  cursor: pointer;
+  transition: background .2s, box-shadow .2s, transform .2s;
   white-space: nowrap;
 }
 
-.coluna-nome  { width: 40%; }
-.coluna-email { width: 35%; }
-.coluna-acoes { width: 25%; text-align: right; }
-
-.tabela-docentes tbody tr {
-  border-bottom: 1px solid var(--border-subtle);
-  transition: background .15s;
-}
-.tabela-docentes tbody tr:last-child { border-bottom: none; }
-.tabela-docentes tbody tr:hover { background: var(--bg-hover); }
-
-.tabela-docentes tbody td {
-  padding: 14px 18px;
-  color: var(--text-secondary);
-  vertical-align: middle;
-}
-.tabela-docentes tbody td:first-child {
-  color: var(--text-primary);
-  font-weight: 500;
+.btn-grade:hover {
+  background: rgba(56,189,248,.22);
+  box-shadow: 0 0 20px rgba(56,189,248,.15);
+  transform: translateY(-2px);
 }
 
-/* ── Botões de ação inline ── */
-.coluna-acoes { text-align: right; }
-
-.coluna-acoes a {
-  display: inline-flex;
+/* -- Bot�o Adicionar Disciplina (Verde) -- */
+.btn-verde {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  color: var(--text-secondary);
-  font-size: .82rem;
-  text-decoration: none;
-  margin-left: 4px;
-  transition: background .18s, color .18s, border-color .18s, transform .18s;
-}
-.coluna-acoes a:hover { transform: translateY(-2px); }
-
-/* Visualizar */
-.coluna-acoes a[title="Visualizar"]:hover {
-  background: rgba(34,211,238,.12);
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-}
-/* Editar */
-.coluna-acoes a[title="Editar"]:hover {
-  background: rgba(124,111,255,.12);
-  border-color: var(--accent-violet);
-  color: var(--accent-violet);
-}
-/* Excluir */
-.coluna-acoes a[title="Excluir"]:hover {
-  background: rgba(248,113,113,.12);
-  border-color: #f87171;
-  color: #f87171;
+  gap: 8px;
+  background: rgba(52,211,153,.12);
+  border: 1px solid #34d399;
+  border-radius: var(--radius-md);
+  color: #34d399;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+  padding: .55rem 1.1rem;
+  cursor: pointer;
+  transition: background .2s, box-shadow .2s, transform .2s;
+  white-space: nowrap;
 }
 
-/* ── Estado vazio ── */
-.tabela-docentes tbody td[colspan] {
-  text-align: center;
-  padding: 32px 18px;
-  color: var(--text-muted);
-  font-size: .875rem;
-}
-
-/* ── Animação ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Responsivo ── */
-@media (max-width: 820px) {
-  .conteudo-principal  { padding: 24px 18px 40px; }
-  .barra-busca-linha   { flex-direction: column; align-items: stretch; }
-  .header-docentes     { flex-wrap: wrap; }
-}
-@media (max-width: 560px) {
-  .conteudo-principal { padding: 18px 12px 36px; }
-  .titulo-pagina      { font-size: 1.45rem; }
-  .card-tabela        { padding: 16px 12px; }
+.btn-verde:hover {
+  background: rgba(52,211,153,.22);
+  box-shadow: 0 0 20px rgba(52,211,153,.15);
+  transform: translateY(-2px);
 }

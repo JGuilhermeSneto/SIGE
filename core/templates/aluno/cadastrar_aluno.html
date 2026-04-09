@@ -6,20 +6,9 @@
 {% block header_title %}{{ aluno.pk|yesno:"Editar,Cadastrar" }} Discente{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/cadastrar_discente.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/cadastrar_discente.css' %}?v=5">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
-<style>
-    /* Padronização de estilos de validação */
-    .valid { color: #28a745 !important; }
-    .invalido { color: #dc3545 !important; }
-    .campo-erro { border-color: #dc3545 !important; }
-    .erro-inline { color: #dc3545; font-size: 0.85em; display: none; margin-top: 5px; font-weight: 500; }
-    .requisito i { margin-right: 8px; width: 15px; }
-    .upload-container { display: flex; align-items: center; gap: 20px; margin-top: 10px; }
-    .botao-upload { cursor: pointer; background: #f0f0f0; padding: 10px 20px; border-radius: 8px; border: 1px dashed #ccc; display: inline-flex; align-items: center; gap: 8px; }
-    .botao-upload input { display: none; }
-</style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -43,66 +32,77 @@
         <div class="passo-item ativo" id="passo-1">
             <div class="passo-num">1</div>
             <div class="passo-info">
-                <span class="passo-label">Etapa</span>
+                <span class="passo-label">Etapa 1</span>
                 <span class="passo-nome">Dados Pessoais</span>
             </div>
         </div>
         <div class="passo-item" id="passo-2">
             <div class="passo-num">2</div>
             <div class="passo-info">
-                <span class="passo-label">Etapa</span>
+                <span class="passo-label">Etapa 2</span>
                 <span class="passo-nome">Filiação e NE</span>
             </div>
         </div>
         <div class="passo-item" id="passo-3">
             <div class="passo-num">3</div>
             <div class="passo-info">
-                <span class="passo-label">Etapa</span>
+                <span class="passo-label">Etapa 3</span>
                 <span class="passo-nome">Endereço</span>
             </div>
         </div>
         <div class="passo-item" id="passo-4">
             <div class="passo-num">4</div>
             <div class="passo-info">
-                <span class="passo-label">Etapa</span>
+                <span class="passo-label">Etapa 4</span>
                 <span class="passo-nome">Alocação</span>
             </div>
         </div>
     </div>
 
-    <form method="POST" enctype="multipart/form-data" id="form-aluno" class="formulario">
-        {% csrf_token %}
+    <div class="form-card">
+        <div class="form-card-titulo">
+            <div class="form-card-icone">
+                <i class="fa-solid fa-user" id="etapa-icone"></i>
+            </div>
+            <div class="form-card-titulo-texto">
+                <h2 id="etapa-titulo">Dados Pessoais</h2>
+                <p id="etapa-desc">Preencha as informações básicas do discente</p>
+            </div>
+        </div>
+
+        <form method="POST" enctype="multipart/form-data" id="form-aluno" class="formulario">
+            {% csrf_token %}
 
         <!-- ETAPA 1 -->
         <div class="etapa ativa" id="etapa-1">
             <div class="caixa-texto full">
-                <label class="required">{{ form.nome_completo.label }}</label>
-                {{ form.nome_completo|add_class:"form-control" }}
+                <label class="required">Nome completo</label>
+                {{ form.nome_completo }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label class="required">{{ form.cpf.label }}</label>
-                {{ form.cpf|attr:"placeholder:000.000.000-00"|attr:"maxlength:14"|add_class:"form-control" }}
+                <label class="required">CPF</label>
+                {{ form.cpf|attr:"placeholder:000.000.000-00"|attr:"maxlength:14" }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label class="required">{{ form.email.label }}</label>
-                {{ form.email|add_class:"form-control" }}
+                <label class="required">E-mail</label>
+                {{ form.email }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label>{{ form.telefone.label }}</label>
-                {{ form.telefone|attr:"placeholder:(00) 00000-0000"|attr:"maxlength:15"|add_class:"form-control" }}
+                <label>Telefone</label>
+                {{ form.telefone|attr:"placeholder:(00) 00000-0000"|attr:"maxlength:15" }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label class="required">{{ form.data_nascimento.label }}</label>
-                {{ form.data_nascimento|attr:"type:date"|add_class:"form-control" }}
+                <label class="required">Data de nascimento</label>
+                {{ form.data_nascimento|attr:"type:date" }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label>{{ form.naturalidade.label }}</label>
-                {{ form.naturalidade|add_class:"form-control" }}
+                <label>Naturalidade</label>
+                {{ form.naturalidade }}
                 <small class="erro-inline"></small>
             </div>
             <div class="botoes">
@@ -114,22 +114,22 @@
         <!-- ETAPA 2 -->
         <div class="etapa" id="etapa-2">
             <div class="caixa-texto">
-                <label>{{ form.responsavel1.label }}</label>
-                {{ form.responsavel1|add_class:"form-control" }}
+                <label>Responsável 1</label>
+                {{ form.responsavel1 }}
             </div>
             <div class="caixa-texto">
-                <label>{{ form.responsavel2.label }}</label>
-                {{ form.responsavel2|add_class:"form-control" }}
+                <label>Responsável 2</label>
+                {{ form.responsavel2 }}
             </div>
             <div class="caixa-texto full">
                 <label class="checkbox-container">
                     {{ form.possui_necessidade_especial }}
-                    <span>{{ form.possui_necessidade_especial.label }}</span>
+                    <span>Possui necessidade especial?</span>
                 </label>
             </div>
             <div class="caixa-texto full" id="descricao-ne-container" style="display:none;">
-                <label>{{ form.descricao_necessidade.label }}</label>
-                {{ form.descricao_necessidade|add_class:"form-control" }}
+                <label>Descrição da necessidade</label>
+                {{ form.descricao_necessidade }}
             </div>
             <div class="botoes">
                 <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
@@ -140,32 +140,32 @@
         <!-- ETAPA 3 -->
         <div class="etapa" id="etapa-3">
             <div class="caixa-texto">
-                <label class="required">{{ form.cep.label }}</label>
-                {{ form.cep|attr:"placeholder:00000-000"|attr:"maxlength:9"|add_class:"form-control" }}
+                <label class="required">CEP</label>
+                {{ form.cep|attr:"placeholder:00000-000"|attr:"maxlength:9" }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label class="required">{{ form.estado.label }}</label>
-                {{ form.estado|add_class:"form-control" }}
+                <label class="required">Estado</label>
+                {{ form.estado }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label class="required">{{ form.cidade.label }}</label>
-                {{ form.cidade|add_class:"form-control" }}
+                <label class="required">Cidade</label>
+                {{ form.cidade }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label>{{ form.bairro.label }}</label>
-                {{ form.bairro|add_class:"form-control" }}
+                <label>Bairro</label>
+                {{ form.bairro }}
             </div>
             <div class="caixa-texto full">
-                <label class="required">{{ form.logradouro.label }}</label>
-                {{ form.logradouro|add_class:"form-control" }}
+                <label class="required">Logradouro</label>
+                {{ form.logradouro }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
-                <label class="required">{{ form.numero.label }}</label>
-                {{ form.numero|add_class:"form-control" }}
+                <label class="required">Número</label>
+                {{ form.numero }}
                 <small class="erro-inline"></small>
             </div>
             <div class="botoes">
@@ -177,21 +177,21 @@
         <!-- ETAPA 4 -->
         <div class="etapa" id="etapa-4">
             <div class="caixa-texto">
-                <label class="required">{{ form.turma.label }}</label>
-                {{ form.turma|add_class:"form-control" }}
+                <label class="required">Turma</label>
+                {{ form.turma }}
                 <small class="erro-inline"></small>
             </div>
             <div class="caixa-texto">
                 <label {% if not aluno.pk %}class="required"{% endif %}>
-                    {{ form.senha.label }}
+                    Senha
                     {% if aluno.pk %}<small>(vazio para manter)</small>{% endif %}
                 </label>
-                {{ form.senha|add_class:"form-control" }}
+                {{ form.senha }}
             </div>
 
             <div class="caixa-texto" id="confirmar-senha-container" {% if aluno.pk %}style="display:none;"{% endif %}>
-                <label {% if not aluno.pk %}class="required"{% endif %}>{{ form.senha_confirmacao.label }}</label>
-                {{ form.senha_confirmacao|add_class:"form-control" }}
+                <label {% if not aluno.pk %}class="required"{% endif %}>Confirmar senha</label>
+                {{ form.senha_confirmacao }}
                 <small class="erro-inline"></small>
             </div>
 
@@ -205,7 +205,7 @@
             <div class="confirmacao-senha" id="senha-match-msg" style="display:none; margin-bottom: 15px;"></div>
 
             <div class="caixa-texto upload-foto">
-                <label>{{ form.foto.label }}</label>
+                <label>Foto de Perfil</label>
                 <div class="upload-container">
                     <label class="botao-upload">
                         <i class="fa-solid fa-camera"></i> Selecionar Foto
@@ -226,6 +226,7 @@
             </div>
         </div>
     </form>
+    </div>
 </div>
 
 <script>
@@ -279,6 +280,13 @@ document.addEventListener('DOMContentLoaded', function () {
         atualizarIndicadores(n - 1);
     };
 
+    const etapasMeta = {
+        1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do discente' },
+        2: { icone: 'fa-users', titulo: 'Filiação e NE', desc: 'Informações de filiação e necessidades especiais' },
+        3: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do discente' },
+        4: { icone: 'fa-school', titulo: 'Alocação', desc: 'Turma, senha e foto de perfil' }
+    };
+
     function atualizarIndicadores(etapaAtiva) {
         for (let i = 1; i <= 4; i++) {
             const el = document.getElementById('passo-' + i);
@@ -286,6 +294,10 @@ document.addEventListener('DOMContentLoaded', function () {
             if (i < etapaAtiva) el.classList.add('completo');
             else if (i === etapaAtiva) el.classList.add('ativo');
         }
+        const meta = etapasMeta[etapaAtiva];
+        document.getElementById('etapa-icone').className = `fa-solid ${meta.icone}`;
+        document.getElementById('etapa-titulo').textContent = meta.titulo;
+        document.getElementById('etapa-desc').textContent = meta.desc;
     }
 
     // --- SENHA PADRONIZADA ---

@@ -71,6 +71,9 @@
         <div class="particle p5"></div>
 
         <div class="login-card" id="loginCard">
+            <!-- Borda Animada baseada em inputs -->
+            <div class="card-border" id="cardBorder"></div>
+
             <!-- LOGO AREA -->
             <div class="logo-area">
                 <div class="logo-ring" id="mainLogoRing">
@@ -170,7 +173,9 @@
             setTimeout(() => {
                 const el = document.getElementById(s.id);
                 if(el) {
-                    el.querySelector('i').className = 'fas fa-check-circle';
+                    const icon = el.querySelector('i');
+                    icon.classList.remove('fa-circle-notch', 'fa-spin');
+                    icon.classList.add('fa-check-circle', 'pop-in-icon');
                     el.classList.add('done');
                 }
             }, s.delay);
@@ -183,8 +188,9 @@
         }, 3200);
 
         // 2. Animação Dinâmica dos Ícones (E-mail e Cadeado)
-        const emailInput = document.querySelector('input[name="email"]');
-        const passInput = document.querySelector('input[name="password"]');
+        // Pega os inputs sendo bem conservador com as formas do Django
+        const emailInput = document.getElementById('id_email') || document.querySelector('input[type="email"]') || document.querySelector('input[name="email"]') || document.querySelector('input[name="username"]');
+        const passInput = document.getElementById('id_password') || document.querySelector('input[type="password"]') || document.querySelector('input[name="password"]');
         const iconEmail = document.getElementById('icon-email');
         const iconPass = document.getElementById('icon-password');
 
@@ -195,8 +201,10 @@
                 emailInput.closest('.field-wrap').classList.add('focused');
             });
             emailInput.addEventListener('blur', () => {
-                if(!emailInput.value) iconEmail.className = 'fas fa-envelope field-icon';
-                emailInput.closest('.field-wrap').classList.remove('focused');
+                if(!emailInput.value) {
+                    iconEmail.className = 'fas fa-envelope field-icon';
+                    emailInput.closest('.field-wrap').classList.remove('focused');
+                }
             });
         }
 
@@ -213,8 +221,10 @@
                 passInput.closest('.field-wrap').classList.add('focused');
             });
             passInput.addEventListener('blur', () => {
-                passInput.closest('.field-wrap').classList.remove('focused');
-                if(!passInput.value) iconPass.className = 'fas fa-lock field-icon';
+                if(!passInput.value) {
+                    passInput.closest('.field-wrap').classList.remove('focused');
+                    iconPass.className = 'fas fa-lock field-icon';
+                }
             });
         }
 
@@ -266,6 +276,51 @@
             ov.classList.add('show');
             setTimeout(() => ov.classList.remove('show'), 3000);
         }
+
+        // 6. Atualização da Borda Animada
+        const cardBorder = document.getElementById('cardBorder');
+
+        function updateBorder() {
+            // Conta os caracteres e gera o progresso da borda gradativamente
+            let emailLen = (emailInput && emailInput.value) ? emailInput.value.length : 0;
+            let passLen = (passInput && passInput.value) ? passInput.value.length : 0;
+            
+            // Email preenche gradativo até 12 caracteres (50%)
+            let pEmail = Math.min(emailLen / 12, 1) * 50;
+            // O usuário quer que 1 único caractere na senha já complete os outros 50% finais da borda
+            let pPass = passLen > 0 ? 50 : 0;
+            let p = pEmail + pPass;
+
+            if(cardBorder) {
+                cardBorder.style.setProperty('--border-progress', p + '%');
+            }
+
+            // Lógica aplicada diretamente nos bottons dos inputs
+            if(emailInput) {
+                const w = emailInput.closest('.field-wrap');
+                if(w) w.style.setProperty('--input-progress', Math.min(emailLen / 12, 1) * 100 + '%');
+            }
+            if(passInput) {
+                const w = passInput.closest('.field-wrap');
+                if(w) w.style.setProperty('--input-progress', (passLen > 0 ? 100 : 0) + '%');
+            }
+        }
+
+        if(emailInput) {
+            // Usar keyup e input para capturar perfeitamente cada letra
+            emailInput.addEventListener('input', updateBorder);
+            emailInput.addEventListener('keyup', updateBorder);
+            emailInput.addEventListener('change', updateBorder);
+        }
+        if(passInput) {
+            passInput.addEventListener('input', updateBorder);
+            passInput.addEventListener('keyup', updateBorder);
+            passInput.addEventListener('change', updateBorder);
+        }
+        
+        // Cobre possível autocompletar do navegador ou refresh
+        setTimeout(updateBorder, 100);
+        setTimeout(updateBorder, 600);
     })();
     </script>
 </body>

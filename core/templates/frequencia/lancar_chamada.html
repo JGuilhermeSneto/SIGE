@@ -18,10 +18,11 @@
 
 {% block extra_css %}
 {# Folha de estilo da tela de chamada #}
-<link rel="stylesheet" href="{% static 'core/css/lancar_chamada.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/lancar_chamada_alunos.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="pagina-conteudo">
 
 {# ── Breadcrumb de navegação ── #}
 <div class="breadcrumb">
@@ -172,6 +173,7 @@
 
 </form>
 
+</div>{# /pagina-conteudo #}
 {% endblock %}
 
 {% block extra_js %}

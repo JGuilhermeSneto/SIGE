@@ -292,3 +292,21 @@
   .grade-table tbody td { padding: 8px 6px; font-size: .72rem; }
   .grade-table tbody td select { min-width: 110px; font-size: .72rem; }
 }
+
+/* -- Neon Glow Wrapper -- */
+.card-tabela {
+  position: relative;
+}
+.card-tabela::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: -80px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(56,189,248,.09) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.container-tabela {
+  position: relative;
+  z-index: 1;
+}

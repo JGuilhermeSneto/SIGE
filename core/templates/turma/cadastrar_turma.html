@@ -18,89 +18,93 @@
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/cadastrar_turma.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/cadastrar_turma.css' %}?v=3">
 {% endblock %}
 
 {% block content %}
 
-<main class="conteudo-principal">
+<div class="main-area">
 
-    <!-- CABEÇALHO -->
-    <div class="header-docentes">
-        <a href="{% url 'listar_turmas' %}">
-            <button class="btn-voltar">
-                <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </a>
-
-        <h1 class="titulo-pagina">
-            {% if turma %}
-                Editar Turma
-            {% else %}
-                Cadastro de Turma
-            {% endif %}
-        </h1>
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Acadêmico</span>
+            <h1>{{ turma.pk|yesno:"Editar,Cadastrar" }} <span class="destaque">Turma</span></h1>
+            <div class="header-breadcrumb">
+                <a href="{% url 'listar_turmas' %}">Turmas</a>
+                <i class="fa-solid fa-chevron-right"></i>
+                <span>{{ turma.pk|yesno:"Editar,Cadastrar" }}</span>
+            </div>
+        </div>
     </div>
 
     <!-- CARD -->
-    <div class="card-tabela">
+    <div class="form-card">
+        <div class="form-card-titulo">
+            <div class="form-card-icone">
+                <i class="fa-solid fa-users" id="etapa-icone"></i>
+            </div>
+            <div class="form-card-titulo-texto">
+                <h2 id="etapa-titulo">Dados da Turma</h2>
+                <p id="etapa-desc">Defina o nome, turno e o ano letivo correspondente</p>
+            </div>
+        </div>
 
         {% if erro %}
-            <p style="color:red; margin-bottom:15px; font-weight: bold;">{{ erro }}</p>
+            <p style="color:var(--accent-danger); margin-bottom:15px; font-weight: bold;">{{ erro }}</p>
         {% endif %}
 
-        <form method="post" class="form-cadastro">
+        <form method="post" class="formulario" id="form-turma">
             {% csrf_token %}
 
-            <!-- Nome -->
-            <div class="form-group">
-                <label for="nome">Nome da Turma</label>
-                <input type="text" id="nome" name="nome" required value="{{ turma.nome|default:'' }}" placeholder="Ex: 1º Ano A">
-            </div>
+            <div class="etapa ativa">
+                <!-- Nome -->
+                <div class="caixa-texto full">
+                    <label class="required" for="nome">Nome da Turma</label>
+                    <input type="text" id="nome" name="nome" required value="{{ turma.nome|default:'' }}" placeholder="Ex: 1º Ano A">
+                </div>
 
-            <!-- Turno (CORRIGIDO: Espaços adicionados nas comparações) -->
-            <div class="form-group">
-                <label for="turno">Turno</label>
-                <select id="turno" name="turno" required>
-                    <option value="">Selecione...</option>
-                    <option value="manha" {% if turma.turno == "manha" %}selected{% endif %}>Manhã</option>
-                    <option value="tarde" {% if turma.turno == "tarde" %}selected{% endif %}>Tarde</option>
-                    <option value="noite" {% if turma.turno == "noite" %}selected{% endif %}>Noite</option>
-                </select>
-            </div>
+                <!-- Turno -->
+                <div class="caixa-texto">
+                    <label class="required" for="turno">Turno</label>
+                    <select id="turno" name="turno" required>
+                        <option value="">Selecione...</option>
+                        <option value="manha" {% if turma.turno == "manha" %}selected{% endif %}>Manhã</option>
+                        <option value="tarde" {% if turma.turno == "tarde" %}selected{% endif %}>Tarde</option>
+                        <option value="noite" {% if turma.turno == "noite" %}selected{% endif %}>Noite</option>
+                    </select>
+                </div>
 
-            <!-- Ano letivo -->
-            <div class="form-group">
-                <label for="ano">Ano Letivo</label>
-                <input type="number" id="ano" name="ano" list="lista-anos" required min="2010" max="{{ anos|last }}"
-                    placeholder="Ex: 2025" value="{{ turma.ano|default:'' }}">
+                <!-- Ano letivo -->
+                <div class="caixa-texto dois">
+                    <label class="required" for="ano">Ano Letivo</label>
+                    <input type="number" id="ano" name="ano" list="lista-anos" required min="2010" max="{{ anos|last }}"
+                        placeholder="Ex: 2025" value="{{ turma.ano|default:'' }}">
+                    <datalist id="lista-anos">
+                        {% for ano in anos %}
+                            <option value="{{ ano }}"></option>
+                        {% endfor %}
+                    </datalist>
+                </div>
 
-                <datalist id="lista-anos">
-                    {% for ano in anos %}
-                        <option value="{{ ano }}"></option>
-                    {% endfor %}
-                </datalist>
-            </div>
-
-            <!-- Botões de Ação -->
-            <div class="form-actions">
-                <button type="submit" class="btn-adicionar">
-                    {% if turma %}
-                        Salvar Alterações
-                    {% else %}
-                        Cadastrar Turma
-                    {% endif %}
-                </button>
-                
-                <a href="{% url 'listar_turmas' %}" class="btn-cancelar" style="text-decoration: none; margin-left: 10px; color: #666;">
-                    Cancelar
-                </a>
+                <!-- Botões de Ação -->
+                <div class="botoes">
+                    <a href="{% url 'listar_turmas' %}" style="text-decoration: none;">
+                        <button type="button" class="btn-voltar-tab"><i class="fa-solid fa-xmark"></i> Cancelar</button>
+                    </a>
+                    <button type="submit" class="btn salvar">
+                        <i class="fa-solid fa-check"></i>
+                        {% if turma %}
+                            Salvar Alterações
+                        {% else %}
+                            Cadastrar Turma
+                        {% endif %}
+                    </button>
+                </div>
             </div>
 
         </form>
-
     </div>
 
-</main>
+</div>
 
 {% endblock %}

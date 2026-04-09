@@ -4,240 +4,11 @@
 {% block title %}Minha Frequência{% endblock %}
 
 {% block extra_css %}
-<style>
-  .freq-header {
-    background: var(--cor-primaria, #1e3a5f);
-    padding: 1.5rem 2rem;
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .freq-header__left h1 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    margin-bottom: .25rem;
-  }
-
-  .freq-header__left p {
-    font-size: .88rem;
-    opacity: .75;
-  }
-
-  .freq-header__action a {
-    background: rgba(255,255,255,.15);
-    border: 1px solid rgba(255,255,255,.3);
-    color: #fff;
-    border-radius: 8px;
-    padding: .5rem 1.1rem;
-    font-size: .84rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: .4rem;
-    transition: background .2s;
-  }
-
-  .freq-header__action a:hover { background: rgba(255,255,255,.25); }
-
-  .breadcrumb {
-    display: flex;
-    align-items: center;
-    gap: .4rem;
-    font-size: .82rem;
-    color: #6b7280;
-    margin-bottom: 1.2rem;
-    flex-wrap: wrap;
-  }
-
-  .breadcrumb a { color: #6b7280; text-decoration: none; transition: color .2s; }
-  .breadcrumb a:hover { color: var(--cor-primaria, #1e3a5f); }
-  .breadcrumb i { font-size: .65rem; color: #9ca3af; }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .stat-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1rem 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: .85rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-  }
-
-  .stat-card__icon {
-    width: 42px; height: 42px;
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.1rem; flex-shrink: 0;
-  }
-
-  .stat-card__icon--blue   { background: #eff6ff; color: #2563eb; }
-  .stat-card__icon--green  { background: #dcfce7; color: #16a34a; }
-  .stat-card__icon--red    { background: #fee2e2; color: #dc2626; }
-  .stat-card__icon--yellow { background: #fefce8; color: #ca8a04; }
-
-  .stat-card__val { font-size: 1.5rem; font-weight: 700; color: #111827; line-height: 1; }
-  .stat-card__lbl { font-size: .75rem; color: #6b7280; margin-top: .15rem; }
-
-  .freq-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.05);
-    overflow: hidden;
-    margin-bottom: 1rem;
-  }
-
-  .freq-card__head {
-    display: grid;
-    grid-template-columns: 1fr 70px 70px 70px 120px;
-    align-items: center;
-    padding: .85rem 1.4rem;
-    background: #f9fafb;
-    border-bottom: 1px solid #e5e7eb;
-    font-size: .78rem;
-    font-weight: 700;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    gap: 1rem;
-  }
-
-  .freq-row {
-    display: grid;
-    grid-template-columns: 1fr 70px 70px 70px 120px;
-    align-items: center;
-    padding: .9rem 1.4rem;
-    border-bottom: 1px solid #f3f4f6;
-    gap: 1rem;
-    transition: background .15s;
-  }
-
-  .freq-row:last-child { border-bottom: none; }
-  .freq-row:hover { background: #f9fafb; }
-  .freq-row--risco { background: #fff7f7; }
-  .freq-row--risco:hover { background: #fee2e2; }
-
-  .disc-nome {
-    font-size: .9rem;
-    font-weight: 600;
-    color: #111827;
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-  }
-
-  .disc-nome i { color: #9ca3af; font-size: .85rem; }
-
-  .badge-risco {
-    background: #fee2e2;
-    color: #b91c1c;
-    font-size: .65rem;
-    font-weight: 700;
-    padding: .1rem .45rem;
-    border-radius: 999px;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-  }
-
-  .num {
-    font-size: .9rem;
-    font-weight: 600;
-    text-align: center;
-  }
-
-  .num--total   { color: #374151; }
-  .num--present { color: #16a34a; }
-  .num--absent  { color: #dc2626; }
-
-  .pct-wrap {
-    display: flex;
-    align-items: center;
-    gap: .5rem;
-  }
-
-  .pct-bar {
-    flex: 1;
-    height: 6px;
-    background: #fee2e2;
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  .pct-bar__fill {
-    height: 100%;
-    border-radius: 999px;
-    transition: width .4s;
-  }
-
-  .pct-bar__fill--ok   { background: #16a34a; }
-  .pct-bar__fill--risco { background: #dc2626; }
-
-  .pct-val {
-    font-size: .78rem;
-    font-weight: 700;
-    color: #374151;
-    min-width: 38px;
-    text-align: right;
-  }
-
-  .pct-val--risco { color: #b91c1c; }
-
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1.5rem;
-    color: #9ca3af;
-  }
-
-  .empty-state i {
-    font-size: 2.5rem;
-    margin-bottom: .75rem;
-    display: block;
-    color: #d1d5db;
-  }
-
-  .alerta-box {
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 10px;
-    padding: .85rem 1.2rem;
-    margin-bottom: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: .65rem;
-    font-size: .87rem;
-    color: #9a3412;
-    font-weight: 500;
-  }
-
-  .alerta-box i { color: #ea580c; font-size: 1.1rem; flex-shrink: 0; }
-
-  @media (max-width: 600px) {
-    .freq-card__head,
-    .freq-row { grid-template-columns: 1fr 60px 60px; }
-    .freq-card__head span:nth-child(2),
-    .freq-row .num--total,
-    .freq-card__head span:last-child,
-    .freq-row .pct-wrap { display: none; }
-  }
-</style>
+<link rel="stylesheet" href="{% static 'core/css/frequencia_aluno.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="pagina-conteudo">
 <!-- Breadcrumb -->
 <div class="breadcrumb">
   <a href="{% url 'painel_aluno' %}"><i class="fa-solid fa-house"></i> Painel</a>
@@ -260,14 +31,16 @@
 
 <!-- Alerta se houver risco -->
 {% for item in frequencia_por_disciplina %}
-  {% if item.em_risco %}
-  <div class="alerta-box">
-    <i class="fa-solid fa-triangle-exclamation"></i>
-    Atenção! Você está com frequência abaixo de 75% em uma ou mais disciplinas.
-    O limite mínimo exigido é 75% de presença.
+{% if item.em_risco %}
+<div class="alerta-risco">
+  <i class="fa-solid fa-triangle-exclamation"></i>
+  <div>
+    <strong>Atenção! Você está em risco de reprovação por falta.</strong>
+    Frequência abaixo de 75% em uma ou mais disciplinas. O mínimo exigido é 75%.
   </div>
-  {% break %}
-  {% endif %}
+</div>
+{% break %}
+{% endif %}
 {% endfor %}
 
 <!-- Stats gerais -->
@@ -287,11 +60,7 @@
       <i class="fa-solid fa-circle-check"></i>
     </div>
     <div>
-      <div class="stat-card__val">
-        {% with total=0 %}
-          {% for item in frequencia_por_disciplina %}{{ item.presencas|add:0 }}{% endfor %}
-        {% endwith %}—
-      </div>
+      <div class="stat-card__val" id="total-presencas">—</div>
       <div class="stat-card__lbl">Total de presenças</div>
     </div>
   </div>
@@ -300,11 +69,7 @@
       <i class="fa-solid fa-circle-xmark"></i>
     </div>
     <div>
-      <div class="stat-card__val">
-        {% with total=0 %}
-          {% for item in frequencia_por_disciplina %}{{ item.faltas|add:0 }}{% endfor %}
-        {% endwith %}—
-      </div>
+      <div class="stat-card__val" id="total-faltas">—</div>
       <div class="stat-card__lbl">Total de faltas</div>
     </div>
   </div>
@@ -313,61 +78,97 @@
       <i class="fa-solid fa-triangle-exclamation"></i>
     </div>
     <div>
-      <div class="stat-card__val">
-        {% with risco=0 %}
-          {% for item in frequencia_por_disciplina %}{% if item.em_risco %}{{ risco|add:1 }}{% endif %}{% endfor %}
-        {% endwith %}—
-      </div>
+      <div class="stat-card__val" id="total-risco">—</div>
       <div class="stat-card__lbl">Em risco</div>
     </div>
   </div>
 </div>
 
-<!-- Tabela -->
-<div class="freq-card">
-  <div class="freq-card__head">
+<!-- Tabela de frequência -->
+<div class="hist-card">
+  <div class="hist-card__head">
     <span>Disciplina</span>
-    <span style="text-align:center;">Aulas</span>
+    <span style="text-align:center;" class="col-total">Aulas</span>
     <span style="text-align:center;">Presenças</span>
     <span style="text-align:center;">Faltas</span>
-    <span>% Presença</span>
+    <span class="col-pct">% Presença</span>
   </div>
 
   {% for item in frequencia_por_disciplina %}
-  <div class="freq-row {% if item.em_risco %}freq-row--risco{% endif %}">
-    <div class="disc-nome">
-      <i class="fa-solid fa-book"></i>
+  <div class="hist-row {% if item.em_risco %}hist-row--risco{% endif %}"
+       data-total="{{ item.total }}"
+       data-presencas="{{ item.presencas }}"
+       data-faltas="{{ item.faltas }}">
+
+    <div class="hist-row__date" style="gap:.5rem; font-size:.88rem;">
+      <i class="fa-solid fa-book" style="color:var(--accent-violet);"></i>
       {{ item.disciplina.nome }}
       {% if item.em_risco %}
-        <span class="badge-risco"><i class="fa-solid fa-triangle-exclamation"></i> Risco</span>
+      <span class="badge-hoje" style="background:rgba(251,113,133,.15);color:#fb7185;border-color:rgba(251,113,133,.28);">
+        <i class="fa-solid fa-triangle-exclamation"></i> Risco
+      </span>
       {% endif %}
     </div>
-    <div class="num num--total">{{ item.total }}</div>
-    <div class="num num--present">{{ item.presencas }}</div>
-    <div class="num num--absent">{{ item.faltas }}</div>
+
+    <div class="hist-row__num hist-row__num--total">{{ item.total }}</div>
+    <div class="hist-row__num hist-row__num--present">{{ item.presencas }}</div>
+    <div class="hist-row__num hist-row__num--absent">{{ item.faltas }}</div>
+
     <div class="pct-wrap">
       {% if item.percentual is not None %}
-        <div class="pct-bar">
-          <div class="pct-bar__fill {% if item.em_risco %}pct-bar__fill--risco{% else %}pct-bar__fill--ok{% endif %}"
-               style="width:{{ item.percentual }}%"></div>
+      <div class="pct-bar">
+        <div class="pct-bar__fill"
+             style="width:{{ item.percentual }}%;
+                    background:{% if item.em_risco %}var(--accent-rose,#fb7185){% else %}var(--accent-emerald){% endif %};">
         </div>
-        <span class="pct-val {% if item.em_risco %}pct-val--risco{% endif %}">
-          {{ item.percentual|floatformat:0 }}%
-        </span>
+      </div>
+      <span class="pct-val"
+            style="{% if item.em_risco %}color:#fb7185;{% endif %}">
+        {{ item.percentual|floatformat:0 }}%
+      </span>
       {% else %}
-        <span class="pct-val" style="color:#9ca3af;">—</span>
+      <span class="pct-val" style="color:var(--text-muted);">—</span>
       {% endif %}
     </div>
+
   </div>
   {% endfor %}
 </div>
 
 {% else %}
-<div class="freq-card">
-  <div class="empty-state">
-    <i class="fa-solid fa-calendar-xmark"></i>
-    <p>Nenhum registro de frequência encontrado ainda.</p>
-  </div>
+<div class="empty-state">
+  <i class="fa-solid fa-calendar-xmark"></i>
+  <p>Nenhum registro de frequência encontrado ainda.</p>
 </div>
 {% endif %}
+</div>{# /pagina-conteudo #}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var totalPresencas = 0;
+  var totalFaltas    = 0;
+  var totalRisco     = 0;
+
+  document.querySelectorAll('.hist-row[data-presencas]').forEach(function (row) {
+    var presencas = parseInt(row.dataset.presencas, 10) || 0;
+    var faltas    = parseInt(row.dataset.faltas,    10) || 0;
+    var total     = parseInt(row.dataset.total,     10) || 0;
+
+    totalPresencas += presencas;
+    totalFaltas    += faltas;
+
+    var pct = total > 0 ? Math.round((presencas / total) * 100) : null;
+    if (pct !== null && pct < 75) { totalRisco++; }
+  });
+
+  var elP = document.getElementById('total-presencas');
+  var elF = document.getElementById('total-faltas');
+  var elR = document.getElementById('total-risco');
+  if (elP) elP.textContent = totalPresencas;
+  if (elF) elF.textContent = totalFaltas;
+  if (elR) elR.textContent = totalRisco;
+});
+</script>
 {% endblock %}

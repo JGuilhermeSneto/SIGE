@@ -1,0 +1,272 @@
+/* ============================================================
+   SIGE — Lançar Chamada (Professor)
+   lancar_chamada_alunos.css  v4.0 — alinhado ao base_do_menu_core
+   Não redefine :root nem wrappers de layout (já no base)
+============================================================ */
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex; align-items: center; gap: .35rem;
+  font-size: .75rem; color: var(--text-muted);
+  margin-bottom: 1.25rem; flex-wrap: wrap;
+  padding-top: .25rem;
+}
+.breadcrumb a { color: var(--text-secondary); text-decoration: none; transition: color .2s; }
+.breadcrumb a:hover { color: var(--accent-violet); }
+.breadcrumb i { font-size: .58rem; color: var(--text-muted); }
+
+/* ── Header do módulo ── */
+.mod-header {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.75rem;
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: .75rem;
+  position: relative; overflow: hidden;
+}
+.mod-header::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent-violet), transparent 70%);
+}
+.mod-header h1 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.15rem; font-weight: 800;
+  color: var(--text-primary); margin-bottom: .25rem;
+  display: flex; align-items: center; gap: .45rem;
+  letter-spacing: -.015em;
+}
+.mod-header h1 i { color: var(--accent-violet); }
+.mod-header p    { font-size: .82rem; color: var(--text-secondary); }
+
+.btn-header {
+  display: flex; align-items: center; gap: .38rem;
+  background: rgba(124, 111, 255, .12);
+  border: 1px solid var(--accent-violet);
+  color: var(--accent-violet);
+  border-radius: var(--radius-md);
+  padding: .45rem 1rem;
+  font-size: .82rem; font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  text-decoration: none;
+  transition: background .2s, box-shadow .2s;
+  white-space: nowrap; cursor: pointer;
+}
+.btn-header:hover { background: rgba(124, 111, 255, .22); box-shadow: 0 0 14px rgba(124, 111, 255, .2); }
+
+/* ── Seletor de data ── */
+.date-bar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg);
+  padding: .9rem 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex; align-items: center; gap: .85rem; flex-wrap: wrap;
+  animation: fadeUp .35s ease both;
+}
+.date-bar label {
+  font-size: .82rem; font-weight: 600; color: var(--text-secondary);
+  display: flex; align-items: center; gap: .38rem;
+}
+.date-bar label i { color: var(--accent-violet); }
+
+.date-bar input[type="date"] {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: .4rem .9rem;
+  font-size: .84rem; color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  color-scheme: dark;
+}
+.date-bar input[type="date"]:focus {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(124, 111, 255, .16);
+}
+
+.date-bar button {
+  display: flex; align-items: center; gap: .38rem;
+  background: rgba(124, 111, 255, .12);
+  border: 1px solid var(--accent-violet);
+  color: var(--accent-violet);
+  border-radius: var(--radius-md);
+  padding: .4rem .95rem;
+  font-size: .82rem; font-weight: 600;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: background .2s, box-shadow .2s;
+}
+.date-bar button:hover { background: rgba(124, 111, 255, .22); box-shadow: 0 0 10px rgba(124, 111, 255, .18); }
+
+/* ── Atalhos marcar todos ── */
+.marcar-todos {
+  display: flex; gap: .55rem; margin-bottom: 1rem; flex-wrap: wrap;
+}
+.btn-marcar {
+  display: flex; align-items: center; gap: .32rem;
+  border: none; border-radius: var(--radius-md);
+  padding: .4rem .95rem;
+  font-size: .78rem; font-weight: 600;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: opacity .2s, transform .15s;
+}
+.btn-marcar:hover { opacity: .85; transform: translateY(-1px); }
+.btn-marcar--todos  { background: rgba(52, 211, 153, .12);  border: 1px solid rgba(52, 211, 153, .28);  color: var(--accent-emerald); }
+.btn-marcar--faltas { background: rgba(251, 113, 133, .1);  border: 1px solid rgba(251, 113, 133, .24); color: var(--accent-rose, #fb7185); }
+
+/* ── Tabela de chamada ── */
+.chamada-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  animation: fadeUp .4s .05s ease both;
+}
+.chamada-card::before {
+  content: ''; display: block; height: 2px;
+  background: linear-gradient(90deg, var(--accent-violet), transparent 70%);
+}
+
+.chamada-card__head {
+  display: grid;
+  grid-template-columns: 1fr 150px 1fr;
+  align-items: center;
+  padding: 12px 22px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-mid);
+  font-size: .65rem; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .09em;
+  gap: .85rem;
+}
+.chamada-card__head span:nth-child(2) { text-align: center; }
+
+.chamada-row {
+  display: grid;
+  grid-template-columns: 1fr 150px 1fr;
+  align-items: center;
+  padding: 13px 22px;
+  border-bottom: 1px solid var(--border-subtle);
+  gap: .85rem;
+  transition: background .18s;
+}
+.chamada-row:last-child { border-bottom: none; }
+.chamada-row:hover { background: var(--bg-hover); }
+
+.aluno-nome {
+  font-size: .85rem; font-weight: 500; color: var(--text-primary);
+  display: flex; align-items: center; gap: .45rem;
+}
+.aluno-nome i { color: var(--text-muted); font-size: .78rem; }
+
+/* ── Toggle de presença ── */
+.presenca-toggle { display: flex; align-items: center; justify-content: center; }
+.presenca-toggle input[type="checkbox"] { display: none; }
+.presenca-toggle label {
+  display: flex; align-items: center; gap: .38rem;
+  cursor: pointer; padding: .3rem .9rem;
+  border-radius: 999px; font-size: .76rem; font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  border: 1px solid rgba(251, 113, 133, .28);
+  color: var(--accent-rose, #fb7185); background: rgba(251, 113, 133, .1);
+  transition: all .2s; user-select: none; white-space: nowrap;
+}
+.presenca-toggle input:checked + label {
+  background: rgba(52, 211, 153, .11);
+  border-color: rgba(52, 211, 153, .28);
+  color: var(--accent-emerald);
+}
+
+/* ── Campo observação ── */
+.observacao-input,
+.justificativa-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  padding: .36rem .8rem;
+  font-size: .81rem; font-family: 'Inter', sans-serif;
+  color: var(--text-primary); outline: none;
+  transition: border-color .2s, box-shadow .2s, opacity .2s;
+}
+.observacao-input::placeholder,
+.justificativa-input::placeholder { color: var(--text-muted); }
+.observacao-input:focus,
+.justificativa-input:focus {
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(124, 111, 255, .14);
+}
+.observacao-input:disabled,
+.justificativa-input:disabled { opacity: .28; cursor: not-allowed; background: var(--bg-base); }
+
+/* ── Botões de ação ── */
+.acoes {
+  display: flex; justify-content: flex-end;
+  gap: .65rem; flex-wrap: wrap; margin-top: .75rem;
+  padding-bottom: 1rem;
+}
+.btn-salvar {
+  display: flex; align-items: center; gap: .45rem;
+  background: rgba(124, 111, 255, .12);
+  border: 1px solid var(--accent-violet);
+  color: var(--accent-violet);
+  border-radius: var(--radius-md);
+  padding: .6rem 1.5rem;
+  font-size: .84rem; font-weight: 700;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: background .2s, box-shadow .2s, transform .15s;
+}
+.btn-salvar:hover { background: rgba(124, 111, 255, .22); box-shadow: 0 0 18px rgba(124, 111, 255, .2); transform: translateY(-1px); }
+
+.btn-voltar {
+  display: flex; align-items: center; gap: .45rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-mid);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  padding: .6rem 1.25rem;
+  font-size: .84rem; font-weight: 600;
+  font-family: 'Inter', sans-serif; text-decoration: none;
+  transition: background .2s, color .2s;
+}
+.btn-voltar:hover { background: var(--bg-hover); color: var(--text-primary); }
+
+/* ── Mensagens flash ── */
+.msg-list { list-style: none; margin-bottom: 1rem; }
+.msg-list li {
+  padding: .65rem 1rem; border-radius: var(--radius-md);
+  font-size: .82rem; font-weight: 500; margin-bottom: .4rem;
+  display: flex; align-items: center; gap: .42rem;
+}
+.msg-list li.success { background: rgba(52, 211, 153, .1);  border: 1px solid rgba(52, 211, 153, .22);  color: var(--accent-emerald); }
+.msg-list li.error   { background: rgba(251, 113, 133, .1); border: 1px solid rgba(251, 113, 133, .22); color: var(--accent-rose, #fb7185); }
+
+/* ── Estado vazio ── */
+.empty-chamada {
+  text-align: center; padding: 2.5rem 1.5rem; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: .5rem;
+}
+.empty-chamada i { font-size: 1.8rem; color: var(--text-muted); }
+
+/* ── Responsivo ── */
+@media (max-width: 1024px) {
+  .chamada-card__head,
+  .chamada-row { grid-template-columns: 1fr 130px 1fr; }
+}
+@media (max-width: 768px) {
+  .chamada-card__head,
+  .chamada-row { grid-template-columns: 1fr 115px; }
+  .chamada-card__head span:last-child,
+  .chamada-row .observacao-input,
+  .chamada-row .justificativa-input { display: none; }
+}
+@media (max-width: 480px) {
+  .mod-header { padding: .9rem 1.1rem; }
+  .mod-header h1 { font-size: .95rem; }
+  .acoes { justify-content: stretch; }
+  .btn-salvar, .btn-voltar { flex: 1; justify-content: center; }
+}

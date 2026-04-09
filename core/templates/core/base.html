@@ -10,7 +10,7 @@
   <title>{% block title %}SIGE{% endblock %}</title>
 
   <!-- CSS BASE -->
-  <link rel="stylesheet" href="{% static 'core/css/base_do_menu.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/base_do_menu_core.css' %}">
 
   <!-- FONT AWESOME -->
   <link
@@ -141,7 +141,7 @@
   {% endif %}
 
   <!-- ═════════ CONTEÚDO ═════════ -->
-  <main class="area-conteudo">
+  <main class="area-conteudo {% if request.user.is_authenticated and request.user|has_attr:'aluno' %}sem-menu{% endif %}">
     {% block content %}{% endblock %}
   </main>
 

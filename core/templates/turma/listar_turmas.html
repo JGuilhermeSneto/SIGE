@@ -5,7 +5,7 @@
 {% block header_title %}Turmas{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/listar_turmas.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/listar_turmas.css' %}?v=6">
 {% endblock %}
 
 {% block content %}
@@ -24,7 +24,7 @@
         <div class="barra-busca-linha">
 
             <div class="barra-busca">
-                <form method="get" action="{% url 'listar_turmas' %}" style="width:100%; display:flex;">
+                <form method="get" action="{% url 'listar_turmas' %}">
                     <input type="text" name="q" placeholder="Buscar turma..." value="{{ query|default:'' }}">
                 </form>
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -65,38 +65,38 @@
                         <td>{{ turma.ano }}</td>
                         <td>{{ turma.get_turno_display }}</td>
                         <td class="coluna-acoes">
-
                             {% if turma.id %}
+                            <div class="acoes-linha" style="display:flex; justify-content:flex-end; gap:6px;">
 
-                            {% if request.user.is_superuser or request.user.gestor %}
-                            <a href="{% url 'listar_disciplinas_turma' turma.id %}" class="acao-btn"
-                               title="Ver Disciplinas">
-                                <i class="fa-solid fa-book"></i>
-                            </a>
-                            {% else %}
-                            <a href="{% url 'disciplinas_turma' turma.id %}" class="acao-btn"
-                               title="Ver Disciplinas">
-                                <i class="fa-solid fa-book"></i>
-                            </a>
+                                {% if request.user.is_superuser or request.user.gestor %}
+                                <a href="{% url 'listar_disciplinas_turma' turma.id %}" class="acao-btn"
+                                   title="Ver Disciplinas">
+                                    <i class="fa-solid fa-book"></i>
+                                </a>
+                                {% else %}
+                                <a href="{% url 'disciplinas_turma' turma.id %}" class="acao-btn"
+                                   title="Ver Disciplinas">
+                                    <i class="fa-solid fa-book"></i>
+                                </a>
+                                {% endif %}
+
+                                <a href="{% url 'grade_horaria' turma.id %}" class="acao-btn"
+                                   title="Grade Horária">
+                                    <i class="fa-solid fa-table"></i>
+                                </a>
+
+                                <a href="{% url 'editar_turma' turma.id %}" class="acao-btn"
+                                   title="Editar Turma">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+
+                                <a href="{% url 'excluir_turma' turma.id %}" class="acao-btn"
+                                   onclick="return confirm('Deseja realmente excluir esta turma?');">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+
+                            </div>
                             {% endif %}
-
-                            <a href="{% url 'grade_horaria' turma.id %}" class="acao-btn"
-                               title="Grade Horária">
-                                <i class="fa-solid fa-table"></i>
-                            </a>
-
-                            <a href="{% url 'editar_turma' turma.id %}" class="acao-btn"
-                               title="Editar Turma">
-                                <i class="fa-solid fa-pen"></i>
-                            </a>
-
-                            <a href="{% url 'excluir_turma' turma.id %}" class="acao-btn"
-                               onclick="return confirm('Deseja realmente excluir esta turma?');">
-                                <i class="fa-solid fa-trash"></i>
-                            </a>
-
-                            {% endif %}
-
                         </td>
                     </tr>
                     {% empty %}

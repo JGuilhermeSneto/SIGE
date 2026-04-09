@@ -5,7 +5,7 @@
 {% block header_title %}Disciplinas da Turma{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/listar_disciplinas.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/listar_disciplinas.css' %}?v=8">
 {% endblock %}
 
 {% block content %}
@@ -27,18 +27,16 @@
             <span class="subtitulo-turma">{{ turma.nome }} – {{ turma.get_turno_display }}</span>
         </h1>
 
-        <!-- EDITAR + EXCLUIR TURMA -->
         <div style="display:flex; gap:10px;">
-            <a href="{% url 'editar_turma' turma.id %}">
-                <button class="btn-adicionar" style="background:#1e90ff">
-                    <i class="fas fa-pen"></i>
+            <a href="{% url 'grade_horaria' turma.id %}">
+                <button class="btn-grade">
+                    <i class="fa-solid fa-calendar-days" style="margin-right: 5px;"></i> Grade Horária
                 </button>
             </a>
 
-            <a href="{% url 'excluir_turma' turma.id %}"
-               onclick="return confirm('Tem certeza que deseja excluir esta turma e todas as disciplinas dela?');">
-                <button class="btn-adicionar" style="background:#d9534f">
-                    <i class="fas fa-trash"></i>
+            <a href="{% url 'cadastrar_disciplina_turma' turma.id %}">
+                <button class="btn-verde">
+                    Adicionar Disciplina
                 </button>
             </a>
         </div>
@@ -48,35 +46,15 @@
     <!-- CARD PRINCIPAL -->
     <div class="card-tabela">
 
-        <!-- BUSCA + AÇÕES -->
-        <div class="barra-busca-linha">
-
-            <!-- BUSCA -->
-            <div class="barra-busca">
-                <form method="get" style="width:100%; display:flex;">
-                    <input type="text"
-                           name="q"
-                           placeholder="Buscar disciplina..."
-                           value="{{ query|default:'' }}">
-                </form>
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </div>
-
-            <!-- BOTÕES ADICIONAR / GRADE -->
-            <div style="display:flex; gap:10px;">
-                <a href="{% url 'cadastrar_disciplina_turma' turma.id %}">
-                    <button class="btn-adicionar">
-                        Adicionar Disciplina
-                    </button>
-                </a>
-
-                <a href="{% url 'grade_horaria' turma.id %}">
-                    <button class="btn-grade">
-                        📅 Grade Horária
-                    </button>
-                </a>
-            </div>
-
+        <!-- BUSCA -->
+        <div class="barra-busca">
+            <form method="get" style="width:100%; display:flex;">
+                <input type="text"
+                       name="q"
+                       placeholder="Buscar disciplina..."
+                       value="{{ query|default:'' }}">
+            </form>
+            <i class="fa-solid fa-magnifying-glass"></i>
         </div>
 
         <!-- TABELA DE DISCIPLINAS -->
@@ -98,19 +76,19 @@
 
                             <!-- VISUALIZAR DISCIPLINA -->
                             <a href="{% url 'visualizar_disciplinas' disciplina.id %}" title="Visualizar">
-                                <i class="fa-solid fa-eye"></i>
+                                <i class="fa-solid fa-eye acao-visualizar"></i>
                             </a>
 
                             <!-- EDITAR DISCIPLINA -->
                             <a href="{% url 'editar_disciplina' disciplina.id %}" title="Editar">
-                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-pen acao-editar"></i>
                             </a>
 
                             <!-- EXCLUIR DISCIPLINA -->
                             <a href="{% url 'excluir_disciplina' disciplina.id %}" 
                                title="Excluir"
                                onclick="return confirm('Deseja realmente excluir esta disciplina?');">
-                                <i class="fa-solid fa-trash"></i>
+                                <i class="fa-solid fa-trash acao-excluir"></i>
                             </a>
 
                         </td>

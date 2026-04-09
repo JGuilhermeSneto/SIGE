@@ -1,5 +1,5 @@
 /* ============================================================
-   Cadastrar / Editar Gestor
+   SIGE — Cadastrar / Editar Gestor
 ============================================================ */
 :root {
   --bg-base:        #090e1a;
@@ -8,13 +8,20 @@
   --bg-hover:       #1a2844;
   --border-subtle:  rgba(255,255,255,.06);
   --border-mid:     rgba(255,255,255,.11);
-  --accent-violet:  #7c6fff;
-  --accent-cyan:    #22d3ee;
-  --accent-emerald: #34d399;
-  --accent-amber:   #fbbf24;
+
+  /* Cyan theme for Gestor */
+  --theme-primary:  #22d3ee;
+  --theme-primary-rgb: 34, 211, 238;
+  
+  --accent-success: #34d399;
+  --accent-success-rgb: 52, 211, 153;
+  --accent-danger:  #f87171;
+  --accent-danger-rgb: 248, 113, 113;
+
   --text-primary:   #eef2ff;
   --text-secondary: #7986a8;
   --text-muted:     #3d4f72;
+
   --radius-sm:  8px;
   --radius-md:  12px;
   --radius-lg:  18px;
@@ -26,7 +33,7 @@ a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    ÁREA PRINCIPAL
-============================================================ */
+=========================================================== */
 .main-area {
   padding: 32px 28px 48px;
   font-family: 'DM Sans', sans-serif;
@@ -35,7 +42,7 @@ a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    HEADER
-============================================================ */
+=========================================================== */
 .header-painel {
   display: flex;
   align-items: flex-start;
@@ -52,7 +59,7 @@ a { text-decoration: none !important; color: inherit; }
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .14em;
-  color: var(--accent-violet);
+  color: var(--theme-primary);
   text-transform: uppercase;
 }
 
@@ -68,14 +75,14 @@ a { text-decoration: none !important; color: inherit; }
 .header-painel h1 .destaque {
   position: relative;
   display: inline-block;
-  color: var(--accent-violet);
+  color: var(--theme-primary);
 }
 .header-painel h1 .destaque::after {
   content: '';
   position: absolute;
   bottom: -3px; left: 0;
   width: 100%; height: 2px;
-  background: linear-gradient(90deg, var(--accent-violet), transparent);
+  background: linear-gradient(90deg, var(--theme-primary), transparent);
   border-radius: 2px;
 }
 
@@ -96,7 +103,7 @@ a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    INDICADORES DE PASSO
-============================================================ */
+=========================================================== */
 .passos-wrapper {
   display: flex;
   gap: 8px;
@@ -127,11 +134,11 @@ a { text-decoration: none !important; color: inherit; }
 }
 .passo-item.ativo {
   background: var(--bg-elevated);
-  border-color: var(--accent-violet);
+  border-color: var(--theme-primary);
 }
-.passo-item.ativo::before { background: var(--accent-violet); opacity: 1; }
-.passo-item.completo { border-color: var(--accent-emerald); }
-.passo-item.completo::before { background: var(--accent-emerald); opacity: 1; }
+.passo-item.ativo::before { background: var(--theme-primary); opacity: 1; }
+.passo-item.completo { border-color: var(--accent-success); }
+.passo-item.completo::before { background: var(--accent-success); opacity: 1; }
 
 .passo-num {
   width: 28px; height: 28px;
@@ -147,14 +154,14 @@ a { text-decoration: none !important; color: inherit; }
   transition: background .25s, color .25s, border-color .25s;
 }
 .passo-item.ativo .passo-num {
-  background: rgba(124,111,255,.18);
-  border-color: var(--accent-violet);
-  color: var(--accent-violet);
+  background: rgba(var(--theme-primary-rgb), .18);
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
 }
 .passo-item.completo .passo-num {
-  background: rgba(52,211,153,.18);
-  border-color: var(--accent-emerald);
-  color: var(--accent-emerald);
+  background: rgba(var(--accent-success-rgb), .18);
+  border-color: var(--accent-success);
+  color: var(--accent-success);
 }
 
 .passo-info { display: flex; flex-direction: column; gap: 1px; }
@@ -167,8 +174,8 @@ a { text-decoration: none !important; color: inherit; }
   color: var(--text-muted);
   transition: color .25s;
 }
-.passo-item.ativo .passo-label    { color: var(--accent-violet);  }
-.passo-item.completo .passo-label { color: var(--accent-emerald); }
+.passo-item.ativo .passo-label    { color: var(--theme-primary);  }
+.passo-item.completo .passo-label { color: var(--accent-success); }
 
 .passo-nome {
   font-size: .82rem;
@@ -181,7 +188,7 @@ a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    CARD DO FORMULÁRIO
-============================================================ */
+=========================================================== */
 .form-card {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -197,7 +204,7 @@ a { text-decoration: none !important; color: inherit; }
   position: absolute;
   top: -80px; right: -80px;
   width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(124,111,255,.06) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(var(--theme-primary-rgb), .06) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -213,11 +220,11 @@ a { text-decoration: none !important; color: inherit; }
 .form-card-icone {
   width: 40px; height: 40px;
   border-radius: var(--radius-sm);
-  background: rgba(124,111,255,.12);
-  border: 1px solid rgba(124,111,255,.2);
+  background: rgba(var(--theme-primary-rgb), .12);
+  border: 1px solid rgba(var(--theme-primary-rgb), .2);
   display: flex; align-items: center; justify-content: center;
   font-size: 16px;
-  color: var(--accent-violet);
+  color: var(--theme-primary);
 }
 
 .form-card-titulo-texto h2 {
@@ -225,16 +232,17 @@ a { text-decoration: none !important; color: inherit; }
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
+  margin: 0;
 }
 .form-card-titulo-texto p {
   font-size: .78rem;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin: 2px 0 0 0;
 }
 
 /* ============================================================
    ETAPAS
-============================================================ */
+=========================================================== */
 .etapa { display: none; }
 .etapa.ativa {
   display: grid;
@@ -244,8 +252,8 @@ a { text-decoration: none !important; color: inherit; }
 }
 
 /* ============================================================
-   CAMPOS
-============================================================ */
+   CAMPOS E FORMULARIO
+=========================================================== */
 .caixa-texto {
   display: flex;
   flex-direction: column;
@@ -269,12 +277,30 @@ a { text-decoration: none !important; color: inherit; }
   content: '';
   width: 5px; height: 5px;
   border-radius: 50%;
-  background: var(--accent-violet);
+  background: var(--theme-primary);
   display: inline-block;
   flex-shrink: 0;
 }
 
-.caixa-texto input,
+/* Checkbox container specifically for discente forms etc. */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  color: var(--text-secondary) !important;
+  font-weight: 500 !important;
+  font-size: .85rem !important;
+}
+.checkbox-container input {
+  width: auto;
+  min-height: auto;
+  padding: 0;
+}
+
+.caixa-texto input:not([type="checkbox"]),
 .caixa-texto select {
   padding: 13px 15px;
   border-radius: var(--radius-md);
@@ -290,31 +316,31 @@ a { text-decoration: none !important; color: inherit; }
 .caixa-texto input::placeholder { color: var(--text-muted); }
 .caixa-texto select option { background: var(--bg-elevated); color: var(--text-primary); }
 
-.caixa-texto input:hover,
+.caixa-texto input:not([type="checkbox"]):hover,
 .caixa-texto select:hover {
   border-color: rgba(255,255,255,.18);
   background: var(--bg-hover);
 }
-.caixa-texto input:focus,
+.caixa-texto input:not([type="checkbox"]):focus,
 .caixa-texto select:focus {
-  border-color: var(--accent-violet);
-  box-shadow: 0 0 0 3px rgba(124,111,255,.15);
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), .15);
   background: var(--bg-hover);
 }
 .caixa-texto input.campo-erro {
-  border-color: #f87171;
-  box-shadow: 0 0 0 3px rgba(248,113,113,.1);
+  border-color: var(--accent-danger);
+  box-shadow: 0 0 0 3px rgba(var(--accent-danger-rgb), .1);
 }
 
 .erro-inline {
   font-size: .72rem;
-  color: #f87171;
+  color: var(--accent-danger);
   display: none;
 }
 
 /* ============================================================
-   REQUISITOS DE SENHA
-============================================================ */
+   REQUISITOS DE SENHA E CONFIRMAÇÃO
+=========================================================== */
 .requisitos-senha {
   grid-column: span 3;
   display: grid;
@@ -334,31 +360,28 @@ a { text-decoration: none !important; color: inherit; }
   transition: color .2s;
 }
 .requisito i { font-size: .7rem; transition: color .2s; }
-.requisito.valid { color: var(--accent-emerald); }
-.requisito.valid i { color: var(--accent-emerald); }
+.requisito.valid { color: var(--accent-success); }
+.requisito.valid i { color: var(--accent-success); }
 
-/* ============================================================
-   MATCH DE SENHA
-============================================================ */
 .confirmacao-senha {
   grid-column: span 3;
   font-size: .78rem;
   padding: 10px 14px;
   border-radius: var(--radius-sm);
-  background: rgba(248,113,113,.08);
-  border: 1px solid rgba(248,113,113,.2);
-  color: #f87171;
+  background: rgba(var(--accent-danger-rgb), .08);
+  border: 1px solid rgba(var(--accent-danger-rgb), .2);
+  color: var(--accent-danger);
   display: none;
 }
 .confirmacao-senha.valid {
-  background: rgba(52,211,153,.08);
-  border-color: rgba(52,211,153,.2);
-  color: var(--accent-emerald);
+  background: rgba(var(--accent-success-rgb), .08);
+  border-color: rgba(var(--accent-success-rgb), .2);
+  color: var(--accent-success);
 }
 
 /* ============================================================
    UPLOAD DE FOTO
-============================================================ */
+=========================================================== */
 .upload-foto { grid-column: span 3; }
 
 .upload-container {
@@ -382,9 +405,9 @@ a { text-decoration: none !important; color: inherit; }
   transition: border-color .2s, background .2s, color .2s;
 }
 .botao-upload:hover {
-  border-color: var(--accent-violet);
-  background: rgba(124,111,255,.08);
-  color: var(--accent-violet);
+  border-color: var(--theme-primary);
+  background: rgba(var(--theme-primary-rgb), .08);
+  color: var(--theme-primary);
 }
 .botao-upload input[type="file"] { display: none; }
 
@@ -403,8 +426,8 @@ a { text-decoration: none !important; color: inherit; }
 }
 
 /* ============================================================
-   BOTÕES
-============================================================ */
+   BOTÕES DE NAVEGAÇÃO
+=========================================================== */
 .botoes {
   grid-column: span 3;
   display: flex;
@@ -444,48 +467,50 @@ a { text-decoration: none !important; color: inherit; }
   padding: 11px 24px;
   border-radius: var(--radius-md);
   border: none;
-  background: var(--accent-violet);
-  color: #fff;
+  background: var(--theme-primary);
+  color: #090e1a; /* Escuro para legibilidade nas cores brilhantes como amber, cyan, emerald */
   font-size: .88rem;
-  font-weight: 600;
+  font-weight: 700;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
   transition: background .2s, transform .15s, box-shadow .2s;
-  box-shadow: 0 4px 16px rgba(124,111,255,.3);
+  box-shadow: 0 4px 16px rgba(var(--theme-primary-rgb), .3);
   margin-left: auto;
 }
 .btn:hover {
-  background: #6b5cff;
+  filter: brightness(1.1);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(124,111,255,.4);
+  box-shadow: 0 6px 20px rgba(var(--theme-primary-rgb), .4);
 }
 .btn:active { transform: translateY(0); }
 
 .btn.salvar {
-  background: var(--accent-emerald);
-  box-shadow: 0 4px 16px rgba(52,211,153,.25);
+  background: var(--accent-success);
+  color: #090e1a;
+  box-shadow: 0 4px 16px rgba(var(--accent-success-rgb), .25);
 }
 .btn.salvar:hover {
-  background: #2ac486;
-  box-shadow: 0 6px 20px rgba(52,211,153,.35);
+  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(var(--accent-success-rgb), .35);
 }
+.btn.salvar i { color: #090e1a; }
 
 /* ============================================================
-   ALERT
-============================================================ */
+   ALERTAS
+=========================================================== */
 .alert-danger {
   grid-column: span 3;
   padding: 12px 16px;
   border-radius: var(--radius-md);
-  background: rgba(248,113,113,.08);
-  border: 1px solid rgba(248,113,113,.2);
-  color: #f87171;
+  background: rgba(var(--accent-danger-rgb), .08);
+  border: 1px solid rgba(var(--accent-danger-rgb), .2);
+  color: var(--accent-danger);
   font-size: .83rem;
 }
 
 /* ============================================================
    ANIMAÇÃO
-============================================================ */
+=========================================================== */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -493,7 +518,7 @@ a { text-decoration: none !important; color: inherit; }
 
 /* ============================================================
    RESPONSIVO
-============================================================ */
+=========================================================== */
 @media (max-width: 1000px) {
   .etapa.ativa { grid-template-columns: repeat(2, 1fr); }
   .caixa-texto.full,
@@ -515,5 +540,5 @@ a { text-decoration: none !important; color: inherit; }
 
 @media (max-width: 480px) {
   .botoes { flex-direction: column; }
-  .btn { width: 100%; justify-content: center; }
+  .btn, .btn-voltar-tab { width: 100%; justify-content: center; margin-left: 0; }
 }

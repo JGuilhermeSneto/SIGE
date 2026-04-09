@@ -11,200 +11,201 @@
 
 {% block content %}
 
-<div class="container-centralizado">
-    <main class="conteudo-principal">
+<section class="painel-sige">
 
-        <!-- HEADER -->
-        <div class="header-painel">
-            <div class="saudacao">
-                <h1>Olá, {{ aluno.nome_completo|truncatewords:2 }}! 👋</h1>
-                <p>{{ aluno.turma.nome }} • {{ aluno.turma.get_turno_display }}</p>
+    {# ════════════════ HEADER ════════════════ #}
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">SIGE · Painel do Aluno</span>
+            <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋</h1>
+            <p class="header-sub">{{ aluno.turma.nome }} · {{ aluno.turma.get_turno_display }}</p>
+        </div>
+        <button onclick="imprimirBoletim()" class="btn-imprimir">
+            <i class="fa-solid fa-print"></i> Imprimir Boletim
+        </button>
+    </div>
+
+    {# ════════════════ CARDS DE RESUMO ════════════════ #}
+    <section class="cards-resumo">
+        <div class="card-info">
+            <div class="card-icon">📚</div>
+            <div class="card-dados">
+                <p>Disciplinas</p>
+                <h3>{{ disciplinas_com_notas|length }}</h3>
             </div>
-            
-            <button onclick="imprimirBoletim()" class="btn-imprimir">
-                <i class="fa-solid fa-print"></i> Imprimir Boletim
-            </button>
         </div>
 
-        <!-- CARDS DE RESUMO -->
-        <section class="cards-resumo">
-            <div class="card-info">
-                <div class="card-icon">📚</div>
-                <div class="card-dados">
-                    <p>Disciplinas</p>
-                    <h3>{{ disciplinas_com_notas|length }}</h3>
-                </div>
+        <div class="card-info">
+            <div class="card-icon">📊</div>
+            <div class="card-dados">
+                <p>Média Geral</p>
+                <h3>{{ media_geral|floatformat:1|default:"--" }}</h3>
             </div>
+        </div>
 
-            <div class="card-info">
-                <div class="card-icon">📊</div>
-                <div class="card-dados">
-                    <p>Média Geral</p>
-                    <h3>{{ media_geral|floatformat:1|default:"--" }}</h3>
-                </div>
+        <div class="card-info">
+            <div class="card-icon">🎯</div>
+            <div class="card-dados">
+                {% if situacao_geral != "--" %}
+                    <p>Situação Geral</p>
+                    <h3 class="{{ situacao_classe }}">{{ situacao_geral }}</h3>
+                {% else %}
+                    <p>Notas Lançadas</p>
+                    <h3>{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</h3>
+                {% endif %}
             </div>
+        </div>
+    </section>
 
-            <div class="card-info">
-                <div class="card-icon">🎯</div>
-                <div class="card-dados">
-                    {% if situacao_geral != "--" %}
-                        <p>Situação Geral</p>
-                        <h3 class="{{ situacao_classe }}">{{ situacao_geral }}</h3>
-                    {% else %}
-                        <p>Notas Lançadas</p>
-                        <h3>{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</h3>
-                    {% endif %}
-                </div>
-            </div>
-        </section>
+    <div class="conteudo-geral">
 
-        <div class="conteudo-geral">
+        {# ════════════════ DISCIPLINAS E NOTAS ════════════════ #}
+        <div class="secao-disciplinas">
+            <p class="secao-titulo">
+                <i class="fa-solid fa-book-open"></i> Minhas Disciplinas e Notas
+            </p>
 
-            <!-- DISCIPLINAS E NOTAS -->
-            <div class="secao-disciplinas">
-                <h2>📖 Minhas Disciplinas e Notas</h2>
-                
-                <div class="lista-disciplinas">
-                    {% for item in disciplinas_com_notas %}
-                    <div class="disciplina-card">
-                        <div class="disciplina-header" onclick="toggleNotas(this)">
-                            <div class="disciplina-info">
-                                <h3>{{ item.disciplina.nome }}</h3>
-                                <p>Prof. {{ item.disciplina.professor.nome_completo }}</p>
-                            </div>
-
-                            <div class="disciplina-media">
-                                <span class="label">Média</span>
-                                <span class="valor-media {% if item.nota.media %}{% if item.nota.media >= 7 %}aprovado{% elif item.nota.media >= 5 %}recuperacao{% else %}reprovado{% endif %}{% endif %}">
-                                    {{ item.nota.media|floatformat:1|default:"--" }}
-                                </span>
-                            </div>
-
-                            <i class="fa-solid fa-chevron-down seta"></i>
+            <div class="lista-disciplinas">
+                {% for item in disciplinas_com_notas %}
+                <div class="disciplina-card">
+                    <div class="disciplina-header" onclick="toggleNotas(this)">
+                        <span class="disciplina-dot"></span>
+                        <div class="disciplina-info">
+                            <h3>{{ item.disciplina.nome }}</h3>
+                            <p>Prof. {{ item.disciplina.professor.nome_completo }}</p>
                         </div>
-                        
-                        <div class="disciplina-notas">
-                            <div class="nota-item">
-                                <span class="nota-label">1º Bimestre</span>
-                                <span class="nota-valor">{{ item.nota.nota1|default:"--" }}</span>
-                            </div>
-                            <div class="nota-item">
-                                <span class="nota-label">2º Bimestre</span>
-                                <span class="nota-valor">{{ item.nota.nota2|default:"--" }}</span>
-                            </div>
-                            <div class="nota-item">
-                                <span class="nota-label">3º Bimestre</span>
-                                <span class="nota-valor">{{ item.nota.nota3|default:"--" }}</span>
-                            </div>
-                            <div class="nota-item">
-                                <span class="nota-label">4º Bimestre</span>
-                                <span class="nota-valor">{{ item.nota.nota4|default:"--" }}</span>
-                            </div>
 
-                            <!-- FREQUÊNCIA -->
-                            {% if item.total_aulas > 0 %}
-                            <div class="frequencia-resumo">
-                                <div class="freq-item freq-faltas">
-                                    <span class="freq-label">Faltas</span>
-                                    <span class="freq-valor">{{ item.faltas }}/{{ item.total_aulas }}</span>
-                                </div>
-                                <div class="freq-barra-wrap">
-                                    <div
-                                        class="freq-barra {% if item.percentual_faltas >= 25 %}critica{% elif item.percentual_faltas >= 15 %}alerta{% else %}ok{% endif %}"
-                                        style="width: {{ item.percentual_faltas }}%"
-                                        title="{{ item.percentual_faltas }}% de faltas"
-                                    ></div>
-                                </div>
-                                <span class="freq-percentual {% if item.percentual_faltas >= 25 %}reprovado{% elif item.percentual_faltas >= 15 %}recuperacao{% else %}aprovado{% endif %}">
-                                    {{ item.percentual_faltas }}% de faltas
-                                </span>
-                            </div>
-                            {% else %}
-                            <div class="frequencia-resumo sem-registro">
-                                <span>Nenhuma chamada registrada ainda</span>
-                            </div>
-                            {% endif %}
+                        <div class="disciplina-media">
+                            <span class="label">Média</span>
+                            <span class="valor-media {% if item.nota.media %}{% if item.nota.media >= 7 %}aprovado{% elif item.nota.media >= 5 %}recuperacao{% else %}reprovado{% endif %}{% endif %}">
+                                {{ item.nota.media|floatformat:1|default:"--" }}
+                            </span>
                         </div>
+
+                        <i class="fa-solid fa-chevron-down seta"></i>
                     </div>
+
+                    <div class="disciplina-notas">
+                        <div class="nota-item">
+                            <span class="nota-label">1º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota1|default:"--" }}</span>
+                        </div>
+                        <div class="nota-item">
+                            <span class="nota-label">2º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota2|default:"--" }}</span>
+                        </div>
+                        <div class="nota-item">
+                            <span class="nota-label">3º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota3|default:"--" }}</span>
+                        </div>
+                        <div class="nota-item">
+                            <span class="nota-label">4º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota4|default:"--" }}</span>
+                        </div>
+
+                        {# Frequência #}
+                        {% if item.total_aulas > 0 %}
+                        <div class="frequencia-resumo">
+                            <div class="freq-item">
+                                <span class="freq-label">Faltas</span>
+                                <span class="freq-valor">{{ item.faltas }}/{{ item.total_aulas }}</span>
+                            </div>
+                            <div class="freq-barra-wrap">
+                                <div
+                                    class="freq-barra {% if item.percentual_faltas >= 25 %}critica{% elif item.percentual_faltas >= 15 %}alerta{% else %}ok{% endif %}"
+                                    style="width: {{ item.percentual_faltas }}%"
+                                ></div>
+                            </div>
+                            <span class="freq-percentual {% if item.percentual_faltas >= 25 %}reprovado{% elif item.percentual_faltas >= 15 %}recuperacao{% else %}aprovado{% endif %}">
+                                {{ item.percentual_faltas }}% de faltas
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="frequencia-resumo sem-registro">
+                            <span>Nenhuma chamada registrada ainda</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# ════════════════ COLUNA DIREITA ════════════════ #}
+        <div class="coluna-direita">
+
+            {# Gráfico de desempenho #}
+            <div class="card-grafico">
+                <h3><i class="fa-solid fa-chart-bar"></i> Meu Desempenho</h3>
+                <canvas id="graficoDesempenho"></canvas>
+            </div>
+
+            {# Calendário #}
+            <div class="calendario">
+                <div class="calendario-cabecalho">
+                    <h2>{{ agora|date:"F"|upper }}</h2>
+                    <span class="calendario-ano">{{ agora|date:"Y" }}</span>
+                </div>
+                <div class="calendario-grade">
+                    <div class="nome-dia">D</div>
+                    <div class="nome-dia">S</div>
+                    <div class="nome-dia">T</div>
+                    <div class="nome-dia">Q</div>
+                    <div class="nome-dia">Q</div>
+                    <div class="nome-dia">S</div>
+                    <div class="nome-dia">S</div>
+                    {% for celula in calendario %}
+                        <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
+                            {% if not celula.vazio %}{{ celula.numero }}{% endif %}
+                        </div>
                     {% endfor %}
                 </div>
             </div>
 
-            <!-- COLUNA DIREITA -->
-            <div class="coluna-direita">
-                
-                <!-- GRÁFICO DE DESEMPENHO -->
-                <div class="card-grafico">
-                    <h3>📈 Meu Desempenho</h3>
-                    <canvas id="graficoDesempenho"></canvas>
-                </div>
-
-                <!-- CALENDÁRIO -->
-                <div class="calendario">
-                    <div class="calendario-cabecalho">
-                        <h2>{{ agora|date:"F"|upper }}</h2>
-                        <span class="calendario-ano">{{ agora|date:"Y" }}</span>
-                    </div>
-
-                    <div class="calendario-grade">
-                        <div class="nome-dia">D</div>
-                        <div class="nome-dia">S</div>
-                        <div class="nome-dia">T</div>
-                        <div class="nome-dia">Q</div>
-                        <div class="nome-dia">Q</div>
-                        <div class="nome-dia">S</div>
-                        <div class="nome-dia">S</div>
-
-                        {% for celula in calendario %}
-                            <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
-                                {% if not celula.vazio %}{{ celula.numero }}{% endif %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-            </div>
-
         </div>
 
-        <!-- GRADE HORÁRIA -->
-        <div class="secao-grade">
-            <h2>🕐 Grade Horária - {{ aluno.turma.nome }}</h2>
-            
-            {% if grade_horario %}
-            <div class="grade-wrapper">
-                <table class="grade-table">
-                    <thead>
-                        <tr>
-                            <th>Horário</th>
-                            <th>Segunda</th>
-                            <th>Terça</th>
-                            <th>Quarta</th>
-                            <th>Quinta</th>
-                            <th>Sexta</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for horario, aulas in grade_horario.items %}
-                        <tr>
-                            <td class="horario-col">{{ horario }}</td>
-                            <td>{{ aulas.segunda|default:"--" }}</td>
-                            <td>{{ aulas.terca|default:"--" }}</td>
-                            <td>{{ aulas.quarta|default:"--" }}</td>
-                            <td>{{ aulas.quinta|default:"--" }}</td>
-                            <td>{{ aulas.sexta|default:"--" }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="aviso-grade">Grade horária ainda não definida para sua turma.</p>
-            {% endif %}
-        </div>
+    </div>
 
-    </main>
-</div>
+    {# ════════════════ GRADE HORÁRIA ════════════════ #}
+    <div class="secao-grade">
+        <p class="secao-titulo">
+            <i class="fa-solid fa-clock"></i> Grade Horária — {{ aluno.turma.nome }}
+        </p>
+
+        {% if grade_horario %}
+        <div class="grade-wrapper">
+            <table class="grade-table">
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Segunda</th>
+                        <th>Terça</th>
+                        <th>Quarta</th>
+                        <th>Quinta</th>
+                        <th>Sexta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for horario, aulas in grade_horario.items %}
+                    <tr>
+                        <td class="horario-col">{{ horario }}</td>
+                        <td>{{ aulas.segunda|default:"—" }}</td>
+                        <td>{{ aulas.terca|default:"—" }}</td>
+                        <td>{{ aulas.quarta|default:"—" }}</td>
+                        <td>{{ aulas.quinta|default:"—" }}</td>
+                        <td>{{ aulas.sexta|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="aviso-grade">Grade horária ainda não definida para sua turma.</p>
+        {% endif %}
+    </div>
+
+</section>
+
 
 <!-- MODAL DE IMPRESSÃO -->
 <div id="modal-impressao" class="modal-impressao">

@@ -303,3 +303,53 @@
     .coluna-email { display: none; }
   }
 }
+/* --------------------------------------
+   BARRA DE BUSCA
+-------------------------------------- */
+.barra-busca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.barra-busca form {
+  width: 100%;
+  display: flex;
+}
+
+.barra-busca input[type="text"] {
+  flex: 1;
+  padding: 11px 16px 11px 42px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-mid);
+  background: var(--elevated);
+  color: var(--text);
+  font-size: .88rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.barra-busca input[type="text"]::placeholder { color: var(--dim); }
+
+.barra-busca input[type="text"]:hover {
+  border-color: rgba(255,255,255,.18);
+  background: var(--hover);
+}
+
+.barra-busca input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  background: var(--hover);
+}
+
+.barra-busca .fa-magnifying-glass {
+  position: absolute;
+  left: 40px;
+  font-size: .82rem;
+  color: var(--dim);
+  pointer-events: none;
+}

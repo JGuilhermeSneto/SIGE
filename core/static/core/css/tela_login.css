@@ -168,8 +168,11 @@ body {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 2.3rem;
   font-weight: 800;
-  color: var(--text-primary);
   letter-spacing: .03em;
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .splash-sub {
@@ -232,6 +235,11 @@ body {
   width: 14px;
   text-align: center;
   flex-shrink: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.3s;
+}
+
+.step-item i.pop-in-icon {
+  animation: popIn .3s cubic-bezier(.34, 1.56, .64, 1) both;
 }
 
 /* ════════════════════════════════════════
@@ -315,8 +323,7 @@ body {
 .p4 { width: 3px; height: 3px; background: var(--accent-amber); left: 33%; animation-duration: 16s; animation-delay: 5s; box-shadow: 0 0 5px var(--accent-amber); }
 /* Partículas extras */
 .p5 { width: 4px; height: 4px; background: var(--accent-violet); left: 68%; animation-duration: 20s; animation-delay: 6s; box-shadow: 0 0 6px var(--accent-violet); }
-.p6 { width: 5px; height: 5px; background: var(--accent-cyan); left: 22%; animation-duration: 15s; animation-delay: 7s; box-shadow: 0 0 7px var(--accent-cyan); }
-.p7 { width: 3px; height: 3px; background: var(--accent-emerald); left: 88%; animation-duration: 11s; animation-delay: 2s; box-shadow: 0 0 5px var(--accent-emerald); }
+
 
 /* Traços de luz cruzando o fundo */
 .page::before {
@@ -368,16 +375,43 @@ body {
 /* ════════════════════════════════════════
    CARD DE LOGIN
 ═════════════════════════════════════════*/
+@property --border-progress {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+
 .login-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
   padding: 44px 40px 36px;
   width: 100%;
   max-width: 420px;
   position: relative;
   overflow: hidden;
-  transition: border-color .3s;
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+  transition: box-shadow .3s;
+}
+
+.login-card .card-border {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  padding: 2px; /* Aumentei para 2px para dar mais destaque e contraste na borda. */
+  background: conic-gradient(
+    from 135deg, /* Começa perto do canto superior esquerdo para dar a volta completa */
+    var(--accent-violet) 0%, 
+    var(--accent-cyan) var(--border-progress, 0%), 
+    transparent var(--border-progress, 0%),
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out; /* Melhor suporte em webkit */
+  mask-composite: exclude;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 0 6px var(--accent-cyan)); /* EFEITO NEON GLOW */
+  transition: --border-progress 0.15s ease-out; /* Transição curta e suave para digitação */
 }
 
 .login-card::before {
@@ -392,7 +426,7 @@ body {
 }
 
 .login-card:hover::before { opacity: 1; }
-.login-card:hover { border-color: var(--border-mid); }
+.login-card:hover { box-shadow: inset 0 0 0 1px var(--border-mid); }
 
 .login-card::after {
   content: '';
@@ -470,69 +504,6 @@ body {
   z-index: 2;
 }
 
-/* ════════════════════════════════════════
-   ÍCONE CSS DE ESCOLA (substituto quando sem img)
-   Chapéu de formatura com diploma orbitando
-═════════════════════════════════════════*/
-.logo-icon-css {
-  position: relative;
-  width: 44px;
-  height: 44px;
-  z-index: 2;
-  font-size: 0;
-}
-
-/* Aba do chapéu (mortarboard) */
-.logo-icon-css::before {
-  content: '';
-  position: absolute;
-  left: 2px; top: 16px;
-  width: 40px; height: 8px;
-  background: var(--accent-violet);
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(124, 111, 255, .5);
-}
-
-/* Topo do chapéu */
-.logo-icon-css::after {
-  content: '';
-  position: absolute;
-  left: 12px; top: 4px;
-  width: 20px; height: 14px;
-  background: var(--accent-cyan);
-  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
-  animation: capBob 3s ease-in-out infinite;
-}
-
-/* Borla do chapéu — elemento span extra se existir */
-.logo-icon-css .borla {
-  position: absolute;
-  right: 5px; top: 3px;
-  width: 6px; height: 14px;
-  background: var(--accent-amber);
-  border-radius: 0 0 3px 3px;
-  transform-origin: top center;
-  animation: borlaPendulum 2s ease-in-out infinite;
-}
-
-.brand-name {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 1.7rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: .05em;
-  animation: fadeUp .4s .15s ease both;
-}
-
-.brand-sub {
-  font-size: .73rem;
-  color: var(--text-muted);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  font-weight: 600;
-  animation: fadeUp .4s .2s ease both;
-}
-
 /* ── Divider ── */
 .divider {
   display: flex;
@@ -594,17 +565,39 @@ body {
   transition: border-color .25s, background .25s;
 }
 
+/* O contorno progredindo por todas as bordas do input! */
+.field-box::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  padding: 1px;
+  background: conic-gradient(
+    from 135deg, 
+    var(--accent-violet) 0%, 
+    var(--accent-cyan) var(--input-progress, 0%), 
+    transparent var(--input-progress, 0%),
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  pointer-events: none;
+  transition: --input-progress 0.15s ease-out;
+}
+
 .field-accent {
   position: absolute;
   bottom: 0; left: 0;
-  width: 0; height: 2px;
+  width: var(--input-progress, 0%); /* Progresso controlado via JS */
+  height: 2px;
   background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
-  transition: width .3s ease;
+  transition: width .15s ease-out; /* Transição curta para tipagem */
   pointer-events: none;
 }
 
 .field-wrap.focused .field-box    { border-color: rgba(124, 111, 255, .35); background: var(--bg-hover); }
-.field-wrap.focused .field-accent { width: 100%; }
+/* A classe .field-wrap.focused não força mais 100%, acompanha a digitação */
 .field-wrap.error   .field-box    { border-color: rgba(248, 113, 113, .4); }
 .field-wrap.error   .field-accent { width: 100%; background: var(--accent-red); }
 
@@ -785,21 +778,6 @@ body {
   100% { transform: translateX(4px); }
 }
 
-@keyframes capGlow {
-  0%, 100% { filter: drop-shadow(0 0 4px rgba(34,211,238,.4)); }
-  50%      { filter: drop-shadow(0 0 12px rgba(34,211,238,.9)); }
-}
-
-@keyframes capBob {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%      { transform: translateY(-3px) rotate(2deg); }
-}
-
-@keyframes borlaPendulum {
-  0%, 100% { transform: rotate(-15deg); }
-  50%      { transform: rotate(15deg); }
-}
-
 @keyframes sweepLine {
   0%   { transform: translateX(-100%); opacity: 0; }
   20%  { opacity: 1; }
@@ -857,7 +835,34 @@ body {
   0%   { opacity: 0;  bottom: -10px; }
   10%  { opacity: .6; }
   90%  { opacity: .3; }
-  100% { opacity: 0;  bottom: 110vh; }
+}
+
+/* ════════════════════════════════════════
+   TYPOGRAPHY DA LOGO & TÍTULOS
+═════════════════════════════════════════*/
+.brand-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: .05em;
+  animation: fadeUp .4s .15s ease both;
+  text-align: center;
+}
+
+.brand-sub {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--accent-violet), var(--accent-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: fadeUp .4s .2s ease both;
+  text-align: center;
+  margin-top: 2px;
 }
 
 @media (max-width: 480px) {
