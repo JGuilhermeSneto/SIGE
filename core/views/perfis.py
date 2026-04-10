@@ -27,6 +27,12 @@ def editar_perfil(request):
             if perfil and foto:
                 perfil.foto = foto
                 perfil.save()
+                
+                #Editar perfil está sem alteração da imagem
+                #A imagem escolhida no cadastro não está sendo alterada
+
+
+
 
             messages.success(request, "Perfil atualizado com sucesso!")
             return redirect(redirect_user(user))

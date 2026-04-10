@@ -75,6 +75,8 @@ def gerar_base_ano(request):
         
         # Opcional: Limpar ano antes de gerar? 
         # Decidimos apenas sobrepor para não perder descrições manuais se o gestor apenas quiser 'refresh'
+        #Ajustar o calendario para exibir nos usuarios
+        # Dias não estão sendo salvos para os usuários
         
         dados_base = gerar_base_calendario(ano)
         
