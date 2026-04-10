@@ -48,18 +48,18 @@ O SIGE resolve a fragmentação de dados em instituições de ensino, centraliza
 
 ## 🧠 2. Lógica de Negócio e Algoritmos
 
-O núcleo do sistema opera sob regras estritas definidas no backend (`views.py` e `models.py`):
+O núcleo do sistema opera sob regras estritas definidas no backend:
 
-### ⚖️ Algoritmo de Situação Acadêmica (`_calcular_situacao_nota`)
-O sistema avalia automaticamente o desempenho do aluno seguindo o fluxo:
+### ⚖️ Algoritmo de Situação Acadêmica
+O sistema avalia automaticamente o desempenho do aluno seguindo o fluxo definido em `core/utils/academico.py`:
 1.  **Frequência Crítica**: Se `Presença < 75%`, o status é fixado em `Reprovado por Falta`, ignorando a média.
 2.  **Média de Aprovação**: `Média >= 7.0` e `Freq >= 75%` ➔ `Aprovado`.
 3.  **Recuperação**: `Média >= 5.0` e `Média < 7.0` ➔ `Recuperação`.
 4.  **Reprovação**: `Média < 5.0` ➔ `Reprovado`.
 
 ### 📅 Geração de Calendário (Sincronia JS/Python)
-- **Backend**: `gerar_calendario()` em `views.py` gera uma lista plana de células considerando bissextos e semanas escolares (Início no Domingo).
-- **Frontend**: Utiliza JavaScript puro no Dashboard para garantir interatividade instantânea sem recarregar a página.
+- **Backend**: `visualizar_calendario()` em `core/views/calendario.py` gerencia a matriz de dias.
+- **Frontend**: Utiliza JavaScript puro (`static/core/js/ui_utils.js`) para garantir interatividade instantânea.
 
 ### 🔐 Matriz de Permissões (RBAC)
 

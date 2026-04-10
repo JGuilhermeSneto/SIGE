@@ -1,0 +1,73 @@
+:root {
+    /* ============================================================ 
+       COLOR PALETTE (HSL-based for consistency & accessibility)
+    ============================================================ */
+    --primary-h: 245;
+    --primary-s: 75%;
+    --primary-l: 60%;
+    
+    /* Core Brand Colors */
+    --primary:       hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+    --primary-dark:  hsl(var(--primary-h), var(--primary-s), 50%);
+    --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
+    
+    /* Semantic Surfaces (Dark Theme) */
+    --bg-base:        hsl(222, 47%, 7%);   /* #090e1a */
+    --bg-surface:     hsl(222, 47%, 11%);  /* #0f1729 */
+    --bg-elevated:    hsl(222, 45%, 14%);  /* #131e33 */
+    --bg-hover:       hsl(222, 45%, 18%);  /* #1a2844 */
+    --bg-input:       hsl(222, 45%, 20%);
+
+    /* Accents */
+    --accent-violet:  hsl(245, 100%, 72%); /* #7c6fff */
+    --accent-cyan:    hsl(189, 85%, 54%);  /* #22d3ee */
+    --accent-emerald: hsl(160, 65%, 52%);  /* #34d399 */
+    --accent-amber:   hsl(43, 96%, 56%);   /* #fbbf24 */
+    --accent-ruby:    hsl(350, 85%, 60%);
+
+    /* Text */
+    --text-primary:   hsl(227, 100%, 97%); /* #eef2ff */
+    --text-secondary: hsl(225, 27%, 64%);  /* #8b97bb */
+    --text-muted:     hsl(221, 30%, 34%);  /* #3d4f72 */
+
+    /* Borders */
+    --border-subtle:  hsla(0, 0%, 100%, 0.06);
+    --border-mid:     hsla(0, 0%, 100%, 0.11);
+
+    /* ============================================================ 
+       TYPOGRAPHY
+    ============================================================ */
+    --font-main:    'Inter', system-ui, -apple-system, sans-serif;
+    --font-display: 'Plus Jakarta Sans', 'Syne', sans-serif;
+
+    /* ============================================================ 
+       SPACING & LAYOUT
+    ============================================================ */
+    --space-xs: 0.5rem;
+    --space-sm: 1rem;
+    --space-md: 1.5rem;
+    --space-lg: 2.5rem;
+
+    --menu-height: 52px;
+    --menu-width:  260px;
+
+    /* ============================================================ 
+       SHAPE & DEPTH
+    ============================================================ */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, .25);
+    --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 20px 60px rgba(0, 0, 0, .45);
+    --shadow-glow: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.3) 0 0 15px;
+
+    /* ============================================================ 
+       TRANSITIONS
+    ============================================================ */
+    --transition-fast: .15s ease;
+    --transition-mid:  .22s ease;
+    --transition-slow: .35s ease;
+}

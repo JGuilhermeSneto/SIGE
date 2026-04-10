@@ -1,93 +1,102 @@
-{# ============================================================ #}
-{# template: disciplina/cadastrar_disciplina_turma.html        #}
-{# views   : cadastrar_disciplina_para_turma / editar_disciplina#}
-{# contexto: turma, professores, disciplina (None em cadastro) #}
-{# FIX: botão voltar aponta para listar_disciplinas_turma      #}
-{#      em vez de listar_turmas (contexto correto);            #}
-{#      mensagens de erro renderizadas corretamente;           #}
-{#      select de professor preserva seleção atual na edição.  #}
-{# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 
-{# Título dinâmico conforme modo de operação #}
 {% block title %}
-  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
-{% endblock %}
-
-{% block header_title %}
-  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
+  {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %} - {{ turma.nome }}
 {% endblock %}
 
 {% block extra_css %}
-{# Folha de estilo do formulário de disciplina #}
-<link rel="stylesheet" href="{% static 'core/css/cadastrar_disciplina.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/cadastrar_disciplina.css' %}?v=5">
 {% endblock %}
 
 {% block content %}
-<main class="conteudo-principal">
+<div class="main-area">
 
-  {# ── Cabeçalho com botão voltar ── #}
-  <div class="header-docentes">
-
-    {# FIX: volta para a listagem de disciplinas da turma, não para listar_turmas #}
-    <a href="{% url 'listar_disciplinas_turma' turma.id %}">
-      <button class="btn-voltar">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-    </a>
-
-    <h1 class="titulo-pagina">
-      {% if disciplina %}Editar Disciplina{% else %}Cadastrar Disciplina{% endif %}
-    </h1>
+  {# ════════════════ HEADER DO PAINEL ════════════════ #}
+  <div class="header-painel">
+      <div class="header-esquerda">
+          <span class="header-label">Administrativo · Acadêmico</span>
+          <h1>{% if disciplina %}Editar{% else %}Nova{% endif %} <span class="destaque">Disciplina</span></h1>
+          <div class="header-breadcrumb">
+              <a href="{% url 'painel_super' %}">Dashboard</a>
+              <i class="fa-solid fa-chevron-right"></i>
+              <a href="{% url 'listar_turmas' %}">Turmas</a>
+              <i class="fa-solid fa-chevron-right"></i>
+              <a href="{% url 'listar_disciplinas_turma' turma.id %}">{{ turma.nome }}</a>
+              <i class="fa-solid fa-chevron-right"></i>
+              <span>{% if disciplina %}Edição{% else %}Cadastro{% endif %}</span>
+          </div>
+      </div>
   </div>
 
-  <div class="card-tabela">
-
-    {# ── Exibe mensagens flash do Django (erros do POST) ── #}
-    {% if messages %}
-      {% for message in messages %}
-        <p style="color:red; margin-bottom:10px;">{{ message }}</p>
-      {% endfor %}
-    {% endif %}
-
-    {# Formulário POST simples (sem ModelForm — dados processados manualmente na view) #}
-    <form method="post" class="form-cadastro">
-      {% csrf_token %}
-
-      {# Campo: nome da disciplina — obrigatório #}
-      <div class="form-group">
-        <label>Nome da Disciplina</label>
-        <input type="text" name="nome" required
-               value="{{ disciplina.nome|default:'' }}">
+  {# ════════════════ CARD DO FORMULÁRIO ════════════════ #}
+  <div class="form-card">
+      <div class="form-card-titulo">
+          <div class="form-card-icone">
+              <i class="fa-solid fa-book-open-reader"></i>
+          </div>
+          <div class="form-card-titulo-texto">
+              <h2>{% if disciplina %}Modificar Disciplina{% else %}Informações da Disciplina{% endif %}</h2>
+              <p>Insira os detalhes e a alocação de docente para a turma <strong>{{ turma.nome }}</strong>.</p>
+          </div>
       </div>
 
-      {# Campo: seleção de professor — obrigatório #}
-      {# FIX: opção selecionada preservada na edição via disciplina.professor.id #}
-      <div class="form-group">
-        <label>Professor</label>
-        <select name="professor" required>
-          <option value="">Selecione...</option>
-          {% for professor in professores %}
-            <option value="{{ professor.id }}"
-              {% if disciplina and disciplina.professor.id == professor.id %}
-                selected
-              {% endif %}>
-              {{ professor.nome_completo }}
-            </option>
+      {# MENSAGENS DE ERRO/ALERTA #}
+      {% if messages %}
+          {% for message in messages %}
+              <div class="confirmacao-senha" style="display: block; margin-bottom: 20px;">
+                  <i class="fa-solid fa-circle-exclamation"></i> {{ message }}
+              </div>
           {% endfor %}
-        </select>
-      </div>
+      {% endif %}
 
-      {# Botão de submit com texto contextual #}
-      <div class="form-actions">
-        <button type="submit" class="btn-adicionar">
-          {% if disciplina %}Salvar Alterações{% else %}Adicionar Disciplina{% endif %}
-        </button>
-      </div>
+      <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <div class="etapa ativa">
+              
+              {# NOME DA DISCIPLINA #}
+              <div class="caixa-texto full">
+                  <label class="required" for="id_nome">
+                      <i class="fa-solid fa-tag"></i> Nome da Disciplina
+                  </label>
+                  <input type="text" name="nome" id="id_nome" required
+                         placeholder="Ex: Matemática Aplicada" value="{{ disciplina.nome|default:'' }}">
+              </div>
 
-    </form>
+              {# DOCENTE RESPONSÁVEL #}
+              <div class="caixa-texto full">
+                  <label class="required" for="id_professor">
+                      <i class="fa-solid fa-person-chalkboard"></i> Docente Responsável
+                  </label>
+                  <select name="professor" id="id_professor" required>
+                      <option value="" disabled selected>Selecione o professor...</option>
+                      {% for professor in professores %}
+                          <option value="{{ professor.id }}"
+                            {% if disciplina and disciplina.professor.id == professor.id %}
+                              selected
+                            {% endif %}>
+                            {{ professor.nome_completo }}
+                          </option>
+                      {% endfor %}
+                  </select>
+              </div>
+
+              {# AÇÕES DO FORMULÁRIO #}
+              <div class="botoes">
+                  <a href="{% url 'listar_disciplinas_turma' turma.id %}" class="btn-voltar-tab">
+                      <i class="fa-solid fa-arrow-left"></i> Cancelar
+                  </a>
+                  
+                  <button type="submit" class="btn salvar">
+                      {% if disciplina %}<i class="fa-solid fa-check"></i> Salvar Modificações
+                      {% else %}<i class="fa-solid fa-plus"></i> Adicionar Disciplina{% endif %}
+                  </button>
+              </div>
+
+          </div>
+      </form>
   </div>
 
-</main>
+</div>
 {% endblock %}

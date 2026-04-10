@@ -7,32 +7,27 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/cadastrar_docente.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
-<style>
-    /* Estilos para as máscaras e validações */
-    .valid { color: #28a745 !important; }
-    .invalido { color: #dc3545 !important; }
-    .erro-inline { color: #dc3545; font-size: 0.85em; display: none; margin-top: 5px; }
-    .requisito i { margin-right: 5px; }
-</style>
 {% endblock %}
 
 {% block content %}
 <div class="main-area">
 
+    <!-- HEADER DO PAINEL -->
     <div class="header-painel">
         <div class="header-esquerda">
-            <span class="header-label">Acadêmico</span>
+            <span class="header-label">Administrativo · Acadêmico</span>
             <h1>{{ professor.pk|yesno:"Editar,Cadastrar" }} <span class="destaque">Docente</span></h1>
             <div class="header-breadcrumb">
-                <a href="{% url 'painel_super' %}">Início</a>
+                <a href="{% url 'painel_super' %}">Dashboard</a>
                 <i class="fa-solid fa-chevron-right"></i>
                 <a href="{% url 'listar_professores' %}">Professores</a>
+                <i class="fa-solid fa-chevron-right"></i>
+                <span>{{ professor.pk|yesno:"Editar,Cadastrar" }}</span>
             </div>
         </div>
     </div>
 
+    <!-- INDICADORES DE PASSO (WIZARD) -->
     <div class="passos-wrapper">
         <div class="passo-item ativo" id="passo-1">
             <div class="passo-num">1</div>
@@ -52,11 +47,12 @@
             <div class="passo-num">3</div>
             <div class="passo-info">
                 <span class="passo-label">Etapa 3</span>
-                <span class="passo-nome">Profissional</span>
+                <span class="passo-nome">Acesso & Foto</span>
             </div>
         </div>
     </div>
 
+    <!-- CARD DO FORMULÁRIO -->
     <div class="form-card">
         <div class="form-card-titulo">
             <div class="form-card-icone">
@@ -68,293 +64,153 @@
             </div>
         </div>
 
-        <form method="POST" enctype="multipart/form-data" id="form-professor">
+        <form method="post" id="form-professor" class="formulario" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- ETAPA 1 -->
+            <!-- ETAPA 1: DADOS PESSOAIS -->
             <div class="etapa ativa" id="etapa-1">
                 <div class="caixa-texto full">
-                    <label class="required">Nome completo</label>
-                    {{ form.nome_completo }}
+                    <label class="required">Nome Completo</label>
+                    {{ form.nome_completo|attr:"placeholder:Ex: João Silva Sauro" }}
                     <small class="erro-inline"></small>
                 </div>
-
+                
+                <div class="caixa-texto">
+                    <label class="required">E-mail Corporativo</label>
+                    {{ form.email|attr:"placeholder:email@instituicao.com" }}
+                    <small class="erro-inline"></small>
+                </div>
+                
                 <div class="caixa-texto">
                     <label class="required">CPF</label>
-                    {{ form.cpf|attr:"placeholder:000.000.000-00" }}
+                    {{ form.cpf|attr:"placeholder:000.000.000-00"|attr:"maxlength:14" }}
                     <small class="erro-inline"></small>
                 </div>
-
+                
                 <div class="caixa-texto">
-                    <label class="required">E-mail</label>
-                    {{ form.email }}
-                    <small class="erro-inline"></small>
-                </div>
-
-                <div class="caixa-texto">
-                    <label class="required">Telefone</label>
-                    {{ form.telefone|attr:"placeholder:(00) 00000-0000" }}
-                    <small class="erro-inline"></small>
-                </div>
-
-                <div class="caixa-texto">
-                    <label class="required">Data de nascimento</label>
+                    <label class="required">Data de Nascimento</label>
                     {{ form.data_nascimento|attr:"type:date" }}
+                    <small class="erro-inline"></small>
+                </div>
+                
+                <div class="caixa-texto">
+                    <label class="required">Telefone para Contato</label>
+                    {{ form.telefone|attr:"placeholder:(00) 00000-0000"|attr:"maxlength:15" }}
+                    <small class="erro-inline"></small>
+                </div>
+
+                <div class="caixa-texto full">
+                    <label class="required">Formação Acadêmica</label>
+                    {{ form.formacao|attr:"placeholder:Ex: Licenciatura em Matemática" }}
                     <small class="erro-inline"></small>
                 </div>
 
                 <div class="botoes">
                     <span></span>
-                    <button type="button" class="btn" onclick="validarEtapa(1)">
-                        Próximo <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+                    <button type="button" class="btn" onclick="validarEtapa(1)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- ETAPA 2 -->
+            <!-- ETAPA 2: ENDEREÇO -->
             <div class="etapa" id="etapa-2">
                 <div class="caixa-texto">
                     <label class="required">CEP</label>
-                    {{ form.cep|attr:"placeholder:00000-000" }}
+                    {{ form.cep|attr:"placeholder:00000-000"|attr:"maxlength:9" }}
                     <small class="erro-inline"></small>
                 </div>
+                
                 <div class="caixa-texto">
                     <label class="required">Estado</label>
-                    {{ form.estado }}
+                    {{ form.estado|attr:"placeholder:UF" }}
                     <small class="erro-inline"></small>
                 </div>
+                
                 <div class="caixa-texto">
                     <label class="required">Cidade</label>
-                    {{ form.cidade }}
+                    {{ form.cidade|attr:"placeholder:Nome da cidade" }}
                     <small class="erro-inline"></small>
                 </div>
-                <div class="caixa-texto">
-                    <label>Bairro</label>
-                    {{ form.bairro }}
-                </div>
-                <div class="caixa-texto dois">
-                    <label class="required">Logradouro</label>
-                    {{ form.logradouro }}
-                    <small class="erro-inline"></small>
-                </div>
-                <div class="caixa-texto">
-                    <label class="required">Número</label>
-                    {{ form.numero }}
-                    <small class="erro-inline"></small>
-                </div>
+                
                 <div class="caixa-texto full">
-                    <label>Complemento</label>
-                    {{ form.complemento }}
+                    <label class="required">Bairro</label>
+                    {{ form.bairro|attr:"placeholder:Nome do bairro" }}
+                    <small class="erro-inline"></small>
+                </div>
+                
+                <div class="caixa-texto full">
+                    <label class="required">Logradouro (Rua/Avenida)</label>
+                    {{ form.logradouro|attr:"placeholder:Endereço completo" }}
+                    <small class="erro-inline"></small>
                 </div>
 
                 <div class="botoes">
-                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)">
-                        <i class="fa-solid fa-arrow-left"></i> Anterior
-                    </button>
-                    <button type="button" class="btn" onclick="validarEtapa(2)">
-                        Próximo <i class="fa-solid fa-arrow-right"></i>
-                    </button>
+                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
+                    <button type="button" class="btn" onclick="validarEtapa(2)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
             </div>
 
-            <!-- ETAPA 3 -->
+            <!-- ETAPA 3: ACESSO E FOTO -->
             <div class="etapa" id="etapa-3">
                 <div class="caixa-texto">
-                    <label>Formação</label>
-                    {{ form.formacao }}
-                </div>
-                <div class="caixa-texto">
-                    <label>Especialização</label>
-                    {{ form.especializacao }}
-                </div>
-                <div class="caixa-texto full">
-                    <label>Área de atuação</label>
-                    {{ form.area_atuacao }}
-                </div>
-
-                <div class="caixa-texto">
-                    <label {% if not professor.pk %}class="required"{% endif %}>
-                        Senha {% if professor.pk %}<small>(deixe em branco para manter)</small>{% endif %}
-                    </label>
-                    {{ form.senha }}
-                    <small class="erro-inline"></small>
-                </div>
-
-                <div class="requisitos-senha" id="requisitos-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
-                    <div class="requisito" id="req-maiuscula"><i class="fa-solid fa-xmark"></i> 1 Maiúscula</div>
-                    <div class="requisito" id="req-minuscula"><i class="fa-solid fa-xmark"></i> 1 Minúscula</div>
-                    <div class="requisito" id="req-numero"><i class="fa-solid fa-xmark"></i> 1 Número</div>
-                    <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> 6 caracteres</div>
+                  <label {% if not professor.pk %}class="required"{% endif %}>
+                    Senha de Acesso
+                    {% if professor.pk %}<small>(vazio para manter)</small>{% endif %}
+                  </label>
+                  {{ form.senha }}
                 </div>
 
                 <div class="caixa-texto" id="confirmar-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
-                    <label {% if not professor.pk %}class="required"{% endif %}>Confirmar senha</label>
-                    {{ form.senha_confirmacao }}
-                    <small class="erro-inline"></small>
+                  <label {% if not professor.pk %}class="required"{% endif %}>Confirmar Senha</label>
+                  {{ form.senha_confirmacao }}
+                  <small class="erro-inline"></small>
                 </div>
-                <div class="confirmacao-senha" id="senha-match-msg" style="display:none; margin-bottom: 15px;"></div>
+
+                <div class="requisitos-senha" id="requisitos-senha-container" {% if professor.pk %}style="display:none;"{% endif %}>
+                    <div class="requisito" id="req-maiuscula"><i class="fa-solid fa-xmark"></i> 1 Letra maiúscula</div>
+                    <div class="requisito" id="req-minuscula"><i class="fa-solid fa-xmark"></i> 1 Letra minúscula</div>
+                    <div class="requisito" id="req-numero"><i class="fa-solid fa-xmark"></i> 1 Número</div>
+                    <div class="requisito" id="req-caractere"><i class="fa-solid fa-xmark"></i> Mínimo 6 caracteres</div>
+                </div>
 
                 <div class="caixa-texto upload-foto">
-                    <label>Foto</label>
+                    <label>Foto de Perfil Profissional</label>
                     <div class="upload-container">
                         <label class="botao-upload">
-                            <i class="fa-solid fa-camera"></i>
+                            <i class="fa-solid fa-camera"></i> Selecionar Foto
                             {{ form.foto }}
                         </label>
                         <div class="preview-foto">
-                            <img id="preview-imagem" src="{% if professor.foto %}{{ professor.foto.url }}{% endif %}" 
-                                 style="{% if professor.foto %}display:block;{% else %}display:none;{% endif %} width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                            <img id="preview-imagem" src="{% if professor.pk and professor.foto %}{{ professor.foto.url }}{% endif %}" 
+                                 alt="Preview" style="{% if professor.pk and professor.foto %}display:block;{% else %}display:none;{% endif %} width: 80px; height: 80px; border-radius: 50%; object-fit: cover;">
                         </div>
                     </div>
                 </div>
 
                 <div class="botoes">
-                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)">
-                        <i class="fa-solid fa-arrow-left"></i> Anterior
-                    </button>
+                    <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(3)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
                     <button type="submit" class="btn salvar">
-                        <i class="fa-solid fa-check"></i> {{ professor.pk|yesno:"Atualizar,Salvar" }}
+                        <i class="fa-solid fa-check"></i> {{ professor.pk|yesno:"Atualizar,Salvar" }} Cadastro
                     </button>
                 </div>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'core/js/registration_wizard.js' %}"></script>
 <script>
-    // Configurações de Etapa
-    const etapasMeta = {
-        1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas' },
-        2: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização' },
-        3: { icone: 'fa-chalkboard-user', titulo: 'Profissional', desc: 'Formação e acesso' }
-    };
-
-    function atualizarIndicadores(etapaAtiva) {
-        for (let i = 1; i <= 3; i++) {
-            let el = document.getElementById('passo-' + i);
-            if (el) {
-                el.classList.remove('ativo', 'completo');
-                if (i < etapaAtiva) el.classList.add('completo');
-                else if (i === etapaAtiva) el.classList.add('ativo');
-            }
-        }
-        const meta = etapasMeta[etapaAtiva];
-        document.getElementById('etapa-icone').className = `fa-solid ${meta.icone}`;
-        document.getElementById('etapa-titulo').textContent = meta.titulo;
-        document.getElementById('etapa-desc').textContent = meta.desc;
-    }
-
-    function validarEtapa(n) {
-        const etapa = document.getElementById('etapa-' + n);
-        const campos = etapa.querySelectorAll('input[required], select[required]');
-        let valido = true;
-
-        campos.forEach(campo => {
-            const erroEl = campo.parentElement.querySelector('.erro-inline');
-            if (!campo.value.trim()) {
-                campo.style.borderColor = '#dc3545';
-                if (erroEl) { erroEl.textContent = 'Campo obrigatório'; erroEl.style.display = 'block'; }
-                valido = false;
-            } else {
-                campo.style.borderColor = '';
-                if (erroEl) erroEl.style.display = 'none';
-            }
-        });
-
-        if (valido) {
-            document.getElementById('etapa-' + n).classList.remove('ativa');
-            document.getElementById('etapa-' + (n + 1)).classList.add('ativa');
-            atualizarIndicadores(n + 1);
-            window.scrollTo(0, 0);
-        }
-    }
-
-    function voltarEtapa(n) {
-        document.getElementById('etapa-' + n).classList.remove('ativa');
-        document.getElementById('etapa-' + (n - 1)).classList.add('ativa');
-        atualizarIndicadores(n - 1);
-    }
-
-    // Máscaras Automáticas
-    const mascaras = {
-        cpf(value) {
-            return value.replace(/\D/g, '').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})/, '$1-$2').replace(/(-\d{2})\d+?$/, '$1');
-        },
-        telefone(value) {
-            return value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2').replace(/(-\d{4})\d+?$/, '$1');
-        },
-        cep(value) {
-            return value.replace(/\D/g, '').replace(/(\d{5})(\d)/, '$1-$2').replace(/(-\d{3})\d+?$/, '$1');
-        }
-    };
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // Aplicar máscaras nos eventos de input
-        const inputCpf = document.querySelector('input[name="cpf"]');
-        const inputTel = document.querySelector('input[name="telefone"]');
-        const inputCep = document.querySelector('input[name="cep"]');
-
-        if (inputCpf) inputCpf.addEventListener('input', e => e.target.value = mascaras.cpf(e.target.value));
-        if (inputTel) inputTel.addEventListener('input', e => e.target.value = mascaras.telefone(e.target.value));
-        if (inputCep) inputCep.addEventListener('input', e => e.target.value = mascaras.cep(e.target.value));
-
-        // Lógica de Senha
-        const senhaInput = document.getElementById('id_senha');
-        const confirmaInput = document.getElementById('id_senha_confirmacao');
-        const matchMsg = document.getElementById('senha-match-msg');
-        
-        const regras = [
-            { id: 'req-maiuscula', regex: /[A-Z]/ },
-            { id: 'req-minuscula', regex: /[a-z]/ },
-            { id: 'req-numero', regex: /\d/ },
-            { id: 'req-caractere', regex: /.{6,}/ }
-        ];
-
-        if (senhaInput) {
-            senhaInput.addEventListener('input', function() {
-                regras.forEach(r => {
-                    const el = document.getElementById(r.id);
-                    const ok = r.regex.test(this.value);
-                    if (el) {
-                        el.classList.toggle('valid', ok);
-                        el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
-                    }
-                });
-                
-                if (confirmaInput && confirmaInput.value) {
-                    const ok = this.value === confirmaInput.value;
-                    matchMsg.textContent = ok ? 'Senhas coincidem ✓' : 'Senhas não coincidem';
-                    matchMsg.className = 'confirmacao-senha ' + (ok ? 'valid' : 'invalido');
-                    matchMsg.style.display = 'block';
-                }
-            });
-        }
-
-        if (confirmaInput) {
-            confirmaInput.addEventListener('input', function() {
-                const ok = this.value === senhaInput.value;
-                matchMsg.textContent = ok ? 'Senhas coincidem ✓' : 'Senhas não coincidem';
-                matchMsg.className = 'confirmacao-senha ' + (ok ? 'valid' : 'invalido');
-                matchMsg.style.display = 'block';
-            });
-        }
-
-        // Preview Foto
-        const inputFoto = document.getElementById('id_foto');
-        if (inputFoto) {
-            inputFoto.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = e => {
-                        const img = document.getElementById('preview-imagem');
-                        img.src = e.target.result;
-                        img.style.display = 'block';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    RegistrationWizard.init({
+        totalSteps: 3,
+        isEdition: {{ professor.pk|yesno:"true,false" }},
+        stepsMeta: {
+            1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do professor' },
+            2: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do docente' },
+            3: { icone: 'fa-shield-halved', titulo: 'Acesso & Foto', desc: 'Senha de acesso e imagem de perfil' }
         }
     });
+});
 </script>
 {% endblock %}

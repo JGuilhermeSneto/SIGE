@@ -6,7 +6,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link rel="stylesheet" href="{% static 'core/css/listar_discentes.css' %}?v=2">
+<link rel="stylesheet" href="{% static 'core/css/listar_alunos.css' %}?v=2">
 {% endblock %}
 
 {% block content %}
@@ -54,14 +54,25 @@
             <td class="tabela-info">{{ aluno.turma.nome }}</td>
 
             <td class="coluna-acoes">
-              <a href="{% url 'editar_aluno' aluno.id %}" class="acao-editar" title="Editar">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </a>
+              <div class="acoes-grupo">
+                <a href="{% url 'editar_aluno' aluno.id %}" class="acao-btn" title="Editar">
+                  <i class="fa-solid fa-pen-to-square acao-editar"></i>
+                </a>
 
-              <a href="{% url 'excluir_aluno' aluno.id %}" class="acao-excluir" title="Excluir"
-                 onclick="return confirm('Deseja realmente excluir este discente?')">
-                <i class="fa-solid fa-trash"></i>
-              </a>
+                {# Ação desativar: is_active=False #}
+                <form action="{% url 'desativar_usuario' aluno.user.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="acao-btn" title="Desativar"
+                          onclick="return confirm('Deseja suspender o acesso deste discente? (Ele poderá ser reativado depois)')">
+                    <i class="fa-solid fa-user-lock acao-desativar"></i>
+                  </button>
+                </form>
+
+                <a href="{% url 'excluir_aluno' aluno.id %}" class="acao-btn" title="Excluir"
+                   onclick="return confirm('ATENÇÃO: Deseja EXCLUIR DEFINITIVAMENTE este discente? Todos os dados vinculados podem ser perdidos.')">
+                  <i class="fa-solid fa-trash acao-excluir"></i>
+                </a>
+              </div>
             </td>
           </tr>
           {% empty %}

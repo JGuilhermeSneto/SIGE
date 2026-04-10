@@ -1,0 +1,394 @@
+/* ============================================================
+   SIGE — Lista de Discentes
+   lista_discentes.css
+   Coerente com lista_gestores.css / painel_super.css
+ ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:          #090e1a;
+  --surface:     #0f1729;
+  --elevated:    #131e33;
+  --hover:       #1a2844;
+  --border:      rgba(255,255,255,.07);
+  --border-mid:  rgba(255,255,255,.13);
+  --accent:      #fbbf24;       /* amber — cor dos discentes */
+  --accent-dim:  rgba(251,191,36,.12);
+  --accent-glow: rgba(251,191,36,.18);
+  --violet:      #7c6fff;
+  --cyan:        #22d3ee;
+  --amber:       #fbbf24;
+  --rose:        #fb7185;
+  --text:        #eef2ff;
+  --muted:       #7986a8;
+  --dim:         #3d4f72;
+  --r-sm:        8px;
+  --r-md:        14px;
+  --r-lg:        20px;
+}
+
+/* ── Reset base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Conteúdo principal ── */
+.conteudo-principal {
+  font-family: 'DM Sans', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+  padding: 36px 32px 60px;
+  background: var(--bg);
+}
+
+/* ══════════════════════════════════════
+   CABEÇALHO
+   ══════════════════════════════════════ */
+.header-discentes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+  flex-wrap: wrap;
+}
+
+/* botão voltar */
+.btn-voltar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-mid);
+  color: var(--muted);
+  font-size: .95rem;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s, transform .2s;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.btn-voltar:hover {
+  background: var(--hover);
+  color: var(--text);
+  border-color: var(--accent);
+  transform: translateX(-2px);
+}
+
+/* título */
+.titulo-pagina {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text);
+  flex: 1;
+  position: relative;
+  display: inline-block;
+}
+
+.titulo-pagina::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
+}
+
+/* botão adicionar */
+.btn-adicionar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--r-md);
+  color: var(--accent);
+  font-family: 'DM Sans', sans-serif;
+  font-size: .82rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  padding: .55rem 1.1rem;
+  cursor: pointer;
+  transition: background .2s, box-shadow .2s, transform .2s;
+  white-space: nowrap;
+}
+
+.btn-adicionar:hover {
+  background: rgba(251,191,36,.22);
+  box-shadow: 0 0 20px rgba(251,191,36,.15);
+  transform: translateY(-1px);
+}
+
+.btn-adicionar::before {
+  content: '+';
+  font-size: 1.1rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════
+   BARRA DE BUSCA
+   ══════════════════════════════════════ */
+.barra-busca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.barra-busca form {
+  width: 100%;
+  display: flex;
+}
+
+.barra-busca input[type="text"] {
+  flex: 1;
+  padding: 11px 16px 11px 42px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-mid);
+  background: var(--elevated);
+  color: var(--text);
+  font-size: .88rem;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.barra-busca input[type="text"]::placeholder { color: var(--dim); }
+
+.barra-busca input[type="text"]:hover {
+  border-color: rgba(255,255,255,.18);
+  background: var(--hover);
+}
+
+.barra-busca input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(251,191,36,.15);
+  background: var(--hover);
+}
+
+.barra-busca .fa-magnifying-glass {
+  position: absolute;
+  left: 40px;
+  font-size: .82rem;
+  color: var(--dim);
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════
+   CARD / TABELA
+   ══════════════════════════════════════ */
+.card-tabela {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  animation: fadeUp .4s ease both;
+}
+
+/* barra de acento no topo do card */
+.card-tabela::before {
+  content: '';
+  display: block;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 70%);
+}
+
+.container-tabela {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Tabela ── */
+.tabela-discentes {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .875rem;
+}
+
+/* cabeçalho */
+.tabela-discentes thead tr {
+  border-bottom: 1px solid var(--border-mid);
+}
+
+.tabela-discentes thead th {
+  padding: 16px 20px;
+  text-align: left;
+  font-size: .68rem;
+  font-weight: 600;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  white-space: nowrap;
+  background: var(--surface);
+}
+
+/* linhas do body */
+.tabela-discentes tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .18s;
+}
+
+.tabela-discentes tbody tr:last-child {
+  border-bottom: none;
+}
+
+.tabela-discentes tbody tr:hover {
+  background: var(--hover);
+}
+
+.tabela-discentes tbody td {
+  padding: 15px 20px;
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+/* coluna nome — destaque */
+.tabela-discentes tbody td:first-child {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* coluna turma/matrícula — destaque na cor accent */
+.tabela-discentes tbody td.coluna-turma,
+.tabela-discentes tbody td.coluna-matricula {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* linha vazia */
+.tabela-discentes tbody td[colspan] {
+  text-align: center;
+  color: var(--dim);
+  padding: 48px 20px;
+  font-size: .85rem;
+  letter-spacing: .04em;
+}
+
+/* ── Colunas ── */
+.coluna-nome      { width: 28%; }
+.coluna-email     { width: 25%; }
+.coluna-turma     { width: 18%; }
+.coluna-matricula { width: 17%; }
+.coluna-acoes     { width: 14%; text-align: center; }
+
+.tabela-discentes tbody td.coluna-acoes {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* container interno flex para alinhar os botões */
+.tabela-discentes td.coluna-acoes .acoes-grupo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* ══════════════════════════════════════
+   AÇÕES (editar / desativar / excluir)
+   ══════════════════════════════════════ */
+.acao-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--elevated);
+  color: var(--muted);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  text-decoration: none;
+}
+
+.acao-btn:hover {
+  transform: translateY(-2px);
+  color: var(--text);
+}
+
+/* editar */
+.acao-editar {
+  color: var(--accent);
+}
+.acao-btn:has(.acao-editar):hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+/* desativar */
+.acao-desativar {
+  color: var(--accent);
+}
+.acao-btn:has(.acao-desativar):hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+/* excluir */
+.acao-excluir {
+  color: var(--rose);
+}
+.acao-btn:has(.acao-excluir):hover {
+  background: rgba(251,113,133,.12);
+  border-color: var(--rose);
+}
+
+/* ══════════════════════════════════════
+   ANIMAÇÕES
+   ══════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVO
+   ══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .conteudo-principal {
+    padding: 24px 16px 48px;
+  }
+
+  .titulo-pagina {
+    font-size: 1.35rem;
+  }
+
+  .tabela-discentes thead th,
+  .tabela-discentes tbody td {
+    padding: 12px 14px;
+    font-size: .8rem;
+  }
+
+  .barra-busca {
+    padding: 14px 16px;
+  }
+
+  .barra-busca .fa-magnifying-glass {
+    left: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .coluna-email     { display: none; }
+  .coluna-matricula { display: none; }
+  .coluna-nome      { width: 60%; }
+  .coluna-turma     { width: 25%; }
+  .coluna-acoes     { width: 15%; }
+}

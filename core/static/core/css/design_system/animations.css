@@ -1,0 +1,93 @@
+/* ============================================================
+   SIGE — Global Animations
+============================================================ */
+
+@keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes iconBounce {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.22) rotate(-6deg); }
+    70%  { transform: scale(.94) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes iconPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(124, 111, 255, .35); }
+    60%  { box-shadow: 0 0 0 8px rgba(124, 111, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(124, 111, 255, 0); }
+}
+
+@keyframes iconSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+}
+
+@keyframes menuItemIn {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes ripple {
+    from { transform: scale(0); opacity: .5; }
+    to   { transform: scale(2.5); opacity: 0; }
+}
+
+@keyframes penWriteContinuous {
+    0%   { transform: rotate(-30deg) translate(0, 0); }
+    25%  { transform: rotate(-35deg) translate(2px, -2px); }
+    50%  { transform: rotate(-28deg) translate(1px, 2px); }
+    75%  { transform: rotate(-33deg) translate(-1px, -1px); }
+    100% { transform: rotate(-30deg) translate(0, 0); }
+}
+
+@keyframes arrowExitFalling {
+    0%   { transform: translateY(0); opacity: 1; }
+    30%  { transform: translateY(2px); opacity: 1; }
+    60%  { transform: translateY(8px); opacity: 0; }
+    61%  { transform: translateY(-10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Sidebar Specific Icon Animations (Subtle & Elegant) */
+@keyframes houseSubtle {
+    0%   { transform: scale(1) translateY(0); }
+    100% { transform: scale(1.1) translateY(-2px); }
+}
+
+@keyframes hatSubtle {
+    0%   { transform: rotate(0deg) translateY(0); }
+    100% { transform: rotate(8deg) translateY(-3px); }
+}
+
+@keyframes usersSubtle {
+    0%   { transform: scale(1); color: var(--text-secondary); }
+    100% { transform: scale(1.1); color: var(--accent-violet); }
+}
+
+@keyframes calendarSubtle {
+    0%   { transform: translateY(0) rotate(0); }
+    100% { transform: translateY(-2px) rotate(-8deg); }
+}
+
+@keyframes bookSubtle {
+    0%   { transform: scale(1) rotate(0); }
+    100% { transform: scale(1.15) rotate(5deg); }
+}

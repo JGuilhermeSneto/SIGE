@@ -105,7 +105,8 @@
   background: var(--bg-elevated);
 }
 
-.filtro-ano-painel .icone-cal { font-size: 12px; opacity: .6; }
+.filtro-ano-painel .icone-cal { font-size: 12px; opacity: .6; transition: transform .2s, color .2s; }
+.filtro-ano-painel:hover .icone-cal { transform: scale(1.2) rotate(-10deg); color: var(--accent-violet); opacity: 1; }
 
 .filtro-ano-painel label {
   font-size: .72rem;
@@ -236,25 +237,25 @@
 /* ── Cores e animações no hover do card ── */
 .card:nth-child(1):hover .card-icone i {
   color: var(--accent-amber);
-  animation: iconFloat 2.6s ease-in-out infinite;
+  animation: iconBounce 0.5s ease-out forwards;
   filter: drop-shadow(0 0 6px rgba(251,191,36,.55));
 }
 
 .card:nth-child(2):hover .card-icone i {
   color: var(--accent-emerald);
-  animation: iconFloat 2.8s ease-in-out infinite;
+  animation: iconBounce 0.55s ease-out forwards;
   filter: drop-shadow(0 0 6px rgba(52,211,153,.55));
 }
 
 .card:nth-child(3):hover .card-icone i {
   color: var(--accent-cyan);
-  animation: iconFloat 3s ease-in-out infinite;
+  animation: iconBounce 0.5s ease-out forwards;
   filter: drop-shadow(0 0 6px rgba(34,211,238,.55));
 }
 
 .card:nth-child(4):hover .card-icone i {
   color: #f87171;
-  animation: iconFloat 2.5s ease-in-out infinite;
+  animation: bookSubtle 0.4s ease-out forwards;
   filter: drop-shadow(0 0 6px rgba(248,113,113,.55));
 }
 
@@ -386,32 +387,6 @@
   padding: 2px 8px;
 }
 
-/* Grade 7 colunas fixas */
-.calendario-grade {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.nome-dia {
-  text-align: center;
-  font-size: .55rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  letter-spacing: .04em;
-  padding-bottom: 5px;
-  text-transform: uppercase;
-}
-
-.dia {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .68rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  border-radius: 4px;
   transition: background .15s, color .15s, transform .15s;
   cursor: default;
   line-height: 1;

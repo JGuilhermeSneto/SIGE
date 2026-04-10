@@ -1,0 +1,263 @@
+:root {
+  --bg-base:        #090e1a;
+  --bg-surface:     #0f1729;
+  --bg-elevated:    #131e33;
+  --bg-hover:       #1a2844;
+  --border-subtle:  rgba(255,255,255,.06);
+  --border-mid:     rgba(255,255,255,.11);
+
+  /* Violet theme for Academic Gestor features */
+  --theme-primary:      #8b6fff;
+  --theme-primary-rgb:  139, 111, 255;
+  
+  --text-primary:   #eef2ff;
+  --text-secondary: #7986a8;
+  --text-muted:     #3d4f72;
+
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+}
+
+.main-area {
+    padding: 32px 28px 48px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text-primary);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.form-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: 36px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  animation: fadeUp .35s .2s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-card::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 280px; height: 280px;
+  background: radial-gradient(circle, rgba(var(--theme-primary-rgb), .06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.form-card-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  z-index: 2;
+}
+
+.form-card-icone {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  background: rgba(var(--theme-primary-rgb), .12);
+  border: 1px solid rgba(var(--theme-primary-rgb), .2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--theme-primary);
+}
+
+.form-card-titulo-texto h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.form-card-titulo-texto h2 .destaque {
+  color: var(--theme-primary);
+  position: relative;
+}
+
+.form-card-titulo-texto h2 .destaque::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--theme-primary), transparent);
+  border-radius: 2px;
+}
+
+.form-card-titulo-texto p {
+  font-size: .78rem;
+  color: var(--text-muted);
+  margin: 2px 0 0 0;
+}
+
+/* Tabela de Grade */
+.tabela-wrapper {
+    margin: 24px 0;
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.2);
+}
+
+.tabela-grade-edit {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.tabela-grade-edit th {
+    background: var(--bg-elevated);
+    padding: 18px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    border-bottom: 1px solid var(--border-mid);
+    text-align: center;
+}
+
+.tabela-grade-edit th:first-child { text-align: left; padding-left: 24px; }
+
+.celula-horario {
+    padding: 16px 24px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.02);
+    border-right: 1px solid var(--border-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    white-space: nowrap;
+}
+
+.celula-seletor {
+    padding: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
+    background: transparent;
+    transition: background 0.2s;
+}
+
+.celula-seletor:hover {
+    background: rgba(139, 92, 246, 0.03);
+}
+
+/* Select Premium Styling */
+.select-premium {
+    width: 100%;
+    padding: 13px 15px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: .9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233d4f72'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+}
+
+.select-premium:focus {
+    border-color: var(--theme-primary);
+    box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.15);
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.select-premium option {
+    background: #0f1729;
+    color: #fff;
+}
+
+/* Ações */
+.botoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.btn-voltar-tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-mid);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-voltar-tab:hover {
+  background: var(--bg-elevated);
+  border-color: rgba(255,255,255,0.2);
+  color: var(--text-primary);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 24px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn.salvar {
+  background: #34d399;
+  color: #090e1a;
+  padding: 11px 24px;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(52, 211, 153, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn.salvar:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(52, 211, 153, 0.35);
+}
+
+.btn.salvar i {
+  color: #090e1a;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .main-area { padding: 20px 16px 40px; }
+    .tabela-grade-edit select { padding: 8px 10px; font-size: 0.75rem; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

@@ -30,16 +30,6 @@
   </div>
 </div>
 
-{% if messages %}
-<ul class="msg-list">
-  {% for msg in messages %}
-  <li class="{{ msg.tags }}">
-    <i class="fa-solid {% if msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
-    {{ msg }}
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
 
 {% if resumo_por_data %}
 {% with total_aulas=resumo_por_data|length %}
@@ -137,17 +127,8 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'core/js/attendance.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  var totalP = 0, totalF = 0;
-  document.querySelectorAll('.hist-row[data-presencas]').forEach(function (row) {
-    totalP += parseInt(row.dataset.presencas, 10) || 0;
-    totalF += parseInt(row.dataset.faltas,    10) || 0;
-  });
-  var elP = document.getElementById('total-presencas');
-  var elF = document.getElementById('total-faltas');
-  if (elP) elP.textContent = totalP;
-  if (elF) elF.textContent = totalF;
-});
+    document.addEventListener('DOMContentLoaded', () => initHistoryStats());
 </script>
 {% endblock %}

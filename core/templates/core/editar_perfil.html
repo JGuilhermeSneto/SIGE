@@ -54,16 +54,16 @@
 
       {# Botão de câmera que abre o menu de opções de foto #}
       <button type="button"
-              class="btn-foto-acao btn-editar-foto"
-              id="btn-foto-opcoes">
+               class="btn-foto-acao btn-editar-foto"
+               id="btn-foto-opcoes">
         <i class="fa-solid fa-camera"></i>
       </button>
 
       {# Menu flutuante: alterar ou remover foto #}
-      <div class="menu-foto" id="menu-foto">
+      <div class="menu-foto" id="menu-foto-opcoes">
 
         {# Opção: trocar foto #}
-        <button type="button" id="opcao-alterar">
+        <button type="button" id="opcao-alterar-foto">
           <i class="fa-solid fa-image"></i> Alterar foto
         </button>
 
@@ -310,221 +310,21 @@
 
 </main>
 
+{% block extra_js %}
+<script src="{% static 'core/js/profile_editor.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-
-  /* ── Referências de DOM ── */
-  var emailInput     = document.getElementById('id_email');
-  var btnEditar      = document.getElementById('btn-editar');
-  var btnSalvar      = document.getElementById('btn-salvar');
-  var btnCancelar    = document.getElementById('btn-cancelar');
-  var secaoSenha     = document.getElementById('secao-senha');
-  var btnMudarSenha  = document.getElementById('btn-mudar-senha');
-  var textoBtnSenha  = document.getElementById('texto-btn-senha');
-
-  /* Controla se a seção de senha está expandida */
-  var senhaAberta = false;
-
-  /* Guarda o e-mail original para restaurar ao cancelar */
-  var originalEmail = emailInput ? emailInput.value : '';
-
-  /* Estado inicial: e-mail travado, salvar/cancelar ocultos */
-  if (emailInput) { emailInput.disabled = true; }
-  btnSalvar.style.display  = 'none';
-  btnCancelar.style.display = 'none';
-
-  /* ────────────────────────────────────────────────
-     btnEditar.onclick
-     Entra em modo de edição: habilita e-mail,
-     exibe botões Salvar e Cancelar.
-  ──────────────────────────────────────────────── */
-  btnEditar.onclick = function () {
-    if (emailInput) { emailInput.disabled = false; }
-
-    btnEditar.style.display   = 'none';
-    btnSalvar.style.display   = 'flex';
-    btnCancelar.style.display = 'flex';
-
-    if (emailInput) { emailInput.focus(); }
-  };
-
-  /* ────────────────────────────────────────────────
-     btnCancelar.onclick
-     Sai do modo edição sem salvar; restaura valores
-     originais e fecha a seção de senha se aberta.
-  ──────────────────────────────────────────────── */
-  btnCancelar.onclick = function () {
-    /* Restaura e-mail original e trava campo */
-    if (emailInput) {
-      emailInput.value    = originalEmail;
-      emailInput.disabled = true;
-    }
-
-    /* Fecha seção de senha e limpa campos se estiver aberta */
-    if (senhaAberta) {
-      secaoSenha.style.display        = 'none';
-      textoBtnSenha.textContent        = 'Alterar Senha';
-      btnMudarSenha.style.backgroundColor = '#e5e7eb';
-      senhaAberta = false;
-
-      /* Limpa campos de senha para não enviar valores residuais */
-      var novaSenha      = document.getElementById('id_nova_senha');
-      var confirmarSenha = document.getElementById('id_confirmar_senha');
-      if (novaSenha)      { novaSenha.value      = ''; }
-      if (confirmarSenha) { confirmarSenha.value = ''; }
-    }
-
-    /* Restaura estado inicial dos botões */
-    btnEditar.style.display   = 'flex';
-    btnSalvar.style.display   = 'none';
-    btnCancelar.style.display = 'none';
-  };
-
-  /* ────────────────────────────────────────────────
-     btnMudarSenha.onclick
-     Expande/recolhe a seção de senha.
-     Só funciona quando o usuário está em modo edição.
-  ──────────────────────────────────────────────── */
-  btnMudarSenha.onclick = function () {
-    /* Só permite alterar senha em modo de edição ativo */
-    var emEdicao = btnSalvar.style.display === 'flex';
-    if (!emEdicao) { return; }
-
-    senhaAberta = !senhaAberta;
-
-    if (senhaAberta) {
-      /* Expande seção de senha #}*/
-      secaoSenha.style.display        = 'block';
-      textoBtnSenha.textContent        = 'Cancelar Alteração';
-      btnMudarSenha.style.backgroundColor = '#dc2626';
-    } else {
-      /* Recolhe seção de senha e limpa campos */
-      secaoSenha.style.display        = 'none';
-      textoBtnSenha.textContent        = 'Alterar Senha';
-      btnMudarSenha.style.backgroundColor = '#e5e7eb';
-
-      var novaSenha      = document.getElementById('id_nova_senha');
-      var confirmarSenha = document.getElementById('id_confirmar_senha');
-      if (novaSenha)      { novaSenha.value      = ''; }
-      if (confirmarSenha) { confirmarSenha.value = ''; }
-    }
-  };
-
-}); /* fim DOMContentLoaded */
-
-/* ────────────────────────────────────────────────
-   Menu de foto
-   Abre/fecha o menu flutuante de opções de foto.
-──────────────────────────────────────────────── */
-var uploadImagemInput = document.getElementById('upload-imagem');
-var imagemPerfil      = document.getElementById('imagem-perfil');
-var btnFotoOpcoes     = document.getElementById('btn-foto-opcoes');
-var menuFoto          = document.getElementById('menu-foto');
-var opcaoAlterar      = document.getElementById('opcao-alterar');
-
-/* Preview imediato ao selecionar novo arquivo */
-if (uploadImagemInput) {
-  uploadImagemInput.onchange = function () {
-    var file = this.files[0];
-    if (!file) { return; }
-    var reader = new FileReader();
-    reader.onload = function (e) {
-      /* Se o elemento é uma div (sem foto), substitui por img */
-      if (imagemPerfil && imagemPerfil.tagName === 'DIV') {
-        var img       = document.createElement('img');
-        img.id        = 'imagem-perfil';
-        img.className = 'perfil-imagem';
-        img.src       = e.target.result;
-        imagemPerfil.replaceWith(img);
-      } else if (imagemPerfil) {
-        imagemPerfil.src = e.target.result;
-      }
-    };
-    reader.readAsDataURL(file);
-  };
-}
-
-/* Abre/fecha menu ao clicar no botão de câmera */
-if (btnFotoOpcoes && menuFoto) {
-  btnFotoOpcoes.addEventListener('click', function (e) {
-    e.stopPropagation(); /* impede o click no document fechar o menu */
-    menuFoto.style.display =
-      menuFoto.style.display === 'flex' ? 'none' : 'flex';
-  });
-}
-
-/* Clique em "Alterar foto" abre o input de arquivo */
-if (opcaoAlterar) {
-  opcaoAlterar.addEventListener('click', function () {
-    if (uploadImagemInput) { uploadImagemInput.click(); }
-    if (menuFoto) { menuFoto.style.display = 'none'; }
-  });
-}
-
-/* Fecha menu ao clicar fora dele */
-document.addEventListener('click', function (e) {
-  if (menuFoto &&
-      !menuFoto.contains(e.target) &&
-      e.target !== btnFotoOpcoes) {
-    menuFoto.style.display = 'none';
-  }
-});
-
-/* ────────────────────────────────────────────────
-   toggleSenha
-   Alterna visibilidade de campos de senha.
-──────────────────────────────────────────────── */
-function toggleSenha(inputId) {
-  var input     = document.getElementById(inputId);
-  var toggleBtn = input ? input.nextElementSibling : null;
-  var icon      = toggleBtn ? toggleBtn.querySelector('i') : null;
-
-  if (!input || !icon) { return; }
-
-  if (input.type === 'password') {
-    input.type = 'text';
-    icon.classList.replace('fa-eye', 'fa-eye-slash');
-  } else {
-    input.type = 'password';
-    icon.classList.replace('fa-eye-slash', 'fa-eye');
-  }
-}
-
-/* ────────────────────────────────────────────────
-   Estilização dos campos do form via JS
-   (Mantida para retrocompatibilidade com o CSS base)
-──────────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', function () {
-  var emailInput = document.getElementById('id_email');
-
-  /* Estilos do campo de e-mail */
-  if (emailInput) {
-    emailInput.style.cssText = [
-      'width:100%',
-      'padding:10px 0',
-      'border:none',
-      'border-bottom:2px solid #e5e7eb',
-      'border-radius:0',
-      'font-size:1rem',
-      'color:#333',
-      'background:transparent'
-    ].join(';');
-  }
-
-  /* Estilos dos campos de senha */
-  ['id_nova_senha', 'id_confirmar_senha'].forEach(function (id) {
-    var input = document.getElementById(id);
-    if (input) {
-      input.style.cssText = [
-        'width:100%',
-        'padding:12px 40px 12px 12px',
-        'border:1px solid #d1d5db',
-        'border-radius:8px',
-        'font-size:1rem'
-      ].join(';');
-    }
-  });
-});
+    // Applying CSS via JS for backwards compatibility (optional, better in CSS file)
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailInput = document.getElementById('id_email');
+        if (emailInput) {
+            emailInput.style.cssText = 'width:100%; padding:10px 0; border:none; border-bottom:2px solid #e5e7eb; border-radius:0; font-size:1rem; color:#333; background:transparent;';
+        }
+        ['id_nova_senha', 'id_confirmar_senha'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.cssText = 'width:100%; padding:12px 40px 12px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:1rem;';
+        });
+    });
 </script>
+{% endblock %}
 
 {% endblock %}

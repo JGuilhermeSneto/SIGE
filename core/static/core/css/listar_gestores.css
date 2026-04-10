@@ -2,7 +2,7 @@
    SIGE — Lista de Gestores
    lista_gestores.css
    Coerente com painel_usuarios.css
-============================================================ */
+ ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -46,7 +46,7 @@
 
 /* ══════════════════════════════════════
    CABEÇALHO
-══════════════════════════════════════ */
+   ══════════════════════════════════════ */
 .header-docentes {
   display: flex;
   align-items: center;
@@ -135,7 +135,7 @@
 
 /* ══════════════════════════════════════
    CARD / TABELA
-══════════════════════════════════════ */
+   ══════════════════════════════════════ */
 .card-tabela {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -224,16 +224,22 @@
 /* ── Colunas ── */
 .coluna-nome  { width: 30%; }
 .coluna-email { width: 25%; }
-.coluna-acoes { width: 12%; text-align: center; }
+.coluna-acoes { width: 14%; text-align: center; }
 
-.tabela-docentes tbody .coluna-acoes {
+.tabela-docentes tbody td.coluna-acoes {
   text-align: center;
+  vertical-align: middle;
 }
 
-/* ══════════════════════════════════════
-   AÇÕES (editar / excluir)
-══════════════════════════════════════ */
-.coluna-acoes a {
+/* container interno flex para alinhar os botões */
+.tabela-docentes td.coluna-acoes .acoes-grupo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.acao-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -242,21 +248,36 @@
   border-radius: var(--r-sm);
   border: 1px solid var(--border);
   background: var(--elevated);
-  transition: background .18s, border-color .18s, transform .18s;
-  margin: 0 3px;
+  color: var(--muted);
+  font-size: .8rem;
+  cursor: pointer;
+  transition: all .2s ease;
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  text-decoration: none;
 }
 
-.coluna-acoes a:hover {
+.acao-btn:hover {
   transform: translateY(-2px);
+  color: var(--text);
 }
 
 /* editar */
 .acao-editar {
   color: var(--accent);
-  font-size: .8rem;
+}
+.acao-btn:has(.acao-editar):hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
 }
 
-.coluna-acoes a:has(.acao-editar):hover {
+/* desativar */
+.acao-desativar {
+  color: var(--accent);
+}
+.acao-btn:has(.acao-desativar):hover {
   background: var(--accent-dim);
   border-color: var(--accent);
 }
@@ -264,17 +285,15 @@
 /* excluir */
 .acao-excluir {
   color: var(--rose);
-  font-size: .8rem;
 }
-
-.coluna-acoes a:has(.acao-excluir):hover {
+.acao-btn:has(.acao-excluir):hover {
   background: rgba(251,113,133,.12);
   border-color: var(--rose);
 }
 
 /* ══════════════════════════════════════
    ANIMAÇÕES
-══════════════════════════════════════ */
+   ══════════════════════════════════════ */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -282,7 +301,7 @@
 
 /* ══════════════════════════════════════
    RESPONSIVO
-══════════════════════════════════════ */
+   ══════════════════════════════════════ */
 @media (max-width: 768px) {
   .conteudo-principal {
     padding: 24px 16px 48px;
@@ -303,6 +322,7 @@
     .coluna-email { display: none; }
   }
 }
+
 /* --------------------------------------
    BARRA DE BUSCA
 -------------------------------------- */

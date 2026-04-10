@@ -1,0 +1,158 @@
+/* ============================================================
+   SIGE — Premium Notification System
+   notifications.css
+============================================================ */
+
+/* ── Standard Toast Container ── */
+.msg-list {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.msg-list li {
+    pointer-events: all;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 14px 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-mid);
+    box-shadow: var(--shadow-lg), 0 0 0 1px var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    min-width: 280px;
+    max-width: 420px;
+    animation: toastIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transition: all 0.4s ease;
+}
+
+.msg-list li i {
+    font-size: 1.1rem;
+}
+
+.msg-list li.success {
+    border-left: 4px solid var(--accent-emerald);
+}
+
+.msg-list li.success i {
+    color: var(--accent-emerald);
+}
+
+.msg-list li.error {
+    border-left: 4px solid var(--accent-ruby);
+}
+
+.msg-list li.error i {
+    color: var(--accent-ruby);
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(30px) scale(0.9); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ── PREMIUM SUCCESS OVERLAY ── */
+.sige-success-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(9, 14, 26, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: none; /* Controlled by JS */
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.sige-success-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.success-card {
+    background: var(--bg-surface);
+    padding: 3rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-mid);
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5), var(--shadow-glow);
+    animation: modalPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes modalPop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Animated Checkmark */
+.checkmark-container {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 2rem;
+    position: relative;
+    border-radius: 50%;
+    background: hsla(160, 65%, 52%, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.checkmark-container i {
+    font-size: 3.5rem;
+    color: var(--accent-emerald);
+    filter: drop-shadow(0 0 15px var(--accent-emerald));
+    animation: checkReveal 0.8s 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes checkReveal {
+    0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.success-text h2 {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.success-text p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Success Progress Bar */
+.success-timer {
+    margin-top: 2rem;
+    height: 4px;
+    background: var(--bg-input);
+    border-radius: 2px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.success-timer-bar {
+    height: 100%;
+    background: var(--accent-emerald);
+    width: 100%;
+    animation: timerDrain 3s linear forwards;
+}
+
+@keyframes timerDrain {
+    from { width: 100%; }
+    to { width: 0%; }
+}

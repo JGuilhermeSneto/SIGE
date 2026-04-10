@@ -4,7 +4,7 @@
 
 {% block title %}Meu Painel{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/painel_do_aluno.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/painel_dos_alunos.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 {% endblock %}
@@ -141,12 +141,14 @@
             </div>
 
             {# Calendário #}
-            <div class="calendario">
-                <div class="calendario-cabecalho">
-                    <h2>{{ agora|date:"F"|upper }}</h2>
-                    <span class="calendario-ano">{{ agora|date:"Y" }}</span>
-                </div>
-                <div class="calendario-grade">
+            <div class="calendario-box">
+                <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link" style="text-decoration: none; color: inherit;">
+                    <header class="calendario-cabecalho">
+                        <h2 id="cal-mes-nome"></h2>
+                        <span class="calendario-ano" id="cal-ano"></span>
+                    </header>
+                </a>
+                <div class="calendario-grade" id="cal-grade">
                     <div class="nome-dia">D</div>
                     <div class="nome-dia">S</div>
                     <div class="nome-dia">T</div>
@@ -154,11 +156,19 @@
                     <div class="nome-dia">Q</div>
                     <div class="nome-dia">S</div>
                     <div class="nome-dia">S</div>
-                    {% for celula in calendario %}
-                        <div class="dia {% if celula.hoje %}atual{% endif %} {% if celula.vazio %}vazio{% endif %}">
-                            {% if not celula.vazio %}{{ celula.numero }}{% endif %}
-                        </div>
+
+                    {% for d in calendario %}
+                      <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}" 
+                           title="{{ d.descricao|default:'' }}">
+                        {{ d.numero }}
+                      </div>
                     {% endfor %}
+                </div>
+                
+                {# Legenda Mini (Opcional, para clareza) #}
+                <div class="mini-legenda">
+                    <span class="leg-item"><i class="dot-feriado"></i> Feriado</span>
+                    <span class="leg-item"><i class="dot-prova"></i> Prova</span>
                 </div>
             </div>
 

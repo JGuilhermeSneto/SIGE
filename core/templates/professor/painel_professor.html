@@ -9,7 +9,7 @@
 {% block title %}Painel do Professor — SIGE{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/painel_de_professores.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/painel_dos_professores.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -47,27 +47,33 @@
       {# ── Cards de totais ── #}
       <section class="cards">
         <article class="card">
-          <div class="card-icone">
-            <i class="fa-solid fa-users-rectangle"></i>
-          </div>
-          <p class="card-label">Turmas</p>
-          <h2 class="card-valor">{{ total_turmas }}</h2>
+          <a href="{% url 'disciplinas_professor' %}" class="card-link-wrapper">
+            <div class="card-icone">
+              <i class="fa-solid fa-users-rectangle"></i>
+            </div>
+            <p class="card-label">Turmas</p>
+            <h2 class="card-valor">{{ total_turmas }}</h2>
+          </a>
         </article>
 
         <article class="card">
-          <div class="card-icone">
-            <i class="fa-solid fa-user-graduate"></i>
-          </div>
-          <p class="card-label">Alunos</p>
-          <h2 class="card-valor">{{ total_alunos }}</h2>
+          <a href="{% url 'disciplinas_professor' %}" class="card-link-wrapper">
+            <div class="card-icone">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <p class="card-label">Alunos</p>
+            <h2 class="card-valor">{{ total_alunos }}</h2>
+          </a>
         </article>
 
         <article class="card">
-          <div class="card-icone">
-            <i class="fa-solid fa-book"></i>
-          </div>
-          <p class="card-label">Disciplinas</p>
-          <h2 class="card-valor">{{ total_disciplinas }}</h2>
+          <a href="{% url 'disciplinas_professor' %}" class="card-link-wrapper">
+            <div class="card-icone">
+              <i class="fa-solid fa-book"></i>
+            </div>
+            <p class="card-label">Disciplinas</p>
+            <h2 class="card-valor">{{ total_disciplinas }}</h2>
+          </a>
         </article>
 
         {# Card 4: Progresso de Notas (Substitui 'Professores' do Super) #}
@@ -108,10 +114,12 @@
 
       {# ── Calendário ── #}
       <section class="calendario-box">
-        <header class="calendario-cabecalho">
-          <h2 id="cal-mes-nome"></h2>
-          <span class="calendario-ano" id="cal-ano"></span>
-        </header>
+        <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link" style="text-decoration: none; color: inherit;">
+          <header class="calendario-cabecalho">
+            <h2 id="cal-mes-nome"></h2>
+            <span class="calendario-ano" id="cal-ano"></span>
+          </header>
+        </a>
         <div class="calendario-grade" id="cal-grade">
           <div class="nome-dia">D</div>
           <div class="nome-dia">S</div>
@@ -120,6 +128,13 @@
           <div class="nome-dia">Q</div>
           <div class="nome-dia">S</div>
           <div class="nome-dia">S</div>
+
+          {% for d in calendario %}
+            <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}" 
+                 title="{{ d.descricao|default:'' }}">
+              {{ d.numero }}
+            </div>
+          {% endfor %}
         </div>
       </section>
 
@@ -165,34 +180,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-(function () {
-  const MESES = ['JANEIRO','FEVEREIRO','MARÇO','ABRIL','MAIO','JUNHO',
-                 'JULHO','AGOSTO','SETEMBRO','OUTUBRO','NOVEMBRO','DEZEMBRO'];
-  const hoje   = new Date();
-  const ano    = hoje.getFullYear();
-  const mes    = hoje.getMonth();
-  const diaHj  = hoje.getDate();
-
-  document.getElementById('cal-mes-nome').textContent = MESES[mes];
-  document.getElementById('cal-ano').textContent      = ano;
-
-  const grade     = document.getElementById('cal-grade');
-  const primDia   = new Date(ano, mes, 1).getDay();
-  const totalDias = new Date(ano, mes + 1, 0).getDate();
-
-  for (let i = 0; i < primDia; i++) {
-    const v = document.createElement('div');
-    v.className = 'dia vazio';
-    grade.appendChild(v);
-  }
-
-  for (let d = 1; d <= totalDias; d++) {
-    const c = document.createElement('div');
-    c.className   = d === diaHj ? 'dia atual' : 'dia';
-    c.textContent = d;
-    grade.appendChild(c);
-  }
-})();
-</script>
+{# O calendário é inicializado globalmente pelo calendar.js #}
 {% endblock %}

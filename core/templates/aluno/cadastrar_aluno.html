@@ -7,8 +7,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/cadastrar_discente.css' %}?v=5">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Syne:wght@600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -226,141 +224,23 @@
             </div>
         </div>
     </form>
-    </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'core/js/registration_wizard.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const isEdicao = {{ aluno.pk|yesno:"true,false" }};
-    
-    // --- MÁSCARAS ---
-    const masks = {
-        cpf: v => v.replace(/\D/g, "").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2"),
-        tel: v => v.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d{5})(\d)/, "$1-$2"),
-        cep: v => v.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2")
-    };
-
-    const cpfInput = document.getElementById('id_cpf');
-    const telInput = document.getElementById('id_telefone');
-    const cepInput = document.getElementById('id_cep');
-
-    if(cpfInput) cpfInput.addEventListener('input', e => e.target.value = masks.cpf(e.target.value));
-    if(telInput) telInput.addEventListener('input', e => e.target.value = masks.tel(e.target.value));
-    if(cepInput) cepInput.addEventListener('input', e => e.target.value = masks.cep(e.target.value));
-
-    // --- NAVEGAÇÃO E ETAPAS ---
-    window.validarEtapa = function(n) {
-        const etapa = document.getElementById('etapa-' + n);
-        const campos = etapa.querySelectorAll('input[required], select[required]');
-        let valido = true;
-
-        campos.forEach(campo => {
-            const erroEl = campo.parentElement.querySelector('.erro-inline');
-            if (!campo.value.trim()) {
-                campo.classList.add('campo-erro');
-                if (erroEl) { erroEl.textContent = 'Campo obrigatório'; erroEl.style.display = 'block'; }
-                valido = false;
-            } else {
-                campo.classList.remove('campo-erro');
-                if (erroEl) erroEl.style.display = 'none';
-            }
-        });
-
-        if (valido && n < 4) {
-            document.getElementById('etapa-' + n).classList.remove('ativa');
-            document.getElementById('etapa-' + (n + 1)).classList.add('ativa');
-            atualizarIndicadores(n + 1);
-            window.scrollTo(0,0);
+document.addEventListener('DOMContentLoaded', function() {
+    RegistrationWizard.init({
+        totalSteps: 4,
+        isEdition: {{ aluno.pk|yesno:"true,false" }},
+        stepsMeta: {
+            1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do discente' },
+            2: { icone: 'fa-users', titulo: 'Filiação e NE', desc: 'Informações de filiação e necessidades especiais' },
+            3: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do discente' },
+            4: { icone: 'fa-school', titulo: 'Alocação', desc: 'Turma, senha e foto de perfil' }
         }
-    };
-
-    window.voltarEtapa = function(n) {
-        document.getElementById('etapa-' + n).classList.remove('ativa');
-        document.getElementById('etapa-' + (n - 1)).classList.add('ativa');
-        atualizarIndicadores(n - 1);
-    };
-
-    const etapasMeta = {
-        1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do discente' },
-        2: { icone: 'fa-users', titulo: 'Filiação e NE', desc: 'Informações de filiação e necessidades especiais' },
-        3: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do discente' },
-        4: { icone: 'fa-school', titulo: 'Alocação', desc: 'Turma, senha e foto de perfil' }
-    };
-
-    function atualizarIndicadores(etapaAtiva) {
-        for (let i = 1; i <= 4; i++) {
-            const el = document.getElementById('passo-' + i);
-            el.classList.remove('ativo', 'completo');
-            if (i < etapaAtiva) el.classList.add('completo');
-            else if (i === etapaAtiva) el.classList.add('ativo');
-        }
-        const meta = etapasMeta[etapaAtiva];
-        document.getElementById('etapa-icone').className = `fa-solid ${meta.icone}`;
-        document.getElementById('etapa-titulo').textContent = meta.titulo;
-        document.getElementById('etapa-desc').textContent = meta.desc;
-    }
-
-    // --- SENHA PADRONIZADA ---
-    const senhaInput = document.getElementById('id_senha');
-    const confirmaInput = document.getElementById('id_senha_confirmacao');
-    const matchMsg = document.getElementById('senha-match-msg');
-    const regras = [
-        { id: 'req-maiuscula', regex: /[A-Z]/ },
-        { id: 'req-minuscula', regex: /[a-z]/ },
-        { id: 'req-numero', regex: /\d/ },
-        { id: 'req-caractere', regex: /.{6,}/ }
-    ];
-
-    if (senhaInput) {
-        senhaInput.addEventListener('input', function () {
-            if (isEdicao) {
-                const mostrar = this.value.length > 0;
-                document.getElementById('confirmar-senha-container').style.display = mostrar ? 'block' : 'none';
-                document.getElementById('requisitos-senha-container').style.display = mostrar ? 'block' : 'none';
-            }
-            regras.forEach(r => {
-                const el = document.getElementById(r.id);
-                const ok = r.regex.test(this.value);
-                el.classList.toggle('valid', ok);
-                el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
-            });
-            verificarMatch();
-        });
-    }
-
-    if (confirmaInput) confirmaInput.addEventListener('input', verificarMatch);
-
-    function verificarMatch() {
-        if (!confirmaInput || confirmaInput.value === '') { matchMsg.style.display = 'none'; return; }
-        const ok = senhaInput.value === confirmaInput.value;
-        matchMsg.style.display = 'block';
-        matchMsg.textContent = ok ? 'Senhas coincidem ✓' : 'As senhas não coincidem';
-        matchMsg.className = 'confirmacao-senha ' + (ok ? 'valid' : 'invalido');
-    }
-
-    // --- NECESSIDADE ESPECIAL ---
-    const neCheckbox = document.querySelector('input[name="possui_necessidade_especial"]');
-    if (neCheckbox) {
-        neCheckbox.addEventListener('change', function() {
-            document.getElementById('descricao-ne-container').style.display = this.checked ? 'block' : 'none';
-        });
-    }
-
-    // --- PREVIEW FOTO ---
-    const inputFoto = document.getElementById('id_foto');
-    if (inputFoto) {
-        inputFoto.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    const img = document.getElementById('preview-imagem');
-                    img.src = e.target.result;
-                    img.style.display = 'block';
-                };
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-    }
+    });
 });
 </script>
-{% endblock %}
+{% endblock %}

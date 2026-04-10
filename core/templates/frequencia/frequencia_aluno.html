@@ -32,16 +32,6 @@
   </div>
 </div>
 
-{% if messages %}
-<ul class="msg-list">
-  {% for msg in messages %}
-  <li class="{{ msg.tags }}">
-    <i class="fa-solid {% if msg.tags == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
-    {{ msg }}
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
 
 {% if frequencias %}
 

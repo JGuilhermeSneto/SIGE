@@ -7,16 +7,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/cadastrar_gestores.css' %}">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-    /* Estilos para feedback visual das máscaras e validações */
-    .valid { color: #28a745 !important; }
-    .invalido { color: #dc3545 !important; }
-    .campo-erro { border-color: #dc3545 !important; }
-    .erro-inline { color: #dc3545; font-size: 0.85em; display: none; margin-top: 5px; }
-    .requisito i { margin-right: 8px; }
-</style>
 {% endblock %}
 
 {% block content %}
@@ -201,171 +191,36 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'core/js/registration_wizard.js' %}"></script>
 <script>
-const isEdicao = {{ gestor.pk|yesno:"true,false" }};
-
-const etapasMeta = {
-  1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do gestor' },
-  2: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do gestor' },
-  3: { icone: 'fa-shield-halved', titulo: 'Cargo & Acesso', desc: 'Defina o cargo, senha e foto de perfil' },
-};
-
-// --- MÁSCARAS ---
-const maskValues = {
-    cpf(v) {
-        v = v.replace(/\D/g, "");
-        v = v.replace(/(\d{3})(\d)/, "$1.$2");
-        v = v.replace(/(\d{3})(\d)/, "$1.$2");
-        v = v.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-        return v;
-    },
-    telefone(v) {
-        v = v.replace(/\D/g, "");
-        v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-        v = v.replace(/(\d{5})(\d)/, "$1-$2");
-        return v;
-    },
-    cep(v) {
-        v = v.replace(/\D/g, "");
-        v = v.replace(/(\d{5})(\d)/, "$1-$2");
-        return v;
-    }
-};
-
-function aplicarMascaras() {
-    const cpfInput = document.querySelector('input[name="cpf"]');
-    const telInput = document.querySelector('input[name="telefone"]');
-    const cepInput = document.querySelector('input[name="cep"]');
-
-    if (cpfInput) cpfInput.addEventListener('input', (e) => e.target.value = maskValues.cpf(e.target.value));
-    if (telInput) telInput.addEventListener('input', (e) => e.target.value = maskValues.telefone(e.target.value));
-    if (cepInput) cepInput.addEventListener('input', (e) => e.target.value = maskValues.cep(e.target.value));
-}
-
-function atualizarIndicadores(etapaAtiva) {
-  for (let i = 1; i <= 3; i++) {
-    const el = document.getElementById(`passo-${i}`);
-    el.classList.remove('ativo', 'completo');
-    if (i < etapaAtiva) el.classList.add('completo');
-    else if (i === etapaAtiva) el.classList.add('ativo');
-  }
-  const meta = etapasMeta[etapaAtiva];
-  document.getElementById('etapa-icone').className = `fa-solid ${meta.icone}`;
-  document.getElementById('etapa-titulo').textContent = meta.titulo;
-  document.getElementById('etapa-desc').textContent = meta.desc;
-}
-
-function validarEtapa(n) {
-  const etapa = document.getElementById(`etapa-${n}`);
-  const campos = etapa.querySelectorAll('input[required], select[required]');
-  let valido = true;
-
-  campos.forEach(campo => {
-    const erroEl = campo.parentElement.querySelector('.erro-inline');
-    if (!campo.value.trim()) {
-      campo.classList.add('campo-erro');
-      if (erroEl) { erroEl.textContent = 'Campo obrigatório'; erroEl.style.display = 'block'; }
-      valido = false;
-    } else {
-      campo.classList.remove('campo-erro');
-      if (erroEl) erroEl.style.display = 'none';
-    }
-  });
-
-  if (valido) {
-      document.getElementById(`etapa-${n}`).classList.remove('ativa');
-      document.getElementById(`etapa-${n + 1}`).classList.add('ativa');
-      atualizarIndicadores(n + 1);
-      window.scrollTo(0,0);
-  }
-}
-
-function voltarEtapa(n) {
-  document.getElementById(`etapa-${n}`).classList.remove('ativa');
-  document.getElementById(`etapa-${n - 1}`).classList.add('ativa');
-  atualizarIndicadores(n - 1);
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-  aplicarMascaras();
-
-  const senhaInput = document.getElementById('id_senha');
-  const confirmaInput = document.getElementById('id_senha_confirmacao');
-  const matchMsg = document.getElementById('senha-match-msg');
-  const confirmaContainer = document.getElementById('confirmar-senha-container');
-  const requisitosContainer = document.getElementById('requisitos-senha-container');
-
-  const regras = [
-    { id: 'req-maiuscula', regex: /[A-Z]/ },
-    { id: 'req-minuscula', regex: /[a-z]/ },
-    { id: 'req-numero', regex: /\d/ },
-    { id: 'req-caractere', regex: /.{6,}/ },
-  ];
-
-  if (senhaInput) {
-    senhaInput.addEventListener('input', () => {
-      if (isEdicao) {
-        const mostrar = senhaInput.value.length > 0;
-        confirmaContainer.style.display = mostrar ? 'block' : 'none';
-        requisitosContainer.style.display = mostrar ? 'block' : 'none';
-        if (!mostrar && confirmaInput) {
-          confirmaInput.value = '';
-          matchMsg.style.display = 'none';
+document.addEventListener('DOMContentLoaded', function() {
+    RegistrationWizard.init({
+        totalSteps: 3,
+        isEdition: {{ gestor.pk|yesno:"true,false" }},
+        stepsMeta: {
+            1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do gestor' },
+            2: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do gestor' },
+            3: { icone: 'fa-shield-halved', titulo: 'Cargo & Acesso', desc: 'Defina o cargo, senha e foto de perfil' },
         }
-      }
-
-      regras.forEach(r => {
-        const el = document.getElementById(r.id);
-        if (!el) return;
-        const ok = r.regex.test(senhaInput.value);
-        el.classList.toggle('valid', ok);
-        el.querySelector('i').className = ok ? 'fa-solid fa-check' : 'fa-solid fa-xmark';
-      });
-      verificarMatch();
     });
-  }
 
-  if (confirmaInput) confirmaInput.addEventListener('input', verificarMatch);
-
-  function verificarMatch() {
-    if (!confirmaInput || confirmaInput.value === '') {
-      matchMsg.style.display = 'none';
-      return;
+    // Special validation for gestor form submit
+    const form = document.getElementById('form-gestor');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            const senhaInput = document.getElementById('id_senha');
+            const confirmaInput = document.getElementById('id_senha_confirmacao');
+            const senhaVal = senhaInput ? senhaInput.value : "";
+            if (senhaVal.length > 0) {
+                const regras = [/[A-Z]/, /[a-z]/, /\d/, /.{6,}/];
+                const tudoOk = regras.every(r => r.test(senhaVal));
+                if (!tudoOk || (confirmaInput && senhaVal !== confirmaInput.value)) {
+                    e.preventDefault();
+                    alert("Verifique os requisitos de senha e a confirmação.");
+                }
+            }
+        });
     }
-    const ok = senhaInput.value === confirmaInput.value;
-    matchMsg.style.display = 'block';
-    matchMsg.textContent = ok ? 'Senhas coincidem ✓' : 'As senhas não coincidem';
-    matchMsg.className = 'confirmacao-senha ' + (ok ? 'valid' : 'invalido');
-  }
-
-  // Preview da foto
-  const inputFoto = document.getElementById('id_foto');
-  const previewImg = document.getElementById('preview-imagem');
-  if (inputFoto && previewImg) {
-    inputFoto.addEventListener('change', function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          previewImg.src = e.target.result;
-          previewImg.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-      }
-    });
-  }
-
-  // Validação final no Submit
-  document.getElementById('form-gestor').addEventListener('submit', function (e) {
-    const senhaVal = senhaInput ? senhaInput.value : "";
-    if (senhaVal.length > 0) {
-        const tudoOk = regras.every(r => r.regex.test(senhaVal));
-        if (!tudoOk || senhaVal !== confirmaInput.value) {
-            e.preventDefault();
-            alert("Verifique os requisitos de senha e a confirmação.");
-        }
-    }
-  });
 });
 </script>
 {% endblock %}

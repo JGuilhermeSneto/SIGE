@@ -1,86 +1,143 @@
 {# ============================================================ #}
 {# template: disciplina/visualizar_disciplinas.html            #}
-{# view   : visualizar_disciplinas                             #}
-{# contexto: disciplina, turma, alunos, notas, notas_dict,     #}
-{#           is_gestor_ou_super                                 #}
-{# Requer templatetag: {% load get_item %}                     #}
-{# FIX: botão voltar contextual (gestor vs professor);         #}
-{#      usa notas_dict|get_item:aluno.id para buscar nota;     #}
-{#      botão Frequência aponta para historico_frequencia.     #}
 {# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
 {% load get_item %}
 
-{# Título com nome da disciplina; fallback para "Disciplina" se não houver #}
-{% block title %}{{ disciplina.nome|default:"Disciplina" }}{% endblock %}
+{% block title %}Detalhes: {{ disciplina.nome|default:"Disciplina" }}{% endblock %}
 
 {% block extra_css %}
-{# Folha de estilo da visualização de disciplina #}
-<link rel="stylesheet" href="{% static 'core/css/vizualizar_disciplina.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/vizualizar_disciplina.css' %}?v=3">
+<style>
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 5px;
+        width: 100%;
+    }
+    .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .info-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+    }
+    .info-value {
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+    .nota-table-val {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    .badge-professor {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--bg-elevated);
+        padding: 4px 12px;
+        border-radius: 20px;
+        border: 1px solid var(--border-mid);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 <main class="detalhes">
 
-  {# ── Cabeçalho: voltar, título e ações rápidas ── #}
+  {# ── Cabeçalho Premium ── #}
   <div class="header-detalhes">
-
-    {# FIX: gestor/super voltam para listar_turmas;             #}
-    {#      professor volta para as disciplinas da turma        #}
     {% if is_gestor_ou_super %}
-      <a class="voltar" href="{% url 'listar_disciplinas_turma' disciplina.turma.id %}">
+      <a class="voltar" href="{% url 'listar_disciplinas_turma' disciplina.turma.id %}" title="Voltar para Disciplinas">
         <i class="fas fa-arrow-left"></i>
       </a>
     {% else %}
-      <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}">
+      <a class="voltar" href="{% url 'disciplinas_turma' disciplina.turma.id %}" title="Voltar para Minhas Disciplinas">
         <i class="fas fa-arrow-left"></i>
       </a>
     {% endif %}
 
-    {# Nome da disciplina como título da página #}
-    <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
+    <div style="flex: 1;">
+        <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent-violet); margin-bottom: 4px; display: block;">
+            Acadêmico · Diário de Classe
+        </span>
+        <h2 class="titulo">{{ disciplina.nome|default:"Disciplina" }}</h2>
+    </div>
 
-    {# Botão imprimir — aciona window.print() via JS #}
     <a href="#" class="imprimir">
-      Imprimir <i class="fas fa-print"></i>
+      <i class="fas fa-print"></i> Imprimir Relatório
     </a>
   </div>
 
-  {# ── Informações gerais da disciplina ── #}
-  <div class="prof">
-    <div class="info">
-      {# Turno da turma associada #}
-      <p>Turno: {{ disciplina.turma.get_turno_display|default:"-" }}</p>
-
-      {# Professor: exibe nome se atribuído; caso contrário, avisa #}
-      {% if disciplina.professor %}
-        <p>Professor(a): {{ disciplina.professor.nome_completo }}</p>
-      {% else %}
-        <p><strong>Professor:</strong> Não atribuído</p>
-      {% endif %}
+  {# ── Card de Informações Gerais ── #}
+  <div class="prof" style="flex-direction: column; align-items: flex-start; padding: 24px 30px;">
+    <div class="info-grid">
+        <div class="info-item">
+            <span class="info-label">Professor(a) Responsável</span>
+            <div class="info-value">
+                {% if disciplina.professor %}
+                    <div class="badge-professor">
+                        <i class="fa-solid fa-user-tie" style="color: var(--accent-violet); font-size: 0.8rem;"></i>
+                        <span>{{ disciplina.professor.nome_completo }}</span>
+                    </div>
+                {% else %}
+                    <span style="color: var(--accent-ruby); font-style: italic;">Não atribuído</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Turma / Turno</span>
+            <div class="info-value">
+                <i class="fa-solid fa-users" style="color: var(--accent-cyan); font-size: 0.85rem; margin-right: 6px;"></i>
+                {{ disciplina.turma.nome }} · <span style="color: var(--text-secondary);">{{ disciplina.turma.get_turno_display|default:"-" }}</span>
+            </div>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Carga Horária / Local</span>
+            <div class="info-value">
+                <i class="fa-solid fa-clock" style="color: var(--accent-emerald); font-size: 0.85rem; margin-right: 6px;"></i>
+                Padrão · Sala Permanente
+            </div>
+        </div>
     </div>
 
-    {# ── Botões de ação rápida ── #}
-    <div class="botoes">
-      {# Lançar/editar notas bimestrais #}
-      <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">
-        Notas
-      </a>
+    <div style="width: 100%; height: 1px; background: var(--border-subtle); margin: 20px 0;"></div>
 
-      {# FIX: aponta para historico_frequencia (URL correta conforme urls.py) #}
-      <a class="disciplina" href="{% url 'historico_frequencia' disciplina.id %}">
-        Frequência
-      </a>
+    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <div style="display: flex; gap: 10px;">
+            <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">
+                <i class="fa-solid fa-pen-to-square" style="margin-right: 8px;"></i> Gerenciar Notas
+            </a>
+            <a class="disciplina" href="{% url 'historico_frequencia' disciplina.id %}">
+                <i class="fa-solid fa-clipboard-user" style="margin-right: 8px;"></i> Registro de Frequência
+            </a>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.75rem; display: flex; align-items: center; gap: 5px;">
+            <i class="fa-solid fa-circle-info"></i>
+            Atualizado em tempo real pelo sistema SIGE
+        </div>
     </div>
   </div>
 
-  {# ── Tabela de notas por aluno ── #}
+  {# ── Tabela de Rendimento Escolar ── #}
   <div class="tabela">
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-mid); display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-chart-line" style="color: var(--accent-amber);"></i>
+        <h3 style="font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin: 0;">Rendimento por Bimestre</h3>
+    </div>
     <table class="tabela-notas">
       <thead>
         <tr>
-          <th class="nome">Nome</th>
+          <th class="nome">Estudante</th>
           <th class="bim1">1º Bimestre</th>
           <th class="bim2">2º Bimestre</th>
           <th class="bim3">3º Bimestre</th>
@@ -90,32 +147,38 @@
 
       <tbody>
         {% for aluno in alunos %}
-        {# Busca o objeto Nota deste aluno usando templatetag get_item #}
         {% with nota=notas_dict|get_item:aluno.id %}
         <tr>
-          <td>{{ aluno.nome_completo }}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+                    {{ forloop.counter }}
+                </div>
+                {{ aluno.nome_completo }}
+            </div>
+          </td>
 
-          {# Exibe cada bimestre ou "-" quando nota não lançada #}
           {% if nota %}
-            <td>{{ nota.nota1|default_if_none:"-" }}</td>
-            <td>{{ nota.nota2|default_if_none:"-" }}</td>
-            <td>{{ nota.nota3|default_if_none:"-" }}</td>
-            <td>{{ nota.nota4|default_if_none:"-" }}</td>
+            <td class="nota-table-val">{{ nota.nota1|default_if_none:"-" }}</td>
+            <td class="nota-table-val">{{ nota.nota2|default_if_none:"-" }}</td>
+            <td class="nota-table-val">{{ nota.nota3|default_if_none:"-" }}</td>
+            <td class="nota-table-val">{{ nota.nota4|default_if_none:"-" }}</td>
           {% else %}
-            {# Aluno sem registro de nota ainda #}
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
-            <td>-</td>
+            <td style="color: var(--text-muted);">-</td>
+            <td style="color: var(--text-muted);">-</td>
+            <td style="color: var(--text-muted);">-</td>
+            <td style="color: var(--text-muted);">-</td>
           {% endif %}
         </tr>
         {% endwith %}
 
         {% empty %}
-        {# Estado vazio: nenhum aluno cadastrado na turma #}
         <tr>
-          <td colspan="5" style="text-align:center; padding:15px;">
-            Nenhum aluno cadastrado.
+          <td colspan="5">
+            <div style="text-align: center; padding: 40px;">
+                <i class="fa-solid fa-user-slash" style="font-size: 2rem; color: var(--text-muted); margin-bottom: 10px; display: block;"></i>
+                Nenhum estudante matriculado nesta disciplina.
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -126,11 +189,10 @@
 </main>
 
 <script>
-/* Ativa impressão da página ao clicar no link "Imprimir" */
 document.querySelector('.imprimir').addEventListener('click', function (e) {
-  e.preventDefault(); /* impede navegação */
+  e.preventDefault();
   window.print();
 });
 </script>
 
-{% endblock %}
+{% endblock %}

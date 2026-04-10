@@ -1,111 +1,147 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Disciplinas da Turma{% endblock %}
-{% block header_title %}Disciplinas da Turma{% endblock %}
+{% block title %}Disciplinas - {{ turma.nome }}{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/listar_disciplinas.css' %}?v=8">
+<link rel="stylesheet" href="{% static 'core/css/listar_turmas.css' %}?v=7">
+<style>
+    /* Ajustes específicos para disciplinas */
+    .destaque-turma {
+        color: var(--accent);
+        font-weight: 700;
+    }
+    .subtitulo {
+        font-size: 0.85rem;
+        color: var(--muted);
+        margin-top: 4px;
+        display: block;
+    }
+    .btn-grade {
+        background: rgba(var(--primary-h), var(--primary-s), var(--primary-l), 0.1);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+    }
+    .btn-grade:hover {
+        background: var(--accent);
+        color: var(--bg);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-
 <main class="conteudo-principal">
 
-    <!-- CABEÇALHO -->
-    <div class="header-docentes">
-
-        <!-- VOLTAR -->
-        <a href="{% url 'listar_turmas' %}">
-            <button class="btn-voltar">
+    {# ════════════════ HEADER DO PAINEL ════════════════ #}
+    <div class="header-docentes" style="justify-content: space-between; align-items: flex-start;">
+        <div style="display: flex; gap: 16px; align-items: flex-start;">
+            <a href="{% url 'listar_turmas' %}" class="btn-voltar" title="Voltar para Turmas">
                 <i class="fa-solid fa-arrow-left"></i>
-            </button>
-        </a>
-
-        <h1 class="titulo-pagina">
-            Disciplinas da Turma
-            <span class="subtitulo-turma">{{ turma.nome }} – {{ turma.get_turno_display }}</span>
-        </h1>
-
-        <div style="display:flex; gap:10px;">
-            <a href="{% url 'grade_horaria' turma.id %}">
-                <button class="btn-grade">
-                    <i class="fa-solid fa-calendar-days" style="margin-right: 5px;"></i> Grade Horária
-                </button>
             </a>
-
-            <a href="{% url 'cadastrar_disciplina_turma' turma.id %}">
-                <button class="btn-verde">
-                    Adicionar Disciplina
-                </button>
-            </a>
+            <div>
+                <span style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 4px; display: block;">
+                    Gestão Acadêmica · {{ turma.get_turno_display }}
+                </span>
+                <h1 class="titulo-pagina" style="margin-bottom: 0;">
+                    Disciplinas de <span class="destaque-turma">{{ turma.nome }}</span>
+                </h1>
+                <span class="subtitulo">Gerencie a alocação de docentes e as informações das disciplinas desta turma.</span>
+            </div>
         </div>
 
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <a href="{% url 'grade_horaria' turma.id %}" title="Ver Grade de Horários">
+                <button class="btn-adicionar" style="background: transparent; border-color: var(--muted); color: var(--muted);">
+                    <i class="fa-solid fa-calendar-days" style="margin-right: 6px; font-size: 0.85rem;"></i> Grade Horária
+                </button>
+            </a>
+            <a href="{% url 'cadastrar_disciplina_turma' turma.id %}">
+                <button class="btn-adicionar">Adicionar Disciplina</button>
+            </a>
+        </div>
     </div>
 
-    <!-- CARD PRINCIPAL -->
+    {# ════════════════ CARD DA TABELA ════════════════ #}
     <div class="card-tabela">
-
-        <!-- BUSCA -->
-        <div class="barra-busca">
-            <form method="get" style="width:100%; display:flex;">
-                <input type="text"
-                       name="q"
-                       placeholder="Buscar disciplina..."
-                       value="{{ query|default:'' }}">
-            </form>
-            <i class="fa-solid fa-magnifying-glass"></i>
+        
+        {# BARRA DE BUSCA #}
+        <div class="barra-busca-linha">
+            <div class="barra-busca">
+                <form method="get" style="width: 100%;">
+                    <input type="text" name="q" placeholder="Procurar por nome da disciplina ou professor..." value="{{ query|default:'' }}">
+                </form>
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
         </div>
 
-        <!-- TABELA DE DISCIPLINAS -->
+        {# TABELA #}
         <div class="container-tabela">
             <table class="tabela-docentes">
                 <thead>
                     <tr>
                         <th class="coluna-nome">Disciplina</th>
-                        <th class="coluna-email">Professor</th>
-                        <th class="coluna-acoes">Ações</th>
+                        <th class="coluna-email">Professor Responsável</th>
+                        <th class="coluna-acoes">Gerenciar</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for disciplina in disciplinas %}
                     <tr>
-                        <td>{{ disciplina.nome }}</td>
-                        <td>{{ disciplina.professor.nome_completo }}</td>
+                        <td>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="color: var(--text); font-weight: 600;">{{ disciplina.nome }}</span>
+                                <span style="font-size: 0.72rem; color: var(--dim); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px;">
+                                    ID: #{{ disciplina.id|stringformat:"04d" }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if disciplina.professor %}
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--accent); font-weight: 700; border: 1px solid var(--accent-glow);">
+                                        {{ disciplina.professor.nome_completo|slice:":1" }}
+                                    </div>
+                                    <span style="color: var(--text-secondary);">{{ disciplina.professor.nome_completo }}</span>
+                                </div>
+                            {% else %}
+                                <span style="color: var(--rose); font-style: italic; font-size: 0.85rem;">
+                                    <i class="fa-solid fa-triangle-exclamation" style="margin-right: 4px;"></i> Não atribuído
+                                </span>
+                            {% endif %}
+                        </td>
                         <td class="coluna-acoes">
-
-                            <!-- VISUALIZAR DISCIPLINA -->
-                            <a href="{% url 'visualizar_disciplinas' disciplina.id %}" title="Visualizar">
-                                <i class="fa-solid fa-eye acao-visualizar"></i>
-                            </a>
-
-                            <!-- EDITAR DISCIPLINA -->
-                            <a href="{% url 'editar_disciplina' disciplina.id %}" title="Editar">
-                                <i class="fa-solid fa-pen acao-editar"></i>
-                            </a>
-
-                            <!-- EXCLUIR DISCIPLINA -->
-                            <a href="{% url 'excluir_disciplina' disciplina.id %}" 
-                               title="Excluir"
-                               onclick="return confirm('Deseja realmente excluir esta disciplina?');">
-                                <i class="fa-solid fa-trash acao-excluir"></i>
-                            </a>
-
+                            <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                                <a href="{% url 'visualizar_disciplinas' disciplina.id %}" class="acao-btn" title="Visualizar Detalhes">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="{% url 'editar_disciplina' disciplina.id %}" class="acao-btn" title="Editar Disciplina">
+                                    <i class="fa-solid fa-pen"></i>
+                                </a>
+                                <a href="{% url 'excluir_disciplina' disciplina.id %}" class="acao-btn" 
+                                   style="color: var(--rose);"
+                                   onclick="return confirm('Deseja realmente remover a disciplina \'{{ disciplina.nome }}\' desta turma?');"
+                                   title="Excluir Disciplina">
+                                    <i class="fa-solid fa-trash"></i>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="3" style="text-align:center; padding:15px;">
-                            Nenhuma disciplina cadastrada nesta turma.
+                        <td colspan="3">
+                            <div style="padding: 40px; text-align: center;">
+                                <i class="fa-solid fa-book-open" style="font-size: 2.5rem; color: var(--dim); margin-bottom: 16px; display: block;"></i>
+                                <p style="color: var(--muted); font-size: 1rem;">Nenhuma disciplina encontrada para esta turma.</p>
+                                {% if query %}
+                                    <a href="?" style="color: var(--accent); font-size: 0.85rem; margin-top: 8px; display: inline-block;">Limpar busca</a>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
     </div>
-
 </main>
-
-{% endblock %}
+{% endblock %}

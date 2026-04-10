@@ -7,8 +7,8 @@
 {#      professores_ativos, professores_novos, gestores_ativos, #}
 {#      gestores_novos que a view usuarios() não envia;         #}
 {#      seção de stats por card simplificada;                  #}
-{#      card de Gestores usa pode_ver_gestores (enviado pela   #}
-{#      view) em vez de checar apenas is_superuser no template.#}
+{#      card de Gestores usa pode_ver_gestores enviado pela   #}
+{#      view em vez de checar apenas is_superuser no template.#}
 {# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
@@ -17,7 +17,7 @@
 
 {% block extra_css %}
 {# Folha de estilo do painel de usuários #}
-<link rel="stylesheet" href="{% static 'core/css/painel_usuarios.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/painel_dos_usuarios.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -31,17 +31,24 @@
     </div>
 
     {# Total de usuários no sistema (inclui todos os perfis) #}
-    <div class="topo-total">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-           stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-        <circle cx="9" cy="7" r="4"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-      </svg>
-      <span>Total de usuários:</span>
-      <strong>{{ total_usuarios }}</strong>
+    <div class="indicadores-header">
+      <div class="topo-stat database">
+        <i class="fa-solid fa-database"></i>
+        <span>Base:</span>
+        <strong>{{ total_usuarios }}</strong>
+      </div>
+
+      <div class="topo-stat active">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>Ativos:</span>
+        <strong>{{ total_ativos }}</strong>
+      </div>
+
+      <div class="topo-stat inactive">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <span>Inativos:</span>
+        <strong>{{ total_desativados }}</strong>
+      </div>
     </div>
   </div>
 
@@ -59,8 +66,9 @@
 
     {# Pills de filtro — funcionalidade client-side via JS #}
     <div class="pill-filtros">
-      <div class="pill ativo" data-filtro="todos">Todos</div>
-      <div class="pill" data-filtro="ativos">Ativos</div>
+      <a href="{% url 'usuarios' %}" class="pill ativo">Todos</a>
+      <a href="{% url 'usuarios' %}" class="pill">Ativos</a>
+      <a href="{% url 'listar_desativados' %}" class="pill" data-filtro="desativados">Desativados</a>
     </div>
   </div>
 
@@ -102,6 +110,14 @@
         <div class="stat-item">
           <div class="stat-val">{{ total_alunos }}</div>
           <div class="stat-lbl">Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ alunos_ativos }}</div>
+          <div class="stat-lbl">Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ alunos_inativos }}</div>
+          <div class="stat-lbl">Inativos</div>
         </div>
       </div>
 
@@ -152,6 +168,14 @@
         <div class="stat-item">
           <div class="stat-val">{{ total_professores }}</div>
           <div class="stat-lbl">Total</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ professores_ativos }}</div>
+          <div class="stat-lbl">Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ professores_inativos }}</div>
+          <div class="stat-lbl">Inativos</div>
         </div>
       </div>
 
@@ -208,6 +232,14 @@
           <div class="stat-val">{{ total_gestores }}</div>
           <div class="stat-lbl">Total</div>
         </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ gestores_ativos }}</div>
+          <div class="stat-lbl">Ativos</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">{{ gestores_inativos }}</div>
+          <div class="stat-lbl">Inativos</div>
+        </div>
       </div>
 
       <div class="card-arrow">
@@ -232,39 +264,9 @@
 
 {% block extra_js %}
 <script>
-/* ────────────────────────────────────────────────
-   Pills de filtro
-   Alterna a classe "ativo" entre as pills.
-   Funcionalidade de filtro real pode ser adicionada
-   futuramente via data-categoria nos cards.
-──────────────────────────────────────────────── */
-document.querySelectorAll('.pill').forEach(function (pill) {
-  pill.addEventListener('click', function () {
-    /* Remove "ativo" de todas as pills */
-    document.querySelectorAll('.pill').forEach(function (p) {
-      p.classList.remove('ativo');
-    });
-    /* Ativa a pill clicada */
-    pill.classList.add('ativo');
-  });
-});
-
-/* ────────────────────────────────────────────────
-   Busca client-side
-   Filtra os cards pelo nome exibido (card-nome)
-   conforme o usuário digita no input de busca.
-──────────────────────────────────────────────── */
-document.getElementById('busca-input').addEventListener('input', function () {
-  var termo = this.value.toLowerCase().trim();
-  document.querySelectorAll('#grid-cards .card').forEach(function (card) {
-    var nome = card.querySelector('.card-nome');
-    /* Exibe card se o nome contém o termo pesquisado */
-    if (nome && nome.textContent.toLowerCase().includes(termo)) {
-      card.style.display = '';
-    } else {
-      card.style.display = 'none';
-    }
-  });
+document.addEventListener('DOMContentLoaded', function() {
+    initPillsFilter('.pill');
+    initSearchFilter('busca-input', 'grid-cards', '.card', '.card-nome');
 });
 </script>
 {% endblock %}

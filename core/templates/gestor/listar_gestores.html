@@ -74,18 +74,27 @@
               {# A view listar_gestores é protegida por @user_passes_test(is_superuser) #}
               {# mas o template também deve ocultar botões para outros perfis  #}
               {% if user.is_superuser %}
-
+              <div class="acoes-grupo">
                 {# Editar gestor #}
-                <a href="{% url 'editar_gestor' gestor.id %}">
+                <a href="{% url 'editar_gestor' gestor.id %}" class="acao-btn" title="Editar">
                   <i class="fa-solid fa-pen-to-square acao-editar"></i>
                 </a>
 
+                {# Ação desativar: is_active=False #}
+                <form action="{% url 'desativar_usuario' gestor.user.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="acao-btn" title="Desativar"
+                          onclick="return confirm('Deseja suspender o acesso deste gestor? (Ele poderá ser reativado depois)')">
+                    <i class="fa-solid fa-user-lock acao-desativar"></i>
+                  </button>
+                </form>
+
                 {# Excluir gestor com confirmação inline #}
-                <a href="{% url 'excluir_gestor' gestor.id %}"
-                   onclick="return confirm('Deseja excluir este gestor?')">
+                <a href="{% url 'excluir_gestor' gestor.id %}" class="acao-btn" title="Excluir"
+                   onclick="return confirm('ATENÇÃO: Deseja EXCLUIR DEFINITIVAMENTE este gestor? Todos os dados vinculados podem ser perdidos.')">
                   <i class="fa-solid fa-trash acao-excluir"></i>
                 </a>
-
+              </div>
               {% endif %}
             </td>
           </tr>

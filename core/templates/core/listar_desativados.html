@@ -1,0 +1,170 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Contas Inativas — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_dos_usuarios.css' %}?v=5">
+<style>
+    /* Ajustes para a tabela dentro do contexto de desativados */
+    .card-tabela {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        animation: fadeUp .4s ease both;
+    }
+    .card-tabela::before {
+        content: '';
+        display: block;
+        height: 2px;
+        background: linear-gradient(90deg, #f43f5e, transparent 70%);
+    }
+    .tabela-sige {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: .88rem;
+    }
+    .tabela-sige thead th {
+        padding: 16px 20px;
+        text-align: left;
+        font-size: .65rem;
+        font-weight: 700;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        border-bottom: 1px solid var(--border-mid);
+    }
+    .tabela-sige tbody tr {
+        border-bottom: 1px solid var(--border);
+        transition: background .15s;
+    }
+    .tabela-sige tbody tr:hover {
+        background: var(--elevated);
+    }
+    .tabela-sige tbody td {
+        padding: 18px 20px;
+        color: var(--muted);
+        vertical-align: middle;
+    }
+    .badge-perfil {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: rgba(255,255,255,0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="conteudo-principal-rolavel" style="padding: 40px 32px;">
+
+  {# ── Topo Premium ── #}
+  <div class="topo">
+    <div class="topo-esq">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+          <a href="{% url 'usuarios' %}" style="text-decoration: none; color: var(--muted); transition: color .2s;" onmouseover="this.style.color='var(--violet)'" onmouseout="this.style.color='var(--muted)'">
+             <i class="fa-solid fa-arrow-left"></i>
+          </a>
+          <span class="topo-label">SIGE · Controle de Segurança</span>
+      </div>
+      <h1>Contas <span style="color: #f43f5e;">Inativas</span></h1>
+    </div>
+
+    <div class="indicadores-header">
+      <div class="topo-stat inactive">
+        <i class="fa-solid fa-circle-xmark"></i>
+        <span>Bloqueados:</span>
+        <strong>{{ usuarios|length }}</strong>
+      </div>
+    </div>
+  </div>
+
+  {# ── Tabela de Usuários Desativados ── #}
+  <div class="card-tabela">
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-user-lock" style="color: #f43f5e;"></i>
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text);">Lista de Restrições</span>
+        </div>
+        <div class="pill-filtros">
+            <a href="{% url 'usuarios' %}" class="pill">Todos</a>
+            <a href="{% url 'listar_desativados' %}" class="pill ativo" data-filtro="desativados">Apenas Inativos</a>
+        </div>
+    </div>
+
+    <div class="container-tabela">
+        <table class="tabela-sige">
+            <thead>
+                <tr>
+                    <th>Identificação do Usuário</th>
+                    <th>E-mail Corporativo / Perfil</th>
+                    <th>Data de Suspensão</th>
+                    <th style="text-align: right;">Ações de Restauração</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <span style="font-weight: 600; color: var(--text);">{{ u.username }}</span>
+                            <span style="font-size: 0.72rem; color: var(--dim);">UUID: #{{ u.id }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
+                            <span style="color: var(--text-secondary);">{{ u.email|default:"sem-email@sige.br" }}</span>
+                            <div style="display: flex;">
+                                <span class="badge-perfil" style="color: var(--violet); border: 1px solid rgba(124,111,255,0.2);">
+                                    {% if u.aluno %}Discente
+                                    {% elif u.professor %}Docente
+                                    {% elif u.gestor %}Gestor
+                                    {% else %}Administrador{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-regular fa-calendar-xmark" style="color: var(--dim);"></i>
+                            <span style="color: var(--muted); font-size: 0.82rem;">{{ u.date_joined|date:"d/m/Y · H:i" }}</span>
+                        </div>
+                    </td>
+                    <td style="text-align: right;">
+                        <form action="{% url 'reativar_usuario' u.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" 
+                                    style="background: rgba(52, 211, 153, 0.08); border: 1px solid rgba(52, 211, 153, 0.2); color: var(--emerald); cursor: pointer; border-radius: 8px; padding: 8px 16px; font-size: 0.78rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);"
+                                    onmouseover="this.style.background='var(--emerald)'; this.style.color='var(--bg)'; this.style.transform='translateY(-2px)';"
+                                    onmouseout="this.style.background='rgba(52, 211, 153, 0.08)'; this.style.color='var(--emerald)'; this.style.transform='translateY(0)';"
+                                    onclick="return confirm('Confirmar restauração de acesso para {{ u.username }}?')">
+                                <i class="fa-solid fa-shield-heart"></i> Restaurar Acesso
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">
+                        <div style="text-align:center; padding:80px 20px;">
+                            <div style="font-size: 3.5rem; color: var(--border-mid); margin-bottom: 1.5rem; opacity: 0.5;">
+                                <i class="fa-solid fa-users-viewfinder"></i>
+                            </div>
+                            <h3 style="color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 800; margin-bottom: 10px;">Ambiente Limpo</h3>
+                            <p style="color: var(--muted); max-width: 400px; margin: 0 auto; line-height: 1.6;">Atualmente não existem usuários bloqueados no sistema. Todos os perfis possuem acesso regular.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+  </div>
+
+</main>
+{% endblock %}
+

@@ -1,0 +1,99 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}Gerenciar Grade - {{ turma.nome }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/grade_de_horarios.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+
+  {# ════════════════ HEADER (Registration Style) ════════════════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">Administrativo · Gestão Acadêmica</span>
+      <h1>Grade <span class="destaque">Horária</span></h1>
+      <div class="header-breadcrumb">
+        <a href="{% url 'painel_super' %}">Início</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="{% url 'listar_turmas' %}">Turmas</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <a href="#">{{ turma.nome }}</a>
+        <i class="fa-solid fa-chevron-right"></i>
+        <span>Grade</span>
+      </div>
+    </div>
+  </header>
+
+  {# ════════════════ FORM CARD (Registration Style) ════════════════ #}
+  <div class="form-card">
+    
+    <div class="form-card-titulo">
+      <div class="form-card-icone">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+      </div>
+      <div class="form-card-titulo-texto">
+        <h2>Distribuição <span class="destaque">Semanal</span></h2>
+        <p>Defina os horários para a turma <strong>{{ turma.nome }}</strong> (Turno {{ turma.get_turno_display }})</p>
+      </div>
+    </div>
+
+    <form method="post" class="form-grade">
+      {% csrf_token %}
+
+      <div class="tabela-wrapper">
+        <table class="tabela-grade-edit">
+          <thead>
+            <tr>
+              <th>Horário</th>
+              <th>Segunda</th>
+              <th>Terça</th>
+              <th>Quarta</th>
+              <th>Quinta</th>
+              <th>Sexta</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for h in horarios %}
+              <tr>
+                <td class="celula-horario">{{ h }}</td>
+                {% for dia in dias_semana %}
+                  <td class="celula-seletor">
+                    <select name="grade-{{ dia }}-{{ forloop.parentloop.counter0 }}" class="select-premium">
+                      <option value="">— Vazio —</option>
+                      {% for d in disciplinas %}
+                        {% with key=dia|add:"_"|add:h %}
+                          <option value="{{ d.id }}" 
+                            {% if grade_dict|get_item:key == d.id %}selected{% endif %}
+                          >
+                            {{ d.nome|truncatechars:18 }}
+                          </option>
+                        {% endwith %}
+                      {% endfor %}
+                    </select>
+
+                    {# Conflict indicators could be added here if prof_ocupados is implemented #}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="botoes">
+        <a href="{% url 'listar_turmas' %}" class="btn-voltar-tab">
+          <i class="fa-solid fa-arrow-left"></i> Cancelar
+        </a>
+        <button type="submit" class="btn salvar">
+          <i class="fa-solid fa-check"></i> Salvar Grade
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

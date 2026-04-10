@@ -47,19 +47,6 @@
   </a>
 </div>
 
-{# ── Mensagens flash ── #}
-{% if messages %}
-<ul class="msg-list">
-  {% for msg in messages %}
-  <li class="{{ msg.tags }}">
-    <i class="fa-solid
-      {% if msg.tags == 'success' %}fa-circle-check
-      {% else %}fa-circle-exclamation{% endif %}"></i>
-    {{ msg }}
-  </li>
-  {% endfor %}
-</ul>
-{% endif %}
 
 {# ── Seletor de data: GET com parâmetro "data" ── #}
 <form method="get">
@@ -145,7 +132,7 @@
              placeholder="Motivo da falta..."
              {# Pré-popula com observação salva anteriormente #}
              value="{% if f %}{{ f.observacao }}{% endif %}"
-             {# Desabilita campo se o aluno está presente #}
+             {# Desabilita campo se the aluno está presente #}
              {% if f and f.presente %}disabled{% endif %}>
 
     </div>
@@ -177,62 +164,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-/* ────────────────────────────────────────────────
-   atualizarEstado
-   Sincroniza texto do label e estado do campo de
-   observação com o checkbox de presença.
-──────────────────────────────────────────────── */
-function atualizarEstado(cb) {
-  var id    = cb.value;
-  /* FIX: ID do input alterado de "just_{id}" para "obs_{id}" */
-  var obs   = document.getElementById('obs_' + id);
-  var lbl   = cb.nextElementSibling
-                ? cb.nextElementSibling.querySelector('.status-txt')
-                : null;
-
-  if (cb.checked) {
-    /* Presente: desabilita observação e limpa o valor */
-    if (obs) { obs.disabled = true; obs.value = ''; }
-    if (lbl) { lbl.textContent = 'Presente'; }
-  } else {
-    /* Falta: habilita campo de observação */
-    if (obs) { obs.disabled = false; }
-    if (lbl) { lbl.textContent = 'Falta'; }
-  }
-}
-
-/* ────────────────────────────────────────────────
-   toggleObservacao
-   Chamado pelo onchange do checkbox; delega para
-   atualizarEstado para manter lógica centralizada.
-──────────────────────────────────────────────── */
-function toggleObservacao(alunoId, presente) {
-  var cb = document.getElementById('aluno_' + alunoId);
-  if (cb) { atualizarEstado(cb); }
-}
-
-/* ────────────────────────────────────────────────
-   marcarTodos
-   Marca/desmarca todos os checkboxes de presença
-   e atualiza o estado de cada um.
-──────────────────────────────────────────────── */
-function marcarTodos(presente) {
-  document.querySelectorAll(
-    '.presenca-toggle input[type="checkbox"]'
-  ).forEach(function (cb) {
-    cb.checked = presente;
-    atualizarEstado(cb);
-  });
-}
-
-/* Inicializa o estado de cada linha ao carregar a página */
-document.addEventListener('DOMContentLoaded', function () {
-  document.querySelectorAll(
-    '.presenca-toggle input[type="checkbox"]'
-  ).forEach(function (cb) {
-    atualizarEstado(cb);
-  });
-});
-</script>
+<script src="{% static 'core/js/attendance.js' %}"></script>
 {% endblock %}

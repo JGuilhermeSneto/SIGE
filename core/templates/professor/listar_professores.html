@@ -14,7 +14,7 @@
 
 {% block extra_css %}
 {# Folha de estilo específica da listagem de professores #}
-<link rel="stylesheet" href="{% static 'core/css/listar_docentes.css' %}?v=3">
+<link rel="stylesheet" href="{% static 'core/css/listar_professores.css' %}?v=3">
 {% endblock %}
 
 {% block content %}
@@ -72,16 +72,27 @@
             <td>{{ professor.user.email }}</td>
 
             <td class="coluna-acoes">
-              {# Ação editar: abre cadastrar_professor.html com instância #}
-              <a href="{% url 'editar_professor' professor.id %}">
-                <i class="fa-solid fa-pen-to-square acao-editar"></i>
-              </a>
+              <div class="acoes-grupo">
+                {# Ação editar: abre cadastrar_professor.html com instância #}
+                <a href="{% url 'editar_professor' professor.id %}" class="acao-btn" title="Editar">
+                  <i class="fa-solid fa-pen-to-square acao-editar"></i>
+                </a>
 
-              {# Ação excluir: também remove o User Django associado #}
-              <a href="{% url 'excluir_professor' professor.id %}"
-                 onclick="return confirm('Deseja excluir este docente?')">
-                <i class="fa-solid fa-trash acao-excluir"></i>
-              </a>
+                {# Ação desativar: is_active=False #}
+                <form action="{% url 'desativar_usuario' professor.user.id %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="acao-btn" title="Desativar"
+                          onclick="return confirm('Deseja suspender o acesso deste docente? (Ele poderá ser reativado depois)')">
+                    <i class="fa-solid fa-user-lock acao-desativar"></i>
+                  </button>
+                </form>
+
+                {# Ação excluir: também remove o User Django associado #}
+                <a href="{% url 'excluir_professor' professor.id %}" class="acao-btn" title="Excluir"
+                   onclick="return confirm('ATENÇÃO: Deseja EXCLUIR DEFINITIVAMENTE este docente? Todos os dados vinculados podem ser perdidos.')">
+                  <i class="fa-solid fa-trash acao-excluir"></i>
+                </a>
+              </div>
             </td>
           </tr>
 
