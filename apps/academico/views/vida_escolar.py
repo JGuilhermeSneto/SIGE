@@ -21,6 +21,7 @@ from apps.usuarios.utils.perfis import (
     redirect_user
 )
 from ..utils.academico import _contar_notas_lancadas
+from ..services.notificacao_servico import NotificacaoServico
 
 @login_required
 def lancar_nota(request, disciplina_id):
@@ -45,6 +46,14 @@ def lancar_nota(request, disciplina_id):
                         if 0 <= v <= 10: setattr(nota_obj, f"nota{i}", v)
                     except ValueError: messages.error(request, f"Erro na nota {i} de {aluno.nome_completo}")
             nota_obj.save()
+            media_txt = f"{nota_obj.media:.2f}" if nota_obj.media is not None else "N/A"
+            NotificacaoServico.criar(
+                aluno=aluno,
+                tipo="NOTA",
+                titulo="Notas bimestrais atualizadas",
+                mensagem=f"{disciplina.nome}: suas notas foram atualizadas (média atual {media_txt}).",
+                url_destino="/academico/meu-painel/atividades/",
+            )
         messages.success(request, "Notas salvas!")
         return redirect("lancar_nota", disciplina_id=disciplina.id)
 
@@ -79,6 +88,15 @@ def lancar_chamada(request, disciplina_id):
             Frequencia.objects.update_or_create(
                 aluno=aluno, disciplina=disciplina, data=data_sel,
                 defaults={"presente": pres, "observacao": obs}
+            )
+            status = "Presença registrada" if pres else "Falta registrada"
+            detalhe = "Você foi marcado como presente." if pres else "Você foi marcado com falta."
+            NotificacaoServico.criar(
+                aluno=aluno,
+                tipo="CHAMADA",
+                titulo=status,
+                mensagem=f"{disciplina.nome} ({data_sel.strftime('%d/%m/%Y')}): {detalhe}",
+                url_destino="/academico/frequencia/aluno/",
             )
         messages.success(request, "Chamada salva!")
         return redirect(f"{reverse('lancar_chamada', args=[disciplina.id])}?data={data_sel}")

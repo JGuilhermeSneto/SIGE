@@ -15,6 +15,7 @@ from ..models.academico import (
     Questao, Alternativa
 )
 from ..models.desempenho import NotaAtividade
+from .notificacao_servico import NotificacaoServico
 
 class AtividadeServico:
     """Serviço para gerenciar lógica de negócios de atividades e avaliações."""
@@ -140,4 +141,11 @@ class AtividadeServico:
         entrega.feedback_professor = data_post.get("obs_geral", "")
         entrega.status = data_post.get("status", "CORRIGIDO")
         entrega.save()
+        NotificacaoServico.criar(
+            aluno=entrega.aluno,
+            tipo="CORRECAO",
+            titulo="Correção disponível",
+            mensagem=f"Sua entrega de '{atividade.titulo}' foi corrigida pelo professor.",
+            url_destino=f"/academico/meu-painel/atividades/{atividade.id}/entregar/",
+        )
         return total_pontos

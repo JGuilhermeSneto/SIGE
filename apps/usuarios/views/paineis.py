@@ -15,11 +15,13 @@ from apps.academico.utils.academico import _get_grade_horario_turma
 
 from ..models.perfis import Professor, Aluno
 from apps.academico.models.academico import Turma, Disciplina
+from apps.academico.models.desempenho import NotificacaoAluno
 
 @login_required
 def painel_super(request):
     """Dashboard principal para Superusuários e Gestores."""
-    ano_atual = datetime.now().year
+    agora = datetime.now()
+    ano_atual = agora.year
     from apps.calendario.models.calendario import EventoCalendario
     anos_turmas = list(Turma.objects.values_list("ano", flat=True).distinct())
     anos_cal = list(EventoCalendario.objects.dates('data', 'year').values_list('data__year', flat=True).distinct())
@@ -34,15 +36,16 @@ def painel_super(request):
 
     turmas = Turma.objects.filter(ano=ano_filtro)
     MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    mes_nome = MESES[datetime.now().month - 1].upper()
+    mes_nome = MESES[agora.month - 1].upper()
 
     contexto = {
         "usuario":           request.user,
         "nome_exibicao":     get_nome_exibicao(request.user),
         "foto_perfil_url":   get_foto_perfil(request.user),
-        "agora":             datetime.now(),
+        "agora":             agora,
         "mes_nome":          mes_nome,
-        "calendario":        gerar_calendario(ano_filtro, datetime.now().month),
+        "calendario":        gerar_calendario(ano_atual, agora.month),
+        "ano_calendario":    ano_atual,
         "anos_disponiveis":  anos_disponiveis,
         "ano_filtro":        ano_filtro,
         "total_professores": (
@@ -107,7 +110,8 @@ def painel_professor(request):
         "foto_perfil_url":         get_foto_perfil(request.user),
         "agora":                   hoje,
         "mes_nome":                mes_nome,
-        "calendario":              gerar_calendario(ano_filtro, hoje.month),
+        "calendario":              gerar_calendario(ano_atual, hoje.month),
+        "ano_calendario":          ano_atual,
         "total_turmas":            turmas_ids.count(),
         "total_alunos":            total_alunos_unicos,
         "total_disciplinas":       disciplinas.count(),
@@ -179,16 +183,19 @@ def painel_aluno(request):
         situacao_geral = "--"
         situacao_classe = ""
 
+    agora = datetime.now()
+    ano_atual = agora.year
     MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    mes_nome = MESES[datetime.now().month - 1].upper()
+    mes_nome = MESES[agora.month - 1].upper()
 
     contexto = {
         "aluno":                 aluno,
         "nome_exibicao":         get_nome_exibicao(request.user),
         "foto_perfil_url":       get_foto_perfil(request.user),
-        "agora":                 datetime.now(),
+        "agora":                 agora,
         "mes_nome":              mes_nome,
-        "calendario":            gerar_calendario(aluno.turma.ano, datetime.now().month),
+        "calendario":            gerar_calendario(ano_atual, agora.month),
+        "ano_calendario":        ano_atual,
         "grade_horario":         grade,
         "disciplinas_com_notas": disciplinas_com_notas,
         "media_geral":           media_geral,
@@ -196,6 +203,8 @@ def painel_aluno(request):
         "situacao_classe":       situacao_classe,
         "total_notas_lancadas":  total_notas_lancadas,
         "total_notas_possiveis": total_notas_possiveis,
+        "notificacoes_recentes": NotificacaoAluno.objects.filter(aluno=aluno).order_by("-criado_em")[:8],
+        "notificacoes_nao_lidas": NotificacaoAluno.objects.filter(aluno=aluno, lida=False).count(),
     }
 
     return render(request, "aluno/painel_aluno.html", contexto)

@@ -8,7 +8,9 @@ O que é: opera sobre o ``User`` logado e o objeto de perfil retornado por
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.views.decorators.http import require_POST
 from ..forms.autenticacao import EditarPerfilForm
 from ..utils.perfis import get_user_profile, get_foto_perfil, get_nome_exibicao, redirect_user
 
@@ -51,6 +53,9 @@ def editar_perfil(request):
                     perfil.foto = foto
                     perfil.save()
 
+                    # For normal POST, continue to redirect. AJAX photo updates handled
+                    # by a dedicated view below.
+
             messages.success(request, "Perfil atualizado com sucesso!")
             return redirect(redirect_user(user))
         else:
@@ -89,3 +94,35 @@ def remover_foto_perfil(request):
         messages.info(request, "Você não possui uma foto de perfil cadastrada.")
 
     return redirect("editar_perfil")
+
+
+@login_required
+@require_POST
+def atualizar_foto_perfil(request):
+    """Endpoint AJAX para atualizar apenas a foto de perfil e retornar a URL."""
+    perfil = get_user_profile(request.user)
+
+    if not perfil:
+        return JsonResponse({"error": "Nenhum perfil associado ao usuário."}, status=400)
+
+    foto = request.FILES.get('foto')
+    if not foto:
+        return JsonResponse({"error": "Nenhum arquivo enviado."}, status=400)
+
+    # Remove antigo e salva novo
+    if getattr(perfil, 'foto', None):
+        try:
+            perfil.foto.delete(save=False)
+        except Exception:
+            pass
+    perfil.foto = foto
+    perfil.save()
+
+    foto_url = perfil.foto.url
+    try:
+        ts = int(perfil.atualizado_em.timestamp())
+        foto_url = f"{foto_url}?v={ts}"
+    except Exception:
+        pass
+
+    return JsonResponse({"foto_url": foto_url})

@@ -55,11 +55,11 @@
                 {% endif %}
             </div>
         </div>
-        <a href="{% url 'listar_atividades_aluno' %}" class="card-info" style="text-decoration: none;">
-            <div class="card-icon" style="background: var(--accent-violet);"><i class="fa-solid fa-list-check"></i></div>
+        <a href="{% url 'listar_atividades_aluno' %}" class="card-info card-info-link">
+            <div class="card-icon card-icon-portal"><i class="fa-solid fa-list-check"></i></div>
             <div class="card-dados">
                 <p>Atividades</p>
-                <h3 style="color: var(--accent-violet);">Ver Portal</h3>
+                <h3 class="titulo-portal">Ver Portal</h3>
             </div>
         </a>
     </section>
@@ -120,7 +120,8 @@
                             <div class="freq-barra-wrap">
                                 <div
                                     class="freq-barra {% if item.percentual_faltas >= 25 %}critica{% elif item.percentual_faltas >= 15 %}alerta{% else %}ok{% endif %}"
-                                    style="width: {{ item.percentual_faltas }}%"
+                                    data-final-width="{{ item.percentual_faltas }}"
+                                    style="width: 0%"
                                 ></div>
                             </div>
                             <span class="freq-percentual {% if item.percentual_faltas >= 25 %}reprovado{% elif item.percentual_faltas >= 15 %}recuperacao{% else %}aprovado{% endif %}">
@@ -141,6 +142,26 @@
         {# ════════════════ COLUNA DIREITA ════════════════ #}
         <div class="coluna-direita">
 
+            <div class="card-grafico card-notificacoes">
+                <h3><i class="fa-solid fa-bell"></i> Notificações {% if notificacoes_nao_lidas %}<span class="contador-notificacoes">({{ notificacoes_nao_lidas }})</span>{% endif %}</h3>
+                {% if notificacoes_recentes %}
+                <div class="lista-notificacoes">
+                    {% for n in notificacoes_recentes %}
+                    <a href="{% url 'marcar_notificacao_lida' n.id %}"
+                        class="item-notificacao {% if not n.lida %}nao-lida{% endif %}">
+                        <div class="item-notificacao-head">
+                            <strong>{{ n.titulo }}</strong>
+                            <span>{{ n.criado_em|date:"d/m H:i" }}</span>
+                        </div>
+                        <p>{{ n.mensagem }}</p>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="vazio-notificacoes">Sem notificações por enquanto.</p>
+                {% endif %}
+            </div>
+
             {# Gráfico de desempenho #}
             <div class="card-grafico">
                 <h3><i class="fa-solid fa-chart-bar"></i> Meu Desempenho</h3>
@@ -148,12 +169,12 @@
             </div>
 
             {# Calendário #}
-            <div class="calendario-box">
-                <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link" style="text-decoration: none; color: inherit;">
+            <section class="calendario-box">
+                <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link calendario-link">
                     <header class="calendario-cabecalho">
-                    <h3 id="cal-mes-nome-aluno">{{ mes_nome }}</h3>
-                    <span class="calendario-ano" id="cal-ano-aluno">{{ aluno.turma.ano|default:agora.year }}</span>
-                </header>
+                    <h2 id="cal-mes-nome">{{ mes_nome }}</h2>
+                    <span class="calendario-ano" id="cal-ano">{{ ano_calendario }}</span>
+                    </header>
                 </a>
                 <div class="calendario-grade" id="cal-grade">
                     <div class="nome-dia">D</div>
@@ -165,22 +186,24 @@
                     <div class="nome-dia">S</div>
 
                     {% for d in calendario %}
-                      <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}" 
-                           title="{{ d.descricao|default:'' }}">
+                      <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}{% if d.tem_evento %} tipo-evento{% endif %}{% if d.aula_suspensa %} tipo-aula_suspensa{% endif %}" 
+                           title="{% if d.status_tooltip %}{{ d.status_tooltip }}{% if d.descricao %} - {{ d.descricao }}{% endif %}{% else %}{{ d.descricao|default:'' }}{% endif %}">
                         {{ d.numero }}
                       </div>
                     {% endfor %}
                 </div>
                 
                 {# Legenda Mini Padronizada #}
-                <div class="mini-legenda" style="flex-wrap: wrap;">
-                    <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-letivo"></i> Letivo</span>
-                    <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-feriado"></i> Feriado</span>
-                    <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-prova"></i> Prova</span>
+                <div class="mini-legenda legenda-quebra">
+                    <span class="leg-item"><i class="dot-letivo"></i> Letivo</span>
+                    <span class="leg-item"><i class="dot-evento"></i> Evento</span>
+                    <span class="leg-item"><i class="dot-feriado"></i> Feriado</span>
+                    <span class="leg-item"><i class="dot-prova"></i> Prova</span>
+                    <span class="leg-item"><i class="dot-suspensa"></i> Aula Suspensa</span>
                     <span class="leg-item"><i class="dot-sabado"></i> Sáb. Letivo</span>
                     <span class="leg-item"><i class="dot-recesso"></i> Recesso</span>
                 </div>
-            </div>
+            </section>
 
         </div>
 
@@ -367,6 +390,27 @@ window.onclick = function(event) {
 
 // GRÁFICO DE DESEMPENHO
 document.addEventListener('DOMContentLoaded', function() {
+    const headerPainel = document.querySelector('.header-painel');
+    if (headerPainel) {
+        headerPainel.addEventListener('mousemove', function (e) {
+            const rect = headerPainel.getBoundingClientRect();
+            const px = (e.clientX - rect.left) / rect.width - 0.5;
+            const py = (e.clientY - rect.top) / rect.height - 0.5;
+            headerPainel.style.transform = `translate3d(${px * 6}px, ${py * 5}px, 0)`;
+        });
+        headerPainel.addEventListener('mouseleave', function () {
+            headerPainel.style.transform = 'translate3d(0, 0, 0)';
+        });
+    }
+
+    const barrasFreq = document.querySelectorAll('.freq-barra[data-final-width]');
+    barrasFreq.forEach((barra, idx) => {
+        const destino = barra.dataset.finalWidth || '0';
+        setTimeout(() => {
+            barra.style.width = `${destino}%`;
+        }, 220 + (idx * 55));
+    });
+
     const ctx = document.getElementById('graficoDesempenho');
     if (ctx) {
         new Chart(ctx, {

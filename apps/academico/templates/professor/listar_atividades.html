@@ -138,6 +138,126 @@
         color: var(--text-muted);
         line-height: 1.5;
     }
+    .atividade-footer {
+        margin-top: auto;
+        padding-top: 10px;
+        display: flex;
+        justify-content: stretch;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .atividade-footer .btn-magic {
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        min-width: 0;
+        white-space: normal;
+        line-height: 1.25;
+        flex: 1 1 170px;
+        justify-content: center;
+        text-align: center;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .atividade-footer .btn-magic i {
+        flex-shrink: 0;
+    }
+
+    .gabarito-pill {
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 5px 10px;
+        width: fit-content;
+        border: 1px solid transparent;
+    }
+    .gabarito-pill.ok {
+        color: var(--accent-emerald);
+        background: rgba(52, 211, 153, 0.12);
+        border-color: rgba(52, 211, 153, 0.35);
+    }
+    .gabarito-pill.locked {
+        color: var(--accent-amber);
+        background: rgba(251, 191, 36, 0.12);
+        border-color: rgba(251, 191, 36, 0.35);
+    }
+    .gabarito-pill.empty {
+        color: var(--text-muted);
+        background: rgba(148, 163, 184, 0.12);
+        border-color: rgba(148, 163, 184, 0.25);
+    }
+    .gabarito-meta {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: -6px;
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+    }
+    .btn-gabarito {
+        background: rgba(124, 111, 255, 0.12);
+        border: 1px solid rgba(124, 111, 255, 0.45);
+        color: var(--accent-violet);
+    }
+    .btn-gabarito:hover {
+        background: rgba(124, 111, 255, 0.22);
+    }
+
+    .gabarito-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(9, 14, 26, 0.72);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+        backdrop-filter: blur(2px);
+    }
+    .gabarito-modal {
+        width: min(520px, calc(100vw - 30px));
+        background: var(--bg-surface);
+        border: 1px solid var(--border-mid);
+        border-radius: 16px;
+        padding: 22px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    }
+    .gabarito-modal h3 {
+        margin: 0 0 8px;
+        font-size: 1.05rem;
+        color: var(--text-primary);
+    }
+    .gabarito-modal p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 0.88rem;
+        line-height: 1.5;
+    }
+    .gabarito-modal-actions {
+        margin-top: 16px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+    .btn-modal {
+        border: 1px solid var(--border-mid);
+        border-radius: 10px;
+        padding: 9px 14px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        cursor: pointer;
+        background: var(--bg-elevated);
+        color: var(--text-primary);
+    }
+    .btn-modal.sim {
+        border-color: rgba(52, 211, 153, 0.55);
+        color: var(--accent-emerald);
+        background: rgba(52, 211, 153, 0.12);
+    }
+    .btn-modal.nao {
+        border-color: rgba(251, 191, 36, 0.55);
+        color: var(--accent-amber);
+        background: rgba(251, 191, 36, 0.12);
+    }
 
     .empty-state {
         padding: 40px;
@@ -146,6 +266,17 @@
         background: var(--bg-surface);
         border-radius: var(--radius-lg);
         border: 1px dashed var(--border-mid);
+    }
+
+    @media (max-width: 640px) {
+        .atividade-footer {
+            justify-content: stretch;
+        }
+        .atividade-footer .btn-magic {
+            flex: 1 1 100%;
+            justify-content: center;
+            text-align: center;
+        }
     }
 </style>
 {% endblock %}
@@ -183,14 +314,31 @@
                 <i class="fa-regular fa-calendar"></i> {{ atv.data|date:"d/m/Y" }}
             </div>
             <p class="atividade-desc">{{ atv.descricao|truncatewords:20 }}</p>
-            <div class="atividade-footer"
-                style="margin-top: auto; padding-top: 10px; display: flex; justify-content: flex-end; gap: 10px;">
-                <a href="{% url 'gerenciar_questoes' disciplina.id atv.id %}" class="btn-magic"
-                    style="padding: 6px 14px; font-size: 0.75rem;">
+            {% if atv.possui_gabarito %}
+                {% if atv.exibir_gabarito_para_aluno %}
+                    <span class="gabarito-pill ok"><i class="fa-solid fa-lock-open"></i> Gabarito visível para alunos</span>
+                    {% if atv.gabarito_liberado and atv.gabarito_liberado_em %}
+                    <span class="gabarito-meta">
+                        <i class="fa-regular fa-clock"></i> Liberado em {{ atv.gabarito_liberado_em|date:"d/m/Y H:i" }}
+                    </span>
+                    {% endif %}
+                {% else %}
+                    <span class="gabarito-pill locked"><i class="fa-solid fa-lock"></i> Gabarito bloqueado até liberação/prazo</span>
+                {% endif %}
+            {% else %}
+                <span class="gabarito-pill empty"><i class="fa-solid fa-circle-info"></i> Gabarito ainda não cadastrado</span>
+            {% endif %}
+            <div class="atividade-footer">
+                <a href="{% url 'gerenciar_questoes' disciplina.id atv.id %}" class="btn-magic">
                     <i class="fa-solid fa-question-circle"></i> Gerenciar Questões
                 </a>
-                <a href="{% url 'lancar_notas_atividade' disciplina.id atv.id %}" class="btn-magic"
-                    style="padding: 6px 14px; font-size: 0.75rem;">
+                {% if atv.possui_gabarito and is_professor %}
+                <button type="button" class="btn-magic btn-gabarito"
+                    onclick="abrirModalGabarito('{% url 'controlar_liberacao_gabarito' disciplina.id atv.id %}', '{{ atv.titulo|escapejs }}')">
+                    <i class="fa-solid fa-unlock-keyhole"></i> Liberar Gabarito
+                </button>
+                {% endif %}
+                <a href="{% url 'lancar_notas_atividade' disciplina.id atv.id %}" class="btn-magic">
                     <i class="fa-solid fa-graduation-cap"></i> Atribuir Notas
                 </a>
             </div>
@@ -205,4 +353,49 @@
     </div>
     {% endif %}
 </div>
+
+<div class="gabarito-modal-overlay" id="gabarito-modal-overlay">
+    <div class="gabarito-modal">
+        <h3 id="gabarito-modal-titulo">Controle de liberação do gabarito</h3>
+        <p>Escolha se o gabarito desta atividade deve ser liberado agora, mantido bloqueado até o prazo final ou cancelar.</p>
+        <form method="post" id="gabarito-form">
+            {% csrf_token %}
+            <input type="hidden" name="decisao" id="gabarito-decisao">
+            <div class="gabarito-modal-actions">
+                <button type="button" class="btn-modal" onclick="fecharModalGabarito()">Cancelar</button>
+                <button type="button" class="btn-modal nao" onclick="enviarDecisaoGabarito('nao')">Não liberar</button>
+                <button type="button" class="btn-modal sim" onclick="enviarDecisaoGabarito('sim')">Sim, liberar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function abrirModalGabarito(actionUrl, tituloAtividade) {
+    const overlay = document.getElementById('gabarito-modal-overlay');
+    const form = document.getElementById('gabarito-form');
+    const titulo = document.getElementById('gabarito-modal-titulo');
+    if (!overlay || !form || !titulo) return;
+    form.action = actionUrl;
+    titulo.textContent = `Controle de gabarito: ${tituloAtividade}`;
+    overlay.style.display = 'flex';
+}
+
+function fecharModalGabarito() {
+    const overlay = document.getElementById('gabarito-modal-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function enviarDecisaoGabarito(decisao) {
+    const input = document.getElementById('gabarito-decisao');
+    const form = document.getElementById('gabarito-form');
+    if (!input || !form) return;
+    input.value = decisao;
+    form.submit();
+}
+
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') fecharModalGabarito();
+});
+</script>
 {% endblock %}

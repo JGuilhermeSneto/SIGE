@@ -79,6 +79,15 @@ class AtividadeProfessor(models.Model):
     data = models.DateField(help_text="Data do agendamento (para provas, deve coincidir com o calendário)")
     prazo_final = models.DateTimeField(null=True, blank=True, help_text="Data e Hora limite para entrega (Obrigatório para Atividade/Trabalho)")
     descricao = models.TextField(blank=True, help_text="Descrição detalhada")
+    gabarito_liberado = models.BooleanField(
+        default=False,
+        help_text="Permite liberar gabarito manualmente antes do prazo.",
+    )
+    gabarito_liberado_em = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Data/hora da liberação manual do gabarito.",
+    )
     criado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -105,7 +114,7 @@ class AtividadeProfessor(models.Model):
 
     @property
     def exibir_gabarito_para_aluno(self):
-        return self.possui_gabarito and self.prazo_encerrado
+        return self.possui_gabarito and (self.gabarito_liberado or self.prazo_encerrado)
 
 class Questao(models.Model):
     """Questões de uma atividade (objetivas ou discursivas)."""

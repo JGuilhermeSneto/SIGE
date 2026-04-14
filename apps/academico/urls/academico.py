@@ -29,6 +29,11 @@ urlpatterns = [
     # Atividades / Provas (Professor)
     path("disciplinas/<int:disciplina_id>/atividades/", academico.listar_atividades, name="listar_atividades"),
     path("disciplinas/<int:disciplina_id>/atividades/cadastrar/", academico.cadastrar_atividade, name="cadastrar_atividade"),
+    path(
+        "disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/gabarito/",
+        academico.controlar_liberacao_gabarito,
+        name="controlar_liberacao_gabarito",
+    ),
     path("disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/notas/", academico.lancar_notas_atividade, name="lancar_notas_atividade"),
     path("disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/questoes/", academico.gerenciar_questoes, name="gerenciar_questoes"),
     path("disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/corrigir/<int:entrega_id>/", academico.corrigir_entrega, name="corrigir_entrega"),
@@ -36,5 +41,6 @@ urlpatterns = [
     # Portal do Aluno (Atividades)
     path("meu-painel/atividades/", academico.listar_atividades_aluno, name="listar_atividades_aluno"),
     path("meu-painel/atividades/<int:atividade_id>/entregar/", academico.entregar_atividade, name="entregar_atividade"),
+    path("meu-painel/notificacoes/<int:notificacao_id>/", academico.marcar_notificacao_lida, name="marcar_notificacao_lida"),
 ]
 

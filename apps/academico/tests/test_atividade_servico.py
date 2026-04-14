@@ -253,3 +253,28 @@ class AtividadeServicoTest(TestCase):
         self.assertTrue(atividade_prova.possui_gabarito)
         self.assertTrue(atividade_prova.prazo_encerrado)
         self.assertTrue(atividade_prova.exibir_gabarito_para_aluno)
+
+    def test_atividade_exibe_gabarito_quando_liberado_manual(self):
+        atividade = AtividadeProfessor.objects.create(
+            disciplina=self.disciplina,
+            titulo="Atividade com liberação manual",
+            tipo="ATIVIDADE",
+            data=timezone.now().date(),
+            prazo_final=timezone.now() + timedelta(days=2),
+            gabarito_liberado=True,
+            gabarito_liberado_em=timezone.now(),
+        )
+
+        questao = Questao.objects.create(
+            atividade=atividade,
+            texto="Quanto é 2 + 2?",
+            tipo="OBJETIVA",
+            valor=1.0,
+            ordem=1,
+        )
+        Alternativa.objects.create(questao=questao, texto="4", eh_correta=True)
+        Alternativa.objects.create(questao=questao, texto="5", eh_correta=False)
+
+        self.assertTrue(atividade.possui_gabarito)
+        self.assertFalse(atividade.prazo_encerrado)
+        self.assertTrue(atividade.exibir_gabarito_para_aluno)

@@ -14,6 +14,7 @@ from ..models.academico import (
     Disciplina, Turma, GradeHorario, AtividadeProfessor, 
     Questao, Alternativa, EntregaAtividade, RespostaAluno
 )
+from ..models.desempenho import NotificacaoAluno
 from ..models.desempenho import Nota, NotaAtividade, Frequencia
 from apps.usuarios.models.perfis import Professor, Aluno
 from ..forms.academico import DisciplinaForm, AtividadeProfessorForm
@@ -21,6 +22,7 @@ from ..utils.academico import (
     _get_grade_horario_turma, _get_ocupados_por_professor,
     _calcular_detalhes_disciplina
 )
+from ..services.notificacao_servico import NotificacaoServico
 from apps.comum.utils.constantes import NOMES_DIAS
 from apps.usuarios.utils.perfis import (
     get_nome_exibicao, get_foto_perfil, redirect_user, is_super_ou_gestor
@@ -220,6 +222,47 @@ def listar_atividades(request, disciplina_id):
         "foto_perfil_url": get_foto_perfil(request.user),
     })
 
+
+@login_required
+def controlar_liberacao_gabarito(request, disciplina_id, atividade_id):
+    """Permite ao professor definir a liberação manual do gabarito."""
+    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+    atividade = get_object_or_404(AtividadeProfessor, id=atividade_id, disciplina=disciplina)
+
+    if not (hasattr(request.user, "professor") and disciplina.professor == request.user.professor):
+        messages.error(request, "Acesso negado.")
+        return redirect("listar_atividades", disciplina_id=disciplina.id)
+
+    if request.method != "POST":
+        return redirect("listar_atividades", disciplina_id=disciplina.id)
+
+    if not atividade.possui_gabarito:
+        messages.error(request, "Cadastre questões antes de controlar a liberação do gabarito.")
+        return redirect("listar_atividades", disciplina_id=disciplina.id)
+
+    decisao = (request.POST.get("decisao") or "").strip().lower()
+    if decisao == "sim":
+        atividade.gabarito_liberado = True
+        atividade.gabarito_liberado_em = timezone.localtime(timezone.now())
+        atividade.save(update_fields=["gabarito_liberado", "gabarito_liberado_em"])
+        NotificacaoServico.criar_para_turma(
+            turma=disciplina.turma,
+            tipo="GABARITO",
+            titulo="Gabarito liberado",
+            mensagem=f"O gabarito de '{atividade.titulo}' foi liberado pelo professor.",
+            url_destino=f"/academico/meu-painel/atividades/{atividade.id}/entregar/",
+        )
+        messages.success(request, "Gabarito liberado para os alunos.")
+    elif decisao == "nao":
+        atividade.gabarito_liberado = False
+        atividade.gabarito_liberado_em = None
+        atividade.save(update_fields=["gabarito_liberado", "gabarito_liberado_em"])
+        messages.info(request, "Liberação manual removida. O gabarito aparecerá automaticamente no fim do prazo.")
+    else:
+        messages.info(request, "Ação cancelada. Nenhuma alteração foi feita.")
+
+    return redirect("listar_atividades", disciplina_id=disciplina.id)
+
 @login_required
 def cadastrar_atividade(request, disciplina_id):
     """Permite ao professor cadastrar nova prova ou trabalho."""
@@ -276,10 +319,17 @@ def lancar_notas_atividade(request, disciplina_id, atividade_id):
             if valor:
                 try:
                     valor_decimal = float(valor.replace(",", "."))
-                    NotaAtividade.objects.update_or_create(
+                    nota_obj, _ = NotaAtividade.objects.update_or_create(
                         aluno=aluno,
                         atividade=atividade,
                         defaults={"valor": valor_decimal, "observacao": obs}
+                    )
+                    NotificacaoServico.criar(
+                        aluno=aluno,
+                        tipo="NOTA",
+                        titulo="Nota lançada",
+                        mensagem=f"Sua nota em '{atividade.titulo}' foi lançada: {nota_obj.valor}.",
+                        url_destino=f"/academico/meu-painel/atividades/{atividade.id}/entregar/",
                     )
                 except ValueError:
                     messages.error(request, f"Valor inválido para o aluno {aluno.nome_completo}")
@@ -334,6 +384,20 @@ def listar_atividades_aluno(request):
         "nome_exibicao": get_nome_exibicao(request.user),
         "foto_perfil_url": get_foto_perfil(request.user),
     })
+
+
+@login_required
+def marcar_notificacao_lida(request, notificacao_id):
+    """Marca notificação do aluno como lida e redireciona ao destino."""
+    if not hasattr(request.user, "aluno"):
+        return redirect("painel_aluno")
+    notificacao = get_object_or_404(NotificacaoAluno, id=notificacao_id, aluno=request.user.aluno)
+    if not notificacao.lida:
+        notificacao.lida = True
+        notificacao.save(update_fields=["lida"])
+    if notificacao.url_destino:
+        return redirect(notificacao.url_destino)
+    return redirect("painel_aluno")
 
 from ..services.atividade_servico import AtividadeServico
 from ..selectors.atividade_seletores import AtividadeSeletores

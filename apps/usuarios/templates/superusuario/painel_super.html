@@ -102,7 +102,7 @@
         <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link" style="text-decoration: none; color: inherit;">
           <header class="calendario-cabecalho">
             <h2 id="cal-mes-nome">{{ mes_nome }}</h2>
-            <span class="calendario-ano" id="cal-ano">{{ ano_filtro }}</span>
+            <span class="calendario-ano" id="cal-ano">{{ ano_calendario }}</span>
           </header>
         </a>
         <div class="calendario-grade" id="cal-grade">
@@ -115,8 +115,8 @@
           <div class="nome-dia">S</div>
 
           {% for d in calendario %}
-            <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}" 
-                 title="{{ d.descricao|default:'' }}">
+            <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}{% if d.tem_evento %} tipo-evento{% endif %}{% if d.aula_suspensa %} tipo-aula_suspensa{% endif %}" 
+                 title="{% if d.status_tooltip %}{{ d.status_tooltip }}{% if d.descricao %} - {{ d.descricao }}{% endif %}{% else %}{{ d.descricao|default:'' }}{% endif %}">
               {{ d.numero }}
             </div>
           {% endfor %}
@@ -125,8 +125,10 @@
         {# Legenda Mini Padronizada #}
         <div class="mini-legenda" style="flex-wrap: wrap;">
             <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-letivo"></i> Letivo</span>
+            <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-evento"></i> Evento</span>
             <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-feriado"></i> Feriado</span>
             <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-prova"></i> Prova</span>
+            <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-suspensa"></i> Aula Suspensa</span>
             <span class="leg-item"><i class="dot-sabado"></i> Sáb. Letivo</span>
             <span class="leg-item"><i class="dot-recesso"></i> Recesso</span>
         </div>

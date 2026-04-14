@@ -37,14 +37,17 @@ function initProfilePhotoEditor() {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
 
-            // Campos disabled não vão no POST — precisa estar habilitado antes do envio.
+            // Campos disabled não vão no POST.
             const emailInput = document.getElementById('id_email');
             if (emailInput) emailInput.disabled = false;
+            const btnEditar = document.getElementById('btn-editar');
+            const btnSalvar = document.getElementById('btn-salvar');
+            const btnCancelar = document.getElementById('btn-cancelar');
+            if (btnEditar) btnEditar.style.display = 'none';
+            if (btnSalvar) btnSalvar.style.display = 'flex';
+            if (btnCancelar) btnCancelar.style.display = 'flex';
 
-            const form = document.getElementById('perfil-form');
-            if (!form) return;
-
-            // Pré-visualização (assíncrona; não bloqueia o envio).
+            // Pré-visualização local. O arquivo só é persistido no submit do form.
             const reader = new FileReader();
             reader.onload = (ev) => {
                 const img = document.getElementById('imagem-perfil');
@@ -61,14 +64,6 @@ function initProfilePhotoEditor() {
                 }
             };
             reader.readAsDataURL(file);
-
-            // `form.submit()` ignora validação e, em alguns casos, comporta-se mal com FILE.
-            // `requestSubmit()` envia multipart corretamente como um envio “real”.
-            if (typeof form.requestSubmit === 'function') {
-                form.requestSubmit();
-            } else {
-                form.submit();
-            }
         });
     }
 }
@@ -109,6 +104,9 @@ function initProfileEditorControls() {
 
     let senhaAberta = false;
     let originalEmail = emailInput ? emailInput.value : '';
+    const imagemPerfil = document.getElementById('imagem-perfil');
+    const originalImagemSrc = imagemPerfil && imagemPerfil.tagName === 'IMG' ? imagemPerfil.getAttribute('src') : null;
+    const hadImage = !!originalImagemSrc;
 
     // Initial state
     if (emailInput) emailInput.disabled = true;
@@ -130,6 +128,31 @@ function initProfileEditorControls() {
             emailInput.value = originalEmail;
             emailInput.disabled = true;
         }
+        const uploadImagemInput = document.getElementById('upload-imagem');
+        if (uploadImagemInput) uploadImagemInput.value = '';
+
+        const currentImagem = document.getElementById('imagem-perfil');
+        if (currentImagem) {
+            if (hadImage && originalImagemSrc) {
+                if (currentImagem.tagName === 'IMG') {
+                    currentImagem.src = originalImagemSrc;
+                } else {
+                    const restoredImg = document.createElement('img');
+                    restoredImg.id = 'imagem-perfil';
+                    restoredImg.className = 'perfil-imagem';
+                    restoredImg.alt = 'Foto de Perfil';
+                    restoredImg.src = originalImagemSrc;
+                    currentImagem.replaceWith(restoredImg);
+                }
+            } else if (currentImagem.tagName === 'IMG') {
+                const placeholder = document.createElement('div');
+                placeholder.id = 'imagem-perfil';
+                placeholder.className = 'perfil-imagem perfil-sem-foto';
+                placeholder.innerHTML = '<i class="fa-solid fa-user"></i>';
+                currentImagem.replaceWith(placeholder);
+            }
+        }
+
         if (senhaAberta) {
             toggleSecaoSenha(false);
         }
@@ -152,7 +175,7 @@ function initProfileEditorControls() {
         if (secaoSenha) secaoSenha.style.display = show ? 'block' : 'none';
         if (textoBtnSenha) textoBtnSenha.textContent = show ? 'Cancelar Alteração' : 'Alterar Senha';
         if (btnMudarSenha) btnMudarSenha.style.backgroundColor = show ? '#dc2626' : '#e5e7eb';
-        
+
         if (!show) {
             const novaSenha = document.getElementById('id_nova_senha');
             const confirmarSenha = document.getElementById('id_confirmar_senha');

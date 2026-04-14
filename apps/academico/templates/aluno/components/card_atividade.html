@@ -53,10 +53,10 @@
 
         <a href="{% url 'entregar_atividade' atv.id %}" class="btn-entregar">
             {% if entrega %}
-                {% if atv.tipo != 'PROVA' or not prazo_expirado %}
-                    <i class="fa-solid fa-pen-to-square"></i> Ver / Editar
+                {% if atv.exibir_gabarito_para_aluno %}
+                    <i class="fa-solid fa-eye"></i> Ver / Gabarito
                 {% else %}
-                    <i class="fa-solid fa-eye"></i> Ver Gabarito
+                    <i class="fa-solid fa-pen-to-square"></i> Ver / Editar
                 {% endif %}
             {% else %}
                 <i class="fa-solid fa-upload"></i> Entregar Agora

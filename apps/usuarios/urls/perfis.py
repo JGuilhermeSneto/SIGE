@@ -29,6 +29,11 @@ urlpatterns = [
         perfis.remover_foto_perfil,
         name="remover_foto_perfil",
     ),
+    path(
+        "editar/perfil/atualizar-foto/",
+        perfis.atualizar_foto_perfil,
+        name="atualizar_foto_perfil",
+    ),
     
     # Professores
     path("professores/", registros.listar_professores, name="listar_professores"),

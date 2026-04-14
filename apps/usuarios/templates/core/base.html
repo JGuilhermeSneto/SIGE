@@ -105,23 +105,11 @@
 
         <!-- AVATAR -->
         <div class="user-avatar" id="user-avatar">
-
-          {% if request.user|has_attr:"aluno" and request.user.aluno.foto and request.user.aluno.foto.url %}
-          <img src="{{ request.user.aluno.foto.url }}" alt="Foto do aluno"
+          {% now "U" as avatar_version %}
+          <img id="user-avatar-img"
+            src="{{ request.user|foto_perfil_url }}?v={{ avatar_version }}"
+            alt="Foto do usuário"
             onerror="this.onerror=null;this.src='{% static 'core/img/avatar_padrao.png' %}'">
-
-          {% elif request.user|has_attr:"professor" and request.user.professor.foto and request.user.professor.foto.url
-          %}
-          <img src="{{ request.user.professor.foto.url }}" alt="Foto do professor"
-            onerror="this.onerror=null;this.src='{% static 'core/img/avatar_padrao.png' %}'">
-
-          {% elif request.user|has_attr:"gestor" and request.user.gestor.foto and request.user.gestor.foto.url %}
-          <img src="{{ request.user.gestor.foto.url }}" alt="Foto do gestor"
-            onerror="this.onerror=null;this.src='{% static 'core/img/avatar_padrao.png' %}'">
-
-          {% else %}
-          <img src="{% static 'core/img/avatar_padrao.png' %}" alt="Avatar padrão">
-          {% endif %}
 
         </div>
 

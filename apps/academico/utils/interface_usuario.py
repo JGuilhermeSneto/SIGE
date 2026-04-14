@@ -34,6 +34,16 @@ def gerar_calendario(ano=None, mes=None):
             evento = eventos_dict.get(d)
             tipo = evento.tipo if evento else ('FIM_SEMANA' if d.weekday() in [5, 6] else 'DI_LETIVO')
             descricao = evento.descricao if evento else ''
+            aula_suspensa = bool(getattr(evento, "aula_suspensa", False))
+            tem_evento = bool(descricao and descricao.strip())
+            if tem_evento and aula_suspensa:
+                status_tooltip = "Evento + Aula suspensa"
+            elif tem_evento:
+                status_tooltip = "Evento"
+            elif aula_suspensa:
+                status_tooltip = "Aula suspensa"
+            else:
+                status_tooltip = ""
             
             calendario_flat.append({
                 "numero": d.day,
@@ -41,6 +51,9 @@ def gerar_calendario(ano=None, mes=None):
                 "vazio": not is_mes_atual,
                 "hoje": is_hoje,
                 "tipo": tipo,
-                "descricao": descricao
+                "descricao": descricao,
+                "aula_suspensa": aula_suspensa,
+                "tem_evento": tem_evento,
+                "status_tooltip": status_tooltip,
             })
     return calendario_flat

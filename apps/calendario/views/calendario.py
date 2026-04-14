@@ -17,6 +17,16 @@ from ..models.calendario import EventoCalendario
 from ..utils.calendario import gerar_base_calendario, get_pascoa
 from apps.usuarios.utils.perfis import is_super_ou_gestor
 
+
+def _as_bool(value):
+    """Converte valores de formulário para boolean."""
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "on", "yes", "sim"}
+
+
 @login_required
 def visualizar_calendario(request):
     """Exibe o calendário acadêmico para todos os usuários."""
@@ -54,7 +64,7 @@ def ajustar_dia_calendario(request):
             data_str = request.POST.get('data')
             tipo = request.POST.get('tipo')
             descricao = request.POST.get('descricao', '')
-            aula_suspensa = request.POST.get('aula_suspensa') == 'true'
+            aula_suspensa = _as_bool(request.POST.get('aula_suspensa'))
             
             data_obj = datetime.strptime(data_str, '%Y-%m-%d').date()
             
@@ -86,19 +96,33 @@ def gerar_base_ano(request):
         
         dados_base = gerar_base_calendario(ano)
         
+        # Gera apenas dias que ainda não existem, preservando ajustes manuais
+        # (ex.: PROVA, eventos locais, suspensões definidas pela gestão).
+        existentes = {
+            ev.data
+            for ev in EventoCalendario.objects.filter(
+                data__year=ano
+            ).only("data")
+        }
+
+        criados = 0
+        preservados = 0
         for data_obj, info in dados_base.items():
-            # Não sobrepõe se já existir algo com descrição manual rica? 
-            # Como é uma ação de 'Gerar Base', vamos atualizar os padrões.
-            EventoCalendario.objects.update_or_create(
+            if data_obj in existentes:
+                preservados += 1
+                continue
+            EventoCalendario.objects.create(
                 data=data_obj,
-                defaults={
-                    'tipo': info['tipo'],
-                    'descricao': info['descricao'],
-                    'aula_suspensa': info['aula_suspensa']
-                }
+                tipo=info['tipo'],
+                descricao=info['descricao'],
+                aula_suspensa=info['aula_suspensa'],
             )
+            criados += 1
             
-        messages.success(request, f"Base do calendário de {ano} gerada com sucesso!")
+        messages.success(
+            request,
+            f"Base de {ano} gerada: {criados} dias criados e {preservados} preservados."
+        )
         from django.urls import reverse
         url = reverse('visualizar_calendario')
         return redirect(f"{url}?ano={ano}&mes={mes}")

@@ -30,6 +30,8 @@
   gap: 1rem;
   margin-bottom: 24px;
   animation: fadeUp .35s ease both;
+  transition: transform .22s ease;
+  will-change: transform;
 }
 
 .header-esquerda {
@@ -116,7 +118,7 @@
 ═════════════════════════════════════════*/
 .cards-resumo {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
   margin-bottom: 24px;
   animation: fadeUp .38s .05s ease both;
@@ -215,6 +217,7 @@
 .card-info:nth-child(1) { animation: fadeUp .38s .08s ease both; }
 .card-info:nth-child(2) { animation: fadeUp .38s .14s ease both; }
 .card-info:nth-child(3) { animation: fadeUp .38s .20s ease both; }
+.card-info:nth-child(4) { animation: fadeUp .38s .26s ease both; }
 
 /* ════════════════════════════════════════
    LAYOUT GERAL
@@ -421,11 +424,19 @@
   height: 100%;
   border-radius: 999px;
   transition: width .7s cubic-bezier(.22, 1, .36, 1);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
 }
 
 .freq-barra.ok      { background: linear-gradient(90deg, #059669, var(--accent-emerald)); }
 .freq-barra.alerta  { background: linear-gradient(90deg, #b45309, var(--accent-amber));   }
 .freq-barra.critica { background: linear-gradient(90deg, #9f1239, #f87171);               }
+
+.disciplina-card {
+  transform-origin: center;
+}
+.disciplina-card:hover {
+  box-shadow: 0 14px 28px rgba(0, 0, 0, .22);
+}
 
 .freq-percentual { font-size: .76rem; font-weight: 700; white-space: nowrap; }
 
@@ -445,16 +456,27 @@
   animation: fadeUp .38s .18s ease both;
 }
 
+.coluna-direita > * {
+  animation: fadeUp .4s ease both;
+}
+.coluna-direita > *:nth-child(1) { animation-delay: .12s; }
+.coluna-direita > *:nth-child(2) { animation-delay: .2s; }
+.coluna-direita > *:nth-child(3) { animation-delay: .28s; }
+
 /* ── Gráfico de desempenho ── */
 .card-grafico {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 16px 18px;
-  transition: border-color .22s;
+  transition: border-color .22s, transform .22s, box-shadow .22s;
 }
 
-.card-grafico:hover { border-color: var(--border-mid); }
+.card-grafico:hover {
+  border-color: var(--border-mid);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
+}
 
 .card-grafico h3 {
   font-size: .65rem;
@@ -465,6 +487,70 @@
   margin-bottom: 14px;
 }
 
+.card-notificacoes h3 i {
+  animation: icon-float 2.8s ease-in-out infinite;
+}
+.contador-notificacoes {
+  color: var(--accent-violet);
+}
+.lista-notificacoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+  padding-right: 2px;
+}
+.item-notificacao {
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  transition: transform .2s, border-color .2s, background .2s;
+}
+.item-notificacao:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-violet);
+}
+.item-notificacao.nao-lida {
+  background: rgba(124, 111, 255, 0.08);
+}
+.item-notificacao-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.item-notificacao-head strong {
+  font-size: .78rem;
+}
+.item-notificacao-head span {
+  font-size: .68rem;
+  color: var(--text-muted);
+}
+.item-notificacao p {
+  margin: 4px 0 0;
+  font-size: .75rem;
+  color: var(--text-secondary);
+}
+.vazio-notificacoes {
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.card-info-link {
+  text-decoration: none;
+}
+.card-icon-portal {
+  background: var(--accent-violet);
+}
+.titulo-portal {
+  color: var(--accent-violet);
+}
+
 /* ── Calendário ── (Estilos unificados via calendario_menu.css) */
 .calendario-box {
   background: var(--bg-surface);
@@ -472,14 +558,22 @@
   border-radius: var(--radius-lg);
   padding: 18px;
   overflow: hidden;
-  transition: all .22s;
+  transition: border-color .22s;
   animation: fadeUp .38s .3s ease both;
 }
 
 .calendario-box:hover { 
   border-color: var(--border-mid); 
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.calendario-link {
+  text-decoration: none;
+  color: inherit;
+}
+.legenda-quebra {
+  flex-wrap: wrap;
+}
+.legenda-quebra .leg-item {
+  margin-bottom: 4px;
 }
 
 /* ════════════════════════════════════════

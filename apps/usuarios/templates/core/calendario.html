@@ -73,8 +73,9 @@
         <div id="calendar-days-wrapper" style="display: contents;">
             <!-- Renderizado dinamicamente pelo calendar.js ou via template tags -->
             {% for dia in dias_calendario %}
-                <div class="calendar-day {% if dia.vazio %}day-not-current-month{% endif %} {% if dia.hoje %}today{% endif %} day-{{ dia.tipo|lower }}"
+                <div class="calendar-day {% if dia.vazio %}day-not-current-month{% endif %} {% if dia.hoje %}today{% endif %} day-{{ dia.tipo|lower }}{% if dia.tem_evento %} day-evento{% endif %}{% if dia.aula_suspensa %} day-aula_suspensa{% endif %}"
                      data-data="{{ dia.data }}"
+                     title="{% if dia.status_tooltip %}{{ dia.status_tooltip }}{% if dia.descricao %} - {{ dia.descricao }}{% endif %}{% else %}{{ dia.descricao|default:'' }}{% endif %}"
                      {% if pode_gerenciar and not dia.vazio %}onclick="openEditModal('{{ dia.data }}', '{{ dia.tipo }}', '{{ dia.descricao }}', '{{ dia.aula_suspensa|lower }}')"{% endif %}>
                     
                     <span class="day-number">{{ dia.numero }}</span>
@@ -88,8 +89,10 @@
     <!-- Legenda -->
     <div class="calendar-legend">
         <div class="legend-item"><div class="legend-dot" style="background: var(--accent-emerald);"></div> Letivo</div>
+        <div class="legend-item"><div class="legend-dot dot-evento"></div> Evento</div>
         <div class="legend-item"><div class="legend-dot" style="background: hsl(350, 85%, 60%);"></div> Feriado</div>
         <div class="legend-item"><div class="legend-dot" style="background: var(--accent-amber);"></div> Prova</div>
+        <div class="legend-item"><div class="legend-dot dot-suspensa"></div> Aula Suspensa</div>
         <div class="legend-item"><div class="legend-dot" style="background: var(--accent-cyan);"></div> Sábado Letivo</div>
         <div class="legend-item"><div class="legend-dot" style="background: var(--accent-violet);"></div> Recesso</div>
         <div class="legend-item"><div class="legend-dot" style="background: var(--text-muted);"></div> Fim de Semana</div>

@@ -1,13 +1,13 @@
 {# ============================================================ #}
-{# template: core/editar_perfil.html                           #}
-{# view   : editar_perfil                                      #}
-{# form   : EditarPerfilForm (fields: email, nova_senha,       #}
-{#          confirmar_senha) — SEM campo "senha_atual"         #}
-{# contexto: form, perfil, foto_atual, foto_perfil_url         #}
-{# FIX: removidos form.senha_atual / id_senha_atual que não    #}
-{#      existem em EditarPerfilForm;                           #}
-{#      seção de senha ajustada para nova_senha + confirmar;   #}
-{#      JS corrigido para não referenciar id_senha_atual.      #}
+{# template: core/editar_perfil.html #}
+{# view : editar_perfil #}
+{# form : EditarPerfilForm (fields: email, nova_senha, #}
+{# confirmar_senha) — SEM campo "senha_atual" #}
+{# contexto: form, perfil, foto_atual, foto_perfil_url #}
+{# FIX: removidos form.senha_atual / id_senha_atual que não #}
+{# existem em EditarPerfilForm; #}
+{# seção de senha ajustada para nova_senha + confirmar; #}
+{# JS corrigido para não referenciar id_senha_atual. #}
 {# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
@@ -34,23 +34,19 @@
 
       {# Exibe foto atual ou placeholder com ícone de usuário #}
       {% if foto_atual %}
-        <img src="{{ foto_atual }}{% if perfil.atualizado_em %}?v={{ perfil.atualizado_em|date:'U' }}{% endif %}"
-             alt="Foto de Perfil"
-             class="perfil-imagem"
-             id="imagem-perfil">
+      <img src="{{ foto_atual }}{% if perfil.atualizado_em %}?v={{ perfil.atualizado_em|date:'U' }}{% endif %}"
+        alt="Foto de Perfil" class="perfil-imagem" id="imagem-perfil">
       {% else %}
-        <div class="perfil-imagem perfil-sem-foto" id="imagem-perfil">
-          <i class="fa-solid fa-user"></i>
-        </div>
+      <div class="perfil-imagem perfil-sem-foto" id="imagem-perfil">
+        <i class="fa-solid fa-user"></i>
+      </div>
       {% endif %}
 
       {# Input de upload oculto; acionado pelo menu de opções #}
       {# movido para dentro do form #}
 
       {# Botão de câmera que abre o menu de opções de foto #}
-      <button type="button"
-               class="btn-foto-acao btn-editar-foto"
-               id="btn-foto-opcoes">
+      <button type="button" class="btn-foto-acao btn-editar-foto" id="btn-foto-opcoes">
         <i class="fa-solid fa-camera"></i>
       </button>
 
@@ -64,16 +60,12 @@
 
         {# Opção: remover foto — exibida apenas se houver foto atual #}
         {% if foto_atual %}
-          <form method="post"
-                action="{% url 'remover_foto_perfil' %}"
-                style="margin:0; padding:0;">
-            {% csrf_token %}
-            <button type="submit"
-                    id="opcao-remover"
-                    style="width:100%; text-align:left;">
-              <i class="fa-solid fa-trash"></i> Remover foto
-            </button>
-          </form>
+        <form method="post" action="{% url 'remover_foto_perfil' %}" style="margin:0; padding:0;">
+          {% csrf_token %}
+          <button type="submit" id="opcao-remover" style="width:100%; text-align:left;">
+            <i class="fa-solid fa-trash"></i> Remover foto
+          </button>
+        </form>
         {% endif %}
 
       </div>
@@ -84,151 +76,131 @@
 
     {# ════════════════ FORMULÁRIO DE DADOS ════════════════ #}
     {# FIX: enctype obrigatório para upload de foto funcionar #}
-    <form class="formulario perfil-detalhes-form"
-          id="perfil-form"
-          method="post"
-          enctype="multipart/form-data">
+    <form class="formulario perfil-detalhes-form" id="perfil-form" method="post" enctype="multipart/form-data"
+      data-photo-url="{% url 'atualizar_foto_perfil' %}">
       {% csrf_token %}
-      
-      <input type="file"
-             id="upload-imagem"
-             name="foto"
-             accept="image/*"
-             style="display:none;">
+
+      <input type="file" id="upload-imagem" name="foto" accept="image/*" style="display:none;">
 
       {# ── Campos de somente leitura: exibidos se perfil existir ── #}
       {% if perfil %}
 
-        {# Nome completo — desabilitado (não editável aqui) #}
-        <div class="linha-form">
-          <div class="coluna-dado full-width">
-            <label>Nome Completo</label>
-            <input type="text"
-                   value="{{ perfil.nome_completo }}"
-                   disabled>
-          </div>
+      {# Nome completo — desabilitado (não editável aqui) #}
+      <div class="linha-form">
+        <div class="coluna-dado full-width">
+          <label>Nome Completo</label>
+          <input type="text" value="{{ perfil.nome_completo }}" disabled>
         </div>
+      </div>
 
-        {# CPF e E-mail — CPF desabilitado; e-mail editável via EditarPerfilForm #}
-        <div class="linha-form">
-          <div class="coluna-dado">
-            <label>CPF</label>
-            <input type="text"
-                   value="{{ perfil.cpf }}"
-                   disabled>
-          </div>
-          <div class="coluna-dado">
-            <label>E-mail</label>
-            {# Campo editável do form; habilitado pelo botão "Editar" via JS #}
-            {{ form.email }}
-          </div>
+      {# CPF e E-mail — CPF desabilitado; e-mail editável via EditarPerfilForm #}
+      <div class="linha-form">
+        <div class="coluna-dado">
+          <label>CPF</label>
+          <input type="text" value="{{ perfil.cpf }}" disabled>
         </div>
+        <div class="coluna-dado">
+          <label>E-mail</label>
+          {# Campo editável do form; habilitado pelo botão "Editar" via JS #}
+          {{ form.email }}
+        </div>
+      </div>
 
-        {# Data de nascimento e telefone — desabilitados #}
-        {% if perfil.data_nascimento %}
-        <div class="linha-form">
-          <div class="coluna-dado">
-            <label>Data de Nascimento</label>
-            <input type="date"
-                   value="{{ perfil.data_nascimento|date:'Y-m-d' }}"
-                   disabled>
-          </div>
-          {% if perfil.telefone %}
-          <div class="coluna-dado">
-            <label>Telefone</label>
-            <input type="text"
-                   value="{{ perfil.telefone }}"
-                   disabled>
-          </div>
-          {% endif %}
+      {# Data de nascimento e telefone — desabilitados #}
+      {% if perfil.data_nascimento %}
+      <div class="linha-form">
+        <div class="coluna-dado">
+          <label>Data de Nascimento</label>
+          <input type="date" value="{{ perfil.data_nascimento|date:'Y-m-d' }}" disabled>
+        </div>
+        {% if perfil.telefone %}
+        <div class="coluna-dado">
+          <label>Telefone</label>
+          <input type="text" value="{{ perfil.telefone }}" disabled>
         </div>
         {% endif %}
+      </div>
+      {% endif %}
 
-        {# Naturalidade — exibida apenas se preenchida #}
-        {% if perfil.naturalidade %}
-        <div class="linha-form">
-          <div class="coluna-dado full-width">
-            <label>Naturalidade</label>
-            <input type="text"
-                   value="{{ perfil.naturalidade }}"
-                   disabled>
-          </div>
+      {# Naturalidade — exibida apenas se preenchida #}
+      {% if perfil.naturalidade %}
+      <div class="linha-form">
+        <div class="coluna-dado full-width">
+          <label>Naturalidade</label>
+          <input type="text" value="{{ perfil.naturalidade }}" disabled>
+        </div>
+      </div>
+      {% endif %}
+
+      {# Endereço (CEP / Estado / Cidade) — exibido se pelo menos um estiver preenchido #}
+      {% if perfil.cep or perfil.estado or perfil.cidade %}
+      <div class="linha-form">
+        {% if perfil.cep %}
+        <div class="coluna-dado">
+          <label>CEP</label>
+          <input type="text" value="{{ perfil.cep }}" disabled>
         </div>
         {% endif %}
-
-        {# Endereço (CEP / Estado / Cidade) — exibido se pelo menos um estiver preenchido #}
-        {% if perfil.cep or perfil.estado or perfil.cidade %}
-        <div class="linha-form">
-          {% if perfil.cep %}
-          <div class="coluna-dado">
-            <label>CEP</label>
-            <input type="text" value="{{ perfil.cep }}" disabled>
-          </div>
-          {% endif %}
-          {% if perfil.estado %}
-          <div class="coluna-dado">
-            <label>Estado</label>
-            <input type="text" value="{{ perfil.estado }}" disabled>
-          </div>
-          {% endif %}
-          {% if perfil.cidade %}
-          <div class="coluna-dado">
-            <label>Cidade</label>
-            <input type="text" value="{{ perfil.cidade }}" disabled>
-          </div>
-          {% endif %}
+        {% if perfil.estado %}
+        <div class="coluna-dado">
+          <label>Estado</label>
+          <input type="text" value="{{ perfil.estado }}" disabled>
         </div>
         {% endif %}
-
-        {# Turma do aluno — exibida apenas para perfis com turma (Aluno) #}
-        {% if perfil.turma %}
-        <div class="linha-form">
-          <div class="coluna-dado full-width">
-            <label>Turma</label>
-            <input type="text"
-                   value="{{ perfil.turma.nome }}{% if perfil.turma.get_turno_display %} • {{ perfil.turma.get_turno_display }}{% endif %}{% if perfil.turma.ano %} • {{ perfil.turma.ano }}{% endif %}"
-                   disabled>
-          </div>
+        {% if perfil.cidade %}
+        <div class="coluna-dado">
+          <label>Cidade</label>
+          <input type="text" value="{{ perfil.cidade }}" disabled>
         </div>
         {% endif %}
+      </div>
+      {% endif %}
 
-        {# Responsável 1 — exibido apenas para alunos com responsavel1 preenchido #}
-        {# FIX: campo é responsavel1/responsavel2 no model, não filiacao_1/filiacao_2 #}
-        {% if perfil.responsavel1 %}
-        <div class="linha-form">
-          <div class="coluna-dado full-width">
-            <label>Responsável 1</label>
-            <input type="text"
-                   value="{{ perfil.responsavel1 }}"
-                   disabled>
-          </div>
+      {# Turma do aluno — exibida apenas para perfis com turma (Aluno) #}
+      {% if perfil.turma %}
+      <div class="linha-form">
+        <div class="coluna-dado full-width">
+          <label>Turma</label>
+          <input type="text"
+            value="{{ perfil.turma.nome }}{% if perfil.turma.get_turno_display %} • {{ perfil.turma.get_turno_display }}{% endif %}{% if perfil.turma.ano %} • {{ perfil.turma.ano }}{% endif %}"
+            disabled>
         </div>
-        {% endif %}
+      </div>
+      {% endif %}
 
-        {% if perfil.responsavel2 %}
-        <div class="linha-form">
-          <div class="coluna-dado full-width">
-            <label>Responsável 2</label>
-            <input type="text"
-                   value="{{ perfil.responsavel2 }}"
-                   disabled>
-          </div>
+      {# Responsável 1 — exibido apenas para alunos com responsavel1 preenchido #}
+      {# FIX: campo é responsavel1/responsavel2 no model, não filiacao_1/filiacao_2 #}
+      {% if perfil.responsavel1 %}
+      <div class="linha-form">
+        <div class="coluna-dado full-width">
+          <label>Responsável 1</label>
+          <input type="text" value="{{ perfil.responsavel1 }}" disabled>
         </div>
-        {% endif %}
+      </div>
+      {% endif %}
+
+      {% if perfil.responsavel2 %}
+      <div class="linha-form">
+        <div class="coluna-dado full-width">
+          <label>Responsável 2</label>
+          <input type="text" value="{{ perfil.responsavel2 }}" disabled>
+        </div>
+      </div>
+      {% endif %}
 
       {% else %}
-        {# ── Superusuário sem perfil: exibe apenas o campo e-mail ── #}
-        <div class="linha-form">
-          <div class="coluna-dado full-width">
-            <label>E-mail</label>
-            {{ form.email }}
-          </div>
+      {# ── Superusuário sem perfil: exibe apenas o campo e-mail ── #}
+      <div class="linha-form">
+        <div class="coluna-dado full-width">
+          <label>E-mail</label>
+          {{ form.email }}
         </div>
+      </div>
       {% endif %}
 
       {# ════════════════ SEÇÃO DE ALTERAR SENHA ════════════════ #}
-      {# FIX: EditarPerfilForm tem nova_senha e confirmar_senha   #}
-      {#      mas NÃO tem senha_atual — campo removido            #}
+      {# FIX: EditarPerfilForm tem nova_senha e confirmar_senha #}
+      {# mas NÃO tem senha_atual — campo removido #}
       <div class="secao-senha" id="secao-senha" style="display:none;">
         <h3 style="margin-bottom:20px; color:#333; font-size:1.2rem;">
           Alterar Senha
@@ -240,8 +212,7 @@
             <label>Nova Senha</label>
             <div class="input-com-toggle">
               {{ form.nova_senha }}
-              <span class="toggle-senha"
-                    onclick="toggleSenha('id_nova_senha')">
+              <span class="toggle-senha" onclick="toggleSenha('id_nova_senha')">
                 <i class="fa-solid fa-eye"></i>
               </span>
             </div>
@@ -252,8 +223,7 @@
             <label>Confirmar Senha</label>
             <div class="input-com-toggle">
               {{ form.confirmar_senha }}
-              <span class="toggle-senha"
-                    onclick="toggleSenha('id_confirmar_senha')">
+              <span class="toggle-senha" onclick="toggleSenha('id_confirmar_senha')">
                 <i class="fa-solid fa-eye"></i>
               </span>
             </div>
@@ -266,9 +236,9 @@
       {% if form.errors %}
       <div class="mensagens-erro">
         {% for field, errors in form.errors.items %}
-          {% for error in errors %}
-            <p class="erro">{{ error }}</p>
-          {% endfor %}
+        {% for error in errors %}
+        <p class="erro">{{ error }}</p>
+        {% endfor %}
         {% endfor %}
       </div>
       {% endif %}
@@ -288,18 +258,12 @@
         </button>
 
         {# Botão salvar — oculto até entrar em modo edição #}
-        <button type="submit"
-                class="btn-acao salvar"
-                id="btn-salvar"
-                style="display:none;">
+        <button type="submit" class="btn-acao salvar" id="btn-salvar" style="display:none;">
           <i class="fa-solid fa-check"></i> Salvar
         </button>
 
         {# Botão cancelar — oculto até entrar em modo edição #}
-        <button type="button"
-                class="btn-acao cancelar"
-                id="btn-cancelar"
-                style="display:none;">
+        <button type="button" class="btn-acao cancelar" id="btn-cancelar" style="display:none;">
           <i class="fa-solid fa-xmark"></i> Cancelar
         </button>
 
@@ -317,15 +281,15 @@
 {{ block.super }}
 <script src="{% static 'core/js/profile_editor.js' %}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const emailInput = document.getElementById('id_email');
-        if (emailInput) {
-            emailInput.style.cssText = 'width:100%; padding:10px 0; border:none; border-bottom:2px solid #e5e7eb; border-radius:0; font-size:1rem; color:#333; background:transparent;';
-        }
-        ['id_nova_senha', 'id_confirmar_senha'].forEach(function (id) {
-            const el = document.getElementById(id);
-            if (el) el.style.cssText = 'width:100%; padding:12px 40px 12px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:1rem;';
-        });
+  document.addEventListener('DOMContentLoaded', function () {
+    const emailInput = document.getElementById('id_email');
+    if (emailInput) {
+      emailInput.style.cssText = 'width:100%; padding:10px 0; border:none; border-bottom:2px solid #e5e7eb; border-radius:0; font-size:1rem; color:#333; background:transparent;';
+    }
+    ['id_nova_senha', 'id_confirmar_senha'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.style.cssText = 'width:100%; padding:12px 40px 12px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:1rem;';
     });
+  });
 </script>
 {% endblock %}

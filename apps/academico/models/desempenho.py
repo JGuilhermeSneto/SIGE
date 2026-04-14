@@ -96,5 +96,33 @@ class NotaAtividade(models.Model):
     def __str__(self):
         return f"{self.aluno} - {self.atividade.titulo}: {self.valor if self.valor is not None else 'N/A'}"
 
+
+class NotificacaoAluno(models.Model):
+    """Notificações exibidas para alunos no painel."""
+
+    TIPO_CHOICES = [
+        ("NOTA", "Nota lançada"),
+        ("CHAMADA", "Chamada"),
+        ("CORRECAO", "Correção"),
+        ("GABARITO", "Gabarito"),
+    ]
+
+    aluno = models.ForeignKey("usuarios.Aluno", on_delete=models.CASCADE, related_name="notificacoes")
+    tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
+    titulo = models.CharField(max_length=120)
+    mensagem = models.CharField(max_length=255)
+    url_destino = models.CharField(max_length=255, blank=True)
+    lida = models.BooleanField(default=False)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "core_notificacaoaluno"
+        ordering = ["-criado_em"]
+        verbose_name = "Notificação do aluno"
+        verbose_name_plural = "Notificações dos alunos"
+
+    def __str__(self):
+        return f"{self.aluno.nome_completo} - {self.titulo}"
+
 # Mantendo o alias Presenca para compatibilidade
 Presenca = Frequencia

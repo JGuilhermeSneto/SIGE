@@ -298,6 +298,50 @@
 
 .day-recesso { border-left: 4px solid var(--accent-violet); opacity: 0.8; }
 .day-recesso .day-status { background: var(--accent-violet); }
+.day-evento {
+  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45);
+}
+.day-aula_suspensa {
+  outline: 1px dashed rgba(96, 165, 250, 0.85);
+  outline-offset: -2px;
+}
+.day-aula_suspensa .day-status {
+  background: hsl(221, 83%, 63%);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.75);
+}
+.calendar-day.day-evento::after,
+.calendar-day.day-aula_suspensa::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-elevated);
+  z-index: 2;
+}
+.calendar-day.day-evento::after {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+}
+.calendar-day.day-aula_suspensa::after {
+  background: hsl(221, 83%, 63%);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.75);
+}
+.calendar-day.day-evento.day-aula_suspensa::before {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  right: 20px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-elevated);
+  background: var(--accent-emerald);
+  box-shadow: 0 0 8px rgba(52, 211, 153, 0.7);
+  z-index: 2;
+}
 
 /* Mini Calendar Status Indicators (.dia) */
 .calendario-cabecalho {
@@ -350,6 +394,7 @@
     border-radius: 6px;
     transition: all 0.2s;
     cursor: pointer;
+    position: relative;
 }
 
 .dia:hover:not(.vazio):not(.atual) {
@@ -374,6 +419,32 @@
 .dia.tipo-recesso { color: var(--accent-violet) !important; opacity: 0.7; }
 .dia.tipo-fim_semana { color: var(--text-muted); }
 .dia.tipo-di_letivo { color: var(--accent-emerald); }
+.dia.tipo-evento {
+  box-shadow: inset 0 0 0 1px rgba(52, 211, 153, 0.45);
+}
+.dia.tipo-aula_suspensa {
+  border-bottom: 2px dashed rgba(96, 165, 250, 0.95);
+}
+.dia.tipo-evento::after,
+.dia.tipo-aula_suspensa::before {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  bottom: 3px;
+  border: 1px solid rgba(15, 23, 41, 0.9);
+}
+.dia.tipo-evento::after {
+  right: 3px;
+  background: var(--accent-emerald);
+  box-shadow: 0 0 6px rgba(52, 211, 153, 0.7);
+}
+.dia.tipo-aula_suspensa::before {
+  left: 3px;
+  background: hsl(221, 83%, 63%);
+  box-shadow: 0 0 6px rgba(96, 165, 250, 0.75);
+}
 
 .day-fim_semana { background: var(--bg-surface); opacity: 0.6; }
 .day-not-current-month { opacity: 0.2; cursor: default; }
@@ -417,6 +488,8 @@
 .dot-prova { background: var(--accent-amber); box-shadow: 0 0 6px rgba(251, 191, 36, 0.4); }
 .dot-sabado { background: var(--accent-cyan); box-shadow: 0 0 6px rgba(34, 211, 238, 0.4); }
 .dot-recesso { background: var(--accent-violet); box-shadow: 0 0 6px rgba(139, 92, 246, 0.4); }
+.dot-evento { background: var(--accent-emerald); box-shadow: 0 0 6px rgba(52, 211, 153, 0.4); }
+.dot-suspensa { background: hsl(221, 83%, 63%); box-shadow: 0 0 6px rgba(96, 165, 250, 0.65); }
 
 /* Legend */
 .calendar-legend {
