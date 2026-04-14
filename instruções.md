@@ -72,5 +72,4 @@ Para confirmar que o banco está sendo atualizado corretamente:
 
 SHOW TABLES;
 SELECT * FROM nome_da_tabela;
-
 📌 As alterações feitas no Django refletem automaticamente no banco de dados.

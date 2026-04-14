@@ -1,5 +1,12 @@
+"""
+Constantes de domínio compartilhadas (horários por turno).
+
+O que é: dicionário ``HORARIOS`` usado na montagem de grades e telas que
+exibem blocos de aula por manhã/tarde/noite.
+"""
+
 # =====================================================================
-# Constantes
+# Grade horária — faixas exibidas na UI
 # =====================================================================
 
 HORARIOS = {

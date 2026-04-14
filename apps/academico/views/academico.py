@@ -1,3 +1,10 @@
+"""
+Views de cadastro e consulta acadêmica: turmas, disciplinas, atividades, questões.
+
+O que é: maior volume de telas do professor/gestor sobre o modelo em
+``models.academico`` (CRUD + fluxos de atividade e entrega).
+"""
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
@@ -171,7 +178,6 @@ def disciplinas_professor(request):
     anos_disponiveis = list(Turma.objects.filter(disciplinas__professor=professor).values_list("ano", flat=True).distinct().order_by("-ano")) or [timezone.now().year]
     ano_filtro, anos_disponiveis = _get_ano_filtro_professor(request, anos_disponiveis, timezone.now().year)
 
-    from ..models import Aluno
     turmas = Turma.objects.filter(disciplinas__professor=professor, ano=ano_filtro).distinct().order_by("nome")
     turmas_detalhadas = [{
         "turma": t, "disciplinas_count": Disciplina.objects.filter(turma=t, professor=professor).count(), "alunos_count": Aluno.objects.filter(turma=t).count(), "turno_display": t.get_turno_display(),

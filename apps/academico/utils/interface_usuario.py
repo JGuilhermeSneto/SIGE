@@ -1,3 +1,10 @@
+"""
+Montagem de dados de calendário para dashboards (grade visual mensal).
+
+O que é: lê ``EventoCalendario`` e monta estrutura consumida pelos templates
+de painel e pela view principal do app ``calendario``.
+"""
+
 import calendar
 from django.utils.timezone import now
 

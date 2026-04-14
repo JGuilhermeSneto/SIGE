@@ -7,7 +7,6 @@ django-settings-module=notas.settings
 
 [DESIGN]
 max-module-lines=2000
-
 [MESSAGES CONTROL]
 disable=
     C0301, # line-too-long

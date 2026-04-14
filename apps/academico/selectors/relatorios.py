@@ -1,3 +1,9 @@
+"""
+Consultas complexas só leitura para relatórios (métricas, agregações ORM).
+
+O que é: camada “selector” para manter views finas e SQL/ORM reutilizável.
+"""
+
 from django.db.models import Count, Q, Avg, F
 from django.utils import timezone
 from apps.usuarios.models.perfis import Aluno, Professor, Gestor

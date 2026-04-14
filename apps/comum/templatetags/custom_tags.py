@@ -1,3 +1,10 @@
+"""
+Filtros de template reutilizáveis (``get_item``, ``has_attr``, ``unlocalize``).
+
+O que é: biblioteca registrada em ``settings.TEMPLATES`` como ``custom_tags``;
+permite lógica simples nos HTML sem poluir as views.
+"""
+
 from django import template
 
 register = template.Library()

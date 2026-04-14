@@ -1,3 +1,10 @@
+"""
+Modelos de desempenho: frequência, notas, entregas e rubricas de avaliação.
+
+O que é: registra o que o professor lança e o que o sistema usa para situação
+final (média + frequência).
+"""
+
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 

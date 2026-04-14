@@ -1,3 +1,10 @@
+"""
+Regras de negócio transacionais: entrega de atividade, respostas, notas de atividade.
+
+O que é: camada de serviço chamada pelas views para persistir vários modelos
+de forma consistente.
+"""
+
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from ..models.academico import (

@@ -1,3 +1,10 @@
+"""
+Formulários do domínio acadêmico (turma, disciplina, atividades).
+
+O que é: validações de negócio na camada de formulário antes de persistir
+em ``models.academico``.
+"""
+
 from django import forms
 from apps.comum.forms.base_formularios import BaseModelForm
 from ..models.academico import Turma, Disciplina, AtividadeProfessor

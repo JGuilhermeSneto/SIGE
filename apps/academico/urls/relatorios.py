@@ -1,3 +1,10 @@
+"""
+Rotas do módulo de relatórios (painel, PDF, busca AJAX de alunos).
+
+O que é: prefixo ``/academico/relatorios/`` definido no ``urls`` do app;
+delega a ``views.relatorios``.
+"""
+
 from django.urls import path
 from ..views import relatorios
 

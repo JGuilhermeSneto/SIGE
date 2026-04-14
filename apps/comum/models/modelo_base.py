@@ -1,3 +1,10 @@
+"""
+Modelos abstratos e choices compartilhados (pessoa, endereço, UF, turno).
+
+O que é: ``PessoaBase`` concentra campos comuns; outros apps herdam via
+``Meta: abstract = True`` para evitar duplicação de colunas.
+"""
+
 from django.db import models
 from django.core.validators import RegexValidator
 

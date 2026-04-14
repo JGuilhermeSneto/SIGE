@@ -1,3 +1,10 @@
+"""
+Views HTTP do calendário: página mensal, AJAX de ajuste de dias, geração de base anual.
+
+O que é: combina ``EventoCalendario`` com funções puras em ``utils.calendario``
+e o mini-calendário de ``academico.utils.interface_usuario``.
+"""
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import JsonResponse

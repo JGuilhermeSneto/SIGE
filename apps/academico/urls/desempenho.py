@@ -1,3 +1,10 @@
+"""
+Rotas de notas e frequência (lançamento e histórico por disciplina).
+
+O que é: expõe as views em ``views.vida_escolar`` para professores registrarem
+chamada e notas vinculadas a ``Disciplina``.
+"""
+
 from django.urls import path
 from ..views import vida_escolar
 

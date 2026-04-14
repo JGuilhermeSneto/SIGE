@@ -1,5 +1,6 @@
 {% load static %}
 {% load custom_tags %}
+{# base.html — template-mãe do SIGE: HTML comum, design system, navbar e blocos title/content/extra_js. #}
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -177,6 +178,9 @@
       <a href="{% url 'painel_relatorios' %}" class="{% if request.resolver_match.url_name == 'painel_relatorios' %}ativo{% endif %}">
         <i class="fa-solid fa-chart-line"></i> Relatórios
       </a>
+      <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
+        <i class="fa-solid fa-bolt"></i> App React
+      </a>
 
       {% elif request.user|has_attr:"professor" %}
       <a href="{% url 'painel_professor' %}" class="{% if request.resolver_match.url_name == 'painel_professor' %}ativo{% endif %}">
@@ -187,6 +191,9 @@
       </a>
       <a href="{% url 'visualizar_calendario' %}" class="{% if request.resolver_match.url_name == 'visualizar_calendario' %}ativo{% endif %}">
         <i class="fa-solid fa-calendar-days"></i> Calendário
+      </a>
+      <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
+        <i class="fa-solid fa-bolt"></i> App React
       </a>
       {% endif %}
 

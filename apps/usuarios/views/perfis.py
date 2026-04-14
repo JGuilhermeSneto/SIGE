@@ -1,3 +1,10 @@
+"""
+Views de autoatendimento: editar perfil, trocar/remover foto.
+
+O que é: opera sobre o ``User`` logado e o objeto de perfil retornado por
+``get_user_profile``.
+"""
+
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
@@ -27,13 +34,20 @@ def editar_perfil(request):
             if foto:
                 if not perfil and user.is_superuser:
                     from ..models.perfis import Gestor
+
                     perfil = Gestor.objects.create(
-                        user=user, 
-                        nome_completo=user.first_name or user.username or user.email or 'Super Usuário', 
-                        cargo='diretor'
+                        user=user,
+                        nome_completo=user.first_name
+                        or user.username
+                        or user.email
+                        or "Super Usuário",
+                        cargo="diretor",
                     )
-                
+
                 if perfil:
+                    # Remove o arquivo antigo para liberar storage e evitar bloqueio (ex.: Windows).
+                    if perfil.foto:
+                        perfil.foto.delete(save=False)
                     perfil.foto = foto
                     perfil.save()
 

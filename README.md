@@ -15,16 +15,13 @@
 <br/>
 
 ![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-green?style=flat-square)
-![Build](https://img.shields.io/badge/Build-Passing-brightgreen?style=flat-square)
-![Linting](https://img.shields.io/badge/Quality-10%2F10-blueviolet?style=flat-square)
-![Coverage](https://img.shields.io/badge/Coverage-100%25-orange?style=flat-square)
-![MyPy](https://img.shields.io/badge/Types-Strict-blue?style=flat-square)
+![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=flat-square)
 
 <br/>
 
-> **SIGE** não é apenas um sistema de gestão — é uma infraestrutura completa de software focada em escalabilidade, segurança e experiência do usuário. Desenvolvido com uma arquitetura **MTV** robusta, integra automação acadêmica com padrões modernos de UI/UX.
+> **SIGE** centraliza a gestão acadêmica em uma aplicação **Django** (arquitetura **MTV**), com perfis de aluno, professor e gestor, frequência, notas, calendário e relatórios. A interface usa um **design system** próprio em CSS (tokens, componentes e animações) e JavaScript para interações (calendário, frequência, formulários).
 
-[🚀 Primeiros Passos](#-instalação-e-configuração) • [🏗️ Arquitetura](#-topografia-do-projeto) • [🧠 Regras de Negócio](#-lógica-de-negócio-e-algoritmos) • [🎨 Design System](#-design-system--uiux) • [🧪 QA & CI/CD](#-garantia-de-qualidade--devops) • [🛣️ Roadmap](#-futuras-melhorias-e-roadmap)
+[Visão geral](#1-visão-geral-e-módulos) · [Regras de negócio](#2-lógica-de-negócio-e-algoritmos) · [Stack](#3-stack-tecnológica--dependências) · [Topografia](#4-topografia-do-projeto) · [Design system](#5-design-system--uiux) · [CI/CD](#6-garantia-de-qualidade--devops) · [Roadmap](#7-futuras-melhorias-e-roadmap) · [Instalação](#8-instalação-setup-rápido) · [Front-end Vite](#9-front-end-vite-em-paralelo)
 
 </div>
 
@@ -32,174 +29,198 @@
 
 ## 📖 1. Visão Geral e Módulos
 
-O SIGE resolve a fragmentação de dados em instituições de ensino, centralizando o fluxo de vida acadêmica desde a matrícula até a emissão de relatórios consolidados.
+O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo matrículas, turmas, disciplinas, lançamento de notas e frequência até relatórios consolidados.
 
-### 🧩 Decomposição de Módulos (Meticulosa)
+### 🧩 Aplicativos Django (`apps/`)
 
-| Módulo | Escopo Técnico | Cobertura Funcional |
+| Módulo | Escopo técnico | Cobertura funcional |
 | :--- | :--- | :--- |
-| **🛡️ Gestão de Identidade (IAM)** | Autenticação RBAC personalizada. | Controle de perfis, reset de senha seguro, gestão de fotos via `Pillow`. |
-| **🏫 Infraestrutura Acadêmica** | Gestão de entidades relacionais. | CRUD completo de Turmas, Disciplinas e Grade Horária com detecção de conflitos. |
-| **📊 Engine de Desempenho** | Algoritmos de média e status. | Lançamento de notas bimestrais com processamento automático de situação acadêmica. |
-| **✅ Attendance System** | Rastreabilidade de presença. | Chamada diária vinculada à disciplina, histórico retroativo e estatística de evasão. |
-| **📱 Front-End Engine** | Design System Proprietário. | Dashboards centralizados, micro-animações CSS e arquitetura responsiva multinível. |
+| **`apps.usuarios`** | Autenticação, perfis e painéis por papel. | Login, reset de senha, cadastro/edição de perfis, dashboards (superusuário, gestor, professor, aluno). |
+| **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, grade horária, notas, frequência, atividades, relatórios. |
+| **`apps.calendario`** | Calendário acadêmico e eventos. | Visualização mensal, integração com utilitários de grade em `apps.academico`. |
+| **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, **estáticos globais** em `static/core/`. |
 
 ---
 
 ## 🧠 2. Lógica de Negócio e Algoritmos
 
-O núcleo do sistema opera sob regras estritas definidas no backend:
+As regras de situação acadêmica estão centralizadas em `apps/academico/utils/academico.py` (constantes e funções como `_calcular_situacao_nota`).
 
-### ⚖️ Algoritmo de Situação Acadêmica
-O sistema avalia automaticamente o desempenho do aluno seguindo o fluxo definido em `core/utils/academico.py`:
-1.  **Frequência Crítica**: Se `Presença < 75%`, o status é fixado em `Reprovado por Falta`, ignorando a média.
-2.  **Média de Aprovação**: `Média >= 7.0` e `Freq >= 75%` ➔ `Aprovado`.
-3.  **Recuperação**: `Média >= 5.0` e `Média < 7.0` ➔ `Recuperação`.
-4.  **Reprovação**: `Média < 5.0` ➔ `Reprovado`.
+### ⚖️ Situação acadêmica (resumo)
 
-### 📅 Geração de Calendário (Sincronia JS/Python)
-- **Backend**: `visualizar_calendario()` em `core/views/calendario.py` gerencia a matriz de dias.
-- **Frontend**: Utiliza JavaScript puro (`static/core/js/ui_utils.js`) para garantir interatividade instantânea.
+1. **Frequência crítica**: se presença **&lt; 75%**, status **Reprovado por Falta** (a média não desfaz essa regra).
+2. **Aprovação**: média **≥ 7,0** e frequência **≥ 75%** → **Aprovado**.
+3. **Recuperação**: média **≥ 5,0** e **&lt; 7,0** → **Recuperação**.
+4. **Reprovação**: média **&lt; 5,0** → **Reprovado**.
 
-### 🔐 Matriz de Permissões (RBAC)
+### 📅 Calendário
 
-| Perfil | Dashboard | Gerir Alunos | Gerir Prof. | Gerir Turmas | Lançar Notas | Lançar Freq. | Relatórios |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **👑 SuperUser** | Total | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **🏛️ Gestor** | Admin | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **👨‍🏫 Professor** | Academic | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| **🎓 Aluno** | Personal | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+- **View principal**: `visualizar_calendario` em `apps/calendario/views/calendario.py` (monta o mês/ano e usa `gerar_calendario` de `apps.academico.utils.interface_usuario`).
+- **Frontend**: JavaScript em `apps/comum/static/core/js/` (por exemplo `ui_utils.js`, `calendar.js`).
+
+### 🔐 Matriz de permissões (RBAC)
+
+| Perfil | Painel amplo | Alunos / prof. / turmas | Notas | Frequência | Relatórios |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Superusuário** | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **Gestor** | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **Professor** | — | ❌ | ✅ | ✅ | ✅ |
+| **Aluno** | — | ❌ | ❌ | ❌ | ❌ |
+
+*(Detalhes finos estão nos decorators e checagens em cada view.)*
 
 ---
 
 ## 🛠️ 3. Stack Tecnológica & Dependências
 
-O SIGE é construído sobre um ecossistema de 36 bibliotecas de alto nível.
+Tudo fica em **um único** `requirements.txt`, com blocos comentados (execução × desenvolvimento/CI). Basta `pip install -r requirements.txt` em qualquer máquina.
 
 <details>
-<summary><b>📦 Clique para ver o catálogo completo de dependências</b></summary>
+<summary><b>📦 Catálogo resumido (ver o próprio <code>requirements.txt</code>)</b></summary>
 
-#### Core & Web
-*   [Django 6.0](https://www.djangoproject.com/): Framework Web de alta performance (The "Ridiculously Fast" framework).
-*   [python-decouple](https://pypi.org/project/python-decouple/): Abstração de variáveis de ambiente para segurança.
-*   [python-dotenv](https://pypi.org/project/python-dotenv/): Suporte a arquivos `.env`.
+#### Core
+* [Django 6.0.x](https://www.djangoproject.com/)
+* [python-decouple](https://pypi.org/project/python-decouple/) — variáveis de ambiente e `.env`
+* [python-dotenv](https://pypi.org/project/python-dotenv/)
 
-#### Banco de Dados & Persistence
-*   [mysqlclient](https://pypi.org/project/mysqlclient/): Driver nativo em C para integração MySQL de baixa latência.
-*   [sqlparse](https://pypi.org/project/sqlparse/): Processamento e formatação de SQL.
+#### Banco e relatórios
+* [mysqlclient](https://pypi.org/project/mysqlclient/) — MySQL em produção
+* [Pillow](https://python-pillow.org/) — imagens (ex.: perfil)
+* [ReportLab](https://www.reportlab.com/) — PDFs
 
-#### UI & Ativos
-*   [Pillow](https://python-pillow.org/): Processamento de imagens (fotos de perfil).
-*   [ReportLab](https://www.reportlab.com/): Motor de geração de PDFs para boletins e relatórios.
-*   [django-widget-tweaks](https://github.com/jazzband/django-widget-tweaks): Renderização avançada de formulários HTML5.
+#### Templates e formulários
+* [django-widget-tweaks](https://github.com/jazzband/django-widget-tweaks)
 
-#### Garantia de Qualidade (QA)
-*   [Black](https://github.com/psf/black): O formatador de código "uncompromising".
-*   [Flake8](https://flake8.pycqa.org/): Validação de estilo PEP8.
-*   [Mypy](http://mypy-lang.org/): Verificação de tipagem estática.
-*   [Pylint](https://pylint.org/): Análise profunda de erros e qualidade de código.
-*   [Coverage](https://coverage.readthedocs.io/): Medição de cobertura de testes unitários.
-*   [isort](https://pycqa.github.io/isort/): Organização automática de imports.
+#### Qualidade de código
+* Black, Flake8, isort, Pylint, pylint-django, Mypy (django-stubs), Coverage
 
 </details>
+
+O `config/settings.py` registra **REST framework** e **CORS** em `INSTALLED_APPS`; os pacotes correspondentes já estão no `requirements.txt`.
 
 ---
 
 ## 🏗️ 4. Topografia do Projeto
 
-Mapeamento meticuloso da estrutura de arquivos:
-
-| Diretório/Arquivo | Função Crítica |
+| Caminho | Função |
 | :--- | :--- |
-| `core/models.py` | Definição do Esquema de Banco e Integridade de Dados. |
-| `core/views.py` | Lógica Central de Negócio e Roteamento de Dashboards. |
-| `core/templatetags/` | Filtros customizados de auxílio a templates (`get_item`, `dict_get`). |
-| `core/static/core/css/` | **Design System**: Global CSS, Variáveis e Animações. |
-| `notas/settings.py` | Configurações de segurança distribuídas via `decouple`. |
-| `.github/workflows/` | Automatização do Pipeline de Continuous Integration. |
+| `config/` | Pacote de configuração Django: `settings.py`, `urls.py` (rotas `admin/`, `academico/`, `calendario/`, raiz para `apps.usuarios`), `wsgi.py`, `asgi.py`. |
+| `manage.py` | Entrada da CLI; `DJANGO_SETTINGS_MODULE=config.settings`. |
+| `apps/usuarios/` | Models de perfil, views de auth e painéis, templates em `templates/`, URLs na raiz do site. |
+| `apps/academico/` | Models (`models/`), views (`views/`), forms, URLs sob prefixo `/academico/`, templates acadêmicos. |
+| `apps/calendario/` | Models e views do calendário; URLs sob `/calendario/`. |
+| `apps/comum/` | Formulários base, templatetags (`custom_tags`, `get_item`), estáticos em `static/core/`. |
+| `.env` / `.env.example` | Segredos e opções de banco (não versionar o `.env`). |
+| `.github/workflows/` | Pipeline CI (testes, migrations MySQL, flake8, pylint, mypy, coverage). |
 
 ---
 
 ## 🎨 5. Design System & UI/UX
 
-O SIGE implementa uma interface **Premium Dark Mode** baseada em tokens de design:
+Interface em modo escuro baseada em tokens CSS em `apps/comum/static/core/css/design_system/tokens.css`.
 
-### 💠 Design Tokens (Variáveis CSS)
-*   `--accent-cyan`: `#22d3ee` (Identidade do Professor)
-*   `--accent-violet`: `#7c6fff` (Identidade do Superusuário)
-*   `--bg-base`: `#090e1a` (Background Profundo)
+### 💠 Exemplos de tokens
+* `--accent-cyan` — identidade professor
+* `--accent-violet` — destaque superusuário
+* `--bg-base` — fundo principal
 
-### 📽️ Catálogo de Animações
-*   `iconFloat`: Translação suave em Y para feedback interativo em cards.
-*   `diaAtualPulse`: Efeito de pulsação luminosa no calendário para o dia hoje.
-*   `fadeUp`: Transição suave de entrada para componentes asíncronos.
+### 📽️ Animações (`animations.css`)
+* `iconFloat`, `diaAtualPulse`, `fadeUp`, entre outras usadas nos templates base.
 
 ---
 
 ## 🧪 6. Garantia de Qualidade & DevOps
 
-Nossa pipeline de CI/CD não permite a entrada de código que não atinja os critérios:
+No GitHub Actions (`.github/workflows/django.yml`), em **push** e **pull request** para `main`:
 
-```bash
-# 1. Conformidade Estética
-flake8 .
-black --check .
+* Serviço **MySQL 8** e `python manage.py migrate`
+* `coverage run --source='.' manage.py test` e `coverage report`
+* `flake8 .`, `pylint **/*.py`, `mypy .`
 
-# 2. Tipagem e Integridade
-mypy .
-pylint core/
+**Python na CI:** 3.12 (o projeto também pode ser desenvolvido com 3.11+ localmente).
 
-# 3. Testes e Cobertura
-coverage run manage.py test
-coverage report -m
-```
-
-A cada `push` na branch `main`, o **GitHub Actions** valida esses 3 pilares. Falhas bloqueiam o merge automaticamente.
+Localmente você pode ainda usar **Black** e **isort** (presentes no `requirements.txt`) antes de commitar.
 
 ---
 
 ## 🛣️ 7. Futuras Melhorias e Roadmap
 
-O projeto está em constante evolução. Nossos próximos passos são:
-
-*   [ ] **API RESTful**: Implementação de Django Rest Framework para integração com apps mobile.
-*   [ ] **Dashboard de BI**: Gráficos analíticos de desempenho escolar usando `Chart.js`.
-*   [ ] **Notificações Push**: Alertas em tempo real sobre notas e faltas.
-*   [ ] **Multi-Tenancy**: Suporte para múltiplas escolas em uma única instância do banco.
+* [ ] **API**: consolidar e documentar endpoints com Django REST Framework.
+* [ ] **BI / dashboards**: gráficos de desempenho (ex.: Chart.js).
+* [ ] **Notificações**: alertas sobre notas e faltas.
+* [ ] **Multi-tenant**: várias escolas na mesma instância, se necessário.
 
 ---
 
 ## 🚀 8. Instalação (Setup Rápido)
 
-1.  **Clone & VENV**:
+1. **Clone e ambiente virtual**
     ```bash
     git clone https://github.com/JGuilhermeSneto/SIGE.git
     cd SIGE
     python -m venv venv
-    source venv/bin/activate # Ou venv\Scripts\activate no Windows
+    # Linux/macOS: source venv/bin/activate
+    # Windows: venv\Scripts\activate
     ```
-2.  **Config**:
+2. **Dependências e variáveis** (lista completa no único `requirements.txt` na raiz)
     ```bash
     pip install -r requirements.txt
-    cp .env.example .env # Edite com suas credenciais
+    copy .env.example .env   # Windows; em Unix: cp .env.example .env
     ```
-3.  **Boot**:
+    Edite o `.env` (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, e opcionalmente `DB_*` para MySQL — ver `config/settings.py`).
+3. **Banco e servidor**
     ```bash
     python manage.py migrate
     python manage.py createsuperuser
     python manage.py runserver
     ```
 
+Para MySQL no ambiente institucional, veja também `instruções.md`.
+
+---
+
+## 🔗 9. Front-end Vite em paralelo
+
+O repositório do **React + Vite** fica em `frontend_SIGE/Frontend_SIGE` (irmão desta pasta `SIGE` no monorepo local). O back expõe **`GET /api/ping/`** (health check) e **`GET /api/dashboard/resumo/`** (totais de turmas/disciplinas e lista de turmas do banco), ambos em `config/api_views.py`, sem autenticação, para o front validar a conexão e exibir dados reais.
+
+### Rodar Django e Vite ao mesmo tempo
+
+1. **Terminal 1 — Django** (na pasta `SIGE`):
+   ```bash
+   python manage.py runserver
+   ```
+   O servidor padrão fica em `http://127.0.0.1:8000/`. O endpoint de teste: `http://127.0.0.1:8000/api/ping/`.
+
+2. **Terminal 2 — Vite** (na pasta do front `frontend_SIGE/Frontend_SIGE`):
+   ```bash
+   npm install
+   npm run dev
+   ```
+   O Vite encaminha requisições **`/api`** para `http://127.0.0.1:8000` (veja `vite.config.js`). Com `VITE_API_URL` vazio (padrão), o axios usa URLs relativas e o proxy aplica.
+
+3. Abra a URL que o Vite mostrar (em geral `http://localhost:5173/`). A página deve indicar que o back-end **SIGE** respondeu.
+
+**Sem proxy:** no front, crie `.env` a partir de `.env.example` e defina `VITE_API_URL=http://127.0.0.1:8000`. O CORS do Django já permite origens em desenvolvimento (`CORS_ALLOW_ALL_ORIGINS`); em produção restrinja origens e use HTTPS.
+
+### React dentro do layout SIGE (templates + Vite)
+
+Há uma rota que **reusa o `base.html` real** (menu superior, lateral, design system) e só a área principal é o app React carregado pelo Vite em modo dev:
+
+1. Com **Django** e **Vite** rodando como acima.
+2. Faça login no SIGE e acesse **`http://127.0.0.1:8000/app/vite/`** (ou use o item **App React** no menu lateral, para gestor/superusuário e professor).
+
+O template `apps/usuarios/templates/core/app_vite.html` estende `core/base.html` e injeta `http://127.0.0.1:5173/@vite/client` e `.../src/main.jsx`. A URL do servidor Vite pode ser ajustada com **`VITE_DEV_SERVER_URL`** no `.env` (ver `config/settings.py`). Em produção (`DEBUG=False`), substitua por arquivos estáticos gerados com `npm run build` e referências em `{% static %}`.
+
 ---
 
 ## 👥 Equipe Desenvolvedora
 
-*   **João Batista** — [@JBatista](https://github.com/JBatista)
-*   **José Guilherme** — [@JGuilhermeSneto](https://github.com/JGuilhermeSneto)
-*   **Suanderson Santos** — [@JuniorNascimento2](https://github.com/JuniorNascimento2)
-*   **Israel Cipriano** — [@Israelf1lho](https://github.com/Israelf1lho)
-*   **Pedro Henrique** — [@Henrriks](https://github.com/Henrriks)
-*   **Vanessa Gonçalves** — [@vangoncalves](https://github.com/vangoncalves)
+* **João Batista** — [@JBatista](https://github.com/JBatista)
+* **José Guilherme** — [@JGuilhermeSneto](https://github.com/JGuilhermeSneto)
+* **Suanderson Santos** — [@JuniorNascimento2](https://github.com/JuniorNascimento2)
+* **Israel Cipriano** — [@Israelf1lho](https://github.com/Israelf1lho)
+* **Pedro Henrique** — [@Henrriks](https://github.com/Henrriks)
+* **Vanessa Gonçalves** — [@vangoncalves](https://github.com/vangoncalves)
 
 <br/>
 

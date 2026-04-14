@@ -1,3 +1,10 @@
+"""
+Painéis (dashboards) por tipo de usuário: super/gestor, professor, aluno.
+
+O que é: monta contexto com calendário, turmas, disciplinas e resumos
+acadêmicos reutilizando utilitários do app ``academico``.
+"""
+
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render

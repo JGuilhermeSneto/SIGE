@@ -1,4 +1,12 @@
+"""
+Regras e helpers acadêmicos: situação por média/frequência, grade, notas.
+
+O que é: funções puras e consultas usadas pelas views para montar painéis,
+relatórios e validações de aprovação.
+"""
+
 from apps.comum.utils.constantes import HORARIOS, DIAS_SEMANA
+
 
 def _calcular_situacao_nota(media_final, frequencia_percentual):
     """Define a situação acadêmica do aluno com base na média e na frequência."""

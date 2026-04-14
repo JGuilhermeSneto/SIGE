@@ -1,3 +1,10 @@
+"""
+Rotas de domínio acadêmico “estrutural”: turmas, disciplinas, grade, atividades.
+
+O que é: mapeia URLs ``/academico/...`` para views em ``views.academico`` e
+``views.vida_escolar`` (cadastros e telas de professor/aluno).
+"""
+
 from django.urls import path
 from ..views import academico, vida_escolar
 

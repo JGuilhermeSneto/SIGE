@@ -1,3 +1,10 @@
+"""
+Modelos de entidades acadêmicas: turma, disciplina, grade, atividades.
+
+O que é: núcleo do domínio escolar; relaciona-se com ``usuarios.Professor``/``Aluno``
+e com modelos de desempenho em ``desempenho.py``.
+"""
+
 from django.db import models
 from apps.comum.models.modelo_base import TURNO_CHOICES
 

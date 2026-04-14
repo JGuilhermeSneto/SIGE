@@ -1,3 +1,10 @@
+"""
+Views administrativas: CRUD de professores, alunos, gestores e usuários.
+
+O que é: telas protegidas por ``user_passes_test`` para superusuário/gestor;
+orquestra forms de ``usuarios`` e ``academico`` (ex.: turma no cadastro de aluno).
+"""
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render

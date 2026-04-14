@@ -1,3 +1,10 @@
+"""
+Filtro ``get_item`` para templates (duplicado conceitualmente de ``custom_tags``).
+
+O que é: biblioteca alternativa registrada como ``get_item`` no ``settings``;
+útil para acessar dicionários por chave dinâmica em templates.
+"""
+
 from django import template
 
 register = template.Library()

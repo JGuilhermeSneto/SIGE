@@ -1,3 +1,10 @@
+"""
+Formulários ModelForm para cadastro/edição de Professor, Aluno e Gestor.
+
+O que é: usa ``BaseModelForm`` para receber ``request`` e cria/atualiza
+``User`` + perfil associado com validações de senha quando necessário.
+"""
+
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError

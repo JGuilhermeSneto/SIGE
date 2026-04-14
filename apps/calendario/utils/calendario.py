@@ -1,4 +1,12 @@
+"""
+Funções puras de calendário: Páscoa, geração de grade anual, regras de dia letivo.
+
+O que é: algoritmos sem acesso a ``request``; usados pelas views ao criar/atualizar
+``EventoCalendario`` em lote.
+"""
+
 from datetime import date, timedelta
+
 
 def get_pascoa(ano):
     """Calcula a data do domingo de Páscoa usando o algoritmo de Meeus/Jones/Butcher."""

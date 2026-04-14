@@ -1,3 +1,11 @@
+"""
+Utilitários de filtro (anos letivos, etc.) para views e relatórios.
+
+O que é: normaliza parâmetros de query string em listas consistentes para
+templates e queries.
+"""
+
+
 def _get_anos_filtro(anos_disponiveis, ano_selecionado, ano_atual):
     """Processa a seleção de ano letivo para filtros."""
     try:

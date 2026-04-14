@@ -34,30 +34,40 @@ function initProfilePhotoEditor() {
 
     if (uploadImagemInput) {
         uploadImagemInput.addEventListener('change', (e) => {
-            if (e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const img = document.getElementById('imagem-perfil');
-                    if (img) {
-                        if (img.tagName === 'DIV') {
-                            const newImg = document.createElement('img');
-                            newImg.id = img.id;
-                            newImg.className = img.className;
-                            newImg.src = ev.target.result;
-                            img.replaceWith(newImg);
-                        } else {
-                            img.src = ev.target.result;
-                        }
-                    }
-                    
-                    // Habilita campos obrigatórios e submete o form automaticamente
-                    const emailInput = document.getElementById('id_email');
-                    if (emailInput) emailInput.disabled = false;
-                    
-                    const form = document.getElementById('perfil-form');
-                    if (form) form.submit();
-                };
-                reader.readAsDataURL(e.target.files[0]);
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            // Campos disabled não vão no POST — precisa estar habilitado antes do envio.
+            const emailInput = document.getElementById('id_email');
+            if (emailInput) emailInput.disabled = false;
+
+            const form = document.getElementById('perfil-form');
+            if (!form) return;
+
+            // Pré-visualização (assíncrona; não bloqueia o envio).
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = document.getElementById('imagem-perfil');
+                if (!img || !ev.target || !ev.target.result) return;
+                if (img.tagName === 'DIV') {
+                    const newImg = document.createElement('img');
+                    newImg.id = img.id;
+                    newImg.className = img.className.replace('perfil-sem-foto', '').trim();
+                    newImg.alt = 'Foto de Perfil';
+                    newImg.src = ev.target.result;
+                    img.replaceWith(newImg);
+                } else {
+                    img.src = ev.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+
+            // `form.submit()` ignora validação e, em alguns casos, comporta-se mal com FILE.
+            // `requestSubmit()` envia multipart corretamente como um envio “real”.
+            if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit();
+            } else {
+                form.submit();
             }
         });
     }

@@ -1,3 +1,10 @@
+"""
+Modelos de perfil do SIGE: ``Gestor``, ``Professor``, ``Aluno`` (estendem ``User``).
+
+O que é: cada perfil herda dados pessoais de ``PessoaBase`` e aponta para
+``auth.User``; define papéis e permissões usados nas views e templates.
+"""
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator

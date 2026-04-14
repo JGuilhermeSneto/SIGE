@@ -1,3 +1,10 @@
+"""
+Relatórios consolidados e exportação (ex.: histórico em PDF com ReportLab).
+
+O que é: painel para gestor/superusuário e endpoints AJAX de busca;
+delega agregações a ``selectors.relatorios``.
+"""
+
 import datetime
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse

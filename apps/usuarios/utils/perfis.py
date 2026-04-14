@@ -1,4 +1,12 @@
+"""
+Funções auxiliares de perfil: nome na UI, foto, redirecionamento por papel.
+
+O que é: centraliza regras “quem é esse usuário no SIGE?” para views e
+templates sem repetir ``hasattr``/``getattr`` espalhados.
+"""
+
 from django.templatetags.static import static
+
 
 def get_nome_exibicao(user):
     """Retorna o nome para exibição (Primeiro Sobrenome ou E-mail)."""

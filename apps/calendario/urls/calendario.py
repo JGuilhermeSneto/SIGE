@@ -1,3 +1,10 @@
+"""
+Rotas do calendário acadêmico sob ``/calendario/`` (prefixo do app).
+
+O que é: visualização mensal, geração de base anual e ajustes de dia
+(eventos), implementados em ``apps.calendario.views.calendario``.
+"""
+
 from django.urls import path
 from ..views import calendario
 

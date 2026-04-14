@@ -34,7 +34,7 @@
 
       {# Exibe foto atual ou placeholder com ícone de usuário #}
       {% if foto_atual %}
-        <img src="{{ foto_atual }}"
+        <img src="{{ foto_atual }}{% if perfil.atualizado_em %}?v={{ perfil.atualizado_em|date:'U' }}{% endif %}"
              alt="Foto de Perfil"
              class="perfil-imagem"
              id="imagem-perfil">
@@ -311,21 +311,21 @@
 
 </main>
 
+{% endblock %}
+
 {% block extra_js %}
+{{ block.super }}
 <script src="{% static 'core/js/profile_editor.js' %}"></script>
 <script>
-    // Applying CSS via JS for backwards compatibility (optional, better in CSS file)
     document.addEventListener('DOMContentLoaded', function() {
         const emailInput = document.getElementById('id_email');
         if (emailInput) {
             emailInput.style.cssText = 'width:100%; padding:10px 0; border:none; border-bottom:2px solid #e5e7eb; border-radius:0; font-size:1rem; color:#333; background:transparent;';
         }
-        ['id_nova_senha', 'id_confirmar_senha'].forEach(id => {
+        ['id_nova_senha', 'id_confirmar_senha'].forEach(function (id) {
             const el = document.getElementById(id);
             if (el) el.style.cssText = 'width:100%; padding:12px 40px 12px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:1rem;';
         });
     });
 </script>
-{% endblock %}
-
 {% endblock %}

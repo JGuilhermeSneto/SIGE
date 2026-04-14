@@ -1,7 +1,17 @@
+"""
+Rotas de painéis por perfil, cadastro de usuários (aluno, professor, gestor)
+e edição de perfil.
+
+O que é: concentra URLs “funcionais” do SIGE após o login (dashboards e CRUD
+de pessoas), ligadas às views ``paineis``, ``registros`` e ``perfis``.
+"""
+
 from django.urls import path
-from ..views import perfis, registros, paineis
+from ..views import perfis, react_app, registros, paineis
 
 urlpatterns = [
+    # React (Vite) dentro do layout SIGE
+    path("app/vite/", react_app.app_vite_shell, name="app_vite"),
     # Dashboards (Painéis)
     path("painel/super/", paineis.painel_super, name="painel_super"),
     path("painel/gestor/", paineis.painel_super, name="painel_gestor"),

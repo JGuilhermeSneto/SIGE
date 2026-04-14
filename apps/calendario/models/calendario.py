@@ -1,4 +1,12 @@
+"""
+Modelo de evento/dia letivo no calendário acadêmico institucional.
+
+O que é: um registro por data com tipo (letivo, feriado, prova, etc.);
+alimenta a UI mensal e os utilitários em ``utils.calendario``.
+"""
+
 from django.db import models
+
 
 class EventoCalendario(models.Model):
     """Representa um dia no calendário acadêmico com seu respectivo status."""

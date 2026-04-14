@@ -1,3 +1,10 @@
+"""
+Views de sessão: login, logout e mensagens de feedback.
+
+O que é: usa ``LoginForm`` para autenticar por e-mail e encaminha o usuário
+ao painel correto via ``redirect_user``.
+"""
+
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.shortcuts import redirect, render

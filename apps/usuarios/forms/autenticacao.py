@@ -1,3 +1,10 @@
+"""
+Formulários de autenticação e edição de conta (login, perfil, senha).
+
+O que é: valida e-mail/senha no login e expõe campos para o usuário
+ajustar nome, e-mail e imagem de perfil.
+"""
+
 from django import forms
 from django.contrib.auth import authenticate, get_user_model
 from django.core.exceptions import ValidationError

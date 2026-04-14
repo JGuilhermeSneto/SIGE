@@ -1,5 +1,12 @@
+"""
+Cópia local de horários por turno para o app acadêmico (grade).
+
+O que é: igual conceito a ``apps.comum.utils.constantes`` — usado na
+montagem de slots de aula nas telas de grade.
+"""
+
 # =====================================================================
-# Constantes
+# Grade horária — faixas por turno
 # =====================================================================
 
 HORARIOS = {

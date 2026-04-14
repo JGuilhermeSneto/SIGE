@@ -1,3 +1,10 @@
+"""
+Views de lançamento pedagógico: notas bimestrais e frequência (chamada).
+
+O que é: opera sobre ``models.desempenho`` e ``Disciplina``; restrito a
+professores (ou outros papéis definidos nos decorators).
+"""
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
