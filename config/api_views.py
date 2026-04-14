@@ -6,7 +6,7 @@ Rotas sob ``/api/`` permitem verificar conectividade sem autenticação.
 
 from apps.academico.models.academico import Disciplina, Turma
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -19,7 +19,7 @@ def ping(_request: Request) -> Response:
 
 
 @api_view(["GET"])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def dashboard_resumo(_request: Request) -> Response:
     """Totais e amostra de turmas lidos do banco (dados reais do SIGE)."""
     turmas_qs = Turma.objects.order_by("-ano", "nome")[:12]

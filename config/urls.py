@@ -20,11 +20,15 @@ from django.contrib import admin
 from django.urls import URLPattern, URLResolver, include, path
 
 from config.api_views import dashboard_resumo, ping
+from config.jwt_views import EmailTokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns: list[URLPattern | URLResolver] = [
     path("admin/", admin.site.urls),
     path("api/ping/", ping, name="api-ping"),
     path("api/dashboard/resumo/", dashboard_resumo, name="api-dashboard-resumo"),
+    path("api/token/", EmailTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("", include("apps.usuarios.urls")),
     path("academico/", include("apps.academico.urls")),
     path("calendario/", include("apps.calendario.urls")),

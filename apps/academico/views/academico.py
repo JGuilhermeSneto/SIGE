@@ -348,7 +348,7 @@ def entregar_atividade(request, atividade_id):
     atividade = get_object_or_404(AtividadeProfessor, id=atividade_id, disciplina__turma=aluno.turma)
     
     hoje = timezone.now()
-    prazo_expirado = atividade.prazo_final and hoje > atividade.prazo_final
+    prazo_expirado = atividade.exibir_gabarito_para_aluno
     
     entrega, _ = EntregaAtividade.objects.get_or_create(aluno=aluno, atividade=atividade)
 
@@ -386,9 +386,12 @@ def gerenciar_questoes(request, disciplina_id, atividade_id):
         return redirect("listar_atividades", disciplina_id=disciplina.id)
 
     if request.method == "POST":
-        AtividadeServico.salvar_banco_questoes(atividade, request.POST)
-        messages.success(request, "Questões salvas com sucesso!")
-        return redirect("gerenciar_questoes", disciplina_id=disciplina.id, atividade_id=atividade.id)
+        try:
+            AtividadeServico.salvar_banco_questoes(atividade, request.POST)
+            messages.success(request, "Questões salvas com sucesso!")
+            return redirect("gerenciar_questoes", disciplina_id=disciplina.id, atividade_id=atividade.id)
+        except ValueError as e:
+            messages.error(request, str(e))
 
     questoes = atividade.questoes.all().prefetch_related("alternativas")
     

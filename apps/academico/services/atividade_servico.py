@@ -5,6 +5,9 @@ O que é: camada de serviço chamada pelas views para persistir vários modelos
 de forma consistente.
 """
 
+from decimal import Decimal, InvalidOperation
+
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from ..models.academico import (
@@ -59,24 +62,45 @@ class AtividadeServico:
     @staticmethod
     def salvar_banco_questoes(atividade, data_post):
         """Recria o banco de questões de uma atividade com base nos dados do formulário."""
-        Questao.objects.filter(atividade=atividade).delete()
-        
         questoes_count = int(data_post.get("questoes_count", 0))
-        for i in range(1, questoes_count + 1):
-            texto = data_post.get(f"questao_texto_{i}")
-            tipo = data_post.get(f"questao_tipo_{i}")
-            valor = data_post.get(f"questao_valor_{i}", 1.0)
-            
-            if texto:
+        if atividade.tipo == "PROVA" and questoes_count == 0:
+            raise ValueError("Provas precisam ter ao menos uma questão de gabarito.")
+
+        saved_questions = 0
+        with transaction.atomic():
+            Questao.objects.filter(atividade=atividade).delete()
+            for i in range(1, questoes_count + 1):
+                texto = data_post.get(f"questao_texto_{i}")
+                tipo = data_post.get(f"questao_tipo_{i}")
+                valor = data_post.get(f"questao_valor_{i}", 1.0)
+                
+                if not texto:
+                    continue
+
                 q = Questao.objects.create(
                     atividade=atividade, texto=texto, tipo=tipo, valor=valor, ordem=i
                 )
+                saved_questions += 1
+
                 if tipo == "OBJETIVA":
+                    alternativa_correta_definida = False
+                    alternativas_criadas = 0
                     for j in range(1, 6):
                         alt_texto = data_post.get(f"alt_{i}_{j}")
                         if alt_texto:
+                            alternativas_criadas += 1
                             eh_correta = data_post.get(f"correta_{i}") == str(j)
+                            if eh_correta:
+                                alternativa_correta_definida = True
                             Alternativa.objects.create(questao=q, texto=alt_texto, eh_correta=eh_correta)
+
+                    if alternativas_criadas == 0:
+                        raise ValueError(f"Questão {i} objetiva precisa ter pelo menos uma alternativa.")
+                    if not alternativa_correta_definida:
+                        raise ValueError(f"Questão {i} objetiva precisa ter uma alternativa correta.")
+
+            if atividade.tipo == "PROVA" and saved_questions == 0:
+                raise ValueError("Provas precisam ter ao menos uma questão de gabarito.")
 
     @staticmethod
     def finalizar_correcao(entrega, data_post):
@@ -97,16 +121,16 @@ class AtividadeServico:
                 if r.alternativa_escolhida and r.alternativa_escolhida.eh_correta:
                     r.pontos_atribuidos = q.valor
                 else:
-                    r.pontos_atribuidos = 0
+                    r.pontos_atribuidos = Decimal("0")
             else:
                 val = data_post.get(f"pontos_{q.id}", 0)
                 try:
-                    r.pontos_atribuidos = float(str(val).replace(",", "."))
-                except:
-                    r.pontos_atribuidos = 0
-            
+                    r.pontos_atribuidos = Decimal(str(val).replace(",", "."))
+                except (InvalidOperation, TypeError):
+                    r.pontos_atribuidos = Decimal("0")
+
             r.save()
-            total_pontos += r.pontos_atribuidos or 0
+            total_pontos += r.pontos_atribuidos or Decimal("0")
 
         NotaAtividade.objects.update_or_create(
             aluno=entrega.aluno, atividade=atividade,

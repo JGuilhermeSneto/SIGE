@@ -13,4 +13,5 @@ Este é o diretório raiz de configuração do Django. Embora o nome da pasta se
 
 1. **Segurança**: Nunca coloque senhas ou chaves secretas diretamente no `settings.py`. Use o arquivo `.env`.
 2. **Ambientes**: O `settings.py` está configurado para alternar entre SQLite (desenvolvimento) e MySQL (produção) automaticamente com base nas variáveis de ambiente.
-3. **Inclusão de Apps**: Sempre adicione novos aplicativos instalados na lista `INSTALLED_APPS` aqui.
+3. **Segurança em produção**: mantenha `DEBUG=False`, configure `ALLOWED_HOSTS`, `SECURE_SSL_REDIRECT`, cookies seguros e CORS/CSRF trusted origins para o domínio público.
+4. **Inclusão de Apps**: Sempre adicione novos aplicativos instalados na lista `INSTALLED_APPS` aqui.

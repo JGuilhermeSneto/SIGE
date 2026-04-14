@@ -1,5 +1,5 @@
 {% extends "core/base.html" %}
-{% load static %}
+{% load static vite_assets %}
 {# Página React (Vite) embutida no layout SIGE: menu, fontes e design system do Django. #}
 
 {% block title %}SIGE · App React{% endblock %}
@@ -24,13 +24,5 @@
 
 {% block extra_js %}
 {{ block.super }}
-{% if use_vite_dev %}
-<script type="module" src="{{ vite_dev_url }}/@vite/client"></script>
-<script type="module" src="{{ vite_dev_url }}/src/main.jsx"></script>
-{% else %}
-<script>
-  document.getElementById("root").innerHTML =
-    '<p style="padding:1rem;color:var(--text-muted,#888)">Em produção, configure os assets do Vite (<code>npm run build</code>) e aponte os <code>&lt;script&gt;</code> para <code>STATIC_URL</code>.</p>';
-</script>
-{% endif %}
+{% vite_entry 'src/main.jsx' %}
 {% endblock %}

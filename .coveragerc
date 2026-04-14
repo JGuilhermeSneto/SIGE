@@ -1,7 +1,12 @@
 [run]
+source = apps
 omit =
     */migrations/*
     */venv/*
     manage.py
-    notas/asgi.py
-    notas/wsgi.py
+    config/asgi.py
+    config/wsgi.py
+
+[report]
+show_missing = True
+skip_covered = False

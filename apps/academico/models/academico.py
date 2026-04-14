@@ -6,6 +6,7 @@ e com modelos de desempenho em ``desempenho.py``.
 """
 
 from django.db import models
+from django.utils import timezone
 from apps.comum.models.modelo_base import TURNO_CHOICES
 
 class Turma(models.Model):
@@ -88,6 +89,23 @@ class AtividadeProfessor(models.Model):
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.titulo} - {self.data}"
+
+    @property
+    def prazo_encerrado(self):
+        agora = timezone.localtime(timezone.now())
+        if self.prazo_final:
+            return agora > self.prazo_final
+        if self.tipo == 'PROVA':
+            return agora.date() > self.data
+        return False
+
+    @property
+    def possui_gabarito(self):
+        return self.questoes.exists()
+
+    @property
+    def exibir_gabarito_para_aluno(self):
+        return self.possui_gabarito and self.prazo_encerrado
 
 class Questao(models.Model):
     """Questões de uma atividade (objetivas ou discursivas)."""

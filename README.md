@@ -3,6 +3,8 @@
 # 🏫 SIGE — Sistema Integrado de Gestão Escolar
 ### A Engenharia de Software Aplicada à Educação de Alta Performance
 
+> Este projeto faz parte de um monorepo. Para um guia de inicio rápido, consulte `../README.md`.
+
 <br/>
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white)
@@ -162,54 +164,135 @@ Localmente você pode ainda usar **Black** e **isort** (presentes no `requiremen
     # Linux/macOS: source venv/bin/activate
     # Windows: venv\Scripts\activate
     ```
-2. **Dependências e variáveis** (lista completa no único `requirements.txt` na raiz)
+2. **Dependências e variáveis**
     ```bash
     pip install -r requirements.txt
-    copy .env.example .env   # Windows; em Unix: cp .env.example .env
+    copy .env.example .env   # Windows
+    # em Unix/macOS: cp .env.example .env
     ```
-    Edite o `.env` (`SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, e opcionalmente `DB_*` para MySQL — ver `config/settings.py`).
-3. **Banco e servidor**
+    Edite o `.env` com os valores do seu ambiente. Os campos principais são:
+    - `SECRET_KEY`
+    - `DEBUG` (True em desenvolvimento)
+    - `ALLOWED_HOSTS`
+    - `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` quando usar MySQL.
+
+3. **Banco e servidor Django**
     ```bash
     python manage.py migrate
     python manage.py createsuperuser
     python manage.py runserver
     ```
 
-Para MySQL no ambiente institucional, veja também `instruções.md`.
+Para MySQL no ambiente institucional, consulte também `instruções.md`.
 
 ---
 
 ## 🔗 9. Front-end Vite em paralelo
 
-O repositório do **React + Vite** fica em `frontend_SIGE/Frontend_SIGE` (irmão desta pasta `SIGE` no monorepo local). O back expõe **`GET /api/ping/`** (health check) e **`GET /api/dashboard/resumo/`** (totais de turmas/disciplinas e lista de turmas do banco), ambos em `config/api_views.py`, sem autenticação, para o front validar a conexão e exibir dados reais.
+O front-end React + Vite fica em `frontend_SIGE/Frontend_SIGE`, ao lado da pasta `SIGE` no monorepo. O backend Django oferece as APIs usadas pelo app:
 
-### Rodar Django e Vite ao mesmo tempo
+- `GET /api/ping/` → verifica se o backend está online
+- `GET /api/dashboard/resumo/` → totais de turmas e disciplinas + amostra de turmas
 
-1. **Terminal 1 — Django** (na pasta `SIGE`):
+Essas views estão implementadas em `SIGE/config/api_views.py`.
+
+### Executar Django + Vite juntos
+
+1. **Terminal 1 — Back-end**
    ```bash
+   cd SIGE
    python manage.py runserver
    ```
-   O servidor padrão fica em `http://127.0.0.1:8000/`. O endpoint de teste: `http://127.0.0.1:8000/api/ping/`.
+   O servidor Django padrão fica em `http://127.0.0.1:8000/`.
 
-2. **Terminal 2 — Vite** (na pasta do front `frontend_SIGE/Frontend_SIGE`):
+2. **Terminal 2 — Front-end**
    ```bash
+   cd frontend_SIGE/Frontend_SIGE
    npm install
    npm run dev
    ```
-   O Vite encaminha requisições **`/api`** para `http://127.0.0.1:8000` (veja `vite.config.js`). Com `VITE_API_URL` vazio (padrão), o axios usa URLs relativas e o proxy aplica.
+   O Vite roda em `http://127.0.0.1:5173/` e, em modo dev, proxy passa `/api` para `http://127.0.0.1:8000`.
 
-3. Abra a URL que o Vite mostrar (em geral `http://localhost:5173/`). A página deve indicar que o back-end **SIGE** respondeu.
+3. Abra o endereço do Vite (geralmente `http://127.0.0.1:5173/`). A página deve mostrar que o back-end respondeu.
 
-**Sem proxy:** no front, crie `.env` a partir de `.env.example` e defina `VITE_API_URL=http://127.0.0.1:8000`. O CORS do Django já permite origens em desenvolvimento (`CORS_ALLOW_ALL_ORIGINS`); em produção restrinja origens e use HTTPS.
+### Quando usar proxy ou URL direta
 
-### React dentro do layout SIGE (templates + Vite)
+- `VITE_API_URL=` vazio: em dev, a app usa o proxy do Vite para `/api` → Django.
+- `VITE_API_URL=http://127.0.0.1:8000`: o app chama o Django diretamente, sem proxy.
 
-Há uma rota que **reusa o `base.html` real** (menu superior, lateral, design system) e só a área principal é o app React carregado pelo Vite em modo dev:
+O front-end lê essa variável em `frontend_SIGE/Frontend_SIGE/src/services/api.js`.
 
-1. Com **Django** e **Vite** rodando como acima.
-2. Faça login no SIGE e acesse **`http://127.0.0.1:8000/app/vite/`** (ou use o item **App React** no menu lateral, para gestor/superusuário e professor).
+### Autenticação JWT
 
-O template `apps/usuarios/templates/core/app_vite.html` estende `core/base.html` e injeta `http://127.0.0.1:5173/@vite/client` e `.../src/main.jsx`. A URL do servidor Vite pode ser ajustada com **`VITE_DEV_SERVER_URL`** no `.env` (ver `config/settings.py`). Em produção (`DEBUG=False`), substitua por arquivos estáticos gerados com `npm run build` e referências em `{% static %}`.
+Para obter um token JWT, use:
+
+```bash
+POST /api/token/
+{
+  "email": "seu@email.com",
+  "password": "sua-senha"
+}
+```
+
+Para renovar o token de acesso, use:
+
+```bash
+POST /api/token/refresh/
+{
+  "refresh": "<refresh_token>"
+}
+```
+
+O frontend já está preparado para enviar o cabeçalho `Authorization: Bearer <access_token>` automaticamente quando o token estiver armazenado.
+
+### Usar Vite em qualquer template Django
+
+Para usar os assets do Vite diretamente em qualquer template do Django, carregue a biblioteca de tags e chame o entrypoint:
+
+```django
+{% load static vite_assets %}
+{% vite_entry 'src/main.jsx' %}
+```
+
+Em desenvolvimento, isso injeta automaticamente `@vite/client` e o módulo do Vite. Em produção, usa o `manifest.json` gerado pelo build e serve os arquivos em `STATIC_URL/vite/`.
+
+Alternativamente, se você quiser habilitar Vite pelo contexto no `base.html`, passe `vite_entry_name = 'src/main.jsx'` na view e o template pai o incluirá.
+
+### Segurança em produção
+
+Em produção, defina no `.env`:
+
+- `DEBUG=False`
+- `ALLOWED_HOSTS=seu-dominio.com`
+- `SECRET_KEY` forte e secreta
+- `SECURE_SSL_REDIRECT=True`
+- `SESSION_COOKIE_SECURE=True`
+- `CSRF_COOKIE_SECURE=True`
+- `CORS_ALLOWED_ORIGINS=https://seu-dominio.com`
+- `CSRF_TRUSTED_ORIGINS=https://seu-dominio.com`
+
+Assim o Django habilita HSTS, cookies seguros, XSS e content-type protections.
+
+### Rota integrada no Django
+
+Enquanto o Vite estiver ativo, é possível abrir o React embutido dentro do layout do SIGE em:
+
+```bash
+http://127.0.0.1:8000/app/vite/
+```
+
+Essa view usa o template `SIGE/apps/usuarios/templates/core/app_vite.html`, que injeta o Vite dev server em desenvolvimento. Em produção, o Django serve os assets buildados.
+
+### Build de produção
+
+Quando estiver pronto para produção:
+
+```bash
+cd frontend_SIGE/Frontend_SIGE
+npm run build
+```
+
+O build é gerado em `SIGE/apps/comum/static/vite` e o Django irá servir esses arquivos como estáticos. Em produção, configure `VITE_API_URL` para a URL pública da API e defina `DEBUG=False` no Django.
 
 ---
 
