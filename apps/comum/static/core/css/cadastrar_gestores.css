@@ -1,7 +1,7 @@
 /* ============================================================
    SIGE — Cadastrar / Editar Gestor
 ============================================================ */
-:root {
+html[data-theme="default"] {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
   --bg-elevated:    #131e33;
@@ -9,7 +9,7 @@
   --border-subtle:  rgba(255,255,255,.06);
   --border-mid:     rgba(255,255,255,.11);
 
-  /* Cyan theme for Gestor */
+  /* Default-only page primary */
   --theme-primary:  #22d3ee;
   --theme-primary-rgb: 34, 211, 238;
   
@@ -26,6 +26,20 @@
   --radius-md:  12px;
   --radius-lg:  18px;
   --radius-xl:  24px;
+}
+
+html[data-theme="cyan"],
+html[data-theme="gray"] {
+  --theme-primary: var(--primary);
+  --accent-success: var(--accent-emerald);
+  --accent-danger: var(--accent-ruby);
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --text-muted: var(--text-muted);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
 }
 
 *, *::before, *::after { box-sizing: border-box; }

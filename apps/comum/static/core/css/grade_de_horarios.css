@@ -1,4 +1,4 @@
-:root {
+html[data-theme="default"] {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
   --bg-elevated:    #131e33;
@@ -6,7 +6,7 @@
   --border-subtle:  rgba(255,255,255,.06);
   --border-mid:     rgba(255,255,255,.11);
 
-  /* Violet theme for Academic Gestor features */
+  /* Default-only page primary */
   --theme-primary:      #8b6fff;
   --theme-primary-rgb:  139, 111, 255;
   
@@ -18,6 +18,18 @@
   --radius-md:  12px;
   --radius-lg:  18px;
   --radius-xl:  24px;
+}
+
+html[data-theme="cyan"],
+html[data-theme="gray"] {
+  --theme-primary: var(--primary);
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --text-muted: var(--text-muted);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
 }
 
 .main-area {

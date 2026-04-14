@@ -1,0 +1,891 @@
+/* ============================================================
+   SIGE — Themes (global reskins)
+   Applied via: <html data-theme="...">
+============================================================ */
+
+/* Theme Switcher UI (topbar) */
+.theme-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  margin-right: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.theme-switcher:hover {
+  transform: translateY(-1px);
+  background: var(--bg-hover);
+  border-color: var(--border-mid);
+  color: var(--text-primary);
+}
+
+.theme-switcher i {
+  font-size: 0.95rem;
+  opacity: 0.9;
+}
+
+.theme-switcher select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.02em;
+  padding-right: 16px;
+  cursor: pointer;
+}
+
+.theme-switcher select:focus-visible {
+  outline: 2px solid hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.35);
+  outline-offset: 2px;
+  border-radius: 999px;
+}
+
+/* ============================================================
+   DEFAULT (current project look)
+============================================================ */
+html[data-theme="default"] {
+  color-scheme: dark;
+}
+
+/* Global “theme signature” hooks */
+html[data-theme] ::selection {
+  background: color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+html[data-theme] a:focus-visible,
+html[data-theme] button:focus-visible,
+html[data-theme] input:focus-visible,
+html[data-theme] select:focus-visible,
+html[data-theme] textarea:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  outline-offset: 2px;
+  border-radius: max(6px, var(--radius-sm));
+}
+
+/* Make the theme obvious across common UI */
+html[data-theme] .menu-principal::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  height: 2px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--primary), transparent 60%);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+html[data-theme] .nav-lateral a.ativo::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 8px;
+  background: var(--primary);
+  opacity: 0.85;
+}
+
+html[data-theme] .sige-btn-primary,
+html[data-theme] .btn-modal-salvar {
+  position: relative;
+}
+
+html[data-theme] .sige-btn-primary::after,
+html[data-theme] .btn-modal-salvar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+html[data-theme] .sige-input:focus,
+html[data-theme] .form-control:focus,
+html[data-theme] input[type="text"]:focus,
+html[data-theme] input[type="email"]:focus,
+html[data-theme] input[type="password"]:focus,
+html[data-theme] input[type="date"]:focus,
+html[data-theme] select:focus,
+html[data-theme] textarea:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent) !important;
+}
+
+/* ============================================================
+   Shared components (tables, modals, pills) — themed hooks
+============================================================ */
+html[data-theme] .btn,
+html[data-theme] .btn-adicionar,
+html[data-theme] .btn-voltar {
+  border-radius: var(--radius-md);
+}
+
+html[data-theme] .btn-modal-salvar {
+  background: var(--primary);
+  color: #fff;
+}
+
+html[data-theme] .btn-modal-cancelar:hover {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border-mid));
+}
+
+html[data-theme] .sige-badge-success { background: color-mix(in srgb, var(--accent-emerald) 22%, transparent); color: var(--accent-emerald); }
+html[data-theme] .sige-badge-warning { background: color-mix(in srgb, var(--accent-amber) 22%, transparent); color: var(--accent-amber); }
+html[data-theme] .sige-badge-danger  { background: color-mix(in srgb, var(--accent-ruby) 22%, transparent); color: var(--accent-ruby); }
+
+/* ============================================================
+   CYAN THEME (LightCyan → SteelBlue)
+   Extremely different: light, glassy, rounded, bouncy
+============================================================ */
+html[data-theme="cyan"] {
+  color-scheme: light;
+
+  /* Palette (exact hex from request) */
+  --c-lightcyan: #E0FFFF;
+  --c-paleTurq:  #AFEEEE;
+  --c-aqua:      #7FFFD4;
+  --c-turq:      #40E0D0;
+  --c-medTurq:   #48D1CC;
+  --c-darkTurq:  #00CED1;
+  --c-cadet:     #5F9EA0;
+  --c-steel:     #4682B4;
+
+  /* Core (avoid white: keep everything tinted by the palette) */
+  --bg-base:     var(--c-lightcyan);
+  --bg-surface:  color-mix(in srgb, var(--c-paleTurq) 92%, var(--c-lightcyan) 8%);
+  --bg-elevated: color-mix(in srgb, var(--c-aqua) 72%, var(--c-paleTurq) 28%);
+  --bg-hover:    color-mix(in srgb, var(--c-turq) 72%, var(--c-paleTurq) 28%);
+  --bg-input:    color-mix(in srgb, var(--c-aqua) 55%, var(--c-lightcyan) 45%);
+
+  --text-primary:   #06343b;
+  --text-secondary: #0a4e57;
+  --text-muted:     #2a6a73;
+
+  --border-subtle: rgba(6, 52, 59, 0.16);
+  --border-mid:    rgba(6, 52, 59, 0.26);
+
+  /* Brand / accents */
+  --primary-h: 182;
+  --primary-s: 100%;
+  --primary-l: 40%;
+  --primary:       var(--c-darkTurq);
+  --primary-dark:  color-mix(in srgb, var(--c-darkTurq) 75%, #0b3e45 25%);
+  --primary-light: color-mix(in srgb, var(--c-lightcyan) 70%, var(--c-darkTurq) 30%);
+
+  --accent-violet: var(--c-steel);
+  --accent-cyan:   var(--c-darkTurq);
+  --accent-emerald: var(--c-medTurq);
+  --accent-amber:  var(--c-cadet);
+  --accent-ruby:   var(--c-steel);
+
+  /* Layout */
+  --header-bg: color-mix(in srgb, var(--c-lightcyan) 72%, transparent 28%);
+  --header-bg-scrolled: color-mix(in srgb, var(--c-lightcyan) 88%, transparent 12%);
+  --sidebar-bg-top: color-mix(in srgb, var(--c-paleTurq) 80%, white 20%);
+  --sidebar-bg-bottom: color-mix(in srgb, var(--c-aqua) 22%, var(--c-lightcyan) 78%);
+
+  /* Shapes & motion */
+  --radius-sm: 14px;
+  --radius-md: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+
+  --shadow-sm: 0 8px 24px rgba(70, 130, 180, 0.18);
+  --shadow-md: 0 16px 44px rgba(0, 206, 209, 0.22);
+  --shadow-lg: 0 30px 70px rgba(70, 130, 180, 0.20);
+  --shadow-glow: rgba(0, 206, 209, 0.30) 0 0 22px;
+
+  --transition-fast: .16s cubic-bezier(0.2, 1.0, 0.2, 1);
+  --transition-mid:  .26s cubic-bezier(0.2, 1.1, 0.2, 1);
+  --transition-slow: .42s cubic-bezier(0.2, 1.2, 0.2, 1);
+
+  /* Typography signature */
+  --font-main: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Syne', sans-serif;
+}
+
+/* Cyan: make cards/buttons more “playful” */
+html[data-theme="cyan"] .sige-card {
+  background: linear-gradient(180deg, rgba(224,255,255,0.78) 0%, rgba(175,238,238,0.55) 100%);
+  backdrop-filter: blur(14px);
+  border-color: rgba(6, 52, 59, 0.18);
+}
+
+html[data-theme="cyan"] .sige-btn-primary {
+  background: linear-gradient(135deg, var(--c-darkTurq) 0%, var(--c-steel) 100%);
+  color: #ffffff;
+}
+
+html[data-theme="cyan"] .sige-btn-primary:hover {
+  transform: translateY(-1px) scale(1.01);
+}
+
+html[data-theme="cyan"] .sige-input {
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgba(6, 52, 59, 0.22);
+}
+
+html[data-theme="cyan"] body.layout-base {
+  background:
+    radial-gradient(900px 520px at 15% 10%, rgba(0, 206, 209, 0.26) 0%, transparent 62%),
+    radial-gradient(900px 520px at 85% 0%, rgba(70, 130, 180, 0.22) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(224,255,255,0.92) 0%, rgba(175,238,238,0.92) 55%, rgba(127,255,212,0.84) 100%);
+}
+
+html[data-theme="cyan"] .menu-principal::after {
+  opacity: 1;
+  background: linear-gradient(90deg, var(--c-darkTurq), var(--c-steel), transparent 70%);
+}
+
+html[data-theme="cyan"] .sige-btn-outline {
+  border-color: rgba(6, 52, 59, 0.34);
+}
+
+html[data-theme="cyan"] .sige-btn-outline:hover {
+  background: linear-gradient(180deg, rgba(64,224,208,0.26), rgba(175,238,238,0.24));
+}
+
+html[data-theme="cyan"] .msg-list li.success {
+  border-left-color: var(--c-darkTurq);
+}
+
+/* Cyan: bouncy motion signature */
+@keyframes sigeCyanFloatIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+html[data-theme="cyan"] .sige-card,
+html[data-theme="cyan"] .calendar-container,
+html[data-theme="cyan"] .card-tabela {
+  animation: sigeCyanFloatIn .38s cubic-bezier(0.2, 1.1, 0.2, 1) both;
+}
+
+html[data-theme="cyan"] .dropdown-menu a:hover {
+  background: linear-gradient(90deg, rgba(0,206,209,0.18), rgba(70,130,180,0.14));
+}
+
+html[data-theme="cyan"] .btn,
+html[data-theme="cyan"] .btn-adicionar,
+html[data-theme="cyan"] .btn-voltar {
+  border-radius: 999px;
+}
+
+html[data-theme="cyan"] .btn-circle:hover {
+  background: linear-gradient(135deg, var(--c-darkTurq), var(--c-steel));
+}
+
+html[data-theme="cyan"] .calendar-day:hover {
+  box-shadow: 0 18px 42px rgba(0, 206, 209, 0.18);
+}
+
+/* ============================================================
+   SKY THEME (CadetBlue → SteelBlue → Light/Sky Blues)
+   Extremely different: airy, “cloud” feel, soft borders, calm motion
+============================================================ */
+html[data-theme="sky"] {
+  color-scheme: light;
+
+  --s-cadet: #5F9EA0;
+  --s-steel: #4682B4;
+  --s-lightSteel: #B0C4DE;
+  --s-powder: #B0E0E6;
+  --s-lightBlue: #ADD8E6;
+  --s-sky: #87CEEB;
+  --s-lightSky: #87CEFA;
+
+  /* Core (avoid white: keep base tinted in blues) */
+  --bg-base: var(--s-powder);
+  --bg-surface: color-mix(in srgb, var(--s-lightSteel) 70%, var(--s-powder) 30%);
+  --bg-elevated: color-mix(in srgb, var(--s-lightBlue) 70%, var(--s-lightSteel) 30%);
+  --bg-hover: color-mix(in srgb, var(--s-sky) 70%, var(--s-lightBlue) 30%);
+  --bg-input: color-mix(in srgb, var(--s-lightSteel) 60%, var(--s-powder) 40%);
+
+  --text-primary: #0d2a3a;
+  --text-secondary: #1d4b66;
+  --text-muted: #3d6f8b;
+
+  --border-subtle: rgba(13, 42, 58, 0.14);
+  --border-mid: rgba(13, 42, 58, 0.22);
+
+  --primary-h: 204;
+  --primary-s: 71%;
+  --primary-l: 54%;
+  --primary: var(--s-steel);
+  --primary-dark: color-mix(in srgb, var(--s-steel) 82%, #0d2a3a 18%);
+  --primary-light: color-mix(in srgb, var(--s-lightSky) 60%, white 40%);
+
+  --accent-violet: var(--s-cadet);
+  --accent-cyan: var(--s-sky);
+  --accent-emerald: var(--s-lightBlue);
+  --accent-amber: var(--s-lightSteel);
+  --accent-ruby: var(--s-steel);
+
+  --header-bg: rgba(255, 255, 255, 0.72);
+  --header-bg-scrolled: rgba(255, 255, 255, 0.86);
+  --sidebar-bg-top: color-mix(in srgb, white 60%, var(--s-powder) 40%);
+  --sidebar-bg-bottom: color-mix(in srgb, white 55%, var(--s-lightSteel) 45%);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 34px;
+
+  --shadow-sm: 0 10px 26px rgba(70, 130, 180, 0.14);
+  --shadow-md: 0 18px 52px rgba(135, 206, 235, 0.18);
+  --shadow-lg: 0 30px 76px rgba(70, 130, 180, 0.18);
+  --shadow-glow: rgba(135, 206, 235, 0.30) 0 0 26px;
+
+  --transition-fast: .18s cubic-bezier(0.2, 0.9, 0.2, 1);
+  --transition-mid:  .28s cubic-bezier(0.2, 1.0, 0.2, 1);
+  --transition-slow: .46s cubic-bezier(0.2, 1.05, 0.2, 1);
+
+  /* Typography signature */
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Syne', sans-serif;
+}
+
+html[data-theme="sky"] .menu-principal,
+html[data-theme="sky"] .menu-lateral {
+  backdrop-filter: blur(22px);
+}
+
+html[data-theme="sky"] .sige-card {
+  background: linear-gradient(180deg, rgba(176,224,230,0.70), rgba(176,196,222,0.55));
+  border-color: rgba(13, 42, 58, 0.16);
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="sky"] .sige-btn {
+  border-radius: 999px;
+}
+
+html[data-theme="sky"] .sige-btn-primary {
+  background: linear-gradient(135deg, var(--s-steel), var(--s-sky));
+}
+
+html[data-theme="sky"] .sige-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+html[data-theme="sky"] .nav-lateral a.ativo {
+  background: linear-gradient(90deg, rgba(70, 130, 180, 0.16), rgba(135, 206, 235, 0.14));
+  color: var(--text-primary);
+}
+
+html[data-theme="sky"] .dropdown-menu {
+  background: linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.56));
+  backdrop-filter: blur(18px);
+}
+
+html[data-theme="sky"] .flatpickr-calendar {
+  border-radius: 22px !important;
+}
+
+/* Sky: hard-override base chrome so it can't look like default */
+html[data-theme="sky"] body.layout-base {
+  background: radial-gradient(1200px 700px at 20% 10%, rgba(135, 206, 235, 0.55) 0%, transparent 58%),
+              radial-gradient(900px 560px at 80% 0%, rgba(176, 196, 222, 0.55) 0%, transparent 62%),
+              linear-gradient(180deg, rgba(176, 224, 230, 0.92) 0%, rgba(176, 196, 222, 0.86) 55%, rgba(176, 224, 230, 0.88) 100%);
+}
+
+html[data-theme="sky"] .menu-principal {
+  background: linear-gradient(90deg, rgba(135, 206, 235, 0.78), rgba(70, 130, 180, 0.60)) !important;
+  border-bottom: 1px solid rgba(13, 42, 58, 0.14);
+}
+
+html[data-theme="sky"] .menu-lateral {
+  background: linear-gradient(180deg, rgba(176, 196, 222, 0.62), rgba(176, 224, 230, 0.46)) !important;
+  border-right: 1px solid rgba(13, 42, 58, 0.12);
+}
+
+html[data-theme="sky"] .brand-link span {
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+html[data-theme="sky"] .nav-lateral a:hover {
+  transform: translateX(8px);
+}
+
+html[data-theme="sky"] .theme-switcher {
+  background: rgba(176, 224, 230, 0.55);
+  border-color: rgba(13, 42, 58, 0.16);
+}
+
+html[data-theme="sky"] .menu-principal::after {
+  opacity: 1;
+  background: linear-gradient(90deg, var(--s-sky), var(--s-steel), transparent 70%);
+}
+
+html[data-theme="sky"] .sige-input,
+html[data-theme="sky"] .form-control {
+  border-width: 2px;
+  border-style: solid;
+}
+
+html[data-theme="sky"] .msg-list li {
+  background: linear-gradient(180deg, rgba(176,224,230,0.72), rgba(176,196,222,0.54));
+  backdrop-filter: blur(18px);
+}
+
+html[data-theme="sky"] .msg-list li.success i {
+  color: var(--s-steel);
+}
+
+/* Sky: calm “float” motion + slightly different shapes */
+@keyframes sigeSkyDriftIn {
+  from { opacity: 0; transform: translateY(10px); filter: saturate(1.05); }
+  to   { opacity: 1; transform: translateY(0); filter: saturate(1); }
+}
+
+html[data-theme="sky"] .sige-card,
+html[data-theme="sky"] .calendar-container,
+html[data-theme="sky"] .card-tabela {
+  animation: sigeSkyDriftIn .45s cubic-bezier(0.2, 1.0, 0.2, 1) both;
+}
+
+html[data-theme="sky"] .btn,
+html[data-theme="sky"] .btn-adicionar,
+html[data-theme="sky"] .btn-voltar,
+html[data-theme="sky"] .sige-btn {
+  border-radius: 18px;
+}
+
+html[data-theme="sky"] .calendar-day {
+  border-radius: 18px;
+  border-left: 4px solid rgba(70, 130, 180, 0.55);
+}
+
+html[data-theme="sky"] .calendar-day.today {
+  outline: 2px solid rgba(70, 130, 180, 0.75);
+}
+
+html[data-theme="sky"] .dropdown-menu a:hover {
+  background: linear-gradient(90deg, rgba(135,206,235,0.22), rgba(70,130,180,0.14));
+}
+
+/* Cyan: layout/navigation feel */
+html[data-theme="cyan"] .menu-principal {
+  border-bottom-color: rgba(6, 52, 59, 0.18);
+  box-shadow: 0 10px 30px rgba(70, 130, 180, 0.18);
+}
+
+html[data-theme="cyan"] .menu-principal,
+html[data-theme="cyan"] .menu-lateral {
+  backdrop-filter: blur(18px);
+}
+
+html[data-theme="cyan"] .menu-principal {
+  height: 64px;
+}
+
+html[data-theme="cyan"] .logo-menu {
+  filter: saturate(1.25) contrast(1.1);
+}
+
+html[data-theme="cyan"] .menu-lateral {
+  border-right-color: rgba(6, 52, 59, 0.18);
+}
+
+html[data-theme="cyan"] .nav-lateral a {
+  border-radius: 18px;
+}
+
+html[data-theme="cyan"] .nav-lateral a:hover {
+  transform: translateX(6px) rotate(-0.25deg);
+}
+
+html[data-theme="cyan"] .nav-lateral a.ativo {
+  background: linear-gradient(90deg, rgba(0, 206, 209, 0.18), rgba(70, 130, 180, 0.12));
+  color: var(--text-primary);
+}
+
+html[data-theme="cyan"] .dropdown-menu {
+  background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.52));
+  backdrop-filter: blur(16px);
+}
+
+/* Cyan: more “juicy” buttons & inputs (extremely different) */
+html[data-theme="cyan"] .sige-btn {
+  border-radius: 999px;
+}
+
+html[data-theme="cyan"] .sige-btn-outline {
+  border-width: 2px;
+}
+
+html[data-theme="cyan"] .sige-input,
+html[data-theme="cyan"] .form-control,
+html[data-theme="cyan"] input[type="text"],
+html[data-theme="cyan"] input[type="email"],
+html[data-theme="cyan"] input[type="password"],
+html[data-theme="cyan"] input[type="date"],
+html[data-theme="cyan"] select,
+html[data-theme="cyan"] textarea {
+  border-radius: 16px;
+}
+
+/* Cyan: toasts & success overlay */
+html[data-theme="cyan"] .msg-list li {
+  background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.50));
+  backdrop-filter: blur(12px);
+}
+
+html[data-theme="cyan"] .sige-success-overlay {
+  background: rgba(224, 255, 255, 0.78);
+}
+
+html[data-theme="cyan"] .success-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.80), rgba(255,255,255,0.55));
+}
+
+/* ============================================================
+   GRAY THEME (Gainsboro → DarkSlateGray)
+   Extremely different: monochrome, sharp, minimal, “industrial”
+============================================================ */
+html[data-theme="gray"] {
+  color-scheme: light;
+
+  --g-gainsboro: #DCDCDC;
+  --g-lightgray: #D3D3D3;
+  --g-silver:    #C0C0C0;
+  --g-darkgray:  #A9A9A9;
+  --g-gray:      #808080;
+  --g-dimgray:   #696969;
+  --g-lightslate:#778899;
+  --g-slate:     #708090;
+  --g-darkslate: #2F4F4F;
+
+  /* Core (avoid pure white; keep it “steel/industrial”) */
+  --bg-base:     color-mix(in srgb, var(--g-gainsboro) 78%, var(--g-lightSteelGray, #778899) 22%);
+  --bg-surface:  color-mix(in srgb, var(--g-lightgray) 70%, var(--g-gainsboro) 30%);
+  --bg-elevated: color-mix(in srgb, var(--g-silver) 78%, var(--g-lightgray) 22%);
+  --bg-hover:    color-mix(in srgb, var(--g-darkgray) 82%, var(--g-silver) 18%);
+  --bg-input:    color-mix(in srgb, var(--g-gainsboro) 70%, var(--g-silver) 30%);
+
+  --text-primary:   #111315;
+  --text-secondary: #2c3136;
+  --text-muted:     #4f5961;
+
+  --border-subtle: rgba(17, 19, 21, 0.12);
+  --border-mid:    rgba(17, 19, 21, 0.22);
+
+  --primary-h: 200;
+  --primary-s: 7%;
+  --primary-l: 28%;
+  --primary:       var(--g-darkslate);
+  --primary-dark:  #243c3c;
+  --primary-light: color-mix(in srgb, var(--g-gainsboro) 70%, var(--g-darkslate) 30%);
+
+  --accent-violet: var(--g-lightslate);
+  --accent-cyan:   var(--g-slate);
+  --accent-emerald: var(--g-gray);
+  --accent-amber:  var(--g-dimgray);
+  --accent-ruby:   var(--g-darkslate);
+
+  --header-bg: rgba(255, 255, 255, 0.86);
+  --header-bg-scrolled: rgba(255, 255, 255, 0.94);
+  --sidebar-bg-top: color-mix(in srgb, white 20%, var(--g-lightgray) 80%);
+  --sidebar-bg-bottom: color-mix(in srgb, white 10%, var(--g-gainsboro) 90%);
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.10);
+  --shadow-lg: 0 14px 44px rgba(0, 0, 0, 0.14);
+  --shadow-glow: rgba(47, 79, 79, 0.20) 0 0 14px;
+
+  --transition-fast: .10s linear;
+  --transition-mid:  .14s linear;
+  --transition-slow: .18s linear;
+
+  /* Typography signature */
+  --font-main: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+html[data-theme="gray"] .sige-card {
+  border-style: solid;
+  border-color: rgba(17, 19, 21, 0.16);
+}
+
+html[data-theme="gray"] .sige-btn {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+}
+
+html[data-theme="gray"] .sige-btn-primary {
+  background: var(--g-darkslate);
+  color: #fff;
+}
+
+html[data-theme="gray"] .sige-input:focus {
+  box-shadow: 0 0 0 2px rgba(47, 79, 79, 0.18);
+}
+
+/* Gray: hard edges everywhere + “technical” feel */
+html[data-theme="gray"] .menu-principal {
+  border-bottom: 1px solid rgba(17, 19, 21, 0.18);
+  box-shadow: 0 1px 0 rgba(17, 19, 21, 0.08);
+}
+
+html[data-theme="gray"] .menu-principal {
+  height: 48px;
+  backdrop-filter: none;
+}
+
+html[data-theme="gray"] .logo-menu {
+  filter: grayscale(1) contrast(1.15);
+}
+
+html[data-theme="gray"] .menu-lateral {
+  border-right: 1px solid rgba(17, 19, 21, 0.14);
+}
+
+html[data-theme="gray"] .nav-lateral a {
+  border-radius: 4px;
+}
+
+html[data-theme="gray"] .nav-lateral a:hover {
+  transform: translateX(0);
+}
+
+html[data-theme="gray"] .nav-lateral a.ativo {
+  background: rgba(47, 79, 79, 0.10);
+  color: var(--g-darkslate);
+}
+
+html[data-theme="gray"] .dropdown-menu {
+  border-radius: 2px;
+  animation: none;
+}
+
+html[data-theme="gray"] .sige-card:hover {
+  transform: none;
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="gray"] .msg-list li {
+  border-radius: 2px;
+  animation: none;
+  transition: opacity 0.2s linear, transform 0.2s linear;
+}
+
+html[data-theme="gray"] .success-card {
+  border-radius: 6px;
+  animation: none;
+}
+
+html[data-theme="gray"] body.layout-base {
+  background: linear-gradient(180deg, rgba(220,220,220,0.92) 0%, rgba(169,169,169,0.78) 100%);
+}
+
+html[data-theme="gray"] .menu-principal::after {
+  opacity: 1;
+  background: linear-gradient(90deg, var(--g-darkslate), var(--g-slate), transparent 70%);
+}
+
+html[data-theme="gray"] .sige-btn-outline {
+  border-width: 1px;
+  border-color: rgba(17, 19, 21, 0.26);
+}
+
+html[data-theme="gray"] .sige-input,
+html[data-theme="gray"] .form-control {
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* Gray: reduce motion everywhere, tighten density */
+html[data-theme="gray"] * {
+  scroll-behavior: auto;
+}
+
+html[data-theme="gray"] .sige-card,
+html[data-theme="gray"] .calendar-container,
+html[data-theme="gray"] .card-tabela,
+html[data-theme="gray"] .dropdown-menu,
+html[data-theme="gray"] .msg-list li {
+  animation: none !important;
+}
+
+html[data-theme="gray"] .btn,
+html[data-theme="gray"] .btn-adicionar,
+html[data-theme="gray"] .btn-voltar,
+html[data-theme="gray"] .sige-btn {
+  border-radius: 4px !important;
+  letter-spacing: 0.10em;
+}
+
+html[data-theme="gray"] .dropdown-menu a:hover {
+  background: rgba(47, 79, 79, 0.08);
+}
+
+html[data-theme="gray"] .calendar-day {
+  border-left: 4px solid rgba(47, 79, 79, 0.45);
+}
+
+/* ============================================================
+   Page tables/cards — big visual differences per theme
+============================================================ */
+html[data-theme="cyan"] .card-tabela,
+html[data-theme="cyan"] .calendar-container {
+  border-radius: 28px;
+  border-color: rgba(6, 52, 59, 0.16);
+  box-shadow: 0 18px 60px rgba(70, 130, 180, 0.20);
+  overflow: hidden;
+}
+
+html[data-theme="cyan"] table {
+  border-collapse: separate !important;
+  border-spacing: 0 10px !important;
+}
+
+html[data-theme="cyan"] thead tr {
+  background: transparent !important;
+}
+
+html[data-theme="cyan"] tbody tr {
+  background: rgba(255,255,255,0.55);
+  box-shadow: 0 10px 24px rgba(0, 206, 209, 0.10);
+  transition: transform var(--transition-mid), box-shadow var(--transition-mid);
+}
+
+html[data-theme="cyan"] tbody tr:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 0 16px 34px rgba(70, 130, 180, 0.18);
+}
+
+html[data-theme="gray"] .card-tabela,
+html[data-theme="gray"] .calendar-container {
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+html[data-theme="gray"] table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+}
+
+html[data-theme="gray"] thead tr {
+  background: rgba(47, 79, 79, 0.06) !important;
+}
+
+html[data-theme="gray"] tbody tr {
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme="gray"] tbody tr:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(47, 79, 79, 0.06);
+}
+
+/* ============================================================
+   Calendar (mini + full) — extremely different feel
+============================================================ */
+html[data-theme="cyan"] .btn-circle {
+  background: linear-gradient(180deg, rgba(255,255,255,0.70), rgba(255,255,255,0.35));
+  border-width: 2px;
+}
+
+html[data-theme="cyan"] .calendar-day {
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.62), rgba(255,255,255,0.40));
+  backdrop-filter: blur(10px);
+}
+
+html[data-theme="cyan"] .dia {
+  border-radius: 14px;
+}
+
+html[data-theme="cyan"] .dia.atual {
+  background: linear-gradient(135deg, var(--c-darkTurq), var(--c-steel));
+  box-shadow: 0 12px 24px rgba(0, 206, 209, 0.22);
+}
+
+html[data-theme="gray"] .btn-circle {
+  border-radius: 2px;
+}
+
+html[data-theme="gray"] .calendar-day {
+  border-radius: 6px;
+  background: var(--bg-elevated);
+}
+
+html[data-theme="gray"] .dia {
+  border-radius: 2px;
+}
+
+html[data-theme="gray"] .dia.atual {
+  background: var(--g-darkslate);
+  box-shadow: none;
+}
+
+/* ============================================================
+   Flatpickr (date inputs) — themed
+============================================================ */
+.flatpickr-calendar {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-mid) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.flatpickr-months .flatpickr-month {
+  color: var(--text-primary) !important;
+}
+
+.flatpickr-current-month input.cur-year,
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+  color: var(--text-primary) !important;
+}
+
+.flatpickr-weekdays {
+  background: var(--bg-elevated) !important;
+}
+
+.flatpickr-weekday {
+  color: var(--text-muted) !important;
+  font-weight: 800 !important;
+}
+
+.flatpickr-day {
+  color: var(--text-secondary) !important;
+  border-radius: calc(var(--radius-md) - 2px) !important;
+}
+
+.flatpickr-day:hover {
+  background: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+  background: var(--primary) !important;
+  border-color: var(--primary) !important;
+  color: #fff !important;
+}
+

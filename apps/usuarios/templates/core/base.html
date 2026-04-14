@@ -3,7 +3,7 @@
 {% load vite_assets %}
 {# base.html — template-mãe do SIGE: HTML comum, design system, navbar e blocos title/content/extra_js. #}
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-theme="indigo-profundo">
 
 <head>
   <meta charset="UTF-8">
@@ -21,6 +21,7 @@
 
   <!-- DESIGN SYSTEM & LAYOUT -->
   <link rel="stylesheet" href="{% static 'core/css/design_system/tokens.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/themes.css' %}">
   <link rel="stylesheet" href="{% static 'core/css/design_system/base.css' %}">
   <link rel="stylesheet" href="{% static 'core/css/design_system/animations.css' %}">
   <link rel="stylesheet" href="{% static 'core/css/design_system/layout.css' %}">
@@ -38,6 +39,15 @@
   <link rel="stylesheet" href="{% static 'core/css/calendario_do_menu.css' %}">
 
   {% block extra_css %}{% endblock %}
+
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('sige_theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
 </head>
 
 <body class="layout-base">
@@ -100,16 +110,18 @@
 
     <!-- USUÁRIO -->
     <div class="menu-icones">
+      <div class="theme-switcher" title="Tema">
+        <i class="fa-solid fa-palette"></i>
+        <select id="theme-select" aria-label="Selecionar tema"></select>
+      </div>
       {% if request.user.is_authenticated %}
       <div class="user-dropdown">
 
         <!-- AVATAR -->
         <div class="user-avatar" id="user-avatar">
           {% now "U" as avatar_version %}
-          <img id="user-avatar-img"
-            src="{{ request.user|foto_perfil_url }}?v={{ avatar_version }}"
-            alt="Foto do usuário"
-            onerror="this.onerror=null;this.src='{% static 'core/img/avatar_padrao.png' %}'">
+          <img id="user-avatar-img" src="{{ request.user|foto_perfil_url }}?v={{ avatar_version }}"
+            alt="Foto do usuário" onerror="this.onerror=null;this.src='{% static 'core/img/avatar_padrao.png' %}'">
 
         </div>
 
@@ -197,6 +209,7 @@
   <!-- ═════════ JS ═════════ -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="{% static 'core/js/calendar.js' %}"></script>
+  <script src="{% static 'core/js/theme_manager.js' %}"></script>
   <script src="{% static 'core/js/ui_utils.js' %}"></script>
 
   {% if vite_entry_name %}

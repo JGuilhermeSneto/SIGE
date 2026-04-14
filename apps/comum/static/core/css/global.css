@@ -5,22 +5,22 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-/* ── Design Tokens ── */
-:root {
-  --bg-base:        #090e1a;
-  --bg-surface:     #0f1729;
-  --bg-elevated:    #131e33;
-  --bg-hover:       #1a2844;
+/* ── Design Tokens (default-only; other themes come from design_system/tokens.css + themes.css) ── */
+html[data-theme="default"] {
+  --bg-base: #090e1a;
+  --bg-surface: #0f1729;
+  --bg-elevated: #131e33;
+  --bg-hover: #1a2844;
 
-  --border-subtle:  rgba(255,255,255,.06);
-  --border-mid:     rgba(255,255,255,.12);
+  --border-subtle: rgba(255, 255, 255, .06);
+  --border-mid: rgba(255, 255, 255, .12);
 
-  --accent-violet:  #7c6fff;
-  --accent-cyan:    #22d3ee;
+  --accent-violet: #7c6fff;
+  --accent-cyan: #22d3ee;
 
-  --text-primary:   #eef2ff;
+  --text-primary: #eef2ff;
   --text-secondary: #9aa6c7;
-  --text-muted:     #4a5b7d;
+  --text-muted: #4a5b7d;
 
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -54,11 +54,9 @@
   gap: 18px;
   padding: 0 24px;
 
-  background: linear-gradient(
-    180deg,
-    #0b1224 0%,
-    #090e1a 100%
-  );
+  background: linear-gradient(180deg,
+      #0b1224 0%,
+      #090e1a 100%);
 
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -89,6 +87,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
+  overflow: visible !important;
 }
 
 .icone-menu {
@@ -97,6 +96,7 @@
   color: var(--text-secondary);
   transition: transform .2s, color .2s;
 }
+
 .icone-menu:hover {
   transform: scale(1.08);
   color: var(--accent-violet);
@@ -124,6 +124,7 @@
   overflow: hidden;
   transition: border-color .2s, transform .2s;
 }
+
 .user-avatar:hover {
   border-color: var(--accent-violet);
   transform: scale(1.05);
@@ -150,7 +151,7 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-mid);
   border-radius: var(--radius-md);
-  box-shadow: 0 12px 28px rgba(0,0,0,.45);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, .45);
 
   padding: 6px 0;
   display: none;
@@ -190,11 +191,9 @@
   bottom: 0;
   width: 240px;
 
-  background: linear-gradient(
-    180deg,
-    #0b1224 0%,
-    #090e1a 100%
-  );
+  background: linear-gradient(180deg,
+      #0b1224 0%,
+      #090e1a 100%);
 
   border-right: 1px solid var(--border-subtle);
   padding: 26px 16px;
@@ -252,12 +251,19 @@
 }
 
 @media (max-width: 1024px) {
-  .menu-lateral { width: 210px; }
-  .area-conteudo { margin-left: 210px; }
+  .menu-lateral {
+    width: 210px;
+  }
+
+  .area-conteudo {
+    margin-left: 210px;
+  }
 }
 
 @media (max-width: 768px) {
-  .hamburguer { display: block; }
+  .hamburguer {
+    display: block;
+  }
 
   .menu-lateral {
     left: -100%;

@@ -7,25 +7,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 :root {
-  --bg:          #090e1a;
-  --surface:     #0f1729;
-  --elevated:    #131e33;
-  --hover:       #1a2844;
-  --border:      rgba(255,255,255,.07);
-  --border-mid:  rgba(255,255,255,.13);
-  --accent:      #22d3ee;       /* cyan — cor dos gestores */
-  --accent-dim:  rgba(34,211,238,.12);
-  --accent-glow: rgba(34,211,238,.18);
-  --violet:      #7c6fff;
-  --emerald:     #34d399;
-  --amber:       #fbbf24;
-  --rose:        #fb7185;
-  --text:        #eef2ff;
-  --muted:       #7986a8;
-  --dim:         #3d4f72;
-  --r-sm:        8px;
-  --r-md:        14px;
-  --r-lg:        20px;
+  --bg:       var(--bg-base);
+  --surface:  var(--bg-surface);
+  --elevated: var(--bg-elevated);
+  --hover:    var(--bg-hover);
+  --border:   var(--border-subtle);
+  --border-mid: var(--border-mid);
+
+  --accent:      var(--primary);
+  --accent-dim:  color-mix(in srgb, var(--primary) 16%, transparent);
+  --accent-glow: color-mix(in srgb, var(--primary) 22%, transparent);
+
+  --violet:      var(--accent-violet);
+  --emerald:     var(--accent-emerald);
+  --amber:       var(--accent-amber);
+  --rose:        var(--accent-ruby);
+
+  --text:   var(--text-primary);
+  --muted:  var(--text-secondary);
+  --dim:    var(--text-muted);
+
+  --r-sm: var(--radius-sm);
+  --r-md: var(--radius-md);
+  --r-lg: var(--radius-lg);
 }
 
 /* ── Reset base ── */

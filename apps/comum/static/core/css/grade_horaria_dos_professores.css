@@ -6,7 +6,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Syne:wght@600;700&family=Inter:wght@300;400;500;600&display=swap');
 
-:root {
+html[data-theme="default"] {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
   --bg-elevated:    #131e33;
@@ -26,6 +26,18 @@
   --radius-md:  12px;
   --radius-lg:  18px;
   --radius-xl:  24px;
+}
+
+html[data-theme="cyan"],
+html[data-theme="gray"] {
+  --theme-primary: var(--primary);
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --text-muted: var(--text-muted);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
