@@ -11,3 +11,11 @@ Este diretório contém as configurações para automação do ciclo de desenvol
 ## Manutenção
 
 Sempre que uma nova regra de qualidade de código ou uma nova suíte de testes (ex: testes de UI com Selenium) for adicionada, os arquivos em `workflows/` devem ser atualizados para garantir que o pipeline de CI reflita essas novas exigências.
+
+## Novas áreas sensíveis a CI (Abr/2026)
+
+- Fluxos de calendário escolar (evento/aula suspensa/feriado/prova).
+- Fluxos de gabarito (liberação manual e automática por prazo).
+- Notificações de aluno (nota, chamada, correção e gabarito).
+
+Recomendação: ampliar gradualmente testes automatizados para esses cenários em PRs futuros.

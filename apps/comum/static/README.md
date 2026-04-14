@@ -19,3 +19,14 @@ O projeto migrou para um modelo de "Design Premium". Todas as novas interfaces d
 ## Manutenção
 
 Ao criar um novo estilo CSS, sempre importe os tokens primeiro ou utilize as variáveis globais que já estão disponíveis no `base.html`.
+
+## Atualizações visuais recentes (Abr/2026)
+
+- Calendário (`core/css/calendario_do_menu.css`):
+  - marcação visual para evento e aula suspensa com bolinhas/indicadores;
+  - preservação das cores-base de tipo do dia (feriado, prova, recesso etc.).
+- Painel do aluno (`core/css/painel_dos_alunos.css`):
+  - reorganização dos cards em grade 2x2 (como superusuário);
+  - melhorias de microinterações e animações (stagger, hover refinado, parallax leve de header).
+- Perfil (`core/js/profile_editor.js`):
+  - fluxo de foto sem envio automático indevido, com confirmação no salvar.

@@ -15,3 +15,21 @@ Este é o diretório raiz de configuração do Django. Embora o nome da pasta se
 2. **Ambientes**: O `settings.py` está configurado para alternar entre SQLite (desenvolvimento) e MySQL (produção) automaticamente com base nas variáveis de ambiente.
 3. **Segurança em produção**: mantenha `DEBUG=False`, configure `ALLOWED_HOSTS`, `SECURE_SSL_REDIRECT`, cookies seguros e CORS/CSRF trusted origins para o domínio público.
 4. **Inclusão de Apps**: Sempre adicione novos aplicativos instalados na lista `INSTALLED_APPS` aqui.
+
+## Atualizações recentes relevantes para configuração
+
+- O projeto passou a usar notificações persistentes de aluno (modelo em `apps.academico.models.desempenho`), exigindo migration nova.
+- O domínio de atividades recebeu campos de liberação de gabarito (migration dedicada).
+
+### Checklist pós-pull
+
+Sempre rode:
+
+```bash
+python manage.py migrate
+```
+
+Migrations recentes esperadas:
+
+- `academico.0003_atividadeprofessor_gabarito_liberacao`
+- `academico.0004_notificacaoaluno`

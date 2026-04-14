@@ -42,6 +42,24 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 | **`apps.calendario`** | Calendário acadêmico e eventos. | Visualização mensal, integração com utilitários de grade em `apps.academico`. |
 | **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, **estáticos globais** em `static/core/`. |
 
+### ✨ Atualizações recentes (Abr/2026)
+
+- **Perfil / Avatar**
+  - fluxo de edição de foto estabilizado (preview local + persistência apenas no salvar);
+  - avatar no `base.html` com fonte única e atualização consistente.
+- **Calendário escolar**
+  - suporte visual para evento e aula suspensa sem sobrescrever cores-base de tipo (feriado, prova, recesso etc.);
+  - tooltip padronizado (`Evento`, `Aula suspensa`, `Evento + Aula suspensa`);
+  - geração de base anual preserva dias já ajustados manualmente.
+- **Atividades / Gabarito**
+  - controle de liberação manual do gabarito por professor;
+  - liberação automática por prazo final mantida;
+  - status de gabarito visível na listagem de atividades.
+- **Correção individual**
+  - nota parcial da correção atualiza em tempo real na tela.
+- **Notificações para aluno**
+  - criação de notificações persistentes para: nota, chamada, correção e gabarito.
+
 ---
 
 ## 🧠 2. Lógica de Negócio e Algoritmos
@@ -59,6 +77,14 @@ As regras de situação acadêmica estão centralizadas em `apps/academico/utils
 
 - **View principal**: `visualizar_calendario` em `apps/calendario/views/calendario.py` (monta o mês/ano e usa `gerar_calendario` de `apps.academico.utils.interface_usuario`).
 - **Frontend**: JavaScript em `apps/comum/static/core/js/` (por exemplo `ui_utils.js`, `calendar.js`).
+- **Regra de geração da base anual**: não sobrescreve datas que já tenham ajustes manuais (ex.: prova/evento definido pela gestão).
+
+### 🧪 Gabarito e entrega
+
+- `AtividadeProfessor.exibir_gabarito_para_aluno` considera:
+  - liberação manual (`gabarito_liberado=True`), ou
+  - prazo encerrado (`prazo_encerrado=True`).
+- A correção individual calcula a nota final e grava em `NotaAtividade`.
 
 ### 🔐 Matriz de permissões (RBAC)
 
@@ -182,6 +208,16 @@ Localmente você pode ainda usar **Black** e **isort** (presentes no `requiremen
     python manage.py createsuperuser
     python manage.py runserver
     ```
+
+> Se você estiver atualizando um banco existente, garanta que as migrations mais recentes foram aplicadas:
+>
+> ```bash
+> python manage.py migrate
+> ```
+>
+> As migrations recentes incluem:
+> - `academico.0003_atividadeprofessor_gabarito_liberacao`
+> - `academico.0004_notificacaoaluno`
 
 Para MySQL no ambiente institucional, consulte também `instruções.md`.
 
