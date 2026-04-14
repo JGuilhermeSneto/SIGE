@@ -9,7 +9,7 @@
 # Execução — framework, API, integrações usadas em produção / runserver
 # -----------------------------------------------------------------------------
 asgiref==3.11.1
-Django==6.0.3
+Django==6.0.4
 django-cors-headers==4.9.0
 django-widget-tweaks==1.5.1
 djangorestframework==3.17.1
