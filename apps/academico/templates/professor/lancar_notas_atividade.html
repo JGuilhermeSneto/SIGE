@@ -1,0 +1,143 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load get_item %}
+
+{% block title %}Lançar Notas - {{ atividade.titulo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.main-area { padding: 32px 28px 48px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); animation: fadeIn 0.4s ease-out; }
+.header-painel { margin-bottom: 30px; }
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+.header-label { font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--accent-violet); text-transform: uppercase; }
+.header-painel h1 { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.header-painel h1 .destaque { color: var(--accent-violet); position: relative; }
+
+.notas-container { background: var(--bg-surface); border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.table-notas { width: 100%; border-collapse: collapse; }
+.table-notas th { background: var(--bg-elevated); padding: 15px; text-align: left; font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border-subtle); }
+.table-notas td { padding: 15px; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+.aluno-info { display: flex; align-items: center; gap: 12px; }
+.aluno-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--text-secondary); font-size: 0.8rem; }
+.aluno-nome { font-weight: 600; color: var(--text-primary); }
+
+.input-nota { width: 80px; padding: 8px 12px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); text-align: center; font-weight: 700; transition: all 0.2s; }
+.input-nota:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1); }
+.input-obs { width: 100%; padding: 8px 12px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.85rem; }
+
+.footer-acoes { padding: 25px; background: var(--bg-elevated); display: flex; justify-content: flex-end; gap: 15px; }
+.btn { padding: 10px 24px; border-radius: var(--radius-md); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; border: none; }
+.btn-voltar { background: transparent; border: 1px solid var(--border-mid); color: var(--text-secondary); }
+.btn-voltar:hover { background: var(--bg-hover); color: var(--text-primary); }
+.btn-salvar { background: var(--accent-emerald); color: #090e1a; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.2); }
+.btn-salvar:hover { background: #4ade80; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(52, 211, 153, 0.4); }
+
+.info-banner { background: hsla(260, 80%, 70%, 0.1); border-left: 4px solid var(--accent-violet); padding: 15px 20px; border-radius: var(--radius-md); margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+.info-banner i { color: var(--accent-violet); font-size: 1.2rem; }
+.info-text { font-size: 0.9rem; color: var(--text-secondary); }
+.info-text strong { color: var(--text-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">{{ disciplina.nome }} · Turma {{ disciplina.turma.nome }}</span>
+            <h1>Atribuir Notas: <span class="destaque">{{ atividade.titulo }}</span></h1>
+            <div class="header-breadcrumb" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                <a href="{% url 'listar_atividades' disciplina.id %}" style="color: var(--text-secondary); text-decoration: none;">Atividades</a>
+                <i class="fa-solid fa-chevron-right" style="font-size: 0.6rem; margin: 0 5px;"></i>
+                <span>Lançar Notas</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-banner">
+        <i class="fa-solid fa-circle-check"></i>
+        <div class="info-text">
+            Lançando notas para <strong>{{ atividade.get_tipo_display }}</strong> realizada em <strong>{{ atividade.data|date:"d/m/Y" }}</strong>. 
+            Estas notas são independentes das médias bimestrais.
+        </div>
+    </div>
+
+    <form method="post" class="notas-container">
+        {% csrf_token %}
+        <table class="table-notas">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Aluno</th>
+                    <th style="width: 15%; text-align: center;">Entrega</th>
+                    <th style="width: 10%; text-align: center;">Nota</th>
+                    <th style="width: 45%;">Observação / Feedback</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for aluno in alunos %}
+                {% with nota_obj=notas_dict|get_item:aluno.id %}
+                <tr>
+                    <td>
+                        <div class="aluno-info">
+                            <div class="aluno-avatar">
+                                {{ aluno.nome_completo|slice:":1" }}
+                            </div>
+                            <span class="aluno-nome">{{ aluno.nome_completo }}</span>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        {% with entrega=entregas_dict|get_item:aluno.id %}
+                            {% if entrega %}
+                                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                                    <a href="{% url 'corrigir_entrega' disciplina.id atividade.id entrega.id %}" 
+                                       class="btn-corrigir" title="Abrir Painel de Correção Detalhada"
+                                       style="padding: 6px 12px; background: rgba(139, 92, 246, 0.1); color: var(--accent-violet); border-radius: 4px; font-size: 0.75rem; text-decoration: none; font-weight: 800; border: 1px solid rgba(139, 92, 246, 0.2); transition: all 0.2s;">
+                                        <i class="fa-solid fa-pen-nib"></i> Corrigir
+                                    </a>
+                                    
+                                    {% if entrega.status == 'CORRIGIDO' %}
+                                        <span style="font-size: 0.65rem; color: var(--accent-emerald); font-weight: 700;"><i class="fa-solid fa-check-double"></i> Concluído</span>
+                                    {% elif entrega.status == 'DEVOLVIDO' %}
+                                        <span style="font-size: 0.65rem; color: var(--accent-rose); font-weight: 700;"><i class="fa-solid fa-reply"></i> Devolvido</span>
+                                    {% else %}
+                                        <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">Aguardando</span>
+                                    {% endif %}
+
+                                    {% if entrega.arquivo %}
+                                        <a href="{{ entrega.arquivo.url }}" title="Baixar Anexo" target="_blank" style="color: var(--text-muted); font-size: 0.8rem;">
+                                            <i class="fa-solid fa-file-arrow-down"></i>
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                <span style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.5;">Sem entrega</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td style="text-align: center;">
+                        <input type="text" name="nota_{{ aluno.id }}" 
+                               class="input-nota" placeholder="--" 
+                               value="{{ nota_obj.valor|default:'' }}"
+                               maxlength="4">
+                    </td>
+                    <td>
+                        <input type="text" name="obs_{{ aluno.id }}" 
+                               class="input-obs" placeholder="Opcional..."
+                               value="{{ nota_obj.observacao|default:'' }}">
+                    </td>
+                </tr>
+                {% endwith %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer-acoes">
+            <a href="{% url 'listar_atividades' disciplina.id %}" class="btn btn-voltar">
+                <i class="fa-solid fa-xmark"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-salvar">
+                <i class="fa-solid fa-floppy-disk"></i> Salvar Notas da Turma
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

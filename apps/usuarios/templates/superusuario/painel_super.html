@@ -1,0 +1,178 @@
+{# ============================================================ #}
+{# template: superusuario/painel_super.html                    #}
+{# ============================================================ #}
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Painel — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+
+  {# ════════════════ HEADER ════════════════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">SIGE · Painel de Controle</span>
+      <h1>
+        Olá,
+        <span class="nome-destaque">{{ nome_exibicao }}</span>
+      </h1>
+    </div>
+
+    <form method="get" class="filtro-ano-painel">
+      <span class="icone-cal"><i class="fa-solid fa-calendar-days"></i></span>
+      <label for="filtro-select">Ano Letivo</label>
+      <select id="filtro-select" name="ano" onchange="this.form.submit()">
+        {% for ano in anos_disponiveis %}
+          <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+            {{ ano }}
+          </option>
+        {% endfor %}
+      </select>
+    </form>
+  </header>
+
+  {# ════════════════ CONTEÚDO PRINCIPAL ════════════════ #}
+  <div class="conteudo-geral">
+
+    {# ───── COLUNA ESQUERDA ───── #}
+    <section class="coluna-esquerda">
+
+      {# ── Cards de totais ── #}
+      <section class="cards">
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-users-rectangle"></i>
+          </div>
+          <p class="card-label">Turmas</p>
+          <h2 class="card-valor">{{ total_turmas }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <p class="card-label">Alunos</p>
+          <h2 class="card-valor">{{ total_alunos }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <p class="card-label">Professores</p>
+          <h2 class="card-valor">{{ total_professores }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-book"></i>
+          </div>
+          <p class="card-label">Disciplinas</p>
+          <h2 class="card-valor">{{ total_disciplinas }}</h2>
+        </article>
+      </section>
+
+      {# ── Barra de resumo ── #}
+      <section class="resumo-bar">
+        <div class="resumo-item">
+          <p class="resumo-item-label">Ano Letivo</p>
+          <p class="resumo-item-valor">{{ ano_filtro }}</p>
+        </div>
+        <div class="resumo-item">
+          <p class="resumo-item-label">Total de Alunos</p>
+          <p class="resumo-item-valor">{{ total_alunos }}</p>
+        </div>
+        <div class="resumo-item">
+          <p class="resumo-item-label">Total de Turmas</p>
+          <p class="resumo-item-valor">{{ total_turmas }}</p>
+        </div>
+      </section>
+    </section>
+
+    {# ───── COLUNA DIREITA ───── #}
+    <aside class="coluna-direita">
+
+      {# ── Calendário ── #}
+      <section class="calendario-box">
+        <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link" style="text-decoration: none; color: inherit;">
+          <header class="calendario-cabecalho">
+            <h2 id="cal-mes-nome">{{ mes_nome }}</h2>
+            <span class="calendario-ano" id="cal-ano">{{ ano_filtro }}</span>
+          </header>
+        </a>
+        <div class="calendario-grade" id="cal-grade">
+          <div class="nome-dia">D</div>
+          <div class="nome-dia">S</div>
+          <div class="nome-dia">T</div>
+          <div class="nome-dia">Q</div>
+          <div class="nome-dia">Q</div>
+          <div class="nome-dia">S</div>
+          <div class="nome-dia">S</div>
+
+          {% for d in calendario %}
+            <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}" 
+                 title="{{ d.descricao|default:'' }}">
+              {{ d.numero }}
+            </div>
+          {% endfor %}
+        </div>
+
+        {# Legenda Mini Padronizada #}
+        <div class="mini-legenda" style="flex-wrap: wrap;">
+            <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-letivo"></i> Letivo</span>
+            <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-feriado"></i> Feriado</span>
+            <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-prova"></i> Prova</span>
+            <span class="leg-item"><i class="dot-sabado"></i> Sáb. Letivo</span>
+            <span class="leg-item"><i class="dot-recesso"></i> Recesso</span>
+        </div>
+      </section>
+
+      {# ── Visão geral rápida ── #}
+      <section class="info-rapida">
+        <p class="info-rapida-titulo">Visão Geral</p>
+        <ul class="info-rapida-lista">
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-violet)"></span>
+              Turmas ativas
+            </span>
+            <span class="info-item-valor">{{ total_turmas }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-cyan)"></span>
+              Total de alunos
+            </span>
+            <span class="info-item-valor">{{ total_alunos }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-emerald)"></span>
+              Professores
+            </span>
+            <span class="info-item-valor">{{ total_professores }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-amber)"></span>
+              Disciplinas
+            </span>
+            <span class="info-item-valor">{{ total_disciplinas }}</span>
+          </li>
+        </ul>
+      </section>
+
+    </aside>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{# O calendário é inicializado globalmente pelo calendar.js #}
+{% endblock %}

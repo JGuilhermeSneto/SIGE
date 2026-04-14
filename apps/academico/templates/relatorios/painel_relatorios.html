@@ -1,0 +1,313 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Relatórios Gerenciais — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/relatorios.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+
+  {# ════════════════ HEADER ════════════════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">Administrativo · Inteligência Acadêmica</span>
+      <h1>
+        Relatórios
+        <span class="nome-destaque">Gerenciais</span>
+      </h1>
+    </div>
+
+    <form method="get" class="filtro-ano-painel">
+      <span class="icone-cal"><i class="fa-solid fa-calendar-days"></i></span>
+      
+      <div class="filter-group">
+        <label for="ano-select">Ano</label>
+        <select id="ano-select" name="ano" onchange="this.form.submit()">
+          {% for a in anos_disponiveis %}
+            <option value="{{ a }}" {% if a == ano_filtro %}selected{% endif %}>{{ a }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <span class="filter-divider"></span>
+
+      <div class="filter-group">
+        <label for="mes-select">Mês</label>
+        <select id="mes-select" name="mes" onchange="this.form.submit()">
+          <option value="">Anual</option>
+          {% for val, nome in meses_disponiveis %}
+            <option value="{{ val }}" {% if val == mes_filtro %}selected{% endif %}>{{ nome }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+  </header>
+
+  {# ════════════════ CONTEÚDO PRINCIPAL ════════════════ #}
+  <div class="conteudo-geral">
+
+    {# ───── COLUNA ESQUERDA ───── #}
+    <div class="coluna-esquerda">
+
+      {# Cards de Totais (Grid Padrão) #}
+      <section class="cards">
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <p class="card-label">Total Alunos</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.total_alunos }}">0</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-users-rectangle"></i>
+          </div>
+          <p class="card-label">Turmas Ativas</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.total_turmas }}">0</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-user-plus"></i>
+          </div>
+          <p class="card-label">Ingressantes</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.ingressantes }}">0</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <p class="card-label">Concluintes</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.concluintes }}">0</h2>
+        </article>
+      </section>
+
+      {# Gráfico de Desempenho Panorâmico #}
+      <section class="chart-card">
+        <h3><i class="fa-solid fa-circle-dot"></i> Distribuição de Desempenho Acadêmico</h3>
+        <div style="height: 300px; position: relative;">
+            <canvas id="chartDesempenho"></canvas>
+        </div>
+      </section>
+
+    </div>
+
+    {# ───── COLUNA DIREITA ───── #}
+    <aside class="coluna-direita">
+
+      {# Chart de Usuários (Vertical Mini) #}
+      <section class="info-rapida">
+        <p class="info-rapida-titulo">Engajamento de Usuários</p>
+        <div style="height: 180px; margin-bottom: 15px;">
+            <canvas id="chartUsuarios"></canvas>
+        </div>
+        <ul class="info-rapida-lista">
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--accent-violet)"></span>
+              Ativos
+            </span>
+            <span class="info-item-valor">{{ metricas.usuarios_ativos }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">
+              <span class="info-dot" style="background:var(--text-muted)"></span>
+              Inativos
+            </span>
+            <span class="info-item-valor">{{ metricas.usuarios_inativos }}</span>
+          </li>
+        </ul>
+      </section>
+
+      {# Gerador de Histórico Lateral #}
+      <section class="busca-historico-card">
+        <h4><i class="fa-solid fa-file-pdf" style="color:var(--accent-violet);margin-right:6px;"></i>Emissão de Histórico</h4>
+        <div class="search-mini">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="searchAluno" placeholder="Nome ou CPF (min. 3 letras)..." class="sige-input" autocomplete="off">
+        </div>
+        <div id="resultsList" style="margin-top: 10px;"></div>
+      </section>
+
+      {# Métricas de Sistema #}
+      <section class="info-rapida">
+        <p class="info-rapida-titulo">Infraestrutura</p>
+        <ul class="info-rapida-lista">
+          <li class="info-item">
+            <span class="info-item-nome">Disciplinas</span>
+            <span class="info-item-valor">{{ metricas.total_disciplinas }}</span>
+          </li>
+          <li class="info-item">
+            <span class="info-item-nome">Ano Referência</span>
+            <span class="info-item-valor">{{ ano_filtro }}</span>
+          </li>
+        </ul>
+      </section>
+
+    </aside>
+
+  </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Configurações Globais do Chart.js para o tema Dark
+    Chart.defaults.color = '#8b97bb';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    // --- ANIMAÇÃO DE CONTADORES ---
+    document.querySelectorAll('.counter-anim').forEach(counter => {
+        const target = +counter.getAttribute('data-target');
+        if (target === 0) {
+            counter.innerText = "0";
+            return;
+        }
+        const increment = target / 50;
+        let current = 0;
+
+        const updateCounter = () => {
+            if (current < target) {
+                current += increment;
+                counter.innerText = Math.ceil(current);
+                setTimeout(updateCounter, 20);
+            } else {
+                counter.innerText = target;
+            }
+        };
+        updateCounter();
+    });
+
+    // --- GRÁFICO DE DESEMPENHO (PIE) ---
+    const ctxDesempenho = document.getElementById('chartDesempenho').getContext('2d');
+    new Chart(ctxDesempenho, {
+        type: 'doughnut',
+        data: {
+            labels: ['Aprovados', 'Reprovados', 'Conselho', 'Recuperação'],
+            datasets: [{
+                data: [{{ desempenho.aprovados }}, {{ desempenho.reprovados }}, {{ desempenho.conselho }}, {{ desempenho.recuperacao }}],
+                backgroundColor: ['#34d399', '#f87171', '#fbbf24', '#7c6fff'],
+                borderWidth: 0,
+                hoverOffset: 12
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { padding: 20, font: { size: 12 } } }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // --- GRÁFICO DE USUÁRIOS (BAR MINI) ---
+    const ctxUsuarios = document.getElementById('chartUsuarios').getContext('2d');
+    new Chart(ctxUsuarios, {
+        type: 'bar',
+        data: {
+            labels: ['Ativos', 'Inat.'],
+            datasets: [{
+                data: [{{ metricas.usuarios_ativos }}, {{ metricas.usuarios_inativos }}],
+                backgroundColor: ['#7c6fff', 'rgba(148, 163, 184, 0.15)'],
+                borderRadius: 4,
+                barThickness: 20
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { display: false, beginAtZero: true },
+                x: { grid: { display: false } }
+            },
+            plugins: { legend: { display: false } }
+        }
+    });
+
+</script>
+<script>
+    // ─── BUSCA DINÂMICA DE ALUNOS (AJAX) ────────────────────────
+    const searchInput = document.getElementById('searchAluno');
+    const resultsList = document.getElementById('resultsList');
+    const urlBusca   = "{% url 'buscar_alunos_ajax' %}";
+    let debounceTimer;
+
+    function renderLoading() {
+        resultsList.innerHTML = `
+            <p style="font-size:0.75rem;color:var(--text-muted);padding:8px 0;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="margin-right:6px;"></i>Buscando...
+            </p>`;
+    }
+
+    function renderVazio() {
+        resultsList.innerHTML = `
+            <p style="font-size:0.75rem;color:var(--text-muted);padding:8px 0;">
+                <i class="fa-solid fa-circle-info" style="margin-right:6px;"></i>Nenhum aluno encontrado.
+            </p>`;
+    }
+
+    function renderResultados(alunos) {
+        if (!alunos.length) { renderVazio(); return; }
+
+        const items = alunos.map(a => `
+            <div style="
+                display:flex; justify-content:space-between; align-items:center;
+                padding: 9px 8px; border-bottom: 1px solid var(--border-subtle);
+                transition: background var(--transition-fast); border-radius: var(--radius-sm);
+            "
+            onmouseover="this.style.background='var(--bg-hover)'"
+            onmouseout="this.style.background=''"
+            >
+                <div>
+                    <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin:0;">${a.nome}</p>
+                    <p style="font-size:0.68rem;color:var(--text-muted);margin:0;">${a.turma} · ${a.cpf}</p>
+                </div>
+                <a href="${a.url_pdf}" target="_blank" title="Emitir Histórico"
+                   style="
+                    display:flex; align-items:center; gap:5px; font-size:0.72rem;
+                    font-weight:700; color:var(--accent-violet); white-space:nowrap;
+                    padding: 5px 10px; border-radius: var(--radius-sm);
+                    border: 1px solid var(--border-mid);
+                    transition: all var(--transition-fast);
+                   "
+                   onmouseover="this.style.background='rgba(124,111,255,0.1)'"
+                   onmouseout="this.style.background=''">
+                    <i class="fa-solid fa-file-pdf"></i> PDF
+                </a>
+            </div>
+        `).join('');
+
+        resultsList.innerHTML = `<div style="max-height:280px;overflow-y:auto;">${items}</div>`;
+    }
+
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+
+        if (query.length < 3) {
+            resultsList.innerHTML = '';
+            return;
+        }
+
+        renderLoading();
+
+        debounceTimer = setTimeout(() => {
+            fetch(`${urlBusca}?q=${encodeURIComponent(query)}`)
+                .then(r => r.json())
+                .then(data => renderResultados(data.results))
+                .catch(() => {
+                    resultsList.innerHTML = `
+                        <p style="font-size:0.75rem;color:#f87171;padding:8px 0;">
+                            <i class="fa-solid fa-triangle-exclamation" style="margin-right:6px;"></i>Erro ao buscar. Tente novamente.
+                        </p>`;
+                });
+        }, 300);
+    });
+</script>
+{% endblock %}

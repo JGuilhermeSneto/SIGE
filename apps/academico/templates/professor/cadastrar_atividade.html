@@ -1,0 +1,114 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Nova Atividade | {{ disciplina.nome }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.main-area { padding: 32px 28px 48px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); animation: fadeIn 0.4s ease-out; }
+.header-painel { margin-bottom: 30px; }
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+.header-label { font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--accent-violet); text-transform: uppercase; }
+.header-painel h1 { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.header-painel h1 .destaque { color: var(--accent-violet); position: relative; }
+.form-container { background: var(--bg-surface); padding: 30px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+.centro-wrapper { max-width: 600px; margin: 0 auto; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-secondary); font-size: 0.9rem; }
+.form-control { width: 100%; padding: 12px 15px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'DM Sans', sans-serif; transition: border-color 0.2s; }
+.form-control:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1); }
+textarea.form-control { resize: vertical; }
+.btn-submit { background: var(--accent-emerald); color: #090e1a; font-weight: 700; padding: 12px 24px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: all 0.2s; width: 100%; font-size: 1rem; }
+.btn-submit:hover { background: #4ade80; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(52, 211, 153, 0.4); }
+.alert-warning { background: rgba(251, 191, 36, 0.1); border-left: 4px solid var(--accent-amber); padding: 15px; border-radius: 4px; margin-bottom: 20px; color: var(--text-primary); font-size: 0.9rem; }
+.alert-warning strong { color: var(--accent-amber); }
+.error-msg { color: hsl(350, 85%, 60%); font-size: 0.8rem; margin-top: 5px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="centro-wrapper">
+        <div class="header-painel">
+            <div class="header-esquerda">
+                <span class="header-label">{{ disciplina.nome }}</span>
+                <h1>Cadastrar <span class="destaque">Atividade</span></h1>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="alert-warning">
+                <i class="fa-solid fa-circle-info"></i> 
+                <strong>Atenção:</strong> Avaliações do tipo <b>"Prova"</b> só podem ser agendadas nas datas predefinidas como <b>"Semana de Prova"</b> pelo Gestor Acadêmico no calendário escolar. Trabalhos e Atividades são livres.
+            </div>
+            
+            <form method="post" action="">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="{{ form.titulo.id_for_label }}">Título da Atividade</label>
+                    {{ form.titulo }}
+                    {% if form.titulo.errors %}<div class="error-msg">{{ form.titulo.errors.0 }}</div>{% endif %}
+                </div>
+                
+                <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label for="{{ form.tipo.id_for_label }}">Tipo</label>
+                        {{ form.tipo }}
+                        {% if form.tipo.errors %}<div class="error-msg">{{ form.tipo.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.data.id_for_label }}">Data do Evento</label>
+                        {{ form.data }}
+                        {% if form.data.errors %}<div class="error-msg">{{ form.data.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group" id="prazo-container">
+                    <label for="{{ form.prazo_final.id_for_label }}">Prazo Final para Entrega (Data e Hora)</label>
+                    {{ form.prazo_final }}
+                    {% if form.prazo_final.errors %}<div class="error-msg">{{ form.prazo_final.errors.0 }}</div>{% endif %}
+                    <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Até este horário o aluno poderá enviar ou editar a entrega.</p>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.descricao.id_for_label }}">Descrição Detalhada</label>
+                    {{ form.descricao }}
+                    {% if form.descricao.errors %}<div class="error-msg">{{ form.descricao.errors.0 }}</div>{% endif %}
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-check"></i> Registrar no Cronograma
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Add form-control class to all inputs
+    const inputs = document.querySelectorAll('.form-container input, .form-container select, .form-container textarea');
+    inputs.forEach(input => {
+        if (!input.classList.contains('form-control')) {
+            input.classList.add('form-control');
+        }
+    });
+
+    // Lógica para mostrar/esconder prazo_final
+    const tipoSelect = document.getElementById('id_tipo');
+    const prazoContainer = document.getElementById('prazo-container');
+
+    function togglePrazo() {
+        if (tipoSelect.value === 'PROVA') {
+            prazoContainer.style.display = 'none';
+        } else {
+            prazoContainer.style.display = 'block';
+        }
+    }
+
+    tipoSelect.addEventListener('change', togglePrazo);
+    togglePrazo(); // Call on load
+});
+</script>
+{% endblock %}

@@ -1,0 +1,161 @@
+/* ============================================================
+   SIGE — Inteligência & Relatórios (Dashboard Style v2)
+   Alinhado ao padrão Premium do Painel de Superusuário
+============================================================ */
+
+.painel-sige {
+    animation: fadeIn var(--transition-slow);
+}
+
+/* ── Ajustes de Layout 2 Colunas ── */
+.conteudo-geral {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+    align-items: start;
+    margin-top: 10px;
+}
+
+.coluna-esquerda {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.coluna-direita {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── Filtros Pro ── */
+.filtros-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--border-mid);
+    margin: 0 4px;
+}
+
+/* ── Gráficos em Cards Padrão ── */
+.chart-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: all var(--transition-mid);
+    min-height: 400px;
+}
+
+.chart-card:hover {
+    border-color: var(--border-mid);
+    background: var(--bg-elevated);
+}
+
+.chart-card h3 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chart-card h3 i {
+    color: var(--accent-violet);
+    font-size: 0.85rem;
+}
+
+/* ── Utilitários de Métrica (Counter) ── */
+.counter-anim {
+    display: inline-block;
+}
+
+/* ── Buscador de Históricos (Lateral ou Rodapé) ── */
+.busca-historico-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+}
+
+.busca-historico-card h4 {
+    font-size: .65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .11em;
+    margin-bottom: 12px;
+}
+
+.search-mini {
+    position: relative;
+    width: 100%;
+}
+
+.search-mini i {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.search-mini input {
+    padding-left: 36px !important;
+    font-size: 0.8rem !important;
+    height: 40px !important;
+}
+
+/* ── Info Item Custom ── */
+.info-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 0.8rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.info-status:last-child { border-bottom: none; }
+
+.status-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+}
+
+.status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+}
+
+.status-valor {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ── Responsividade ── */
+@media (max-width: 1080px) {
+    .conteudo-geral { grid-template-columns: 1fr; }
+    .coluna-direita { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 560px) {
+    .coluna-direita { display: flex; flex-direction: column; }
+}

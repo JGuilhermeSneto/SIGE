@@ -1,0 +1,416 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load l10n %}
+
+{% block title %}Meu Painel{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_dos_alunos.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<section class="painel-sige">
+
+    {# ════════════════ HEADER ════════════════ #}
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label"><i class="fa-solid fa-graduation-cap"></i> SIGE · Painel do Aluno</span>
+            <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋</h1>
+            <p class="header-sub">{{ aluno.turma.nome }} · {{ aluno.turma.get_turno_display }}</p>
+        </div>
+        <button onclick="imprimirBoletim()" class="btn-imprimir">
+            <i class="fa-solid fa-print"></i> Imprimir Boletim
+        </button>
+    </div>
+
+    {# ════════════════ CARDS DE RESUMO ════════════════ #}
+    <section class="cards-resumo">
+        <div class="card-info">
+            <div class="card-icon"><i class="fa-solid fa-book"></i></div>
+            <div class="card-dados">
+                <p>Disciplinas</p>
+                <h3>{{ disciplinas_com_notas|length }}</h3>
+            </div>
+        </div>
+
+        <div class="card-info">
+            <div class="card-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="card-dados">
+                <p>Média Geral</p>
+                <h3>{{ media_geral|floatformat:1|default:"--" }}</h3>
+            </div>
+        </div>
+
+        <div class="card-info">
+            <div class="card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+            <div class="card-dados">
+                {% if situacao_geral != "--" %}
+                    <p>Situação Geral</p>
+                    <h3 class="{{ situacao_classe }}">{{ situacao_geral }}</h3>
+                {% else %}
+                    <p>Notas Lançadas</p>
+                    <h3>{{ total_notas_lancadas }}/{{ total_notas_possiveis }}</h3>
+                {% endif %}
+            </div>
+        </div>
+        <a href="{% url 'listar_atividades_aluno' %}" class="card-info" style="text-decoration: none;">
+            <div class="card-icon" style="background: var(--accent-violet);"><i class="fa-solid fa-list-check"></i></div>
+            <div class="card-dados">
+                <p>Atividades</p>
+                <h3 style="color: var(--accent-violet);">Ver Portal</h3>
+            </div>
+        </a>
+    </section>
+
+    <div class="conteudo-geral">
+
+        {# ════════════════ DISCIPLINAS E NOTAS ════════════════ #}
+        <div class="secao-disciplinas">
+            <p class="secao-titulo">
+                <i class="fa-solid fa-book-open"></i> Minhas Disciplinas e Notas
+            </p>
+
+            <div class="lista-disciplinas">
+                {% for item in disciplinas_com_notas %}
+                <div class="disciplina-card">
+                    <div class="disciplina-header" onclick="toggleNotas(this)">
+                        <span class="disciplina-dot"></span>
+                        <div class="disciplina-info">
+                            <h3>{{ item.disciplina.nome }}</h3>
+                            <p>Prof. {{ item.disciplina.professor.nome_completo }}</p>
+                        </div>
+
+                        <div class="disciplina-media">
+                            <span class="label">Média</span>
+                            <span class="valor-media {% if item.nota.media %}{% if item.nota.media >= 7 %}aprovado{% elif item.nota.media >= 5 %}recuperacao{% else %}reprovado{% endif %}{% endif %}">
+                                {{ item.nota.media|floatformat:1|default:"--" }}
+                            </span>
+                        </div>
+
+                        <i class="fa-solid fa-chevron-down seta"></i>
+                    </div>
+
+                    <div class="disciplina-notas">
+                        <div class="nota-item">
+                            <span class="nota-label">1º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota1|default:"--" }}</span>
+                        </div>
+                        <div class="nota-item">
+                            <span class="nota-label">2º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota2|default:"--" }}</span>
+                        </div>
+                        <div class="nota-item">
+                            <span class="nota-label">3º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota3|default:"--" }}</span>
+                        </div>
+                        <div class="nota-item">
+                            <span class="nota-label">4º Bimestre</span>
+                            <span class="nota-valor">{{ item.nota.nota4|default:"--" }}</span>
+                        </div>
+
+                        {# Frequência #}
+                        {% if item.total_aulas > 0 %}
+                        <div class="frequencia-resumo">
+                            <div class="freq-item">
+                                <span class="freq-label">Faltas</span>
+                                <span class="freq-valor">{{ item.faltas }}/{{ item.total_aulas }}</span>
+                            </div>
+                            <div class="freq-barra-wrap">
+                                <div
+                                    class="freq-barra {% if item.percentual_faltas >= 25 %}critica{% elif item.percentual_faltas >= 15 %}alerta{% else %}ok{% endif %}"
+                                    style="width: {{ item.percentual_faltas }}%"
+                                ></div>
+                            </div>
+                            <span class="freq-percentual {% if item.percentual_faltas >= 25 %}reprovado{% elif item.percentual_faltas >= 15 %}recuperacao{% else %}aprovado{% endif %}">
+                                {{ item.percentual_faltas }}% de faltas
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="frequencia-resumo sem-registro">
+                            <span>Nenhuma chamada registrada ainda</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# ════════════════ COLUNA DIREITA ════════════════ #}
+        <div class="coluna-direita">
+
+            {# Gráfico de desempenho #}
+            <div class="card-grafico">
+                <h3><i class="fa-solid fa-chart-bar"></i> Meu Desempenho</h3>
+                <canvas id="graficoDesempenho"></canvas>
+            </div>
+
+            {# Calendário #}
+            <div class="calendario-box">
+                <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link" style="text-decoration: none; color: inherit;">
+                    <header class="calendario-cabecalho">
+                    <h3 id="cal-mes-nome-aluno">{{ mes_nome }}</h3>
+                    <span class="calendario-ano" id="cal-ano-aluno">{{ aluno.turma.ano|default:agora.year }}</span>
+                </header>
+                </a>
+                <div class="calendario-grade" id="cal-grade">
+                    <div class="nome-dia">D</div>
+                    <div class="nome-dia">S</div>
+                    <div class="nome-dia">T</div>
+                    <div class="nome-dia">Q</div>
+                    <div class="nome-dia">Q</div>
+                    <div class="nome-dia">S</div>
+                    <div class="nome-dia">S</div>
+
+                    {% for d in calendario %}
+                      <div class="dia {% if d.vazio %}vazio{% endif %} {% if d.hoje %}atual{% endif %} tipo-{{ d.tipo|lower }}" 
+                           title="{{ d.descricao|default:'' }}">
+                        {{ d.numero }}
+                      </div>
+                    {% endfor %}
+                </div>
+                
+                {# Legenda Mini Padronizada #}
+                <div class="mini-legenda" style="flex-wrap: wrap;">
+                    <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-letivo"></i> Letivo</span>
+                    <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-feriado"></i> Feriado</span>
+                    <span class="leg-item" style="margin-bottom: 4px;"><i class="dot-prova"></i> Prova</span>
+                    <span class="leg-item"><i class="dot-sabado"></i> Sáb. Letivo</span>
+                    <span class="leg-item"><i class="dot-recesso"></i> Recesso</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    {# ════════════════ GRADE HORÁRIA ════════════════ #}
+    <div class="secao-grade">
+        <p class="secao-titulo">
+            <i class="fa-solid fa-clock"></i> Grade Horária — {{ aluno.turma.nome }}
+        </p>
+
+        {% if grade_horario %}
+        <div class="grade-wrapper">
+            <table class="grade-table">
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Segunda</th>
+                        <th>Terça</th>
+                        <th>Quarta</th>
+                        <th>Quinta</th>
+                        <th>Sexta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for horario, aulas in grade_horario.items %}
+                    <tr>
+                        <td class="horario-col">{{ horario }}</td>
+                        <td>{{ aulas.segunda|default:"—" }}</td>
+                        <td>{{ aulas.terca|default:"—" }}</td>
+                        <td>{{ aulas.quarta|default:"—" }}</td>
+                        <td>{{ aulas.quinta|default:"—" }}</td>
+                        <td>{{ aulas.sexta|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="aviso-grade">Grade horária ainda não definida para sua turma.</p>
+        {% endif %}
+    </div>
+
+</section>
+
+
+<!-- MODAL DE IMPRESSÃO -->
+<div id="modal-impressao" class="modal-impressao">
+    <div class="modal-conteudo">
+        <span class="fechar-modal" onclick="fecharModal()">&times;</span>
+        
+        <div id="boletim-imprimir" class="boletim-imprimir">
+            <div class="boletim-header">
+                <h1>BOLETIM ESCOLAR</h1>
+                <p class="sistema">Documento gerado pelo SIGE</p>
+            </div>
+
+            <div class="boletim-info-aluno">
+                <div class="info-linha">
+                    <span class="label">Nome:</span>
+                    <span class="valor">{{ aluno.nome_completo }}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="label">CPF:</span>
+                    <span class="valor">{{ aluno.cpf }}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="label">Data de Nascimento:</span>
+                    <span class="valor">{{ aluno.data_nascimento|date:"d/m/Y" }}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="label">Turma:</span>
+                    <span class="valor">{{ aluno.turma.nome }}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="label">Turno:</span>
+                    <span class="valor">{{ aluno.turma.get_turno_display }}</span>
+                </div>
+                <div class="info-linha">
+                    <span class="label">Ano Letivo:</span>
+                    <span class="valor">{{ aluno.turma.ano }}</span>
+                </div>
+            </div>
+
+            <table class="boletim-tabela">
+                <thead>
+                    <tr>
+                        <th>Disciplina</th>
+                        <th>1º Bim</th>
+                        <th>2º Bim</th>
+                        <th>3º Bim</th>
+                        <th>4º Bim</th>
+                        <th>Média</th>
+                        <th>Faltas</th>
+                        <th>% Faltas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in disciplinas_com_notas %}
+                    <tr>
+                        <td>{{ item.disciplina.nome }}</td>
+                        <td>{{ item.nota.nota1|default:"--" }}</td>
+                        <td>{{ item.nota.nota2|default:"--" }}</td>
+                        <td>{{ item.nota.nota3|default:"--" }}</td>
+                        <td>{{ item.nota.nota4|default:"--" }}</td>
+                        <td><strong>{{ item.nota.media|floatformat:1|default:"--" }}</strong></td>
+                        <td>
+                            {% if item.total_aulas > 0 %}
+                                {{ item.faltas }}/{{ item.total_aulas }}
+                            {% else %}
+                                --
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if item.total_aulas > 0 %}
+                                {{ item.percentual_faltas }}%
+                            {% else %}
+                                --
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5"><strong>Média Geral</strong></td>
+                        <td><strong>{{ media_geral|floatformat:1|default:"--" }}</strong></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    {% if situacao_geral != "--" %}
+                    <tr>
+                        <td colspan="5"><strong>Situação Geral</strong></td>
+                        <td><strong>{{ situacao_geral }}</strong></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    {% endif %}
+                </tfoot>
+            </table>
+
+            <div class="boletim-footer">
+                <p><strong>Data de emissão:</strong> {{ agora|date:"d/m/Y às H:i" }}</p>
+                <p class="assinatura">_______________________________</p>
+                <p class="assinatura-texto">Assinatura do Responsável</p>
+            </div>
+        </div>
+
+        <button onclick="window.print()" class="btn-imprimir-modal">
+            <i class="fa-solid fa-print"></i> Imprimir
+        </button>
+    </div>
+</div>
+
+<script>
+// Toggle disciplinas
+function toggleNotas(element) {
+    const card = element.parentElement;
+    const seta = element.querySelector('.seta');
+    
+    card.classList.toggle('aberto');
+    
+    if (card.classList.contains('aberto')) {
+        seta.style.transform = 'rotate(180deg)';
+    } else {
+        seta.style.transform = 'rotate(0deg)';
+    }
+}
+
+// Modal de impressão
+function imprimirBoletim() {
+    document.getElementById('modal-impressao').style.display = 'flex';
+}
+
+function fecharModal() {
+    document.getElementById('modal-impressao').style.display = 'none';
+}
+
+// Fechar modal clicando fora
+window.onclick = function(event) {
+    const modal = document.getElementById('modal-impressao');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// GRÁFICO DE DESEMPENHO
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('graficoDesempenho');
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    {% for item in disciplinas_com_notas %}
+                        '{{ item.disciplina.nome|truncatechars:15 }}'{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Média',
+                    data: [
+                        {% for item in disciplinas_com_notas %}
+                            {{ item.nota.media|default_if_none:0|unlocalize }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: 'rgba(66, 133, 244, 0.7)',
+                    borderColor: 'rgba(66, 133, 244, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                            stepSize: 2
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+
+{% endblock %}

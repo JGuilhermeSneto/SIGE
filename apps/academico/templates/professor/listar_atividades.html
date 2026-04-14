@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Atividades e Provas | {{ disciplina.nome }}{% endblock %}
+
+{% block extra_css %}
+<!-- Styling for activities -->
+<style>
+.main-area { padding: 32px 28px 48px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); animation: fadeIn 0.4s ease-out; }
+.header-painel { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 30px; }
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+.header-label { font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--accent-violet); text-transform: uppercase; }
+.header-painel h1 { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.header-painel h1 .destaque { color: var(--accent-violet); position: relative; }
+.btn-magic { background: hsla(160, 65%, 52%, 0.12); border: 1px solid var(--accent-emerald); color: var(--accent-emerald); letter-spacing: 0.03em; padding: 10px 24px; border-radius: var(--radius-md); font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+.btn-magic:hover { background: hsla(160, 65%, 52%, 0.22); transform: translateY(-1.5px); }
+.atividades-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.atividade-card { background: var(--bg-surface); padding: 20px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); display: flex; flex-direction: column; gap: 12px; transition: transform 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+.atividade-card:hover { transform: translateY(-4px); border-color: var(--primary); }
+.atividade-tipo { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 700; display: inline-block; width: max-content; }
+.atividade-tipo.tipo-prova { background: rgba(251, 191, 36, 0.15); color: var(--accent-amber); }
+.atividade-tipo.tipo-trabalho { background: rgba(52, 211, 153, 0.15); color: var(--accent-emerald); }
+.atividade-tipo.tipo-atividade { background: rgba(139, 92, 246, 0.15); color: var(--accent-violet); }
+.atividade-titulo { font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.atividade-data { font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+.atividade-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+.empty-state { padding: 40px; text-align: center; color: var(--text-muted); background: var(--bg-surface); border-radius: var(--radius-lg); border: 1px dashed var(--border-mid); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Gestão de Turma · {{ turma.nome }}</span>
+            <h1>Atividades da <span class="destaque">Disciplina</span></h1>
+            <div class="header-breadcrumb" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">
+                <a href="{% url 'disciplinas_turma' turma.id %}" style="color: var(--text-secondary); text-decoration: none;">Turma</a>
+                <i class="fa-solid fa-chevron-right" style="font-size: 0.6rem; margin: 0 5px;"></i>
+                <span>{{ disciplina.nome }}</span>
+            </div>
+        </div>
+        
+        <div class="header-acoes">
+            {% if is_professor %}
+            <a href="{% url 'cadastrar_atividade' disciplina.id %}" class="btn-magic">
+                <i class="fa-solid fa-plus"></i> Adicionar Atividade/Prova
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if atividades %}
+    <div class="atividades-grid">
+        {% for atv in atividades %}
+        <div class="atividade-card">
+            <span class="atividade-tipo tipo-{{ atv.tipo|lower }}">{{ atv.get_tipo_display }}</span>
+            <h3 class="atividade-titulo">{{ atv.titulo }}</h3>
+            <div class="atividade-data">
+                <i class="fa-regular fa-calendar"></i> {{ atv.data|date:"d/m/Y" }}
+            </div>
+            <p class="atividade-desc">{{ atv.descricao|truncatewords:20 }}</p>
+            <div class="atividade-footer" style="margin-top: auto; padding-top: 10px; display: flex; justify-content: flex-end;">
+                <a href="{% url 'lancar_notas_atividade' disciplina.id atv.id %}" class="btn-magic" style="padding: 6px 14px; font-size: 0.75rem;">
+                    <i class="fa-solid fa-graduation-cap"></i> Atribuir Notas
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.5;"></i>
+        <h3>Nenhuma atividade cadastrada</h3>
+        <p>Ainda não há trabalhos ou provas programadas nesta disciplina.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

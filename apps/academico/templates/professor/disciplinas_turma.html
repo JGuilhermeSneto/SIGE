@@ -1,0 +1,108 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Disciplinas - {{ turma.nome }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/professor_disciplina.css' %}">
+<!-- Font Awesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <main class="conteudo-principal">
+
+        <!-- HEADER -->
+        <div class="header-pagina">
+            <div class="header-info">
+                <a href="{% url 'disciplinas_professor' %}" class="btn-voltar">
+                    <i class="fas fa-arrow-left"></i> Voltar às Turmas
+                </a>
+
+                <div class="titulo-container">
+                    <h1>{{ turma.nome }}</h1>
+                    <div class="badges">
+                        <span class="badge badge-ano">{{ turma.ano }}</span>
+                        <span class="badge badge-turno">{{ turma.get_turno_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÃO GRADE HORÁRIA -->
+        <div class="secao-grade">
+            <a href="{% url 'visualizar_grade_professor' turma.id %}" class="btn-grade-horaria">
+                <i class="fas fa-calendar-alt"></i> Ver Grade Horária da Turma
+            </a>
+        </div>
+
+        <!-- LISTA DE DISCIPLINAS -->
+        <div class="secao-disciplinas">
+            <h2 class="subtitulo"><i class="fas fa-book"></i> Disciplinas que leciono nesta turma</h2>
+
+            {% if disciplinas_detalhadas %}
+                <div class="lista-disciplinas">
+                    {% for item in disciplinas_detalhadas %}
+                        <div class="card-disciplina">
+                            <!-- HEADER DA DISCIPLINA -->
+                            <div class="disciplina-header">
+                                <h3>{{ item.disciplina.nome }}</h3>
+                            </div>
+
+                            <!-- INFORMAÇÕES: ALUNOS E NOTAS -->
+                            <div class="disciplina-info">
+                                <div class="info-item">
+                                    <i class="fas fa-users"></i>
+                                    <span class="info-valor">{{ item.alunos_count }} aluno{{ item.alunos_count|pluralize }}</span>
+                                </div>
+
+                                <div class="info-item">
+                                    <i class="fas fa-clipboard"></i>
+                                    <span class="info-valor">{{ item.notas_lancadas }}/{{ item.notas_possiveis }} notas lançadas</span>
+                                </div>
+                            </div>
+
+                            <!-- BARRA DE PROGRESSO -->
+                            <div class="progresso-container">
+                                <div class="progresso-barra">
+                                    <div class="progresso-preenchido" data-percentual="{{ item.percentual|floatformat:0 }}"></div>
+                                </div>
+                                <span class="progresso-texto">{{ item.percentual|floatformat:0 }}% completo</span>
+                            </div>
+
+                            <!-- AÇÕES DA DISCIPLINA -->
+                            <div class="disciplina-acoes" style="display: flex; gap: 10px;">
+                                <a href="{% url 'visualizar_disciplinas' item.disciplina.id %}" class="btn-ver-detalhes">
+                                    <i class="fas fa-eye"></i> Ver Detalhes
+                                </a>
+                                <a href="{% url 'listar_atividades' item.disciplina.id %}" class="btn-ver-detalhes" style="background-color: var(--accent-violet); color: white; border-color: var(--accent-violet);">
+                                    <i class="fas fa-tasks"></i> Atividades/Provas
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="mensagem-vazia">
+                    <i class="fas fa-inbox"></i>
+                    <p>Nenhuma disciplina encontrada nesta turma.</p>
+                </div>
+            {% endif %}
+        </div>
+
+    </main>
+</div>
+
+<!-- SCRIPT PARA ANIMAR A BARRA DE PROGRESSO -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.progresso-preenchido').forEach(function(el) {
+            const percentual = el.getAttribute('data-percentual') || 0;
+            el.style.width = percentual + '%';
+        });
+    });
+</script>
+
+{% endblock %}

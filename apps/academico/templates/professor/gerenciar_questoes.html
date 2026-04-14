@@ -1,0 +1,163 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load l10n %}
+{% load get_item %}
+
+{% block title %}Gerenciar Questões - {{ atividade.titulo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.main-area { padding: 32px 28px 48px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); animation: fadeIn 0.4s ease-out; }
+.header-painel { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+.header-label { font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--accent-violet); text-transform: uppercase; }
+.header-painel h1 { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.header-painel h1 .destaque { color: var(--accent-violet); position: relative; }
+
+.centro-wrapper { max-width: 1000px; margin: 0 auto; }
+.builder-container { display: flex; flex-direction: column; gap: 20px; }
+.questao-card { background: var(--bg-surface); padding: 25px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); position: relative; }
+.questao-card .numero { position: absolute; left: -15px; top: 20px; width: 35px; height: 35px; background: var(--accent-violet); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.9rem; box-shadow: 0 4px 10px rgba(139, 92, 246, 0.4); }
+
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.tipo-selector { display: flex; gap: 10px; }
+.tipo-btn { padding: 6px 15px; border-radius: 30px; font-size: 0.75rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-mid); color: var(--text-muted); transition: all 0.2s; }
+.tipo-btn.active { background: var(--accent-violet); color: white; border-color: var(--accent-violet); }
+
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 700; font-size: 0.85rem; margin-bottom: 8px; color: var(--text-secondary); }
+.input-text { width: 100%; padding: 12px 15px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'DM Sans', sans-serif; outline: none; transition: all 0.2s; }
+.input-text:focus { border-color: var(--accent-violet); }
+
+.alternativas-area { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; padding-left: 20px; border-left: 2px solid var(--border-subtle); }
+.alternativa-item { display: flex; align-items: center; gap: 12px; }
+.alt-radio { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent-emerald); }
+.alt-input { flex: 1; padding: 10px 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); font-size: 0.85rem; }
+
+.btn-add { background: var(--bg-surface); color: var(--text-primary); border: 2px dashed var(--border-mid); padding: 20px; border-radius: var(--radius-xl); cursor: pointer; font-weight: 700; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-add:hover { border-color: var(--accent-violet); color: var(--accent-violet); background: rgba(139, 92, 246, 0.05); }
+
+.footer-acoes { margin-top: 40px; display: flex; justify-content: flex-end; gap: 15px; }
+.btn-salvar { background: var(--accent-emerald); color: #090e1a; font-weight: 800; padding: 12px 30px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px; }
+.btn-salvar:hover { background: #4ade80; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(52, 211, 153, 0.3); }
+
+.btn-remover { color: var(--accent-rose); background: transparent; border: none; cursor: pointer; font-size: 1rem; transition: all 0.2s; }
+.btn-remover:hover { transform: scale(1.1); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="centro-wrapper">
+        <div class="header-painel">
+            <div class="header-esquerda">
+                <span class="header-label">{{ disciplina.nome }} · Turma {{ disciplina.turma.nome }}</span>
+                <h1>Gerenciador de <span class="destaque">Questões</span></h1>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">{{ atividade.get_tipo_display }}: {{ atividade.titulo }}</p>
+            </div>
+            <div class="header-direita">
+                 <a href="{% url 'listar_atividades' disciplina.id %}" class="tipo-btn" style="text-decoration: none;">Voltar</a>
+            </div>
+        </div>
+
+        <form method="post" id="questoes-form">
+            {% csrf_token %}
+            <input type="hidden" name="questoes_count" id="questoes_count" value="0">
+            
+            <div id="questoes-lista" class="builder-container">
+                <!-- Questões serão injetadas aqui via JS ou Carregadas do DB -->
+            </div>
+
+            <button type="button" class="btn-add" onclick="addQuestao()">
+                <i class="fa-solid fa-plus"></i> Adicionar Nova Questão
+            </button>
+
+            <div class="footer-acoes">
+                <button type="submit" class="btn-salvar">
+                    <i class="fa-solid fa-floppy-disk"></i> Salvar Todas as Questões
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let count = 0;
+
+function addQuestao(data = null) {
+    count++;
+    document.getElementById('questoes_count').value = count;
+    
+    const container = document.getElementById('questoes_lista');
+    const type = data ? data.tipo : 'OBJETIVA';
+    
+    const card = document.createElement('div');
+    card.className = 'questao-card';
+    card.id = `card-${count}`;
+    card.innerHTML = `
+        <div class="numero">${count}</div>
+        <div class="card-header">
+            <div class="tipo-selector">
+                <input type="hidden" name="questao_tipo_${count}" id="type-${count}" value="${type}">
+                <div class="tipo-btn ${type === 'OBJETIVA' ? 'active' : ''}" onclick="setType(${count}, 'OBJETIVA')">Objetiva</div>
+                <div class="tipo-btn ${type === 'DISCURSIVA' ? 'active' : ''}" onclick="setType(${count}, 'DISCURSIVA')">Discursiva</div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; gap: 8px;">
+                    <label style="margin-bottom: 0;">Valor (pts):</label>
+                    <input type="number" step="0.5" name="questao_valor_${count}" value="${data ? data.valor : '1.0'}" class="input-text" style="width: 70px; padding: 6px 10px;">
+                </div>
+                <button type="button" class="btn-remover" onclick="removerQuestao(${count})"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Enunciado da Questão</label>
+            <textarea name="questao_texto_${count}" class="input-text" rows="3" placeholder="Digite aqui o comando da questão...">${data ? data.texto : ''}</textarea>
+        </div>
+
+        <div class="alternativas-area" id="alts-area-${count}" style="display: ${type === 'OBJETIVA' ? 'flex' : 'none'}">
+            <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Alternativas (Marque a Correta)</label>
+            ${[1,2,3,4,5].map(j => `
+                <div class="alternativa-item">
+                    <input type="radio" name="correta_${count}" value="${j}" class="alt-radio" ${data && data.alternativas[j-1] && data.alternativas[j-1].correta ? 'checked' : (j===1 ? 'checked' : '')}>
+                    <input type="text" name="alt_${count}_${j}" class="alt-input" placeholder="Opção ${String.fromCharCode(64+j)}" value="${data && data.alternativas[j-1] ? data.alternativas[j-1].texto : ''}">
+                </div>
+            `).join('')}
+        </div>
+    `;
+    container.appendChild(card);
+}
+
+function setType(qId, type) {
+    document.getElementById(`type-${qId}`).value = type;
+    const btns = document.querySelectorAll(`#card-${qId} .tipo-btn`);
+    btns.forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.getElementById(`alts-area-${qId}`).style.display = type === 'OBJETIVA' ? 'flex' : 'none';
+}
+
+function removerQuestao(qId) {
+    document.getElementById(`card-${qId}`).remove();
+    // Reajustar counts no envio ou apenas deixar id livre
+}
+
+// Carregar questões existentes
+{% for q in questoes %}
+addQuestao({
+    texto: "{{ q.texto|escapejs }}",
+    tipo: "{{ q.tipo }}",
+    valor: "{{ q.valor|unlocalize }}",
+    alternativas: [
+        {% for alt in q.alternativas.all %}
+        { texto: "{{ alt.texto|escapejs }}", correta: {{ alt.eh_correta|yesno:"true,false" }} }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ]
+});
+{% endfor %}
+
+// Se não houver questões, adiciona uma vazia
+if (count === 0) addQuestao();
+</script>
+{% endblock %}

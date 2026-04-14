@@ -1,0 +1,169 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load l10n %}
+{% load get_item %}
+
+{% block title %}Corrigir Entrega - {{ entrega.aluno.nome_completo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.main-area { padding: 32px 28px 48px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); animation: fadeIn 0.4s ease-out; }
+.header-painel { margin-bottom: 30px; }
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+.header-label { font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--accent-violet); text-transform: uppercase; }
+.header-painel h1 { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.header-painel h1 .destaque { color: var(--accent-violet); position: relative; }
+
+.corrigir-container { display: grid; grid-template-columns: 1fr 350px; gap: 30px; align-items: start; max-width: 1100px; margin: 0 auto; }
+.questoes-list { display: flex; flex-direction: column; gap: 20px; }
+.questao-correcao { background: var(--bg-surface); padding: 25px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); position: relative; }
+.questao-numero { position: absolute; left: -15px; top: 20px; width: 30px; height: 30px; background: var(--bg-hover); color: var(--text-secondary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; border: 1px solid var(--border-mid); }
+
+.resp-aluno { background: var(--bg-elevated); padding: 15px; border-radius: var(--radius-md); border-left: 4px solid var(--border-mid); margin-bottom: 20px; }
+.resp-aluno label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 5px; }
+
+.status-badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 800; }
+.status-correta { background: rgba(52, 211, 153, 0.1); color: #4ade80; border: 1px solid rgba(52, 211, 153, 0.2); }
+.status-errada { background: rgba(244, 63, 94, 0.1); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.2); }
+
+.feedback-area { margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-mid); }
+.feedback-area textarea { width: 100%; background: transparent; border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); padding: 10px; font-size: 0.85rem; outline: none; }
+.feedback-area textarea:focus { border-color: var(--accent-violet); }
+
+.sidebar-correcao { background: var(--bg-surface); padding: 25px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); position: sticky; top: 20px; }
+.nota-resumo { text-align: center; margin-bottom: 25px; padding: 20px; background: var(--bg-elevated); border-radius: var(--radius-lg); }
+.nota-resumo h2 { font-family: 'Syne', sans-serif; font-size: 2.5rem; margin: 0; color: var(--accent-emerald); }
+.nota-resumo p { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; }
+
+.select-status { width: 100%; padding: 12px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); margin-bottom: 20px; font-weight: 700; }
+
+.btn-finalizar { background: var(--accent-emerald); color: #090e1a; width: 100%; padding: 15px; border-radius: var(--radius-md); border: none; font-weight: 800; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-finalizar:hover { background: #4ade80; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(52, 211, 153, 0.3); }
+
+.arquivo-download { display: flex; align-items: center; gap: 10px; padding: 12px; background: rgba(139, 92, 246, 0.05); border-radius: var(--radius-md); margin-bottom: 20px; color: var(--accent-violet); text-decoration: none; font-size: 0.85rem; font-weight: 700; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">{{ atividade.titulo }} · Correção Individual</span>
+            <h1>Aluno: <span class="destaque">{{ entrega.aluno.nome_completo }}</span></h1>
+        </div>
+    </div>
+
+    <form method="post" class="corrigir-container">
+        {% csrf_token %}
+        
+        <div class="questoes-list">
+            {% for q in questoes %}
+            {% with r=respostas|get_item:q.id %}
+            <div class="questao-correcao">
+                <div class="questao-numero">{{ forloop.counter }}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span style="font-weight: 700; color: var(--text-secondary); font-size: 0.9rem;">{{ q.tipo|title }}</span>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        {% if q.tipo == 'OBJETIVA' %}
+                            {% if r.alternativa_escolhida.eh_correta %}
+                                <span class="status-badge status-correta"><i class="fa-solid fa-check"></i> Acertou</span>
+                            {% else %}
+                                <span class="status-badge status-errada"><i class="fa-solid fa-xmark"></i> Errou</span>
+                            {% endif %}
+                        {% endif %}
+                        <span class="questao-valor" style="font-size: 0.7rem; color: var(--text-muted);">{{ q.valor }} pts</span>
+                    </div>
+                </div>
+
+                <div class="questao-enunciado" style="font-size: 0.95rem; margin-bottom: 20px; line-height: 1.5;">
+                    {{ q.texto|linebreaksbr }}
+                </div>
+
+                <div class="resp-aluno">
+                    <label>Resposta do Aluno:</label>
+                    <p style="margin: 0; font-weight: 700; color: var(--text-primary);">
+                        {% if q.tipo == 'OBJETIVA' %}
+                            {{ r.alternativa_escolhida.texto|default:"Não respondeu" }}
+                            {% if not r.alternativa_escolhida.eh_correta %}
+                                <span style="display: block; font-size: 0.75rem; color: var(--accent-emerald); font-weight: 400; margin-top: 5px;">
+                                    Gabarito: <strong>{% for a in q.alternativas.all %}{% if a.eh_correta %}{{ a.texto }}{% endif %}{% endfor %}</strong>
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            {{ r.texto_resposta|default:"Não respondeu"|linebreaksbr }}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="feedback-area">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <label style="font-size: 0.75rem; font-weight: 800; color: var(--text-secondary);">FEEDBACK DA QUESTÃO</label>
+                        {% if q.tipo == 'DISCURSIVA' %}
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <label style="margin: 0;">Pontos:</label>
+                                <input type="number" step="0.1" name="pontos_{{ q.id }}" value="{{ r.pontos_atribuidos|default:0 }}" 
+                                       style="width: 60px; padding: 4px; border-radius: 4px; border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-primary);">
+                                <span style="font-size: 0.7rem; color: var(--text-muted);"> / {{ q.valor }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <textarea name="feedback_{{ q.id }}" rows="2" placeholder="Digite aqui o que o aluno errou ou acertou nesta questão...">{{ r.comentario_professor|default:'' }}</textarea>
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+
+        <div class="sidebar-correcao">
+            <div class="nota-resumo">
+                <p>Nota Final Sugerida (Objetivas)</p>
+                <h2 id="nota-total">--</h2>
+                <p>Baseada nos acertos automáticos</p>
+            </div>
+
+            {% if entrega.arquivo %}
+            <a href="{{ entrega.arquivo.url }}" class="arquivo-download" target="_blank">
+                <i class="fa-solid fa-file-arrow-down"></i> Baixar Arquivo Anexo
+            </a>
+            {% endif %}
+
+            <div class="form-group">
+                <label style="font-size: 0.75rem; font-weight: 800; color: var(--text-secondary); margin-bottom: 8px; display: block;">STATUS DA CORREÇÃO</label>
+                <select name="status" class="select-status">
+                    <option value="CORRIGIDO" {% if entrega.status == 'CORRIGIDO' %}selected{% endif %}>Concluída (Nota Final)</option>
+                    <option value="DEVOLVIDO" {% if entrega.status == 'DEVOLVIDO' %}selected{% endif %}>Devolvida (Para Ajustes)</option>
+                    <option value="ENTREGUE" {% if entrega.status == 'ENTREGUE' %}selected{% endif %}>Aguardando Revisão</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label style="font-size: 0.75rem; font-weight: 800; color: var(--text-secondary); margin-bottom: 8px; display: block;">OBSERVAÇÃO GERAL</label>
+                <textarea name="obs_geral" rows="4" class="textarea-msg" style="width: 100%; padding: 10px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: 8px; color: var(--text-primary);" placeholder="Dê um feedback geral sobre o desempenho do aluno...">{{ entrega.feedback_professor|default:'' }}</textarea>
+            </div>
+
+            <button type="submit" class="btn-finalizar">
+                <i class="fa-solid fa-check-double"></i> Finalizar Correção
+            </button>
+            <a href="{% url 'lancar_notas_atividade' disciplina.id atividade.id %}" style="display: block; text-align: center; margin-top: 15px; color: var(--text-muted); font-size: 0.8rem; text-decoration: none;">Cancelar e Sair</a>
+        </div>
+    </form>
+</div>
+
+<script>
+// Calcular nota automática no load
+function calcularNota() {
+    let total = 0;
+    {% for q in questoes %}
+        {% with r=respostas|get_item:q.id %}
+            {% if q.tipo == 'OBJETIVA' %}
+                {% if r.alternativa_escolhida.eh_correta %}
+                    total += {{ q.valor|unlocalize }};
+                {% endif %}
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+    document.getElementById('nota-total').innerText = total.toFixed(1);
+}
+calcularNota();
+</script>
+{% endblock %}

@@ -1,0 +1,192 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% load get_item %}
+
+{% block title %}Resolver / Entregar Atividade - {{ atividade.titulo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.main-area { padding: 32px 28px 48px; font-family: 'DM Sans', sans-serif; color: var(--text-primary); animation: fadeIn 0.4s ease-out; }
+.centro-wrapper { max-width: 800px; margin: 0 auto; }
+.header-painel { margin-bottom: 30px; }
+.header-esquerda { display: flex; flex-direction: column; gap: 4px; }
+.header-label { font-size: .72rem; font-weight: 600; letter-spacing: .14em; color: var(--accent-violet); text-transform: uppercase; }
+.header-painel h1 { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+.header-painel h1 .destaque { color: var(--accent-violet); position: relative; }
+
+.prazo-banner { background: var(--bg-surface); padding: 15px 25px; border-radius: var(--radius-lg); border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+.prazo-info { display: flex; align-items: center; gap: 15px; }
+.prazo-info i { font-size: 1.5rem; color: var(--accent-violet); }
+.prazo-texto b { color: var(--accent-rose); }
+
+.questao-item { background: var(--bg-surface); padding: 30px; border-radius: var(--radius-xl); border: 1px solid var(--border-subtle); margin-bottom: 25px; position: relative; }
+.questao-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: 700; font-family: 'Syne', sans-serif; }
+.questao-valor { font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-hover); padding: 4px 10px; border-radius: 20px; }
+.questao-enunciado { font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px; color: var(--text-primary); }
+
+.options-list { display: flex; flex-direction: column; gap: 12px; }
+.option-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; }
+.option-item:hover { border-color: var(--accent-violet); background: rgba(139, 92, 246, 0.05); }
+.option-item.selected { border-color: var(--accent-violet); background: rgba(139, 92, 246, 0.1); }
+.option-item input[type="radio"] { width: 20px; height: 20px; accent-color: var(--accent-violet); margin: 0; }
+.option-text { font-size: 0.95rem; flex: 1; }
+
+.textarea-discursiva { width: 100%; padding: 15px; background: var(--bg-elevated); border: 1px solid var(--border-mid); border-radius: var(--radius-md); color: var(--text-primary); font-family: 'DM Sans', sans-serif; resize: vertical; min-height: 150px; outline: none; transition: border-color 0.2s; }
+.textarea-discursiva:focus { border-color: var(--accent-violet); }
+
+.gabarito-tag { margin-top: 10px; font-size: 0.8rem; padding: 5px 12px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px; }
+.tag-correct { background: rgba(52, 211, 153, 0.15); color: #4ade80; }
+.tag-wrong { background: rgba(244, 63, 94, 0.15); color: #fb7185; }
+
+.btn-submit { background: var(--accent-emerald); color: #090e1a; font-weight: 800; padding: 16px 32px; border-radius: var(--radius-md); border: none; cursor: pointer; transition: all 0.2s; width: 100%; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 20px; }
+.btn-submit:hover { background: #4ade80; transform: translateY(-2px); box-shadow: 0 10px 30px rgba(52, 211, 153, 0.3); }
+.btn-disabled { background: var(--border-mid); color: var(--text-muted); cursor: not-allowed; }
+
+.upload-section { margin-top: 40px; border-top: 1px dashed var(--border-mid); padding-top: 30px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="centro-wrapper">
+        <div class="header-painel">
+            <div class="header-esquerda">
+                <span class="header-label">{{ atividade.disciplina.nome }} · {{ atividade.get_tipo_display }}</span>
+                <h1>{{ atividade.titulo }}</h1>
+            </div>
+        </div>
+
+        <div class="prazo-banner">
+            <div class="prazo-info">
+                <i class="fa-solid fa-clock"></i>
+                <div class="prazo-texto">
+                    {% if prazo_expirado %}
+                        <span>Status: <b style="color: var(--accent-rose);">Prazo Encerrado</b></span>
+                    {% else %}
+                        <span>Entrega até: <b>{{ atividade.prazo_final|date:"d/m/Y - H:i" }}</b></span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if prazo_expirado %}
+                <span class="questao-valor" style="background: var(--accent-violet); color: white;">Gabarito Liberado</span>
+            {% endif %}
+        </div>
+
+        {% if atividade.descricao %}
+        <div class="questao-item" style="padding: 20px;">
+            <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">{{ atividade.descricao|linebreaksbr }}</p>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" id="quiz-form">
+            {% csrf_token %}
+
+            {% for q in questoes %}
+            <div class="questao-item" id="q-{{ q.id }}">
+                <div class="questao-header">
+                    <span>Questão {{ forloop.counter }}</span>
+                    <span class="questao-valor">{{ q.valor }} pontos</span>
+                </div>
+                <div class="questao-enunciado">
+                    {{ q.texto|linebreaksbr }}
+                </div>
+
+                {% if q.tipo == 'OBJETIVA' %}
+                    <div class="options-list">
+                        {% for alt in q.alternativas.all %}
+                        {% with r=respostas_atuais|get_item:q.id %}
+                        <label class="option-item {% if r.alternativa_escolhida_id == alt.id %}selected{% endif %}">
+                            <input type="radio" name="questao_{{ q.id }}" value="{{ alt.id }}" 
+                                   {% if r.alternativa_escolhida_id == alt.id %}checked{% endif %}
+                                   {% if prazo_expirado %}disabled{% endif %}>
+                            <span class="option-text">{{ alt.texto }}</span>
+                            
+                            {% if exibir_gabarito %}
+                                {% if alt.eh_correta %}
+                                    <span class="gabarito-tag tag-correct"><i class="fa-solid fa-check"></i> Correta</span>
+                                {% elif r.alternativa_escolhida_id == alt.id %}
+                                    <span class="gabarito-tag tag-wrong"><i class="fa-solid fa-xmark"></i> Sua Escolha</span>
+                                {% endif %}
+                            {% endif %}
+                        </label>
+                        {% endwith %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% with r=respostas_atuais|get_item:q.id %}
+                    <textarea name="questao_{{ q.id }}" class="textarea-discursiva" 
+                              placeholder="Digite sua resposta detalhadamente..."
+                              {% if prazo_expirado %}disabled{% endif %}>{{ r.texto_resposta|default:'' }}</textarea>
+                              
+                    {% if exibir_gabarito and r.comentario_professor %}
+                        <div class="info-atv" style="margin-top: 15px; background: rgba(139, 92, 246, 0.05);">
+                            <label style="font-size: 0.75rem; font-weight: 800; color: var(--accent-violet);">CORREÇÃO DO PROFESSOR:</label>
+                            <p style="color: var(--text-primary); font-size: 0.9rem; margin-top: 5px;">{{ r.comentario_professor }}</p>
+                        </div>
+                    {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="upload-section">
+                <div class="questao-header"><span style="color: var(--text-secondary);">Anexo Adicional (Opcional)</span></div>
+                <div class="form-group">
+                    {% if not prazo_expirado %}
+                    <div class="upload-box" style="margin-bottom: 15px;">
+                        <input type="file" name="arquivo" id="file-input" onchange="updateFileName()">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p id="file-name">Clique para selecionar ou arraste o arquivo adicional</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if entrega.arquivo %}
+                    <div class="arquivo-atual" style="margin-bottom: 20px;">
+                        <i class="fa-solid fa-file-circle-check"></i>
+                        <span>Arquivo enviado: <a href="{{ entrega.arquivo.url }}" target="_blank" style="color: inherit; font-weight: 800;">{{ entrega.arquivo.name|cut:"entregas/atividades/" }}</a></span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: 700; color: var(--text-secondary); font-size: 0.85rem;">Comentário Geral / Justificativa</label>
+                    <textarea name="comentario" class="textarea-msg" style="width: 100%;" 
+                              {% if prazo_expirado %}disabled{% endif %}
+                              placeholder="Alguma observação importante sobre sua entrega?">{{ entrega.comentario_aluno|default:'' }}</textarea>
+                </div>
+            </div>
+
+            {% if not prazo_expirado %}
+                <button type="submit" class="btn-submit">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar Respostas e Finalizar
+                </button>
+            {% else %}
+                <div class="btn-submit btn-disabled">
+                    <i class="fa-solid fa-lock"></i> Entrega Encerrada
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<script>
+function updateFileName() {
+    const input = document.getElementById('file-input');
+    const label = document.getElementById('file-name');
+    if (input.files.length > 0) {
+        label.innerText = "Selecionado: " + input.files[0].name;
+    }
+}
+
+// Highlight selected options
+document.querySelectorAll('.option-item input').forEach(radio => {
+    radio.addEventListener('change', (e) => {
+        const parent = e.target.closest('.options-list');
+        parent.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
+        if (e.target.checked) {
+            e.target.closest('.option-item').classList.add('selected');
+        }
+    });
+});
+</script>
+{% endblock %}
