@@ -1,0 +1,235 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Meus Materiais de Aula{% endblock %}
+
+{% block extra_css %}
+<style>
+    .main-area {
+        padding: 32px 28px 48px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text-primary);
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .header-painel h1 {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.85rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .header-painel p {
+        color: var(--text-secondary);
+        margin-bottom: 30px;
+    }
+
+    .disciplina-section {
+        margin-bottom: 40px;
+        background: var(--bg-surface);
+        padding: 24px;
+        border-radius: 20px;
+        border: 1px solid var(--border-subtle);
+    }
+
+    .disciplina-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-subtle);
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .disciplina-header h2 {
+        font-family: 'Syne', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--accent-violet);
+        margin: 0;
+    }
+
+    .disciplina-header .professor-tag {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        background: var(--bg-elevated);
+        padding: 6px 14px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--border-mid);
+    }
+
+    .materiais-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+
+    .material-card {
+        background: var(--bg-elevated);
+        padding: 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border-mid);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .material-card:hover {
+        transform: translateX(5px);
+        border-color: var(--accent-violet);
+        background: var(--bg-surface);
+        box-shadow: 4px 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .material-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .icon-link { background: rgba(139, 92, 246, 0.12); color: var(--accent-violet); }
+    .icon-arquivo { background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); }
+    .icon-livro { background: rgba(251, 191, 36, 0.12); color: var(--accent-amber); }
+
+    .material-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .material-titulo {
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0 0 4px;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .material-desc {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .material-meta {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: var(--bg-surface);
+        border-radius: 20px;
+        border: 1px dashed var(--border-mid);
+        color: var(--text-muted);
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        opacity: 0.3;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-area">
+    <div class="header-painel" style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
+        <a href="{% url 'painel_aluno' %}" class="btn-action" style="width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-secondary); text-decoration: none; transition: all 0.2s; flex-shrink: 0;" title="Voltar ao Painel">
+            <i class="fa-solid fa-arrow-left"></i>
+        </a>
+        <div style="flex: 1;">
+            <h1 style="margin-bottom: 4px;">Meus <span class="destaque">Materiais de Aula</span></h1>
+            <p style="margin-bottom: 0; color: var(--text-secondary);">Consulte arquivos, links e referências postados por seus professores para suas disciplinas.</p>
+        </div>
+    </div>
+
+    {% if disciplinas %}
+        {% for disc in disciplinas %}
+            {% if disc.materiais.exists %}
+            <div class="disciplina-section">
+                <div class="disciplina-header">
+                    <h2>{{ disc.nome }}</h2>
+                    <span class="professor-tag">
+                        <i class="fa-solid fa-chalkboard-user"></i> 
+                        {{ disc.professor.nome_completo }}
+                    </span>
+                </div>
+
+                <div class="materiais-grid">
+                    {% for mat in disc.materiais.all %}
+                    <a href="{% if mat.tipo == 'LINK' %}{{ mat.url }}{% elif mat.tipo == 'ARQUIVO' %}{{ mat.arquivo.url }}{% elif mat.tipo == 'LIVRO' %}{% if mat.livro.arquivo_digital %}{{ mat.livro.arquivo_digital.url }}{% elif mat.livro.url_digital %}{{ mat.livro.url_digital }}{% else %}{% url 'acervo_biblioteca' %}{% endif %}{% else %}#{% endif %}" 
+                       class="material-card" {% if mat.tipo != 'LIVRO' or mat.livro.arquivo_digital or mat.livro.url_digital %}target="_blank"{% endif %}>
+                        <div class="material-icon icon-{{ mat.tipo|lower }}">
+                            {% if mat.tipo == 'LINK' %}
+                                <i class="fa-solid fa-link"></i>
+                            {% elif mat.tipo == 'ARQUIVO' %}
+                                <i class="fa-solid fa-file-pdf"></i>
+                            {% else %}
+                                <i class="fa-solid fa-book"></i>
+                            {% endif %}
+                        </div>
+                        <div class="material-info">
+                            <h3 class="material-titulo">{{ mat.titulo }}</h3>
+                            <p class="material-desc">
+                                {% if mat.tipo == 'LIVRO' %}
+                                    Referência: {{ mat.livro.titulo }}
+                                {% elif mat.descricao %}
+                                    {{ mat.descricao }}
+                                {% else %}
+                                    {{ mat.get_tipo_display }}
+                                {% endif %}
+                            </p>
+                            <div class="material-meta">
+                                <span><i class="fa-regular fa-calendar-check"></i> {{ mat.criado_em|date:"d/m/Y" }}</span>
+                            </div>
+                        </div>
+                        <div class="arrow">
+                            <i class="fa-solid fa-arrow-right-long" style="opacity: 0.4;"></i>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        
+        {% if not has_any_materials %}
+        <div class="empty-state">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>Nenhum material postado ainda</h3>
+            <p>Seus professores ainda não disponibilizaram materiais para suas disciplinas atuais.</p>
+        </div>
+        {% endif %}
+    {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h3>Você não está matriculado em disciplinas</h3>
+            <p>Entre em contato com a secretaria para verificar sua grade curricular.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -10,6 +10,11 @@ class Livro(models.Model):
     editora = models.CharField(max_length=100, blank=True, null=True)
     capa = models.ImageField(upload_to='biblioteca/capas/', blank=True, null=True)
     quantidade_total = models.PositiveIntegerField(default=1)
+    
+    # Suporte Online/Digital
+    arquivo_digital = models.FileField(upload_to='biblioteca/digitais/', blank=True, null=True, verbose_name="Arquivo PDF/Digital")
+    url_digital = models.URLField(blank=True, null=True, verbose_name="Link para E-book/Conteúdo Online")
+    
     # quantidade_disponivel será calculada via property ou campo denormalizado
     
     def __str__(self):

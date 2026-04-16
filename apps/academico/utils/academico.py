@@ -56,10 +56,10 @@ def _get_turno_key(turno):
     return turno.lower().replace("ã", "a").replace("á", "a")
 
 
-def _get_grade_horario_turma(turma):
-    """Retorna a grade horária de uma turma em formato de dicionário."""
+def _get_grade_horario_turma(turma, data_inicio=None, data_fim=None):
+    """Retorna a grade horária da turma, opcionalmente marcando aulas suspensas no intervalo."""
     turno_key = _get_turno_key(turma.turno)
-    horarios  = HORARIOS.get(turno_key, [])
+    horarios = HORARIOS.get(turno_key, [])
 
     if not horarios:
         return None
@@ -69,17 +69,32 @@ def _get_grade_horario_turma(turma):
         for horario in horarios
     }
 
-    from ..models.academico import GradeHorario
-    registros = (
-        GradeHorario.objects
-        .filter(turma=turma)
-        .select_related("disciplina")
-    )
+    from ..models.academico import GradeHorario, PlanejamentoAula
+    registros = GradeHorario.objects.filter(turma=turma).select_related("disciplina")
+
+    # Buscar suspensões se houver intervalo de datas
+    suspensoes = {}
+    if data_inicio and data_fim:
+        WEEKDAY_MAP = {0: 'segunda', 1: 'terca', 2: 'quarta', 3: 'quinta', 4: 'sexta'}
+        aulas_suspendas = PlanejamentoAula.objects.filter(
+            turma=turma,
+            data_aula__range=[data_inicio, data_fim],
+            status='SUSPENSA'
+        )
+        for asu in aulas_suspendas:
+            dia_key = WEEKDAY_MAP.get(asu.data_aula.weekday())
+            if dia_key:
+                # Chave: (horario, dia)
+                suspensoes[(asu.horario_aula, dia_key)] = True
 
     houve_registro = False
     for registro in registros:
         if registro.horario in grade_horario and registro.dia in grade_horario[registro.horario]:
-            grade_horario[registro.horario][registro.dia] = registro.disciplina.nome
+            nome_disc = registro.disciplina.nome
+            if (registro.horario, registro.dia) in suspensoes:
+                nome_disc = f"{nome_disc} (SUSPENSA)"
+            
+            grade_horario[registro.horario][registro.dia] = nome_disc
             houve_registro = True
 
     return grade_horario if houve_registro else None

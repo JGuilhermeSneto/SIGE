@@ -246,6 +246,12 @@
       <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
         <i class="fa-solid fa-book-open"></i> Biblioteca
       </a>
+      <a href="{% url 'gestao_atestados' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
+        <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
+        {% if global_atestados_pendentes > 0 %}
+          <span class="badge-notificacao" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: var(--status-reprovado); color: white; border-radius: 10px; padding: 2px 8px; font-size: 0.65rem; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">{{ global_atestados_pendentes }}</span>
+        {% endif %}
+      </a>
 
       {% elif request.user|has_attr:"professor" %}
       <a href="{% url 'painel_professor' %}"
@@ -265,6 +271,9 @@
       </a>
       <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
         <i class="fa-solid fa-book-open"></i> Biblioteca
+      </a>
+      <a href="{% url 'listar_atestados_aluno' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}">
+        <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
       </a>
 {% endif %}
 

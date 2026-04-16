@@ -102,24 +102,38 @@
 
       {# Nome do aluno com ícone #}
       <div class="aluno-nome">
-        <i class="fa-solid fa-user"></i>
-        {{ aluno.nome_completo }}
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-user"></i>
+          {{ aluno.nome_completo }}
+        </div>
+        {% if aluno.user_id in ids_usuarios_de_atestado %}
+          <span class="badge-atestado" style="background: var(--accent-ruby); color: white; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-left: 30px;">
+            <i class="fa-solid fa-file-medical"></i> DE ATESTADO
+          </span>
+        {% endif %}
       </div>
 
       {# Toggle de presença: checkbox enviado como lista "presentes" #}
-      <div class="presenca-toggle">
+      <div class="presenca-toggle {% if aluno.user_id in ids_usuarios_de_atestado %}atestado-locked{% endif %}">
         <input type="checkbox"
                name="presentes"
                value="{{ aluno.id }}"
                id="aluno_{{ aluno.id }}"
                onchange="toggleObservacao({{ aluno.id }}, this.checked)"
                {# Pré-marca se há registro de presença #}
-               {% if f and f.presente %}checked{% endif %}>
-        <label for="aluno_{{ aluno.id }}">
+               {% if f and f.presente %}checked{% endif %}
+               {% if aluno.user_id in ids_usuarios_de_atestado %}disabled{% endif %}>
+        <label for="aluno_{{ aluno.id }}" {% if aluno.user_id in ids_usuarios_de_atestado %}style="opacity: 0.6; cursor: not-allowed;"{% endif %}>
           <i class="fa-solid fa-check"></i>
           <span class="status-txt">
             {# Texto inicial baseado no registro existente #}
-            {% if f and f.presente %}Presente{% else %}Falta{% endif %}
+            {% if aluno.user_id in ids_usuarios_de_atestado %}
+               Justificada (Atestado)
+            {% elif f and f.presente %}
+               Presente
+            {% else %}
+               Falta
+            {% endif %}
           </span>
         </label>
       </div>
@@ -131,9 +145,9 @@
              id="obs_{{ aluno.id }}"
              placeholder="Motivo da falta..."
              {# Pré-popula com observação salva anteriormente #}
-             value="{% if f %}{{ f.observacao }}{% endif %}"
-             {# Desabilita campo se the aluno está presente #}
-             {% if f and f.presente %}disabled{% endif %}>
+             value="{% if aluno.user_id in ids_usuarios_de_atestado %}Afastamento médico aprovado{% elif f %}{{ f.observacao }}{% endif %}"
+             {# Desabilita campo se o aluno está presente ou de atestado #}
+             {% if f and f.presente or aluno.user_id in ids_usuarios_de_atestado %}disabled{% endif %}>
 
     </div>
     {% endwith %}

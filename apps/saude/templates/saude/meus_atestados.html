@@ -1,0 +1,87 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Meus Atestados Médicos{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    .status-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .status-pendente { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .status-aprovado { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .status-rejeitado { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+    
+    .atestado-card {
+        background: var(--bg-surface);
+        padding: 1.5rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
+        margin-bottom: 1rem;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .atestado-info h3 { font-size: 1rem; margin: 0 0 5px; color: var(--text-primary); }
+    .atestado-info p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Saúde e Bem-estar</span>
+            <h1>Histórico de <span class="nome-destaque">Atestados</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'enviar_atestado' %}" class="btn-sige-primario">
+                <i class="fa-solid fa-plus"></i> Novo Atestado
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar ao Painel
+            </a>
+        </div>
+    </header>
+
+    <div class="lista-atestados" style="margin-top: 2rem;">
+        {% if atestados %}
+            {% for atest in atestados %}
+            <div class="atestado-card">
+                <div class="atestado-info">
+                    <h3>Período: {{ atest.data_inicio|date:"d/m/Y" }} até {{ atest.data_fim|date:"d/m/Y" }}</h3>
+                    <p>Enviado em {{ atest.data_submissao|date:"d/m/Y H:i" }}</p>
+                    {% if atest.comentario_gestor %}
+                    <p style="margin-top: 8px; color: var(--text-muted); font-style: italic;">
+                        <strong>Retorno da Gestão:</strong> {{ atest.comentario_gestor }}
+                    </p>
+                    {% endif %}
+                </div>
+                
+                <div class="atestado-link">
+                    <a href="{{ atest.arquivo.url }}" target="_blank" class="btn-sige-secundario" style="font-size: 0.8rem; padding: 6px 12px;">
+                        <i class="fa-solid fa-file-pdf"></i> Ver Arquivo
+                    </a>
+                </div>
+
+                <div class="atestado-status">
+                    <span class="status-badge status-{{ atest.status|lower }}">{{ atest.get_status_display }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state" style="text-align: center; padding: 4rem; background: var(--bg-surface); border-radius: 20px; border: 1px dashed var(--border-mid);">
+                <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); opacity: 0.3; margin-bottom: 1rem;"></i>
+                <h3>Nenhum atestado enviado</h3>
+                <p>Você não possui registros de atestados médicos no sistema.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

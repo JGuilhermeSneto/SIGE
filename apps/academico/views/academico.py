@@ -12,12 +12,13 @@ from django.utils import timezone
 
 from ..models.academico import (
     Disciplina, Turma, GradeHorario, AtividadeProfessor, 
-    Questao, Alternativa, EntregaAtividade, RespostaAluno
+    Questao, Alternativa, EntregaAtividade, RespostaAluno,
+    MaterialDidatico
 )
 from ..models.desempenho import NotificacaoAluno
 from ..models.desempenho import Nota, NotaAtividade, Frequencia
 from apps.usuarios.models.perfis import Professor, Aluno
-from ..forms.academico import DisciplinaForm, AtividadeProfessorForm
+from ..forms.academico import DisciplinaForm, AtividadeProfessorForm, MaterialDidaticoForm
 from ..utils.academico import (
     _get_grade_horario_turma, _get_ocupados_por_professor,
     _calcular_detalhes_disciplina
@@ -49,6 +50,7 @@ def visualizar_disciplinas(request, disciplina_id):
         "disciplina": disciplina, "turma": turma, "alunos": alunos, "notas_dict": notas_dict,
         "nome_exibicao": get_nome_exibicao(request.user), "foto_perfil_url": get_foto_perfil(request.user),
         "is_gestor_ou_super": is_super_ou_gestor(request.user),
+        "is_professor": eh_professor_da_disc,
     })
 
 @login_required
@@ -572,3 +574,93 @@ def excluir_turma(request, turma_id):
     turma.delete()
     messages.success(request, f"Turma {nome} removida.")
     return redirect("listar_turmas")
+
+@login_required
+def listar_materiais_professor(request, disciplina_id):
+    """Lista os materiais de aula cadastrados para a disciplina."""
+    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+    
+    eh_professor = hasattr(request.user, "professor") and disciplina.professor == request.user.professor
+    if not (is_super_ou_gestor(request.user) or eh_professor):
+        messages.error(request, "Acesso negado.")
+        return redirect("painel_usuarios")
+        
+    materiais = disciplina.materiais.all().select_related('livro')
+    
+    return render(request, "professor/listar_materiais.html", {
+        "disciplina": disciplina,
+        "turma": disciplina.turma,
+        "materiais": materiais,
+        "is_professor": eh_professor,
+        "nome_exibicao": get_nome_exibicao(request.user),
+        "foto_perfil_url": get_foto_perfil(request.user),
+    })
+
+@login_required
+def cadastrar_editar_material(request, disciplina_id, material_id=None):
+    """Permite ao professor cadastrar ou editar um material de aula."""
+    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+    material = None
+    
+    if material_id:
+        material = get_object_or_404(MaterialDidatico, id=material_id, disciplina=disciplina)
+
+    if not (hasattr(request.user, "professor") and disciplina.professor == request.user.professor):
+        messages.error(request, "Somente o professor da disciplina pode gerenciar materiais.")
+        return redirect("listar_materiais_professor", disciplina_id=disciplina.id)
+
+    if request.method == "POST":
+        form = MaterialDidaticoForm(request.POST, request.FILES, instance=material)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.disciplina = disciplina
+            obj.save()
+            messages.success(request, "Material salvo com sucesso!")
+            return redirect("listar_materiais_professor", disciplina_id=disciplina.id)
+        else:
+            for field, errors in form.errors.items():
+                for error in errors: messages.error(request, f"{field}: {error}")
+    else:
+        form = MaterialDidaticoForm(instance=material)
+
+    return render(request, "professor/cadastrar_material.html", {
+        "disciplina": disciplina,
+        "turma": disciplina.turma,
+        "form": form,
+        "material": material,
+        "nome_exibicao": get_nome_exibicao(request.user),
+        "foto_perfil_url": get_foto_perfil(request.user),
+    })
+
+@login_required
+def excluir_material(request, material_id):
+    """Remove um material de aula."""
+    material = get_object_or_404(MaterialDidatico, id=material_id)
+    disciplina = material.disciplina
+    
+    if not (hasattr(request.user, "professor") and disciplina.professor == request.user.professor):
+        messages.error(request, "Permissão negada.")
+        return redirect("listar_materiais_professor", disciplina_id=disciplina.id)
+        
+    material.delete()
+    messages.success(request, "Material removido com sucesso!")
+    return redirect("listar_materiais_professor", disciplina_id=disciplina.id)
+
+@login_required
+def listar_materiais_aluno(request):
+    """Lista todos os materiais das disciplinas do aluno."""
+    if not hasattr(request.user, "aluno"):
+        messages.error(request, "Acesso exclusivo para alunos.")
+        return redirect("painel_aluno")
+    
+    aluno = request.user.aluno
+    disciplinas = Disciplina.objects.filter(turma=aluno.turma).prefetch_related('materiais', 'materiais__livro')
+    
+    has_any_materials = MaterialDidatico.objects.filter(disciplina__turma=aluno.turma).exists()
+    
+    return render(request, "aluno/materiais_aluno.html", {
+        "disciplinas": disciplinas,
+        "has_any_materials": has_any_materials,
+        "nome_exibicao": get_nome_exibicao(request.user),
+        "foto_perfil_url": get_foto_perfil(request.user),
+    })

@@ -42,5 +42,12 @@ urlpatterns = [
     path("meu-painel/atividades/", academico.listar_atividades_aluno, name="listar_atividades_aluno"),
     path("meu-painel/atividades/<int:atividade_id>/entregar/", academico.entregar_atividade, name="entregar_atividade"),
     path("meu-painel/notificacoes/<int:notificacao_id>/", academico.marcar_notificacao_lida, name="marcar_notificacao_lida"),
+
+    # Materiais de Aula
+    path("disciplinas/<int:disciplina_id>/materiais/", academico.listar_materiais_professor, name="listar_materiais_professor"),
+    path("disciplinas/<int:disciplina_id>/materiais/cadastrar/", academico.cadastrar_editar_material, name="cadastrar_material"),
+    path("disciplinas/<int:disciplina_id>/materiais/<int:material_id>/editar/", academico.cadastrar_editar_material, name="editar_material"),
+    path("materiais/excluir/<int:material_id>/", academico.excluir_material, name="excluir_material"),
+    path("meu-painel/materiais/", academico.listar_materiais_aluno, name="listar_materiais_aluno"),
 ]
 

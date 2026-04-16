@@ -7,7 +7,7 @@ em ``models.academico``.
 
 from django import forms
 from apps.comum.forms.base_formularios import BaseModelForm
-from ..models.academico import Turma, Disciplina, AtividadeProfessor
+from ..models.academico import Turma, Disciplina, AtividadeProfessor, MaterialDidatico
 from apps.usuarios.models.perfis import Professor
 
 class TurmaForm(BaseModelForm):
@@ -81,4 +81,34 @@ class AtividadeProfessorForm(BaseModelForm):
             evento = EventoCalendario.objects.filter(data=data, tipo="PROVA").first()
             if not evento:
                 self.add_error("data", "Provas só podem ser cadastradas em datas marcadas como 'Semana de Prova' no Calendário Escolar Oficial.")
+        return cleaned_data
+
+class MaterialDidaticoForm(BaseModelForm):
+    """Formulário para o professor disponibilizar materiais de aula."""
+    class Meta:
+        model = MaterialDidatico
+        fields = ["titulo", "tipo", "url", "arquivo", "livro", "descricao"]
+        widgets = {
+            "descricao": forms.Textarea(attrs={"rows": 3}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from apps.biblioteca.models.biblioteca import Livro
+        self.fields["livro"].queryset = Livro.objects.all().order_by("titulo")
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tipo = cleaned_data.get("tipo")
+        url = cleaned_data.get("url")
+        arquivo = cleaned_data.get("arquivo")
+        livro = cleaned_data.get("livro")
+
+        if tipo == 'LINK' and not url:
+            self.add_error("url", "Informe o link para o material.")
+        elif tipo == 'ARQUIVO' and not arquivo:
+            self.add_error("arquivo", "Faça o upload do arquivo.")
+        elif tipo == 'LIVRO' and not livro:
+            self.add_error("livro", "Selecione um livro da biblioteca.")
+
         return cleaned_data

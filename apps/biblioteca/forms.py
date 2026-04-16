@@ -4,7 +4,7 @@ from .models.biblioteca import Livro, Emprestimo
 class LivroForm(forms.ModelForm):
     class Meta:
         model = Livro
-        fields = ['titulo', 'autor', 'isbn', 'ano_publicacao', 'editora', 'capa', 'quantidade_total']
+        fields = ['titulo', 'autor', 'isbn', 'ano_publicacao', 'editora', 'capa', 'quantidade_total', 'arquivo_digital', 'url_digital']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'input-sige'}),
             'autor': forms.TextInput(attrs={'class': 'input-sige'}),
@@ -12,6 +12,7 @@ class LivroForm(forms.ModelForm):
             'ano_publicacao': forms.NumberInput(attrs={'class': 'input-sige'}),
             'editora': forms.TextInput(attrs={'class': 'input-sige'}),
             'quantidade_total': forms.NumberInput(attrs={'class': 'input-sige'}),
+            'url_digital': forms.URLInput(attrs={'class': 'input-sige', 'placeholder': 'https://...'}),
         }
 
 class EmprestimoForm(forms.ModelForm):

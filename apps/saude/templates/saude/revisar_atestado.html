@@ -1,0 +1,125 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Revisar Atestado — {{ atestado.usuario.get_full_name|default:atestado.usuario.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+    .doc-preview { 
+        background: var(--bg-base); 
+        border-radius: var(--radius-lg); 
+        border: 1px solid var(--border-subtle);
+        height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+    .review-form {
+        background: var(--bg-surface);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+    }
+    .info-list { margin-bottom: 2rem; }
+    .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bg-base); }
+    .info-label { color: var(--text-muted); font-size: 0.85rem; }
+    .info-value { font-weight: 700; color: var(--text-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Análise de Documentos</span>
+            <h1>Revisão de <span class="nome-destaque">Atestado</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'gestao_atestados' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar à Lista
+            </a>
+        </div>
+    </header>
+
+    <div class="review-grid">
+        <div class="doc-side">
+            <h3 style="margin-bottom: 1rem;"><i class="fa-solid fa-file-medical"></i> Documento Original</h3>
+            <div class="doc-preview">
+                {% if atestado.arquivo.url|lower|slice:"-4:" == ".pdf" %}
+                    <iframe src="{{ atestado.arquivo.url }}" width="100%" height="100%" style="border: none;"></iframe>
+                {% else %}
+                    <img src="{{ atestado.arquivo.url }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                {% endif %}
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="{{ atestado.arquivo.url }}" target="_blank" class="btn-sige-secundario">
+                    <i class="fa-solid fa-up-right-from-square"></i> Abrir em nova aba
+                </a>
+            </div>
+        </div>
+
+        <div class="info-side">
+            <div class="review-form">
+                <h3><i class="fa-solid fa-circle-info"></i> Dados da Solicitação</h3>
+                <div class="info-list">
+                    <div class="info-row">
+                        <span class="info-label">Solicitante</span>
+                        <span class="info-value">{{ atestado.usuario.get_full_name|default:atestado.usuario.username }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Perfil</span>
+                        <span class="info-value">
+                        {% if atestado.usuario.aluno %}
+                                Aluno ({{ atestado.usuario.aluno.turma.nome }})
+                            {% elif atestado.usuario.professor %}
+                                Professor
+                            {% elif atestado.usuario.gestor %}
+                                Gestor
+                            {% else %}
+                                Usuário
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="info-row"><span class="info-label">Início</span><span class="info-value">{{ atestado.data_inicio|date:"d/m/Y" }}</span></div>
+                    <div class="info-row"><span class="info-label">Fim</span><span class="info-value">{{ atestado.data_fim|date:"d/m/Y" }}</span></div>
+                    {% if atestado.descricao %}
+                    <div style="margin-top: 15px;">
+                        <span class="info-label">Justificativa:</span>
+                        <p style="margin-top: 5px; font-size: 0.9rem;">{{ atestado.descricao }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 2rem 0;">
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="{{ form.status.id_for_label }}" style="display: block; font-weight: 700; margin-bottom: 8px;">Decisão do Gestor</label>
+                        {{ form.status }}
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="{{ form.comentario_gestor.id_for_label }}" style="display: block; font-weight: 700; margin-bottom: 8px;">Parecer / Justificativa</label>
+                        {{ form.comentario_gestor }}
+                    </div>
+
+                    <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                        <p style="font-size: 0.8rem; color: var(--accent-emerald); display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <i class="fa-solid fa-robot"></i> 
+                            <strong>Automação:</strong> Se aprovado, o sistema justificará as faltas (alunos) ou suspenderá as aulas (professores) automaticamente.
+                        </p>
+                    </div>
+
+                    <button type="submit" class="btn-sige-primario" style="width: 100%; height: 50px; justify-content: center;">
+                        <i class="fa-solid fa-check-double"></i> Finalizar Avaliação
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

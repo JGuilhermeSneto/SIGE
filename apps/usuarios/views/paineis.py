@@ -5,7 +5,7 @@ O que é: monta contexto com calendário, turmas, disciplinas e resumos
 acadêmicos reutilizando utilitários do app ``academico``.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from ..utils.perfis import get_nome_exibicao, get_foto_perfil, redirect_user
@@ -41,13 +41,15 @@ def painel_super(request):
     MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     mes_nome = MESES[agora.month - 1].upper()
 
+    from apps.saude.models.ficha_medica import AtestadoMedico
+    
     contexto = {
         "usuario":           request.user,
         "nome_exibicao":     get_nome_exibicao(request.user),
         "foto_perfil_url":   get_foto_perfil(request.user),
         "agora":             agora,
         "mes_nome":          mes_nome,
-        "calendario":        gerar_calendario(ano_atual, agora.month),
+        "calendario":        gerar_calendario(ano_atual, agora.month, user=request.user),
         "ano_calendario":    ano_atual,
         "anos_disponiveis":  anos_disponiveis,
         "ano_filtro":        ano_filtro,
@@ -59,6 +61,7 @@ def painel_super(request):
         "total_disciplinas": (
             Disciplina.objects.filter(turma__in=turmas).distinct().count()
         ),
+        "atestados_pendentes_count": AtestadoMedico.objects.filter(status='PENDENTE').count(),
         "comunicados": Comunicado.objects.filter(
             Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
         )[:5],
@@ -116,7 +119,7 @@ def painel_professor(request):
         "foto_perfil_url":         get_foto_perfil(request.user),
         "agora":                   hoje,
         "mes_nome":                mes_nome,
-        "calendario":              gerar_calendario(ano_atual, hoje.month),
+        "calendario":              gerar_calendario(ano_atual, hoje.month, user=request.user),
         "ano_calendario":          ano_atual,
         "total_turmas":            turmas_ids.count(),
         "total_alunos":            total_alunos_unicos,
@@ -141,9 +144,14 @@ def painel_aluno(request):
     if not aluno:
         return render(request, "core/sem_perfil.html")
 
-    grade = _get_grade_horario_turma(aluno.turma)
+    # Calcular intervalo da semana atual para marcar suspensões na grade
+    hoje_date = timezone.now().date()
+    start_week = hoje_date - timedelta(days=hoje_date.weekday())
+    end_week = start_week + timedelta(days=4)
     
-    from apps.academico.models.academico import Disciplina, PlanejamentoAula
+    grade = _get_grade_horario_turma(aluno.turma, data_inicio=start_week, data_fim=end_week)
+    
+    from apps.academico.models.academico import Disciplina, PlanejamentoAula, MaterialDidatico
     from apps.academico.models.desempenho import Nota, Frequencia
     from apps.academico.utils.academico import _calcular_situacao_nota
     
@@ -175,13 +183,17 @@ def painel_aluno(request):
             disciplina=disciplina, turma=aluno.turma
         ).order_by('-data_aula', '-horario_aula')[:10]
         
+        # Buscar materiais de aula (recentes)
+        materiais = MaterialDidatico.objects.filter(disciplina=disciplina).select_related('livro')[:3]
+
         disciplinas_com_notas.append({
             'disciplina': disciplina,
             'nota': nota,
             'total_aulas': total_aulas,
             'faltas': faltas,
             'percentual_faltas': int(percentual_faltas),
-            'planejamentos': planejamentos
+            'planejamentos': planejamentos,
+            'materiais_recentes': materiais
         })
         
     media_geral = (soma_medias / total_disciplinas_com_media) if total_disciplinas_com_media > 0 else 0
@@ -214,7 +226,7 @@ def painel_aluno(request):
         "foto_perfil_url":       get_foto_perfil(request.user),
         "agora":                 agora,
         "mes_nome":              mes_nome,
-        "calendario":            gerar_calendario(ano_atual, agora.month),
+        "calendario":            gerar_calendario(ano_atual, agora.month, user=request.user),
         "ano_calendario":        ano_atual,
         "grade_horario":         grade,
         "disciplinas_com_notas": disciplinas_com_notas,

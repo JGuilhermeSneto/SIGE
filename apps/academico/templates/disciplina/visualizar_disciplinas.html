@@ -120,6 +120,11 @@
             <a class="disciplina" href="{% url 'historico_frequencia' disciplina.id %}">
                 <i class="fa-solid fa-clipboard-user" style="margin-right: 8px;"></i> Registro de Frequência
             </a>
+            {% if is_professor or is_gestor_ou_super %}
+            <a class="disciplina" href="{% url 'listar_materiais_professor' disciplina.id %}" style="background: hsla(160, 65%, 52%, 0.1); color: var(--accent-emerald); border-color: var(--accent-emerald);">
+                <i class="fa-solid fa-folder-open" style="margin-right: 8px;"></i> Materiais de Aula
+            </a>
+            {% endif %}
         </div>
         <div style="color: var(--text-muted); font-size: 0.75rem; display: flex; align-items: center; gap: 5px;">
             <i class="fa-solid fa-circle-info"></i>

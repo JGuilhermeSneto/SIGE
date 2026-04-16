@@ -14,6 +14,11 @@ class Frequencia(models.Model):
     disciplina = models.ForeignKey("Disciplina", on_delete=models.CASCADE, related_name="frequencias")
     data = models.DateField(help_text="Data da frequência")
     presente = models.BooleanField(default=True, help_text="Presença (True) ou Falta (False)")
+    justificada = models.BooleanField(default=False, help_text="Se a falta foi justificada por atestado")
+    atestado = models.ForeignKey(
+        "saude.AtestadoMedico", on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="frequencias_justificadas"
+    )
     observacao = models.CharField(max_length=255, blank=True, help_text="Observações")
     criado_em = models.DateTimeField(auto_now_add=True)
 

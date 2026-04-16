@@ -193,6 +193,22 @@
                 <h3 class="titulo-portal" style="color: var(--accent-violet);">Roteiro de Aulas</h3>
             </div>
         </a>
+
+        <a href="{% url 'listar_materiais_aluno' %}" class="card-info card-info-link" style="text-decoration: none; border-bottom: 3px solid var(--accent-emerald);">
+            <div class="card-icon" style="color: var(--accent-emerald); background: rgba(52, 211, 153, 0.1);"><i class="fa-solid fa-folder-open"></i></div>
+            <div class="card-dados">
+                <p>Materiais de Aula</p>
+                <h3 class="titulo-portal" style="color: var(--accent-emerald);">Arquivos e Links</h3>
+            </div>
+        </a>
+
+        <a href="{% url 'listar_atestados_aluno' %}" class="card-info card-info-link" style="text-decoration: none; border-bottom: 3px solid var(--accent-ruby);">
+            <div class="card-icon" style="color: var(--accent-ruby); background: rgba(239, 68, 68, 0.1);"><i class="fa-solid fa-hospital-user"></i></div>
+            <div class="card-dados">
+                <p>Saúde e Faltas</p>
+                <h3 class="titulo-portal" style="color: var(--accent-ruby);">Atestados Médicos</h3>
+            </div>
+        </a>
         <a href="{% url 'frequencia_aluno' %}" class="card-info card-info-link" style="text-decoration: none; border-bottom: 3px solid #f87171;">
             <div class="card-icon card-icon-portal" style="color: #f87171;"><i class="fa-solid fa-calendar-check"></i></div>
             <div class="card-dados">
@@ -272,6 +288,33 @@
                         {% else %}
                         <div class="frequencia-resumo sem-registro">
                             <span>Nenhuma chamada registrada ainda</span>
+                        </div>
+                        {% endif %}
+
+                        {# Materiais de Apoio #}
+                        {% if item.materiais_recentes %}
+                        <div class="materiais-resumo" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-mid);">
+                            <p style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-emerald); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fa-solid fa-folder-open"></i> Materiais Recentes
+                            </p>
+                            <div class="mini-materiais-lista" style="display: flex; flex-direction: column; gap: 6px;">
+                                {% for mat in item.materiais_recentes %}
+                                <a href="{% if mat.tipo == 'LINK' %}{{ mat.url }}{% elif mat.tipo == 'ARQUIVO' %}{{ mat.arquivo.url }}{% elif mat.tipo == 'LIVRO' %}{% if mat.livro.arquivo_digital %}{{ mat.livro.arquivo_digital.url }}{% elif mat.livro.url_digital %}{{ mat.livro.url_digital }}{% else %}{% url 'acervo_biblioteca' %}{% endif %}{% else %}#{% endif %}" 
+                                   class="mini-material-link" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); font-size: 0.8rem; padding: 6px 10px; background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border-subtle); transition: all 0.2s;" 
+                                   {% if mat.tipo != 'LIVRO' or mat.livro.arquivo_digital or mat.livro.url_digital %}target="_blank"{% endif %}>
+                                    <span style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0;
+                                        {% if mat.tipo == 'LINK' %}background: rgba(139, 92, 246, 0.1); color: var(--accent-violet);
+                                        {% elif mat.tipo == 'ARQUIVO' %}background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald);
+                                        {% else %}background: rgba(251, 191, 36, 0.1); color: var(--accent-amber);{% endif %}">
+                                        {% if mat.tipo == 'LINK' %}<i class="fa-solid fa-link"></i>
+                                        {% elif mat.tipo == 'ARQUIVO' %}<i class="fa-solid fa-file-pdf"></i>
+                                        {% else %}<i class="fa-solid fa-book"></i>{% endif %}
+                                    </span>
+                                    <span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ mat.titulo }}</span>
+                                    <i class="fa-solid fa-chevron-right" style="margin-left: auto; font-size: 0.5rem; opacity: 0.4;"></i>
+                                </a>
+                                {% endfor %}
+                            </div>
                         </div>
                         {% endif %}
                     </div>

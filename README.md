@@ -44,19 +44,20 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 
 ### ✨ Atualizações recentes (Abr/2026)
 
-- **Sistema de Biblioteca & Reservas**
-  - Workflow completo de reserva de livros, gestão de acervo e tela de confirmação para o gestor.
-  - Limite inteligente de 2 livros por aluno com integração no frontend.
+- **Sistema de Atestados Universais & Automação Pedagógica**
+  - Workflow unificado para envio de atestados (Alunos, Professores e Gestores).
+  - **Automação Inteligente**: A aprovação de atestado de professor suspende automaticamente as aulas previstas no período; para alunos, justifica faltas e bloqueia lançamentos indevidos na chamada.
+  - Indicadores Visuais: Badge **[DE ATESTADO]** na folha de chamada e marcador **(SUSPENSA)** na grade horária semanal.
+- **Sistema de Notificações Globais**
+  - Notificações em tempo real no menu lateral para gestores, indicando volume de documentos pendentes.
+  - Integração do módulo de saúde em todas as barras laterais do sistema.
 - **Design System Premium**
   - Padronização de todo o sistema em três temas principais: "Indigo Profundo", "Cinza Industrial" e "Azul Corporativo".
   - Padronização global dos botões (Próximo, Salvar) garantindo alto contraste e interatividade fluida por componente.
   - Atualização do "Mural de Avisos" e "Notificações" usando o layout em `card-mural-sidebar`.
-- **Gestão Acadêmica e Saúde**
-  - Alunos agora têm autonomia para visualizar a própria ficha médica no sistema ("Minha Saúde").
-  - Otimização do dashboard acadêmico utilizando ORM aggregations.
-  - Calendário dinâmico com tooltip padronizado para sobreposição de status (ex: aula suspensa e evento).
-- **Notificações & Atividades**
-  - Sistema de avisos integrado por público-alvo e alertas visuais persistentes para correções de provas, notas e faltas.
+- **Otimizações de Dashboard**
+  - Alunos e professores visualizam sua saúde escolar com total autonomia.
+  - Calendário dinâmico personalizado: exibe suspensões de aula individuais e eventos globais no mesmo dashboard.
 
 ---
 
@@ -88,10 +89,12 @@ As regras de situação acadêmica estão centralizadas em `apps/academico/utils
 
 | Perfil | Painel amplo | Alunos / prof. / turmas | Notas | Frequência | Relatórios |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Superusuário** | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **Gestor** | ✅ | ✅ | ✅ | ❌ | ✅ |
+| **Superusuário** | ✅ | ✅ | ✅ | ⚠️ | ✅ |
+| **Gestor** | ✅ | ✅ | ✅ | ⚠️ | ✅ |
 | **Professor** | — | ❌ | ✅ | ✅ | ✅ |
 | **Aluno** | — | ❌ | ❌ | ❌ | ❌ |
+
+*(Nota: Módulo de Saúde acessível por todos para envio de atestados e consulta de prontuário pessoal.)*
 
 *(Detalhes finos estão nos decorators e checagens em cada view.)*
 

@@ -15,6 +15,7 @@ from django.urls import reverse
 
 from ..models.desempenho import Nota, Frequencia
 from ..models.academico import Disciplina
+from apps.saude.models.ficha_medica import AtestadoMedico
 from apps.usuarios.models.perfis import Aluno
 from apps.usuarios.utils.perfis import (
     get_nome_exibicao, get_foto_perfil, is_super_ou_gestor,
@@ -79,6 +80,13 @@ def lancar_chamada(request, disciplina_id):
 
     alunos = disciplina.turma.alunos.all().order_by("nome_completo")
     freq_obs = {f.aluno_id: f for f in Frequencia.objects.filter(disciplina=disciplina, data=data_sel)}
+    
+    # IDs de usuários com atestado aprovado para este dia
+    ids_usuarios_de_atestado = AtestadoMedico.objects.filter(
+        status='APROVADO',
+        data_inicio__lte=data_sel,
+        data_fim__gte=data_sel
+    ).values_list('usuario_id', flat=True)
 
     if request.method == "POST":
         presentes = request.POST.getlist("presentes")
@@ -103,7 +111,9 @@ def lancar_chamada(request, disciplina_id):
 
     return render(request, "frequencia/lancar_chamada.html", {
         "disciplina": disciplina, "alunos": alunos, "data_selecionada": data_sel.isoformat(), "data_formatada": data_sel.strftime("%d/%m/%Y"),
-        "frequencias_existentes": freq_obs, "nome_exibicao": get_nome_exibicao(request.user), "foto_perfil_url": get_foto_perfil(request.user),
+        "frequencias_existentes": freq_obs, 
+        "ids_usuarios_de_atestado": list(ids_usuarios_de_atestado),
+        "nome_exibicao": get_nome_exibicao(request.user), "foto_perfil_url": get_foto_perfil(request.user),
     })
 
 @login_required

@@ -1,0 +1,90 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Enviar Atestado Médico{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 2rem auto;
+        background: var(--bg-surface);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-subtle);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-primary); font-size: 0.9rem; }
+    .help-text { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+    .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Saúde Aluno</span>
+            <h1>Novo <span class="nome-destaque">Atestado</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'listar_atestados_aluno' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Meus Atestados
+            </a>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="date-row">
+                <div class="form-group">
+                    <label for="{{ form.data_inicio.id_for_label }}">Data de Início</label>
+                    {{ form.data_inicio }}
+                    {% if form.data_inicio.errors %}<div class="error-msg">{{ form.data_inicio.errors }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.data_fim.id_for_label }}">Data de Fim</label>
+                    {{ form.data_fim }}
+                    {% if form.data_fim.errors %}<div class="error-msg">{{ form.data_fim.errors }}</div>{% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.arquivo.id_for_label }}">Arquivo do Atestado</label>
+                {{ form.arquivo }}
+                <p class="help-text">Envie o arquivo em PDF ou Imagem (JPG/PNG).</p>
+                {% if form.arquivo.errors %}<div class="error-msg">{{ form.arquivo.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.descricao.id_for_label }}">Observações</label>
+                {{ form.descricao }}
+                {% if form.descricao.errors %}<div class="error-msg">{{ form.descricao.errors }}</div>{% endif %}
+            </div>
+
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                <button type="submit" class="btn-sige-primario" style="width: 100%; justify-content: center; height: 50px;">
+                    <i class="fa-solid fa-paper-plane"></i> Enviar para Análise
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Flatpickr for better date picking -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr(".flatpickr", {
+        dateFormat: "Y-m-d",
+        allowInput: true,
+        locale: {
+            firstDayOfWeek: 1
+        }
+    });
+</script>
+{% endblock %}
