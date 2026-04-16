@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.http import JsonResponse
 from django.utils import timezone
 from datetime import timedelta
 from .models.biblioteca import Livro, Emprestimo
@@ -131,3 +132,30 @@ def cadastrar_livro(request):
     else:
         form = LivroForm()
     return render(request, 'biblioteca/form_livro.html', {'form': form})
+
+@login_required
+def atualizar_status_leitura(request):
+    """Endpoint AJAX: atualiza o status_leitura de um Emprestimo devolvido do próprio aluno."""
+    if request.method != 'POST':
+        return JsonResponse({'ok': False, 'erro': 'Método inválido.'}, status=405)
+
+    import json
+    try:
+        payload = json.loads(request.body)
+        emprestimo_id  = int(payload.get('emprestimo_id', 0))
+        status_leitura = payload.get('status_leitura', '').strip()
+    except (ValueError, KeyError):
+        return JsonResponse({'ok': False, 'erro': 'Dados inválidos.'}, status=400)
+
+    VALIDOS = {'NAO_INFORMADO', 'LENDO', 'FINALIZADO'}
+    if status_leitura not in VALIDOS:
+        return JsonResponse({'ok': False, 'erro': 'Status inválido.'}, status=400)
+
+    aluno = getattr(request.user, 'aluno', None)
+    if not aluno:
+        return JsonResponse({'ok': False, 'erro': 'Apenas alunos podem atualizar.'}, status=403)
+
+    emprestimo = get_object_or_404(Emprestimo, pk=emprestimo_id, usuario_aluno=aluno, status='DEVOLVIDO')
+    emprestimo.status_leitura = status_leitura
+    emprestimo.save(update_fields=['status_leitura'])
+    return JsonResponse({'ok': True})

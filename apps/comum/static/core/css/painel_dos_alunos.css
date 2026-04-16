@@ -236,6 +236,12 @@
   align-items: start;
 }
 
+.coluna-principal {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 /* ════════════════════════════════════════
    SEÇÃO DE DISCIPLINAS
 ═════════════════════════════════════════*/

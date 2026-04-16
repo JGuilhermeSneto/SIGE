@@ -1,0 +1,184 @@
+{% extends "core/base.html" %}
+
+{% block title %}Meus Planejamentos Literários{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Ocultar a barra lateral e expandir para tela cheia de forma centralizada */
+    .menu-lateral { display: none !important; }
+    .area-conteudo { margin-left: 0 !important; width: 100% !important; border-top-left-radius: 0 !important; display: flex !important; justify-content: center !important; }
+
+    .planner-container { padding: 40px 20px; display: grid; grid-template-columns: 320px 1fr; gap: 40px; width: 100%; max-width: 1500px; margin: 0 auto; }
+    
+    /* Menu Lateral de Disciplinas */
+    .disciplina-list { background: var(--bg-surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border-subtle); align-self: start; }
+    .disciplina-item { display: block; padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; color: var(--text-primary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.02); }
+    .disciplina-item:hover { background: rgba(255,255,255,0.05); }
+    .disciplina-item.active { border-left-color: var(--accent-violet); background: rgba(124, 111, 255, 0.1); font-weight: bold; }
+    
+    /* Conteúdo do Planner */
+    .planner-content { background: var(--bg-surface); border-radius: 12px; border: 1px solid var(--border-subtle); padding: 30px; }
+    .grade-badge { display: inline-block; padding: 5px 12px; background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan); border-radius: 6px; font-size: 0.85rem; margin-right: 10px; margin-bottom: 10px; border: 1px solid rgba(56, 189, 248, 0.2); }
+    
+    /* Formulário Estilizado */
+    .form-group { margin-bottom: 20px; }
+    .form-label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem; font-weight: 600; text-transform: uppercase; }
+    .form-control { width: 100%; padding: 12px 15px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); color: var(--text-primary); border-radius: 8px; font-family: inherit; }
+    .form-control:focus { border-color: var(--accent-violet); outline: none; }
+    .btn-submit { background: var(--accent-violet); color: white; padding: 12px 25px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: all 0.2s; width: 100%; }
+    .btn-submit:hover { opacity: 0.9; }
+
+    /* Notificações */
+    .alert-box { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; }
+    .alert-error { background: rgba(248, 113, 113, 0.1); color: var(--accent-ruby); border-left: 4px solid var(--accent-ruby); }
+    .alert-success { background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald); border-left: 4px solid var(--accent-emerald); }
+
+    /* Timeline de Aulas */
+    .timeline { margin-top: 40px; }
+    .timeline-item { border-left: 2px solid var(--border-subtle); padding-left: 20px; position: relative; margin-bottom: 25px; }
+    .timeline-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-violet); }
+    .timeline-date { font-weight: bold; color: var(--text-primary); margin-bottom: 5px; }
+    .timeline-horario { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; }
+    .timeline-card { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 8px; border: 1px solid var(--border-subtle); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="planner-container">
+    
+    <!-- Menu Sidebar Disciplinas -->
+    <div class="disciplina-list">
+        <a href="{% url 'painel_professor' %}" style="display: block; width: 100%; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); color: var(--text-primary); background: rgba(255,255,255,0.03); margin-bottom: 20px; transition: all 0.2s; font-weight: bold;" onmouseover="this.style.background='var(--bg-base)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+        </a>
+        
+        <h3 style="margin-top: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;"><i class="fa-solid fa-layer-group"></i> Minhas Disciplinas</h3>
+        {% for disc in disciplinas %}
+            <a href="?disciplina={{ disc.id }}" class="disciplina-item {% if disciplina_ativa and disc.id == disciplina_ativa.id %}active{% endif %}">
+                <div style="font-size: 1.1rem; margin-bottom: 3px;">{{ disc.nome }}</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Turma: {{ disc.turma.nome }} ({{ disc.turma.get_turno_display }})</div>
+            </a>
+        {% empty %}
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Você ainda não possui disciplinas vinculadas a turmas deste ano letivo.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Área de Lançamento -->
+    <div class="planner-content">
+        {% if disciplina_ativa %}
+            <h2 style="margin-top: 0; color: var(--text-primary);">
+                <i class="fa-solid fa-pen-ruler"></i> Diário de Planejamento: {{ disciplina_ativa.nome }}
+            </h2>
+            
+            <div style="margin-bottom: 30px;">
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px;">Grade Horária Oficial vinculada a sua matéria:</p>
+                {% for g in grade_ativa %}
+                    <span class="grade-badge"><i class="fa-regular fa-clock"></i> {{ g.get_dia_display }} | {{ g.horario }}</span>
+                {% empty %}
+                    <span class="grade-badge" style="color: var(--accent-ruby); border-color: rgba(248, 113, 113, 0.4);">Sem horários mapeados pela coordenação.</span>
+                {% endfor %}
+            </div>
+
+            <!-- Form -->
+            <div style="background: var(--bg-base); padding: 25px; border-radius: 12px; margin-bottom: 40px; border: 1px solid var(--border-subtle);">
+                <h4 style="margin-top: 0; margin-bottom: 20px; color: var(--text-primary);">Nova Aula (Projetar)</h4>
+                
+                <div id="msgAlert" class="alert-box"></div>
+
+                <form id="formPlanejamento">
+                    {% csrf_token %}
+                    <input type="hidden" name="disciplina_id" value="{{ disciplina_ativa.id }}">
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">Data Escolhida para Ministrar</label>
+                            <input type="date" name="data_aula" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Horário (Conforme Grade Acima)</label>
+                            <select name="horario_aula" class="form-control" required>
+                                <option value="">Selecione o Slot...</option>
+                                {% for g in grade_ativa %}
+                                    <option value="{{ g.horario }}">{{ g.get_dia_display }} - {{ g.horario }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Conteúdo Previsto (Tópicos)</label>
+                        <textarea name="conteudo" class="form-control" rows="4" placeholder="Ex: Roteiro da aula, Resolução exercícios pag. 45" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btnSalvar">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> Registrar Plano de Aula no Diário
+                    </button>
+                </form>
+            </div>
+
+            <!-- Timeline -->
+            <h3><i class="fa-solid fa-timeline"></i> Timeline de Aulas Registradas</h3>
+            <div class="timeline">
+                {% for plan in planejamentos %}
+                    <div class="timeline-item">
+                        <div class="timeline-date">{{ plan.data_aula|date:"l, d \d\e F \d\e Y"|title }}</div>
+                        <div class="timeline-horario"><i class="fa-regular fa-clock"></i> {{ plan.horario_aula }}</div>
+                        <div class="timeline-card">
+                            <p style="margin: 0; color: var(--text-primary); line-height: 1.5;">{{ plan.conteudo|linebreaksbr }}</p>
+                            {% if plan.concluido %}
+                                <span style="display: inline-block; margin-top: 10px; font-size: 0.75rem; background: var(--accent-emerald); color: white; padding: 2px 8px; border-radius: 4px;">✔ Aula Ministrada</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <p style="color: var(--text-muted);">Nenhuma aula planejada futuramente no momento. Se antecipe!</p>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div style="text-align: center; color: var(--text-muted); padding: 50px 0;">
+                <i class="fa-solid fa-chalkboard-user" style="font-size: 4rem; opacity: 0.2; margin-bottom: 20px;"></i>
+                <h2>Selecione uma Disciplina</h2>
+                <p>Clique em uma das turmas na lateral para começar as suas anotações do diário.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    document.getElementById('formPlanejamento')?.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formObj = new FormData(this);
+        const btn = document.getElementById('btnSalvar');
+        const alertBox = document.getElementById('msgAlert');
+        
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Validando Grade Letiva...';
+        btn.disabled = true;
+        
+        try {
+            const resp = await fetch("{% url 'salvar_planejamento' %}", {
+                method: "POST",
+                body: formObj,
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            });
+            const data = await resp.json();
+            
+            alertBox.style.display = 'block';
+            if (!resp.ok) {
+                alertBox.className = 'alert-box alert-error';
+                alertBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <strong>Aviso Importante:</strong> ${data.erro}`;
+            } else {
+                alertBox.className = 'alert-box alert-success';
+                alertBox.innerHTML = `<i class="fa-solid fa-check"></i> <strong>Sucesso:</strong> ${data.msg}`;
+                setTimeout(() => window.location.reload(), 1500);
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> Registrar Plano de Aula no Diário';
+            btn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

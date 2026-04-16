@@ -9,4 +9,5 @@ urlpatterns = [
     path('gestao/confirmar/<int:pk>/', views.confirmar_retirada, name='confirmar_retirada'),
     path('gestao/devolucao/<int:pk>/', views.registrar_devolucao, name='registrar_devolucao'),
     path('livro/novo/', views.cadastrar_livro, name='cadastrar_livro'),
+    path('api/status-leitura/', views.atualizar_status_leitura, name='atualizar_status_leitura'),
 ]

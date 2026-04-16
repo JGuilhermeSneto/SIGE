@@ -67,6 +67,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.usuarios.context_processors.notificacoes_aluno",
             ],
             "libraries": {
                 "custom_tags": "apps.comum.templatetags.custom_tags",

@@ -1,15 +1,31 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}BI Acadêmico{% endblock %}
+{% block title %}Macro Dashboard Executivo{% endblock %}
 
 {% block extra_css %}
 <style>
     .bi-container { padding: 30px; }
+    .bi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; }
+    .bi-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; gap: 15px; flex-wrap: wrap; }
+    
+    .btn-exportar { background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-exportar:hover { background: var(--bg-base); border-color: var(--accent-emerald); color: var(--accent-emerald); }
+    
+    .btn-evasao { background: var(--accent-ruby); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; border: none; }
+    .btn-evasao:hover { opacity: 0.85; color: white; }
+
+    .btn-pdf { background: #1a253c; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+    .btn-pdf:hover { background: var(--accent-cyan); color: #000; }
+
+    /* Top Metrics */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .metric-card { background: var(--bg-surface); padding: 20px; border-radius: 12px; border-left: 4px solid var(--border-subtle); }
+    .metric-title { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 5px; }
+    .metric-value { font-size: 2.5rem; color: var(--text-primary); font-weight: 700; margin: 0; }
+    
+    /* Charts Grid */
     .bi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
-    .bi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; }
-    .bi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-    .btn-exportar { background: var(--accent-emerald); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; }
 </style>
 {% endblock %}
 
@@ -17,90 +33,161 @@
 <div class="bi-container">
     <div class="bi-header">
         <div>
-            <h1><i class="fa-solid fa-chart-pie"></i> Business Intelligence Acadêmico</h1>
-            <p style="color: var(--text-muted);">Painel de indicadores oficiais · Ano Letivo {{ ano_referencia }}</p>
+            <h1 style="color: var(--text-primary); margin-bottom: 5px;"><i class="fa-solid fa-chart-pie" style="color: var(--accent-cyan)"></i> Dashboard Intelligence</h1>
+            <p style="color: var(--text-muted); margin: 0;">Análises demográficas e preditivas · Ano Letivo {{ ano_referencia }}</p>
         </div>
-        <a href="{% url 'exportar_notas_csv' %}" class="btn-exportar">
-            <i class="fa-solid fa-file-csv"></i> Exportar Dados (CSV)
-        </a>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{% url 'exportar_notas_csv' %}" class="btn-exportar" title="Exportar Notas">
+                <i class="fa-solid fa-file-csv"></i> Puxar Notas
+            </a>
+            <a href="{% url 'exportar_relatorio_evasao' %}" class="btn-evasao" title="Extração de Risco">
+                <i class="fa-solid fa-triangle-exclamation"></i> Relatório de Evasão
+            </a>
+            <a href="{% url 'exportar_master_pdf' %}" class="btn-pdf">
+                <i class="fa-solid fa-file-pdf"></i> Imprimir Dossiê Oficial (PDF)
+            </a>
+        </div>
     </div>
 
+    <!-- KPIs Topo -->
+    <div class="metrics-grid">
+        <div class="metric-card" style="border-left-color: var(--accent-emerald);">
+            <p class="metric-title">Alunos Saudáveis</p>
+            <p class="metric-value">{{ risco_evasao.saudavel }}</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-ruby); background: rgba(248, 113, 113, 0.05);">
+            <p class="metric-title" style="color: var(--accent-ruby);">Risco de Evasão (Preditivo)</p>
+            <p class="metric-value">{{ risco_evasao.critico }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Média < 5.0 ou Freq < 75%</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-violet);">
+            <p class="metric-title">Livros Emprestados</p>
+            <p class="metric-value">{{ extra_biblioteca.ativo }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">({{extra_biblioteca.atrasado}} atrasados)</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-cyan);">
+            <p class="metric-title">Espectro Dinâmico</p>
+            <p class="metric-value">
+                {% if demografia_turnos.0.total %}
+                    {{ demografia_turnos.0.total }}<span style="font-size: 1rem; color: var(--text-muted);"> {{demografia_turnos.0.turma__turno}}</span>
+                {% else %}
+                    ...
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Charts -->
     <div class="bi-grid">
+        <!-- Evasão Visual -->
         <div class="bi-card">
-            <h3><i class="fa-solid fa-graduation-cap"></i> Média de Desempenho por Turma</h3>
-            <div style="height: 300px; margin-top: 1rem;">
-                <canvas id="graficoTurmas"></canvas>
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-life-ring"></i> Evasão Escolar</h3>
+            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 250px;">
+                <canvas id="graficoEvasao"></canvas>
+            </div>
+        </div>
+
+        <!-- Frequência x Turmas -->
+        <div class="bi-card" style="grid-column: span 2;">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-user-check"></i> Frequência Global por Turma (%)</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="graficoFrequencia"></canvas>
             </div>
         </div>
         
+        <!-- Demografia -->
         <div class="bi-card">
-            <h3><i class="fa-solid fa-user-check"></i> Taxa de Frequência (%)</h3>
-            <div style="height: 300px; margin-top: 1rem;">
-                <canvas id="graficoFrequencia"></canvas>
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-users-rays"></i> Demografia (Turnos)</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="graficoDemografia"></canvas>
             </div>
+        </div>
+
+        <!-- Saude e Biblioteca Macro -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-heart-pulse"></i> Radar de Serviços Auxiliares</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="graficoRadarServicos"></canvas>
+            </div>
+        </div>
+
+        <!-- Top 10 Críticos -->
+        <div class="bi-card" style="grid-column: span 2;">
+            <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 15px;"><i class="fa-solid fa-list-ol"></i> Top 10 Alunos em Risco Crítico</h3>
+            <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                {% for aluno in risco_evasao.lista_criticos %}
+                <li style="padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--accent-ruby); display: flex; justify-content: space-between;">
+                    <span style="font-weight: 600; color: var(--text-primary);">{{ aluno.nome_completo|truncatechars:25 }}</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem;">{{ aluno.turma.nome }}</span>
+                </li>
+                {% empty %}
+                <p style="color: var(--text-muted); padding: 20px; text-align: center;">Não há alunos em estado crítico. Ótimo trabalho!</p>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Configurações Globais
     Chart.defaults.color = '#8b97bb';
-    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
+    const primaryGridColor = 'rgba(255,255,255,0.05)';
 
-    const dados = {{ dados_turmas|safe }};
-    const labels = dados.map(d => d.nome);
-    
-    // Gráfico de Médias
-    const ctxNotas = document.getElementById('graficoTurmas').getContext('2d');
-    new Chart(ctxNotas, {
-        type: 'bar',
+    const dadosTurmas = {{ dados_turmas|safe }};
+    const labelsTurmas = dadosTurmas.map(d => d.nome);
+    const taxaFrequencias = dadosTurmas.map(d => d.taxa_frequencia || 0);
+
+    const riscoEvasao = { saudavel: parseInt('{{ risco_evasao.saudavel }}'), critico: parseInt('{{ risco_evasao.critico }}') };
+
+    const labelsTurno = { 'M': 'Manhã', 'T': 'Tarde', 'N': 'Noite' };
+    const dadosDemografiaRaw = {{ demografia_turnos|safe }};
+    const labelsDemo = dadosDemografiaRaw.map(d => labelsTurno[d.turma__turno] || 'N/A');
+    const valoresDemo = dadosDemografiaRaw.map(d => d.total);
+
+    const extSaude = parseInt('{{ extra_saude }}');
+    const extBibAtv = parseInt('{{ extra_biblioteca.ativo }}');
+    const extBibAtr = parseInt('{{ extra_biblioteca.atrasado }}');
+
+    new Chart(document.getElementById('graficoEvasao').getContext('2d'), {
+        type: 'doughnut',
         data: {
-            labels: labels,
-            datasets: [{
-                label: 'Média Geral',
-                data: dados.map(d => d.media_geral || 0),
-                backgroundColor: 'rgba(124, 111, 255, 0.4)',
-                borderColor: 'var(--accent-violet)',
-                borderWidth: 2,
-                borderRadius: 8
-            }]
+            labels: ['Fora de Risco', 'Em Risco Crítico'],
+            datasets: [{ data: [riscoEvasao.saudavel, riscoEvasao.critico], backgroundColor: ['rgba(52, 211, 153, 0.8)', 'rgba(248, 113, 113, 0.8)'], borderColor: 'var(--bg-surface)', borderWidth: 3 }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, max: 10, grid: { color: 'rgba(255,255,255,0.05)' } },
-                x: { grid: { display: false } }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { position: 'bottom' } } }
     });
 
-    // Gráfico de Frequência
-    const ctxFreq = document.getElementById('graficoFrequencia').getContext('2d');
-    new Chart(ctxFreq, {
-        type: 'line',
+    new Chart(document.getElementById('graficoFrequencia').getContext('2d'), {
+        type: 'bar',
         data: {
-            labels: labels,
+            labels: labelsTurmas,
+            datasets: [{ label: 'Taxa de Presença %', data: taxaFrequencias, backgroundColor: 'rgba(56, 189, 248, 0.2)', borderColor: 'var(--accent-cyan)', borderWidth: 2, borderRadius: 4 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100, grid: { color: primaryGridColor } }, x: { grid: { display: false } } } }
+    });
+
+    new Chart(document.getElementById('graficoDemografia').getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: labelsDemo,
+            datasets: [{ data: valoresDemo, backgroundColor: ['#7c6fff', '#aa3bff', '#4bc0c0'], borderColor: 'var(--bg-surface)', borderWidth: 2 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Gráfico Polar Area / Radar (Serviços e Bibliotecas Ex.)
+    new Chart(document.getElementById('graficoRadarServicos').getContext('2d'), {
+        type: 'polarArea',
+        data: {
+            labels: ['Livros C/ Alunos', 'Livros Atrasados', 'Assistência Especial (PCD)'],
             datasets: [{
-                label: 'Frequência %',
-                data: dados.map(d => d.taxa_frequencia || 0),
-                backgroundColor: 'rgba(52, 211, 153, 0.1)',
-                borderColor: 'var(--accent-emerald)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: 'var(--accent-emerald)'
+                data: [extBibAtv, extBibAtr, extSaude],
+                backgroundColor: ['rgba(124, 111, 255, 0.5)', 'rgba(248, 113, 113, 0.5)', 'rgba(56, 189, 248, 0.5)'],
+                borderColor: 'var(--bg-surface)'
             }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } },
-                x: { grid: { display: false } }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: false }
     });
 </script>
 {% endblock %}

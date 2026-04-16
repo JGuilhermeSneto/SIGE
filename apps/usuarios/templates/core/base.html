@@ -114,6 +114,60 @@
         <i class="fa-solid fa-palette"></i>
         <select id="theme-select" aria-label="Selecionar tema"></select>
       </div>
+
+      <!-- SINO DE NOTIFICAÇÕES (ALUNOS) -->
+      {% if request.user.is_authenticated and global_notifs_recentes is not None %}
+      <div class="notificacoes-badge-btn" onclick="abrirModalNotificacoesGlobal()" style="position: relative; margin-right: 15px; cursor: pointer; color: var(--text-primary); font-size: 1.25rem; display: flex; align-items: center;">
+          <i class="fa-solid fa-bell"></i>
+          {% if global_notifs_nao_lidas > 0 %}
+            <span style="position: absolute; top: -5px; right: -8px; background: var(--status-reprovado); color: white; width: 16px; height: 16px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.65rem; font-weight: bold; border: 2px solid var(--bg-surface);">{{ global_notifs_nao_lidas }}</span>
+          {% endif %}
+      </div>
+
+      <!-- MODAL GLOBAL DE NOTIFICAÇÕES -->
+      <div id="modal-notificacoes-global" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 450px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
+              
+              <div style="padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-elevated);">
+                  <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                      <i class="fa-solid fa-bell" style="color: var(--accent-amber);"></i> Central de Mensagens
+                  </h3>
+                  <button onclick="fecharModalNotificacoesGlobal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+              </div>
+
+              <div style="padding: 10px 0; overflow-y: auto; flex: 1;">
+              {% if global_notifs_recentes %}
+                  {% for n in global_notifs_recentes %}
+                      <a href="{% url 'marcar_notificacao_lida' n.id|default_if_none:0 %}" style="display: block; padding: 12px 20px; border-bottom: 1px solid var(--border-subtle); text-decoration: none; transition: background 0.2s; background: {% if not n.lida %}rgba(56, 189, 248, 0.05){% else %}transparent{% endif %};" onmouseover="this.style.background='var(--bg-elevated)'" onmouseout="this.style.background='{% if not n.lida %}rgba(56, 189, 248, 0.05){% else %}transparent{% endif %}'">
+                          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                              <strong style="color: {% if not n.lida %}var(--text-primary){% else %}var(--text-muted){% endif %}; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                                  {% if n.tipo == 'NOTA' %}<i class="fa-solid fa-star" style="color: var(--accent-emerald);"></i>{% elif n.tipo == 'CHAMADA' %}<i class="fa-solid fa-calendar-xmark" style="color: var(--accent-ruby);"></i>{% elif n.tipo == 'CORRECAO' %}<i class="fa-solid fa-pen-to-square" style="color: var(--accent-amber);"></i>{% elif n.tipo == 'GABARITO' %}<i class="fa-solid fa-check-double" style="color: var(--accent-cyan);"></i>{% else %}<i class="fa-solid fa-bell"></i>{% endif %}
+                                  {{ n.titulo }}
+                              </strong>
+                              <span style="font-size: 0.7rem; color: var(--text-dim);">{{ n.criado_em|date:"d/m H:i" }}</span>
+                          </div>
+                          <p style="margin: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">{{ n.mensagem }}</p>
+                      </a>
+                  {% endfor %}
+              {% else %}
+                  <div style="padding: 40px 20px; text-align: center; color: var(--text-dim);">
+                      <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; opacity: 0.3; margin-bottom: 10px;"></i>
+                      <p>Nenhuma notificação encontrada.</p>
+                  </div>
+              {% endif %}
+              </div>
+          </div>
+      </div>
+      <script>
+      function abrirModalNotificacoesGlobal() {
+          document.getElementById('modal-notificacoes-global').style.display = 'flex';
+      }
+      function fecharModalNotificacoesGlobal() {
+          document.getElementById('modal-notificacoes-global').style.display = 'none';
+      }
+      </script>
+      {% endif %}
+
       {% if request.user.is_authenticated %}
       <div class="user-dropdown">
 

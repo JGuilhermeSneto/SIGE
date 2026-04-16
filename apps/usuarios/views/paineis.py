@@ -143,7 +143,7 @@ def painel_aluno(request):
 
     grade = _get_grade_horario_turma(aluno.turma)
     
-    from apps.academico.models.academico import Disciplina
+    from apps.academico.models.academico import Disciplina, PlanejamentoAula
     from apps.academico.models.desempenho import Nota, Frequencia
     from apps.academico.utils.academico import _calcular_situacao_nota
     
@@ -170,12 +170,18 @@ def painel_aluno(request):
         faltas = frequencias.filter(presente=False).count()
         percentual_faltas = (faltas / total_aulas * 100) if total_aulas > 0 else 0
         
+        # Buscar roteiros de aula criados pelo professor para esta turma/disciplina
+        planejamentos = PlanejamentoAula.objects.filter(
+            disciplina=disciplina, turma=aluno.turma
+        ).order_by('-data_aula', '-horario_aula')[:10]
+        
         disciplinas_com_notas.append({
             'disciplina': disciplina,
             'nota': nota,
             'total_aulas': total_aulas,
             'faltas': faltas,
-            'percentual_faltas': int(percentual_faltas)
+            'percentual_faltas': int(percentual_faltas),
+            'planejamentos': planejamentos
         })
         
     media_geral = (soma_medias / total_disciplinas_com_media) if total_disciplinas_com_media > 0 else 0
@@ -198,6 +204,10 @@ def painel_aluno(request):
     MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     mes_nome = MESES[agora.month - 1].upper()
 
+    from apps.biblioteca.models.biblioteca import Emprestimo
+    emprestimos = Emprestimo.objects.filter(usuario_aluno=aluno).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
+    devolvidos  = Emprestimo.objects.filter(usuario_aluno=aluno, status='DEVOLVIDO').select_related('livro').order_by('-data_devolucao_real')[:10]
+
     contexto = {
         "aluno":                 aluno,
         "nome_exibicao":         get_nome_exibicao(request.user),
@@ -219,6 +229,8 @@ def painel_aluno(request):
             Q(publico_alvo__in=['GLOBAL', 'ALUNOS']),
             Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
         )[:5],
+        "meus_emprestimos": emprestimos,
+        "livros_devolvidos": devolvidos,
     }
 
     return render(request, "aluno/painel_aluno.html", contexto)

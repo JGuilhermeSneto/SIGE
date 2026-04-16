@@ -4,7 +4,7 @@ e edição de perfil.
 """
 
 from django.urls import path
-from ..views import perfis, react_app, registros, paineis
+from ..views import perfis, react_app, registros, paineis, professor_planejamento, aluno_planejamento
 
 urlpatterns = [
     # React (Vite) dentro do layout SIGE
@@ -15,7 +15,10 @@ urlpatterns = [
     path("painel/super/", paineis.painel_super, name="painel_super"),
     path("painel/gestor/", paineis.painel_super, name="painel_gestor"),
     path("painel/professor/", paineis.painel_professor, name="painel_professor"),
+    path("painel/professor/planejamentos/", professor_planejamento.meus_planejamentos, name="meus_planejamentos"),
+    path("painel/professor/planejamentos/salvar/", professor_planejamento.salvar_planejamento, name="salvar_planejamento"),
     path("painel/aluno/", paineis.painel_aluno, name="painel_aluno"),
+    path("painel/aluno/roteiros/", aluno_planejamento.meus_roteiros_aluno, name="meus_roteiros_aluno"),
 
     # Usuários
     path("usuarios/", registros.usuarios, name="usuarios"),

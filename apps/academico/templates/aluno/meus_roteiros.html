@@ -1,0 +1,108 @@
+{% extends "core/base.html" %}
+
+{% block title %}Roteiro de Aulas | Estudante{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Ocultar a barra lateral global (já que alunos geralmente não usam mesmo) e centralizar conteúdo em modo Teatro */
+    .menu-lateral { display: none !important; }
+    .area-conteudo { margin-left: 0 !important; width: 100% !important; border-top-left-radius: 0 !important; display: flex !important; justify-content: center !important; }
+
+    .roteiro-container { padding: 40px 20px; display: grid; grid-template-columns: 320px 1fr; gap: 40px; width: 100%; max-width: 1400px; margin: 0 auto; }
+    
+    /* Menu Lateral de Matérias */
+    .disciplina-list { background: var(--bg-surface); padding: 15px; border-radius: 12px; border: 1px solid var(--border-subtle); align-self: start; }
+    .disciplina-item { display: block; padding: 12px 15px; margin-bottom: 8px; border-radius: 8px; color: var(--text-primary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.2s; background: rgba(255,255,255,0.02); }
+    .disciplina-item:hover { background: rgba(255,255,255,0.05); }
+    .disciplina-item.active { border-left-color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1); font-weight: bold; }
+    
+    /* Conteúdo Principal */
+    .roteiro-content { background: var(--bg-surface); border-radius: 12px; border: 1px solid var(--border-subtle); padding: 30px; }
+    
+    /* Timeline Visual */
+    .timeline { margin-top: 30px; }
+    .timeline-item { border-left: 2px solid var(--border-subtle); padding-left: 20px; position: relative; margin-bottom: 25px; }
+    .timeline-item::before { content: ''; position: absolute; left: -6px; top: 0; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-cyan); }
+    .timeline-date { font-weight: bold; color: var(--text-primary); margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+    .timeline-horario { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; }
+    .timeline-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid var(--border-subtle); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="roteiro-container">
+    
+    <!-- Menu Lateral: Matérias do Aluno -->
+    <div class="disciplina-list">
+        <a href="{% url 'painel_aluno' %}" style="display: block; width: 100%; text-align: center; text-decoration: none; padding: 10px; border-radius: 8px; border: 1px solid var(--border-subtle); color: var(--text-primary); background: rgba(255,255,255,0.03); margin-bottom: 20px; transition: all 0.2s; font-weight: bold;" onmouseover="this.style.background='var(--bg-base)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+            <i class="fa-solid fa-arrow-left"></i> Voltar ao Meu Painel
+        </a>
+        
+        <h3 style="margin-top: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;"><i class="fa-solid fa-list"></i> Minhas Matérias</h3>
+        {% for disc in disciplinas %}
+            <a href="?disciplina={{ disc.id }}" class="disciplina-item {% if disciplina_ativa and disc.id == disciplina_ativa.id %}active{% endif %}">
+                <div style="font-size: 1.1rem; margin-bottom: 3px;">{{ disc.nome }}</div>
+                <div style="font-size: 0.8rem; opacity: 0.7;">Prof(a). {{ disc.professor.nome_completo|truncatewords:2 }}</div>
+            </a>
+        {% empty %}
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma disciplina vinculada.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Área de Visualização do Diário -->
+    <div class="roteiro-content">
+        {% if disciplina_ativa %}
+            <h2 style="margin-top: 0; color: var(--text-primary); border-bottom: 1px solid var(--border-subtle); padding-bottom: 15px; margin-bottom: 30px;">
+                <i class="fa-solid fa-map-location-dot" style="color: var(--accent-cyan);"></i> Trilha Educacional: {{ disciplina_ativa.nome }}
+            </h2>
+            
+            <p style="color: var(--text-muted); margin-bottom: 30px;">
+                Veja abaixo o que o(a) professor(a) <strong>{{ disciplina_ativa.professor.nome_completo }}</strong> preparou de material ou assuntos para as aulas (Passadas e Futuras).
+            </p>
+
+            <!-- Timeline do Aluno -->
+            <div class="timeline">
+                {% for plan in planejamentos %}
+                    <div class="timeline-item">
+                        <div class="timeline-date">
+                            {{ plan.data_aula|date:"l, d \d\e F \d\e Y"|title }}
+                            {% if plan.concluido %}
+                                <span style="font-size: 0.7rem; background: var(--accent-emerald); color: white; padding: 3px 8px; border-radius: 4px; font-weight: normal;">AULA CONCLUÍDA</span>
+                            {% else %}
+                                <span style="font-size: 0.7rem; background: var(--accent-amber); color: white; padding: 3px 8px; border-radius: 4px; font-weight: normal;"><i class="fa-solid fa-hourglass-half"></i> PREVISTA</span>
+                            {% endif %}
+                        </div>
+                        <div class="timeline-horario"><i class="fa-regular fa-clock"></i> Horário: {{ plan.horario_aula }}</div>
+                        
+                        <div class="timeline-card">
+                            <h4 style="margin-top:0; margin-bottom: 10px; color: var(--text-primary);">Assunto / Tópicos</h4>
+                            <p style="margin: 0; color: var(--text-dim); line-height: 1.6; font-size: 0.95rem;">{{ plan.conteudo|linebreaksbr }}</p>
+                            
+                            {% if plan.arquivos_apoio %}
+                            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed var(--border-subtle);">
+                                <a href="{{ plan.arquivos_apoio.url }}" target="_blank" style="display: inline-block; background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan); text-decoration: none; border-radius: 6px; padding: 8px 12px; font-size: 0.85rem; font-weight: bold; border: 1px solid rgba(56, 189, 248, 0.2); transition: all 0.2s;">
+                                    <i class="fa-solid fa-download"></i> Baixar Material de Apoio
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.02); border-radius: 8px;">
+                        <i class="fa-solid fa-ghost" style="font-size: 3rem; color: var(--text-muted); opacity: 0.4; margin-bottom: 15px;"></i>
+                        <h3 style="color: var(--text-primary); margin:0 0 10px 0;">Nada por aqui!</h3>
+                        <p style="color: var(--text-muted); margin:0;">O professor ainda não lançou o roteiro das próximas aulas no diário digital.</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div style="text-align: center; color: var(--text-muted); padding: 80px 0;">
+                <i class="fa-solid fa-map-location-dot" style="font-size: 5rem; opacity: 0.1; margin-bottom: 25px;"></i>
+                <h2>Escolha uma Matéria</h2>
+                <p>Use o menu lateral para selecionar a disciplina que você quer consultar.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

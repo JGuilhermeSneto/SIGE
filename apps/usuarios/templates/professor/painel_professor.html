@@ -45,7 +45,7 @@
     <section class="coluna-esquerda">
 
       {# ── Cards de totais ── #}
-      <section class="cards">
+      <section class="cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
         <article class="card">
           <a href="{% url 'disciplinas_professor' %}" class="card-link-wrapper">
             <div class="card-icone">
@@ -76,20 +76,16 @@
           </a>
         </article>
 
-        {# Card 4: Progresso de Notas (Substitui 'Professores' do Super) #}
-        <article class="card">
-          <div class="card-icone">
-            <i class="fa-solid fa-file-signature"></i>
-          </div>
-          <p class="card-label">Progresso de Notas</p>
-          <h2 class="card-valor">
-            {% if total_notas_possiveis > 0 %}
-              {% widthratio total_notas_lancadas total_notas_possiveis 100 %}%
-            {% else %}
-              0%
-            {% endif %}
-          </h2>
+        <article class="card" style="border-bottom: 3px solid var(--accent-violet);">
+          <a href="{% url 'meus_planejamentos' %}" class="card-link-wrapper">
+            <div class="card-icone" style="color: var(--accent-violet);">
+              <i class="fa-solid fa-pen-ruler"></i>
+            </div>
+            <p class="card-label">Planejamentos</p>
+            <h2 class="card-valor" style="font-size: 1rem; margin-top: 5px;">Acessar Diário</h2>
+          </a>
         </article>
+
       </section>
 
       {# ── Barra de resumo ── #}

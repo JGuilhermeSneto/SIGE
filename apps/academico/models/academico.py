@@ -168,3 +168,28 @@ class RespostaAluno(models.Model):
     texto_resposta = models.TextField(blank=True, null=True, help_text="Para questões discursivas")
     comentario_professor = models.TextField(blank=True, help_text="Correção específica desta questão")
     pontos_atribuidos = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+
+class PlanejamentoAula(models.Model):
+    """Diário de classe onde o professor registra o plano/conteúdo que vai ou que foi ministrado via Grade Horária."""
+    professor = models.ForeignKey("usuarios.Professor", on_delete=models.CASCADE, related_name="planejamentos_aula")
+    disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="planejamentos_aula")
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="planejamentos_aula")
+    data_aula = models.DateField(help_text="Data efetiva da aula")
+    horario_aula = models.CharField(max_length=50, help_text="Horário conforme a Grade (Ex: 07:00 - 07:50)")
+    
+    conteudo = models.TextField(help_text="Descrição do plano de aula ou conteúdo abordado (Markdown opcional)")
+    arquivos_apoio = models.FileField(upload_to="planejamentos/materiais/", blank=True, null=True, help_text="Upload de lista de exercícios ou slides da aula")
+    
+    concluido = models.BooleanField(default=False, help_text="Se verificado como True, a aula já foi dada e consumida.")
+    criado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'core_planejamentoaula'
+        unique_together = ("disciplina", "data_aula", "horario_aula")
+        ordering = ["-data_aula", "horario_aula"]
+        verbose_name = "Planejamento de Aula"
+        verbose_name_plural = "Planejamentos de Aulas"
+
+    def __str__(self):
+        return f"{self.data_aula.strftime('%d/%m/%Y')} | {self.disciplina.nome} | {self.horario_aula}"

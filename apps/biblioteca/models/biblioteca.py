@@ -40,7 +40,19 @@ class Emprestimo(models.Model):
     data_devolucao_prevista = models.DateField()
     data_devolucao_real = models.DateField(null=True, blank=True)
     
+    STATUS_LEITURA_CHOICES = [
+        ('NAO_INFORMADO', 'Apenas Devolvido'),
+        ('LENDO',         'Estava Lendo'),
+        ('FINALIZADO',    'Finalizou a Leitura'),
+    ]
+
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='ATIVO')
+    status_leitura = models.CharField(
+        max_length=15,
+        choices=STATUS_LEITURA_CHOICES,
+        default='NAO_INFORMADO',
+        verbose_name='Status de Leitura'
+    )
 
     def __str__(self):
         destinatario = self.usuario_aluno.nome_completo if self.usuario_aluno else self.usuario_professor.nome_completo
