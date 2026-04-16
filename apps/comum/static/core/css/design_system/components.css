@@ -220,3 +220,26 @@
 .passo-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
 .passo-nome { font-size: 0.9rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
 .passo-item.ativo .passo-nome { color: var(--text-primary); }
+/* USER LIST CELLS (PHOTO + NAME) */
+.user-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.avatar-list {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid var(--border-mid);
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+    transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.tabela-discentes tr:hover .avatar-list,
+.tabela-membros tr:hover .avatar-list {
+    border-color: var(--primary);
+    transform: scale(1.1);
+}

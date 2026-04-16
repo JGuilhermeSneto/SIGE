@@ -8,6 +8,7 @@
 {# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block title %}Docentes{% endblock %}
 {% block header_title %}Docentes{% endblock %}
@@ -68,7 +69,12 @@
           {% for professor in professores %}
           <tr>
             {# Dados do professor: nome e e-mail do User vinculado #}
-            <td>{{ professor.nome_completo }}</td>
+            <td>
+              <div class="user-info-cell">
+                <img src="{{ professor.user|foto_perfil_url }}" class="avatar-list" alt="{{ professor.nome_completo }}">
+                <span>{{ professor.nome_completo }}</span>
+              </div>
+            </td>
             <td>{{ professor.user.email }}</td>
 
             <td class="coluna-acoes">

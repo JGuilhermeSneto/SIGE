@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block title %}Discentes{% endblock %}
 {% block header_title %}Discentes{% endblock %}
@@ -50,10 +51,13 @@
           {% for aluno in alunos %}
           <tr>
             <td class="tabela-info">
-              {{ aluno.nome_completo }}
-              {% if aluno.ficha_medica.alergias or aluno.ficha_medica.condicoes_pcd %}
-              <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-ruby); cursor: help;" title="Atenção: Possui restrições de saúde ou PCD. Ver ficha médica."></i>
-              {% endif %}
+              <div class="user-info-cell">
+                <img src="{{ aluno.user|foto_perfil_url }}" class="avatar-list" alt="{{ aluno.nome_completo }}">
+                <span>{{ aluno.nome_completo }}</span>
+                {% if aluno.ficha_medica.alergias or aluno.ficha_medica.condicoes_pcd %}
+                <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-ruby); cursor: help;" title="Atenção: Possui restrições de saúde ou PCD. Ver ficha médica."></i>
+                {% endif %}
+              </div>
             </td>
             <td class="tabela-info">{{ aluno.user.email }}</td>
             <td class="tabela-info">{{ aluno.turma.nome }}</td>
