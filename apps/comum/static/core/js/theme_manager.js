@@ -7,25 +7,15 @@
 (() => {
   const STORAGE_KEY = 'sige_theme';
   const THEMES = new Set([
-    'indigo-profundo',      // 1. Dark (antigo 'default')
-    'brisa-aqua',           // 2. Dark Electric Cyan
-    'ceu-sereno',           // 3. Atmospheric Sky Gradient
-    'cinza-industrial',     // 4. Light Minimal (antigo 'gray')
-    'azul-corporativo',     // 5. Corporate Blue with borders
-    'ambar-noite',          // 6. Amber Dark (antigo 'amber')
-    'jardim-fosco',         // 7. Botanical Green
-    'terra-musgo'           // 8. Sage Green
+    'indigo-profundo',      // Dark (antigo 'default')
+    'cinza-industrial',     // Light Minimal (antigo 'gray')
+    'azul-corporativo',     // Corporate Blue with borders
   ]);
 
   const THEME_NAMES = {
     'indigo-profundo': 'Indigo Profundo',
-    'brisa-aqua': 'Brisa Aqua',
-    'ceu-sereno': 'Céu Sereno',
     'cinza-industrial': 'Cinza Industrial',
-    'azul-corporativo': 'Azul Corporativo',
-    'ambar-noite': 'Âmbar & Noite',
-    'jardim-fosco': 'Jardim Fosco',
-    'terra-musgo': 'Terra & Musgo'
+    'azul-corporativo': 'Azul Corporativo'
   };
 
   let initialized = false;

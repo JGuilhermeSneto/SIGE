@@ -16,6 +16,9 @@ from apps.academico.utils.academico import _get_grade_horario_turma
 from ..models.perfis import Professor, Aluno
 from apps.academico.models.academico import Turma, Disciplina
 from apps.academico.models.desempenho import NotificacaoAluno
+from apps.comunicacao.models.comunicado import Comunicado
+from django.db.models import Q
+from django.utils import timezone
 
 @login_required
 def painel_super(request):
@@ -56,6 +59,9 @@ def painel_super(request):
         "total_disciplinas": (
             Disciplina.objects.filter(turma__in=turmas).distinct().count()
         ),
+        "comunicados": Comunicado.objects.filter(
+            Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
+        )[:5],
     }
 
     return render(request, "superusuario/painel_super.html", contexto)
@@ -119,6 +125,10 @@ def painel_professor(request):
         "total_notas_possiveis":   total_possiveis,
         "anos_disponiveis":        anos_disponiveis,
         "ano_filtro":              ano_filtro,
+        "comunicados": Comunicado.objects.filter(
+            Q(publico_alvo__in=['GLOBAL', 'PROFESSORES']),
+            Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
+        )[:5],
     }
 
     return render(request, "professor/painel_professor.html", contexto)
@@ -205,6 +215,10 @@ def painel_aluno(request):
         "total_notas_possiveis": total_notas_possiveis,
         "notificacoes_recentes": NotificacaoAluno.objects.filter(aluno=aluno).order_by("-criado_em")[:8],
         "notificacoes_nao_lidas": NotificacaoAluno.objects.filter(aluno=aluno, lida=False).count(),
+        "comunicados": Comunicado.objects.filter(
+            Q(publico_alvo__in=['GLOBAL', 'ALUNOS']),
+            Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
+        )[:5],
     }
 
     return render(request, "aluno/painel_aluno.html", contexto)

@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Registrar Movimentação — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Administrativo · Estoque</span>
+            <h1>Registrar <span class="nome-destaque">Movimentação</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-formulario-limpo">
+            <div class="alerta-sige status-recuperacao">
+                <i class="fa-solid fa-circle-info"></i> Lembre-se: Saídas de estoque reduzem o saldo atual e entradas aumentam.
+            </div>
+
+            <form method="POST" class="sige-form-padrao">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.item.id_for_label }}">Item de Consumo</label>
+                        {{ form.item }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.unidade.id_for_label }}">Unidade/Campus</label>
+                        {{ form.unidade }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.tipo.id_for_label }}">Tipo de Movimento</label>
+                        {{ form.tipo }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.quantidade.id_for_label }}">Quantidade</label>
+                        {{ form.quantidade }}
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="{{ form.justificativa.id_for_label }}">Justificativa / Observação</label>
+                        {{ form.justificativa }}
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-sige-primario">
+                        <i class="fa-solid fa-right-left"></i> Processar Movimentação
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

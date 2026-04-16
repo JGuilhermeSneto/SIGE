@@ -395,23 +395,28 @@ body {
 
 .login-card .card-border {
   position: absolute;
-  inset: 0;
+  inset: -1px; /* Overlapa a borda real para evitar gaps de 1px */
   border-radius: var(--radius-xl);
-  padding: 2px; /* Aumentei para 2px para dar mais destaque e contraste na borda. */
+  padding: 2px;
   background: conic-gradient(
-    from 135deg, /* Começa perto do canto superior esquerdo para dar a volta completa */
+    from 135deg,
     var(--accent-violet) 0%, 
     var(--accent-cyan) var(--border-progress, 0%), 
     transparent var(--border-progress, 0%),
     transparent 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out; /* Melhor suporte em webkit */
+  mask:         linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
   mask-composite: exclude;
   z-index: 10;
   pointer-events: none;
-  filter: drop-shadow(0 0 6px var(--accent-cyan)); /* EFEITO NEON GLOW */
-  transition: --border-progress 0.15s ease-out; /* Transição curta e suave para digitação */
+  filter: drop-shadow(0 0 6px var(--accent-cyan));
+  transition: --border-progress 0.15s ease-out;
+  /* Hardware acceleration fix */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .login-card::before {
@@ -569,7 +574,7 @@ body {
 .field-box::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: -1px; /* Garante cobertura total da borda do container */
   border-radius: var(--radius-md);
   padding: 1px;
   background: conic-gradient(
@@ -580,10 +585,16 @@ body {
     transparent 100%
   );
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask:         linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
   mask-composite: exclude;
   pointer-events: none;
   transition: --input-progress 0.15s ease-out;
+  z-index: 0;
+  /* FIX: Evita jitter e artefatos de renderização */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .field-accent {
@@ -609,6 +620,9 @@ body {
   pointer-events: none;
   flex-shrink: 0;
   transition: color .25s, transform .3s cubic-bezier(.34, 1.56, .64, 1);
+  /* FIX: eleva acima do ::after (z-index: 0) para evitar overlay de cor */
+  position: relative;
+  z-index: 1;
 }
 
 .field-wrap.focused #icon-email {
@@ -639,6 +653,9 @@ body {
   font-weight: 400;
   padding: 12px 12px 12px 10px;
   width: 100%;
+  /* FIX: eleva acima do ::after para evitar overlay */
+  position: relative;
+  z-index: 1;
 }
 
 .field-box input::placeholder { color: var(--text-muted); }
@@ -658,6 +675,9 @@ body {
   padding: 0 14px 0 8px;
   transition: color .2s;
   flex-shrink: 0;
+  /* FIX: eleva acima do ::after para evitar overlay */
+  position: relative;
+  z-index: 1;
 }
 
 .toggle-pw:hover { color: var(--accent-violet); }

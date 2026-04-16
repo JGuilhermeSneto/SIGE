@@ -56,6 +56,19 @@ img {
 
 /* Utility Classes */
 .hidden { display: none !important; }
+
+/* Browser Normalization — Hides native UI that clashes with custom SIGE elements */
+input::-ms-reveal,
+input::-ms-clear {
+    display: none;
+}
+
+input::-webkit-contacts-auto-fill-button,
+input::-webkit-caps-lock-indicator,
+input::-webkit-credentials-auto-fill-button {
+    display: none !important;
+}
+
 .sr-only {
     position: absolute;
     width: 1px;

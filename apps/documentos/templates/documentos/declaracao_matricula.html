@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+        .titulo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .corpo {
+            text-align: justify;
+            margin-top: 50px;
+            font-size: 16px;
+        }
+        .signature {
+            margin-top: 80px;
+            text-align: center;
+        }
+        .footer {
+            margin-top: 100px;
+            font-size: 12px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="titulo">SIGE</div>
+        <div>{{ instituicao }}</div>
+    </div>
+
+    <div style="text-align: center; font-size: 20px; font-weight: bold; text-decoration: underline;">
+        DECLARAÇÃO DE MATRÍCULA
+    </div>
+
+    <div class="corpo">
+        <p>Declaramos, para os devidos fins, que o(a) aluno(a) <strong>{{ aluno.nome_completo }}</strong>, 
+        inscrito(a) sob o CPF nº <strong>{{ aluno.cpf }}</strong>, encontra-se regularmente matriculado(a) 
+        nesta instituição de ensino, cursando a turma <strong>{{ aluno.turma.nome }}</strong> no turno 
+        <strong>{{ aluno.turma.get_turno_display }}</strong> durante o ano letivo de {{ aluno.turma.ano }}.</p>
+
+        <p>Por ser verdade, firmamos a presente declaração.</p>
+    </div>
+
+    <div style="margin-top: 30px; text-align: right;">
+        Data de emissão: {{ data_atual|date:"d de F de Y" }}
+    </div>
+
+    <div class="signature">
+        <p>_________________________________________________</p>
+        <p>Secretaria Escolar</p>
+    </div>
+
+    <div class="footer">
+        Este documento foi gerado eletronicamente e possui validade jurídica institucional.
+    </div>
+</body>
+</html>

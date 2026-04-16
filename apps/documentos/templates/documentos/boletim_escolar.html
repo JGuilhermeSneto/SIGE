@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 1.5cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #1a1a1a;
+            font-size: 12px;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px double #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .boletim-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .info-aluno {
+            display: table;
+            width: 100%;
+            margin-bottom: 20px;
+            background: #f2f2f2;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .info-cell {
+            display: table-cell;
+            width: 50%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #333;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+        .disciplina-nome {
+            text-align: left;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="boletim-title">BOLETIM ESCOLAR</div>
+        <div>SIGE - Sistema Integrado de Gestão Escolar</div>
+    </div>
+
+    <div class="info-aluno">
+        <div class="info-cell">
+            <strong>Aluno:</strong> {{ aluno.nome_completo }}<br>
+            <strong>CPF:</strong> {{ aluno.cpf }}<br>
+            <strong>Turma:</strong> {{ aluno.turma.nome }}
+        </div>
+        <div class="info-cell">
+            <strong>Ano Letivo:</strong> {{ aluno.turma.ano }}<br>
+            <strong>Turno:</strong> {{ aluno.turma.get_turno_display }}<br>
+            <strong>Data Emissão:</strong> {{ data_emissao|date:"d/m/Y H:i" }}
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Disciplina</th>
+                <th>1º Bim</th>
+                <th>2º Bim</th>
+                <th>3º Bim</th>
+                <th>4º Bim</th>
+                <th>Média</th>
+                <th>Faltas</th>
+                <th>% Freq.</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in dados %}
+            <tr>
+                <td class="disciplina-nome">{{ item.disciplina.nome }}</td>
+                <td>{{ item.nota.nota1|default:"--" }}</td>
+                <td>{{ item.nota.nota2|default:"--" }}</td>
+                <td>{{ item.nota.nota3|default:"--" }}</td>
+                <td>{{ item.nota.nota4|default:"--" }}</td>
+                <td><strong>{{ item.nota.media|floatformat:1|default:"--" }}</strong></td>
+                <td>{{ item.faltas }}</td>
+                <td>{{ item.percentual_faltas }}%</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p>_________________________________________________</p>
+        <p>Assinatura do Diretor / Secretário</p>
+    </div>
+</body>
+</html>

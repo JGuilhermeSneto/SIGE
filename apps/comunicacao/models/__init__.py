@@ -1,0 +1,1 @@
+from .comunicado import Comunicado

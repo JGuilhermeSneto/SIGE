@@ -32,6 +32,12 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("", include("apps.usuarios.urls")),
     path("academico/", include("apps.academico.urls")),
     path("calendario/", include("apps.calendario.urls")),
+    path("documentos/", include("apps.documentos.urls")),
+    path("comunicacao/", include("apps.comunicacao.urls")),
+    path("infraestrutura/", include("apps.infraestrutura.urls")),
+    path("saude/", include("apps.saude.urls")),
+    path("biblioteca/", include("apps.biblioteca.urls")),
+    path("dashboards/", include("apps.dashboards.urls")),
 ]
 
 if settings.DEBUG:

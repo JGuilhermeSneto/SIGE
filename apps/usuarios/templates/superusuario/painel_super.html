@@ -134,6 +134,29 @@
         </div>
       </section>
 
+      {# ── Mural de Avisos ── #}
+      <section class="mural-box card-mural-sidebar" style="margin-bottom: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+        <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
+        </h3>
+        {% if comunicados %}
+          <div class="lista-mural-compacta">
+            {% for c in comunicados %}
+              <div class="item-mural-side {% if c.importancia == 'ALTA' %}urgente{% endif %}" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
+                  <span class="tag-mural">{{ c.get_publico_alvo_display }}</span>
+                  <span>{{ c.data_publicacao|date:"d/m" }}</span>
+                </div>
+                <h4 style="font-size: 0.85rem; margin-bottom: 4px; {% if c.importancia == 'ALTA' %}color: var(--status-reprovado);{% endif %}">{{ c.titulo }}</h4>
+                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">{{ c.conteudo|truncatechars:60 }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Nenhum aviso no momento.</p>
+        {% endif %}
+      </section>
+
       {# ── Visão geral rápida ── #}
       <section class="info-rapida">
         <p class="info-rapida-titulo">Visão Geral</p>

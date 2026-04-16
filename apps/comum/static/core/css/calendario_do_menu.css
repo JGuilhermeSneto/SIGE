@@ -12,6 +12,13 @@
     color: var(--text-primary);
     min-height: calc(100vh - var(--menu-height));
     animation: fadeIn .4s ease-out;
+    transition: padding var(--transition-mid);
+}
+
+@media (max-width: 768px) {
+    .main-area {
+        padding: 12px 0 32px; /* Remove padding lateral no mobile para dar espaço ao container */
+    }
 }
 
 @keyframes fadeIn {
@@ -61,6 +68,17 @@
     color: var(--text-primary);
     line-height: 1.15;
     margin: 0;
+}
+
+@media (max-width: 600px) {
+    .header-painel {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 20px;
+    }
+    .header-painel h1 {
+        font-size: 1.5rem;
+    }
 }
 
 .header-painel h1 .destaque {
@@ -602,17 +620,99 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
+/* Responsive (V4 Overhaul + V5 Safety Net) */
 @media (max-width: 768px) {
+    .calendar-container {
+        padding: 12px 8px;
+        margin-top: 5px;
+        overflow-x: auto; /* REDE DE SEGURANÇA: Permite scroll horizontal se o grid for mais largo que a tela */
+        -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+        border-radius: var(--radius-lg);
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .calendar-controls {
+        flex-direction: column; /* EMPILHAMENTO para ganhar espaço */
+        align-items: stretch;
+        gap: 12px;
+        width: 100%;
+    }
+    .btn-group-nav {
+        width: 100%;
+        justify-content: space-between;
+        padding: 8px 12px;
+    }
+    .mes-ano-display {
+        font-size: 1rem;
+        min-width: 100px;
+        flex: 1;
+    }
+    .calendar-actions, .calendar-actions form {
+        width: 100%;
+    }
+    .btn-magic {
+        width: 100%;
+        padding: 12px;
+    }
     .calendar-grid {
-        gap: 6px;
+        /* MINMAX(0, 1fr) é obrigatório para o grid encolher forçadamente */
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 2px;
+        width: 100%;
+    }
+    .calendar-day-header {
+        font-size: 0.58rem;
+        font-weight: 800;
+        padding: 4px 0;
+        letter-spacing: -0.01em;
     }
     .calendar-day {
-        min-height: 70px;
-        padding: 5px;
+        min-height: auto;
+        min-width: 0; /* Permite encolhimento total */
+        width: 100%;
+        padding: 6px 2px;
+        border-radius: 4px;
+        overflow: hidden;
     }
-    .day-info {
-        display: none;
+    .day-number {
+        font-size: 0.78rem;
+        font-weight: 900;
+    }
+    .day-status {
+        width: 4px; height: 4px;
+        top: 3px; right: 3px;
+    }
+    .day-info { display: none; }
+    
+    .calendar-legend {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Duas colunas para economizar altura */
+        gap: 8px 12px;
+        margin-top: 16px;
+        padding-top: 12px;
+    }
+    .legend-item {
+        font-size: 0.65rem;
+        gap: 5px;
+    }
+}
+
+/* Ajustes Finais para telas ultra-estreitas (Ex: Samsung A06 / 360px) */
+@media (max-width: 380px) {
+    .calendar-container {
+        padding: 8px 4px;
+    }
+    .calendar-grid {
+        gap: 1px;
+    }
+    .day-number {
+        font-size: 0.7rem;
+    }
+    .calendar-day {
+        padding: 4px 1px;
+    }
+    .calendar-day-header {
+        font-size: 0.52rem;
     }
 }
 

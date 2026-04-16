@@ -49,12 +49,21 @@
         <tbody>
           {% for aluno in alunos %}
           <tr>
-            <td class="tabela-info">{{ aluno.nome_completo }}</td>
+            <td class="tabela-info">
+              {{ aluno.nome_completo }}
+              {% if aluno.ficha_medica.alergias or aluno.ficha_medica.condicoes_pcd %}
+              <i class="fa-solid fa-circle-exclamation" style="color: var(--accent-ruby); cursor: help;" title="Atenção: Possui restrições de saúde ou PCD. Ver ficha médica."></i>
+              {% endif %}
+            </td>
             <td class="tabela-info">{{ aluno.user.email }}</td>
             <td class="tabela-info">{{ aluno.turma.nome }}</td>
 
             <td class="coluna-acoes">
               <div class="acoes-grupo">
+                <a href="{% url 'visualizar_saude_aluno' aluno.id %}" class="acao-btn" title="Saúde/Ficha Médica">
+                  <i class="fa-solid fa-heart-pulse" style="color: var(--accent-ruby);"></i>
+                </a>
+                
                 <a href="{% url 'editar_aluno' aluno.id %}" class="acao-btn" title="Editar">
                   <i class="fa-solid fa-pen-to-square acao-editar"></i>
                 </a>

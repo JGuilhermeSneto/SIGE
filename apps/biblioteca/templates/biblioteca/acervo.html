@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Acervo da Biblioteca — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    .grid-livros { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+    .card-livro { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; transition: all 0.2s; position: relative; }
+    .card-livro:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .capa-livro { height: 180px; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-muted); }
+    .info-livro { padding: 1.2rem; }
+    .info-livro h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
+    .info-livro p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .badge-estoque { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Biblioteca Digital</span>
+            <h1>Consultar <span class="nome-destaque">Acervo Escolar</span></h1>
+        </div>
+        <div class="header-acoes">
+            {% if is_gestor %}
+            <a href="{% url 'cadastrar_livro' %}" class="btn-sige-primario">
+                <i class="fa-solid fa-plus"></i> Novo Livro
+            </a>
+            <a href="{% url 'gerenciar_emprestimos' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-book-bookmark"></i> Gerenciar Empréstimos
+            </a>
+            {% endif %}
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="barra-busca-gestao">
+        <form method="get" class="busca-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Buscar por título ou autor..." onchange="this.form.submit()">
+        </form>
+    </div>
+
+    <div class="grid-livros">
+        {% for livro in livros %}
+        <div class="card-livro">
+            <div class="capa-livro">
+                {% if livro.capa %}
+                <img src="{{ livro.capa.url }}" alt="{{ livro.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                <i class="fa-solid fa-book"></i>
+                {% endif %}
+            </div>
+            <div class="info-livro">
+                <span class="badge-estoque {% if livro.exemplares_disponiveis > 0 %}status-aprovado{% else %}status-reprovado{% endif %}">
+                    {{ livro.exemplares_disponiveis }} disponíveis
+                </span>
+                <h3 style="margin-top: 10px;">{{ livro.titulo }}</h3>
+                <p>{{ livro.autor }}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.75rem;">ISBN: {{ livro.isbn|default:"-" }}</span>
+                    {% if livro.exemplares_disponiveis > 0 %}
+                    <a href="{% url 'reservar_livro' livro.id %}" class="btn-sige-primario" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; text-decoration: none;">Reservar</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="vazio-state" style="grid-column: span 3;">
+            <i class="fa-solid fa-book-open"></i>
+            <p>Nenhum livro encontrado no acervo.</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

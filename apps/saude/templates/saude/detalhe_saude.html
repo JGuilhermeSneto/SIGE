@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Saúde do Aluno — {{ aluno.nome_completo }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    .medical-card { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+    .info-group { margin-bottom: 2rem; background: var(--bg-surface); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-subtle); }
+    .info-group h3 { margin-bottom: 1rem; color: var(--primary); font-size: 1.1rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.8rem; }
+    .data-row { display: flex; justify-content: space-between; padding: 0.8rem 0; border-bottom: 1px solid var(--bg-base); }
+    .data-label { color: var(--text-muted); font-weight: 500; font-size: 0.85rem; }
+    .data-value { color: var(--text-primary); font-weight: 600; }
+    .alerta-saude { background: hsla(350, 85%, 60%, 0.1); border: 1px solid var(--accent-ruby); color: var(--accent-ruby); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Gestão de Saúde · {{ aluno.turma.nome }}</span>
+            <h1>Ficha Médica: <span class="nome-destaque">{{ aluno.nome_completo }}</span></h1>
+        </div>
+        <div class="header-acoes">
+            {% if is_gestor %}
+            <a href="{% url 'editar_ficha_medica' aluno.id %}" class="btn-sige-primario">
+                <i class="fa-solid fa-file-medical"></i> Atualizar Dados
+            </a>
+            {% endif %}
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="medical-card">
+        <div class="info-principal">
+            <!-- ALERGIAS E ALERTAS -->
+            {% if ficha.alergias or ficha.condicoes_pcd %}
+            <div class="alerta-saude">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <strong>ATENÇÃO:</strong> 
+                {% if ficha.alergias %}Alergia(s): {{ ficha.alergias }}{% endif %}
+                {% if ficha.condicoes_pcd %}| PCD: {{ ficha.detalhes_pcd }}{% endif %}
+            </div>
+            {% endif %}
+
+            <div class="info-group">
+                <h3><i class="fa-solid fa-notes-medical"></i> Informações Clínicas</h3>
+                <div class="data-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="data-row"><span class="data-label">Tipo Sanguíneo</span><span class="data-value">{{ ficha.get_tipo_sanguineo_display|default:"Não informado" }}</span></div>
+                    <div class="data-row"><span class="data-label">PCD/Deficiência</span><span class="data-value">{% if ficha.condicoes_pcd %}Sim{% else %}Não{% endif %}</span></div>
+                </div>
+                <div class="data-row" style="flex-direction: column; align-items: flex-start;">
+                    <span class="data-label">Medicamentos Contínuos</span>
+                    <p class="data-value">{% if ficha.medicamentos_continuos %}{{ ficha.medicamentos_continuos }}{% else %}Nenhum registrado{% endif %}</p>
+                </div>
+                <div class="data-row" style="flex-direction: column; align-items: flex-start;">
+                    <span class="data-label">Observações Médicas</span>
+                    <p class="data-value" style="font-weight: 400; font-size: 0.9rem;">{{ ficha.observacoes_medicas|default:"Sem observações extras." }}</p>
+                </div>
+            </div>
+
+            <div class="info-group">
+                <h3><i class="fa-solid fa-syringe"></i> Histórico de Vacinas</h3>
+                {% if ficha.vacinas.all %}
+                <table class="tabela-sige">
+                    <thead>
+                        <tr><th>Vacina</th><th>Data dose</th><th>Lote</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for v in ficha.vacinas.all %}
+                        <tr><td>{{ v.nome_vacina }}</td><td>{{ v.data_dose|date:"d/m/Y" }}</td><td>{{ v.lote|default:"-" }}</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="data-value" style="opacity: 0.5;">Nenhuma vacina registrada.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="info-contato">
+            <div class="info-group">
+                <h3><i class="fa-solid fa-phone"></i> Emergência</h3>
+                <div class="data-row" style="flex-direction: column; align-items: flex-start;">
+                    <span class="data-label">Contato Principal</span>
+                    <span class="data-value">{{ ficha.contato_emergencia_nome|default:"Não informado" }}</span>
+                </div>
+                <div class="data-row" style="flex-direction: column; align-items: flex-start;">
+                    <span class="data-label">Telefone</span>
+                    <span class="data-value" style="color: var(--accent-emerald); font-size: 1.2rem;">{{ ficha.contato_emergencia_fone|default:"-" }}</span>
+                </div>
+            </div>
+            
+            <div class="info-group">
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Última atualização em: {{ ficha.ultima_atualizacao|date:"d/m/Y H:i" }}</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

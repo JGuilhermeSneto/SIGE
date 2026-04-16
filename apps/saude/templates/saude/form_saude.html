@@ -1,0 +1,112 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Editar Ficha Médica — {{ aluno.nome_completo }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Saúde Escolar · Gestão</span>
+            <h1>Editar Ficha: <span class="nome-destaque">{{ aluno.nome_completo }}</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-formulario-limpo">
+            <form method="POST" class="sige-form-padrao">
+                {% csrf_token %}
+                
+                <h3 style="margin-bottom: 20px; color: var(--primary);"><i class="fa-solid fa-notes-medical"></i> Dados Clínicos</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.tipo_sanguineo.id_for_label }}">Tipo Sanguíneo</label>
+                        {{ form.tipo_sanguineo }}
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 30px;">
+                        {{ form.condicoes_pcd }}
+                        <label for="{{ form.condicoes_pcd.id_for_label }}" style="margin: 0;">O aluno é PCD?</label>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="{{ form.detalhes_pcd.id_for_label }}">Detalhes da Deficiência (se houver)</label>
+                        {{ form.detalhes_pcd }}
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="{{ form.alergias.id_for_label }}">Alergias Conhecidas</label>
+                        {{ form.alergias }}
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="{{ form.medicamentos_continuos.id_for_label }}">Medicamentos Contínuos</label>
+                        {{ form.medicamentos_continuos }}
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 20px; color: var(--accent-emerald);"><i class="fa-solid fa-phone"></i> Emergência</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.contato_emergencia_nome.id_for_label }}">Nome do Responsável de Emergência</label>
+                        {{ form.contato_emergencia_nome }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.contato_emergencia_fone.id_for_label }}">Telefone de Emergência</label>
+                        {{ form.contato_emergencia_fone }}
+                    </div>
+                </div>
+
+                <div class="form-group full-width" style="margin-top: 20px;">
+                    <label for="{{ form.observacoes_medicas.id_for_label }}">Observações Médicas Adicionais</label>
+                    {{ form.observacoes_medicas }}
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-sige-primario">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Ficha Médica
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-formulario-limpo" style="margin-top: 2rem;">
+            <h3 style="margin-bottom: 20px; color: var(--accent-violet);"><i class="fa-solid fa-plus"></i> Registrar Nova Vacina</h3>
+            <form action="{% url 'adicionar_vacina' aluno.ficha_medica.id %}" method="POST" class="sige-form-padrao" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: flex-end;">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>Nome da Vacina</label>
+                    <input type="text" name="nome_vacina" class="input-sige" required>
+                </div>
+                <div class="form-group">
+                    <label>Data</label>
+                    <input type="text" name="data_dose" class="input-sige flatpickr" required>
+                </div>
+                <div class="form-group">
+                    <label>Lote</label>
+                    <input type="text" name="lote" class="input-sige">
+                </div>
+                <button type="submit" class="btn-sige-primario" style="height: 48px;">
+                    Adicionar
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".flatpickr", {
+            dateFormat: "Y-m-d",
+            locale: "pt"
+        });
+    });
+</script>
+{% endblock %}

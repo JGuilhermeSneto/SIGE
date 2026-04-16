@@ -42,50 +42,39 @@ def get_metricas_gerais(ano=None, mes=None):
     return metricas
 
 def get_performance_academica(ano):
-    """Calcula estatísticas de aprovação, conselho e recuperação."""
-    # Nota: No SIGE, a média é calculada per disciplina. 
-    # Para o relatório geral, vamos considerar a média das médias do aluno.
+    """Calcula estatísticas de aprovação, conselho e recuperação usando agregação ORM."""
     
-    notas = Nota.objects.filter(disciplina__turma__ano=ano)
+    # 1. Filtramos alunos do ano solicitado
+    # 2. Anotamos cada aluno com sua média geral (média das médias de cada disciplina)
+    # 3. Contamos por categoria usando condicionais Case/When
     
-    aprovados = 0
-    reprovados = 0
-    conselho = 0
-    recuperacao = 0
+    from django.db.models import Case, When, IntegerField, Value, Avg, Q, F, DecimalField, ExpressionWrapper
+    from django.db.models.functions import Coalesce
     
-    # Agrupar por aluno para ter uma visão do "estudante" e não apenas da "nota disciplina"
-    alunos = Aluno.objects.filter(turma__ano=ano)
+    # Cálculo da média aritmética ponderada no banco com tipos consistentes
+    calc_media = ExpressionWrapper(
+        (Coalesce(F('notas__nota1'), Value(0.0)) + 
+         Coalesce(F('notas__nota2'), Value(0.0)) + 
+         Coalesce(F('notas__nota3'), Value(0.0)) + 
+         Coalesce(F('notas__nota4'), Value(0.0))) / 4.0,
+        output_field=DecimalField(max_digits=5, decimal_places=2)
+    )
+
+    perf_data = Aluno.objects.filter(turma__ano=ano).annotate(
+        media_aluno=Avg(calc_media)
+    ).aggregate(
+        aprovados=Count(Case(When(media_aluno__gte=6.0, then=Value(1)), output_field=IntegerField())),
+        conselho=Count(Case(When(media_aluno__range=(4.9, 5.9), then=Value(1)), output_field=IntegerField())),
+        reprovados=Count(Case(When(media_aluno__lt=4.9, then=Value(1)), output_field=IntegerField())),
+    )
     
-    for aluno in alunos:
-        notas_aluno = Nota.objects.filter(aluno=aluno)
-        if not notas_aluno.exists():
-            continue
-            
-        medias = [float(n.media) for n in notas_aluno if n.media is not None]
-        if not medias:
-            continue
-            
-        media_geral = sum(medias) / len(medias)
-        
-        # Lógica definida pelo usuário:
-        # > 6.0 Aprovado
-        # 4.9 a 5.9 Conselho
-        # < 4.9 Reprovado
-        
-        if media_geral >= 6.0:
-            aprovados += 1
-        elif 4.9 <= media_geral <= 5.9:
-            conselho += 1
-        elif media_geral < 4.9:
-            reprovados += 1
-        else:
-            recuperacao += 1 # Caso genérico se as faixas não cobrirem tudo
-            
+    # Adicionamos uma lógica para recuperação (não previsto explicitamente no loop original mas pode ser útil)
+    # Aqui vamos apenas retornar as chaves que o template espera
     return {
-        "aprovados": aprovados,
-        "reprovados": reprovados,
-        "conselho": conselho,
-        "recuperacao": recuperacao,
+        "aprovados": perf_data['aprovados'] or 0,
+        "reprovados": perf_data['reprovados'] or 0,
+        "conselho": perf_data['conselho'] or 0,
+        "recuperacao": 0, # Placeholder para compatibilidade
     }
 
 def get_dados_historico(aluno_id):

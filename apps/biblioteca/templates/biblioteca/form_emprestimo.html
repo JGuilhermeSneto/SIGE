@@ -1,0 +1,74 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Novo Empréstimo — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Biblioteca · Gestão</span>
+            <h1>Registrar <span class="nome-destaque">Empréstimo</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-formulario-limpo">
+            <form method="POST" class="sige-form-padrao">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="{{ form.livro.id_for_label }}">Livro</label>
+                        {{ form.livro }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.usuario_aluno.id_for_label }}">Destinatário Aluno</label>
+                        {{ form.usuario_aluno }}
+                        <small class="help-text">Selecione se o empréstimo for para um aluno.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.usuario_professor.id_for_label }}">Destinatário Professor</label>
+                        {{ form.usuario_professor }}
+                        <small class="help-text">Selecione se o empréstimo for para um professor.</small>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="{{ form.data_devolucao_prevista.id_for_label }}">Data Limite para Devolução</label>
+                        {{ form.data_devolucao_prevista }}
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-sige-primario">
+                        <i class="fa-solid fa-book-open-reader"></i> Confirmar Saída
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".flatpickr", {
+            dateFormat: "Y-m-d",
+            locale: "pt",
+            minDate: "today"
+        });
+    });
+</script>
+{% endblock %}

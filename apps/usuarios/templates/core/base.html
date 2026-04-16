@@ -20,13 +20,13 @@
     rel="stylesheet">
 
   <!-- DESIGN SYSTEM & LAYOUT -->
-  <link rel="stylesheet" href="{% static 'core/css/design_system/tokens.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/design_system/themes.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/design_system/base.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/design_system/animations.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/design_system/layout.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/design_system/components.css' %}">
-  <link rel="stylesheet" href="{% static 'core/css/design_system/notifications.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/tokens.css' %}?v=SIGE-V4.5">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/themes.css' %}?v=SIGE-V4.5">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/base.css' %}?v=SIGE-V4.5">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/animations.css' %}?v=SIGE-V4.5">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/layout.css' %}?v=SIGE-V4.5">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/components.css' %}?v=SIGE-V4.5">
+  <link rel="stylesheet" href="{% static 'core/css/design_system/notifications.css' %}?v=SIGE-V4.5">
 
   <!-- FONT AWESOME -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
   <!-- CALENDAR & PICKER UI -->
-  <link rel="stylesheet" href="{% static 'core/css/calendario_do_menu.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/calendario_do_menu.css' %}?v=SIGE-V4.5">
 
   {% block extra_css %}{% endblock %}
 
@@ -170,12 +170,27 @@
         class="{% if request.resolver_match.url_name == 'visualizar_calendario' %}ativo{% endif %}">
         <i class="fa-solid fa-calendar-days"></i> Calendário
       </a>
+      <a href="{% url 'listar_comunicados_gestao' %}"
+        class="{% if request.resolver_match.url_name == 'listar_comunicados_gestao' %}ativo{% endif %}">
+        <i class="fa-solid fa-bullhorn"></i> Comunicados
+      </a>
+      <a href="{% url 'painel_infraestrutura' %}"
+        class="{% if request.resolver_match.url_name == 'painel_infraestrutura' %}ativo{% endif %}">
+        <i class="fa-solid fa-warehouse"></i> Infraestrutura
+      </a>
+      <a href="{% url 'dashboard_bi_academico' %}"
+        class="{% if request.resolver_match.url_name == 'dashboard_bi_academico' %}ativo{% endif %}">
+        <i class="fa-solid fa-chart-pie"></i> Painel BI
+      </a>
       <a href="{% url 'painel_relatorios' %}"
         class="{% if request.resolver_match.url_name == 'painel_relatorios' %}ativo{% endif %}">
         <i class="fa-solid fa-chart-line"></i> Relatórios
       </a>
       <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
         <i class="fa-solid fa-bolt"></i> App React
+      </a>
+      <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
+        <i class="fa-solid fa-book-open"></i> Biblioteca
       </a>
 
       {% elif request.user|has_attr:"professor" %}
@@ -194,7 +209,10 @@
       <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
         <i class="fa-solid fa-bolt"></i> App React
       </a>
-      {% endif %}
+      <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
+        <i class="fa-solid fa-book-open"></i> Biblioteca
+      </a>
+{% endif %}
 
     </nav>
   </aside>

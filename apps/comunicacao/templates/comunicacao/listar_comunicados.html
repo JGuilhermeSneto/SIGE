@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Comunicados — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Administrativo · Comunicação</span>
+            <h1>Gerenciar <span class="nome-destaque">Mural de Avisos</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'cadastrar_comunicado' %}" class="btn-sige-primario">
+                <i class="fa-solid fa-plus"></i> Novo Aviso
+            </a>
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-listagem">
+            {% if comunicados or request.GET.q %}
+            <div class="barra-busca-gestao">
+                <form method="get" class="busca-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Filtrar avisos por título..." onchange="this.form.submit()">
+                </form>
+            </div>
+            
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Público</th>
+                        <th>Importância</th>
+                        <th>Expiração</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in comunicados %}
+                    <tr>
+                        <td><strong>{{ c.titulo }}</strong></td>
+                        <td><span class="tag-sige">{{ c.get_publico_alvo_display }}</span></td>
+                        <td>
+                            {% if c.importancia == 'ALTA' %}
+                            <span class="status-badge status-reprovado">Urgente</span>
+                            {% else %}
+                            <span class="status-badge status-aprovado">Normal</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.data_expiracao|date:"d/m/Y" }}</td>
+                        <td class="acoes-tabela">
+                            <a href="{% url 'editar_comunicado' c.id %}" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                            <form action="{% url 'excluir_comunicado' c.id %}" method="POST" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja excluir este aviso?')">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-icone-excluir" title="Excluir"><i class="fa-solid fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="vazio-state">
+                <i class="fa-solid fa-bullhorn"></i>
+                <p>Nenhum comunicado cadastrado.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

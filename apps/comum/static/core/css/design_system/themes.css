@@ -98,20 +98,216 @@ html[data-theme] .nav-lateral a.ativo::before {
     opacity: 0.85;
 }
 
+/* ============================================================
+   SAVE BUTTONS — Global System
+   Cobre todos os seletores: .btn.salvar, .btn-salvar,
+   .btn-modal-salvar, .sige-btn-primary, .submit-btn, .btn-acao.salvar
+   Borda destacada + hover com contraste + active press
+============================================================ */
+
+/* Selector union — aplica a TODOS os botões de salvar */
 html[data-theme] .sige-btn-primary,
-html[data-theme] .btn-modal-salvar {
+html[data-theme] .btn-modal-salvar,
+html[data-theme] .btn.salvar,
+html[data-theme] .btn-salvar,
+html[data-theme] .submit-btn,
+html[data-theme] .btn-acao.salvar {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.6rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.025em;
+    border-radius: var(--radius-md, 8px);
+    cursor: pointer;
+    /* Border destacada — identifica visualmente o botão de salvar */
+    border: 2.5px solid color-mix(in srgb, var(--primary) 100%, transparent);
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 30%, transparent),
+                0 1px 4px rgba(0,0,0,0.12);
+    transition: transform 0.18s ease,
+                box-shadow 0.18s ease,
+                background 0.18s ease,
+                border-color 0.18s ease,
+                filter 0.18s ease;
+    /* Previne quebra de texto */
+    white-space: nowrap;
+    text-decoration: none;
 }
 
+/* Anel de foco — acessibilidade */
 html[data-theme] .sige-btn-primary::after,
-html[data-theme] .btn-modal-salvar::after {
+html[data-theme] .btn-modal-salvar::after,
+html[data-theme] .btn.salvar::after,
+html[data-theme] .btn-salvar::after,
+html[data-theme] .submit-btn::after,
+html[data-theme] .btn-acao.salvar::after {
     content: "";
     position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 35%, transparent);
-    opacity: 0.8;
+    inset: -4px;
+    border-radius: calc(var(--radius-md, 8px) + 4px);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 28%, transparent);
+    opacity: 0;
+    transition: opacity 0.18s ease;
     pointer-events: none;
+}
+
+html[data-theme] .sige-btn-primary:focus-visible::after,
+html[data-theme] .btn-modal-salvar:focus-visible::after,
+html[data-theme] .btn.salvar:focus-visible::after,
+html[data-theme] .btn-salvar:focus-visible::after,
+html[data-theme] .submit-btn:focus-visible::after,
+html[data-theme] .btn-acao.salvar:focus-visible::after {
+    opacity: 1;
+}
+
+/* ——— HOVER — Contraste máximo, escura o bg e destaca a sombra ——— */
+html[data-theme] .sige-btn-primary:hover,
+html[data-theme] .btn-modal-salvar:hover,
+html[data-theme] .btn.salvar:hover,
+html[data-theme] .btn-salvar:hover,
+html[data-theme] .submit-btn:hover,
+html[data-theme] .btn-acao.salvar:hover {
+    background: var(--primary-dark, color-mix(in srgb, var(--primary) 80%, #000));
+    border-color: var(--primary-dark, color-mix(in srgb, var(--primary) 80%, #000));
+    color: #ffffff;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 45%, transparent),
+                0 2px 8px rgba(0,0,0,0.18);
+    filter: brightness(1.06);
+    text-decoration: none;
+}
+
+/* ——— ACTIVE — press feedback ——— */
+html[data-theme] .sige-btn-primary:active,
+html[data-theme] .btn-modal-salvar:active,
+html[data-theme] .btn.salvar:active,
+html[data-theme] .btn-salvar:active,
+html[data-theme] .submit-btn:active,
+html[data-theme] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--primary) 30%, transparent);
+    filter: brightness(0.96);
+}
+
+/* ============================================================
+   NEXT BUTTONS (WIZARD) — Global System
+   .btn-proximo — Botões de navegação "Próximo" nos wizards
+   Cor distinta do botão Salvar: fundo accent-cyan/complementar
+   Borda destacada + seta animada no hover + active press
+   Usado em: cadastrar_aluno, cadastrar_professor, cadastrar_gestor
+============================================================ */
+
+html[data-theme] .btn-proximo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    padding: 0.68rem 1.75rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+    border-radius: var(--radius-md, 8px);
+    cursor: pointer;
+    white-space: nowrap;
+    text-decoration: none;
+    /* Fundo distinto: em vez da cor primária (salvar), usa cor de acento para diferenciar */
+    background: color-mix(in srgb, var(--accent-cyan, var(--primary)) 80%, var(--primary) 20%);
+    color: #ffffff;
+    /* Borda de alto contraste — torna o botão claramente visível */
+    border: 2.5px solid color-mix(in srgb, var(--accent-cyan, var(--primary)) 60%, #ffffff 40%);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-cyan, var(--primary)) 35%, transparent),
+                0 1px 4px rgba(0, 0, 0, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.20);
+    transition: transform 0.20s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.18s ease,
+                background 0.18s ease,
+                border-color 0.18s ease,
+                gap 0.20s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+/* Anel de foco — acessibilidade */
+html[data-theme] .btn-proximo::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: calc(var(--radius-md, 8px) + 4px);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-cyan, var(--primary)) 32%, transparent);
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    pointer-events: none;
+}
+
+html[data-theme] .btn-proximo:focus-visible::after {
+    opacity: 1;
+}
+
+/* Seta desliza para a direita no hover — feedback visual intuitivo */
+html[data-theme] .btn-proximo:hover {
+    background: color-mix(in srgb, var(--accent-cyan, var(--primary)) 70%, #000 18%);
+    border-color: color-mix(in srgb, var(--accent-cyan, var(--primary)) 85%, #ffffff 30%);
+    color: #ffffff;
+    transform: translateY(-3px) scale(1.04);
+    gap: 0.88rem; /* seta se afasta do texto */
+    box-shadow: 0 10px 28px color-mix(in srgb, var(--accent-cyan, var(--primary)) 50%, transparent),
+                0 3px 8px rgba(0, 0, 0, 0.20);
+    filter: brightness(1.08);
+    text-decoration: none;
+}
+
+/* Active — feedback de clique */
+html[data-theme] .btn-proximo:active {
+    transform: translateY(1px) scale(0.97);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-cyan, var(--primary)) 28%, transparent);
+    filter: brightness(0.94);
+    gap: 0.55rem;
+}
+
+/* ——— Sobrescrições por tema para melhor contraste ——— */
+
+/* Indigo Profundo — acento é azul-roxo, fundo escuro: usa variante mais luminosa */
+html[data-theme="indigo-profundo"] .btn-proximo {
+    background: hsl(217, 91%, 60%);
+    border-color: hsl(217, 91%, 75%);
+    box-shadow: 0 4px 18px hsla(217, 91%, 60%, 0.45),
+                0 1px 4px rgba(0, 0, 0, 0.22);
+}
+
+html[data-theme="indigo-profundo"] .btn-proximo:hover {
+    background: hsl(217, 91%, 52%);
+    border-color: hsl(217, 91%, 70%);
+    box-shadow: 0 10px 30px hsla(217, 91%, 60%, 0.60),
+                0 3px 10px rgba(0, 0, 0, 0.28);
+}
+
+/* Cinza Industrial — monocromático: usa azul-ardósia vivo para contraste máximo */
+html[data-theme="cinza-industrial"] .btn-proximo {
+    background: #2F6FAD;
+    border-color: #4A8FCC;
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(47, 111, 173, 0.40),
+                0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+html[data-theme="cinza-industrial"] .btn-proximo:hover {
+    background: #1E5482;
+    border-color: #3B78B5;
+    box-shadow: 0 10px 28px rgba(47, 111, 173, 0.55),
+                0 3px 8px rgba(0, 0, 0, 0.24);
+}
+
+/* Azul Corporativo — já é azul profissional: usa variante mais saturada */
+html[data-theme="azul-corporativo"] .btn-proximo {
+    background: color-mix(in srgb, var(--primary) 90%, #00aaff 10%);
+    border-color: color-mix(in srgb, var(--primary) 65%, #ffffff 35%);
+    box-shadow: 0 4px 18px color-mix(in srgb, var(--primary) 40%, transparent),
+                0 1px 4px rgba(0, 0, 0, 0.16);
 }
 
 html[data-theme] .sige-input:focus,
@@ -132,10 +328,7 @@ html[data-theme] .btn-voltar {
     border-radius: var(--radius-md);
 }
 
-html[data-theme] .btn-modal-salvar {
-    background: var(--primary);
-    color: #fff;
-}
+/* .btn-modal-salvar — agora coberto pelo bloco global de botões de salvar acima */
 
 html[data-theme] .btn-modal-cancelar:hover {
     border-color: color-mix(in srgb, var(--primary) 35%, var(--border-mid));
@@ -162,6 +355,7 @@ html[data-theme] .sige-badge-danger {
 ============================================================ */
 html[data-theme="indigo-profundo"] {
     color-scheme: dark;
+    --logo-filter: none;
 }
 
 /* Indigo Profundo — Select Visibility Fix */
@@ -685,6 +879,7 @@ html[data-theme="ceu-sereno"] .icone-menu:hover {
 ============================================================ */
 html[data-theme="cinza-industrial"] {
     color-scheme: light;
+    --logo-filter: brightness(0);
 
     --g-gainsboro: #DCDCDC;
     --g-lightgray: #D3D3D3;
@@ -787,6 +982,7 @@ html[data-theme="cinza-industrial"] .btn-voltar {
 ============================================================ */
 html[data-theme="azul-corporativo"] {
     color-scheme: light;
+    --logo-filter: brightness(0);
 
     --ac-lightest: #F3F7FF;
     --ac-light: #B5D4F4;
@@ -1952,3 +2148,355 @@ html[data-theme="terra-musgo"] {
         box-shadow: 0 6px 16px rgba(74, 94, 51, 0.40), inset 0 1px 2px rgba(255, 255, 255, 0.5);
         transform: translateY(-3px);
     }
+
+/* ============================================================
+   BOTÕES DE SALVAR — Overrides por Tema
+   Cada tema recebe: borda na cor da paleta, hover glow específico,
+   border-radius coerente com a geometria do tema.
+   Seletores cobertos em todos os temas:
+     .sige-btn-primary · .btn-modal-salvar · .btn.salvar
+     .btn-salvar · .submit-btn · .btn-acao.salvar
+============================================================ */
+
+/* ─────────────────────────────────────────────────────────
+   1. INDIGO PROFUNDO — Roxo elétrico / violeta
+   Fundo escuro → borda vibrante #7C6FFF → hover: indigo mais claro
+───────────────────────────────────────────────────────── */
+html[data-theme="indigo-profundo"] .sige-btn-primary,
+html[data-theme="indigo-profundo"] .btn-modal-salvar,
+html[data-theme="indigo-profundo"] .btn.salvar,
+html[data-theme="indigo-profundo"] .btn-salvar,
+html[data-theme="indigo-profundo"] .submit-btn,
+html[data-theme="indigo-profundo"] .btn-acao.salvar {
+    background: linear-gradient(135deg, #4F46E5 0%, #6D5FE8 100%);
+    border: 2.5px solid #7C6FFF;
+    color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(99, 88, 232, 0.35),
+                0 0 0 0 rgba(124, 111, 255, 0);
+}
+
+html[data-theme="indigo-profundo"] .sige-btn-primary:hover,
+html[data-theme="indigo-profundo"] .btn-modal-salvar:hover,
+html[data-theme="indigo-profundo"] .btn.salvar:hover,
+html[data-theme="indigo-profundo"] .btn-salvar:hover,
+html[data-theme="indigo-profundo"] .submit-btn:hover,
+html[data-theme="indigo-profundo"] .btn-acao.salvar:hover {
+    background: linear-gradient(135deg, #5D52F5 0%, #8B7FFD 100%);
+    border-color: #A89EFF;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 10px 28px rgba(99, 88, 232, 0.50),
+                0 0 20px rgba(124, 111, 255, 0.30);
+    filter: brightness(1.08);
+}
+
+html[data-theme="indigo-profundo"] .sige-btn-primary:active,
+html[data-theme="indigo-profundo"] .btn-modal-salvar:active,
+html[data-theme="indigo-profundo"] .btn.salvar:active,
+html[data-theme="indigo-profundo"] .btn-salvar:active,
+html[data-theme="indigo-profundo"] .submit-btn:active,
+html[data-theme="indigo-profundo"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 10px rgba(99, 88, 232, 0.30);
+}
+
+/* ─────────────────────────────────────────────────────────
+   2. BRISA AQUA — Turquesa / ciano profundo
+   Gradiente aquático → borda ciano vibrante #00D4FF
+───────────────────────────────────────────────────────── */
+html[data-theme="brisa-aqua"] .sige-btn-primary,
+html[data-theme="brisa-aqua"] .btn-modal-salvar,
+html[data-theme="brisa-aqua"] .btn.salvar,
+html[data-theme="brisa-aqua"] .btn-salvar,
+html[data-theme="brisa-aqua"] .submit-btn,
+html[data-theme="brisa-aqua"] .btn-acao.salvar {
+    background: linear-gradient(135deg, #00D4FF 0%, #0099CC 100%);
+    border: 2.5px solid #00BFEE;
+    color: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 6px 20px rgba(0, 188, 212, 0.38);
+    font-weight: 800;
+}
+
+html[data-theme="brisa-aqua"] .sige-btn-primary:hover,
+html[data-theme="brisa-aqua"] .btn-modal-salvar:hover,
+html[data-theme="brisa-aqua"] .btn.salvar:hover,
+html[data-theme="brisa-aqua"] .btn-salvar:hover,
+html[data-theme="brisa-aqua"] .submit-btn:hover,
+html[data-theme="brisa-aqua"] .btn-acao.salvar:hover {
+    background: linear-gradient(135deg, #00FFFF 0%, #00B8D9 100%);
+    border-color: #00FFFF;
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 14px 36px rgba(0, 188, 212, 0.55),
+                0 0 24px rgba(0, 255, 255, 0.30);
+    filter: brightness(1.08);
+}
+
+html[data-theme="brisa-aqua"] .sige-btn-primary:active,
+html[data-theme="brisa-aqua"] .btn-modal-salvar:active,
+html[data-theme="brisa-aqua"] .btn.salvar:active,
+html[data-theme="brisa-aqua"] .btn-salvar:active,
+html[data-theme="brisa-aqua"] .submit-btn:active,
+html[data-theme="brisa-aqua"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 3px 10px rgba(0, 188, 212, 0.30);
+}
+
+/* ─────────────────────────────────────────────────────────
+   3. CÉU SERENO — Azul céu / steel blue
+   Gradiente sky → borda #0EA5E9 bem identificável
+───────────────────────────────────────────────────────── */
+html[data-theme="ceu-sereno"] .sige-btn-primary,
+html[data-theme="ceu-sereno"] .btn-modal-salvar,
+html[data-theme="ceu-sereno"] .btn.salvar,
+html[data-theme="ceu-sereno"] .btn-salvar,
+html[data-theme="ceu-sereno"] .submit-btn,
+html[data-theme="ceu-sereno"] .btn-acao.salvar {
+    background: linear-gradient(135deg, #0088CC 0%, #1E5A96 100%);
+    border: 2.5px solid #0EA5E9;
+    color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(0, 119, 190, 0.32);
+}
+
+html[data-theme="ceu-sereno"] .sige-btn-primary:hover,
+html[data-theme="ceu-sereno"] .btn-modal-salvar:hover,
+html[data-theme="ceu-sereno"] .btn.salvar:hover,
+html[data-theme="ceu-sereno"] .btn-salvar:hover,
+html[data-theme="ceu-sereno"] .submit-btn:hover,
+html[data-theme="ceu-sereno"] .btn-acao.salvar:hover {
+    background: linear-gradient(135deg, #00A8E8 0%, #0077BE 100%);
+    border-color: #38BDF8;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 30px rgba(14, 165, 233, 0.48),
+                0 0 18px rgba(56, 189, 248, 0.25);
+    filter: brightness(1.06);
+}
+
+html[data-theme="ceu-sereno"] .sige-btn-primary:active,
+html[data-theme="ceu-sereno"] .btn-modal-salvar:active,
+html[data-theme="ceu-sereno"] .btn.salvar:active,
+html[data-theme="ceu-sereno"] .btn-salvar:active,
+html[data-theme="ceu-sereno"] .submit-btn:active,
+html[data-theme="ceu-sereno"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 119, 190, 0.28);
+}
+
+/* ─────────────────────────────────────────────────────────
+   4. CINZA INDUSTRIAL — Verde-azul escuro (teal corporate)
+   Tema monocromático → borda teal #2F8C8C para contraste máximo
+   com texto uppercase e bordas retas
+───────────────────────────────────────────────────────── */
+html[data-theme="cinza-industrial"] .sige-btn-primary,
+html[data-theme="cinza-industrial"] .btn-modal-salvar,
+html[data-theme="cinza-industrial"] .btn.salvar,
+html[data-theme="cinza-industrial"] .btn-salvar,
+html[data-theme="cinza-industrial"] .submit-btn,
+html[data-theme="cinza-industrial"] .btn-acao.salvar {
+    background: #2F4F4F;
+    border: 2.5px solid #3D8080;
+    color: #ffffff;
+    border-radius: 4px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    font-size: 0.78rem;
+    box-shadow: 0 3px 10px rgba(47, 79, 79, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme="cinza-industrial"] .sige-btn-primary:hover,
+html[data-theme="cinza-industrial"] .btn-modal-salvar:hover,
+html[data-theme="cinza-industrial"] .btn.salvar:hover,
+html[data-theme="cinza-industrial"] .btn-salvar:hover,
+html[data-theme="cinza-industrial"] .submit-btn:hover,
+html[data-theme="cinza-industrial"] .btn-acao.salvar:hover {
+    background: #3D6B6B;
+    border-color: #5BAAAA;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 20px rgba(47, 79, 79, 0.42),
+                0 0 12px rgba(91, 170, 170, 0.22);
+    filter: brightness(1.05);
+}
+
+html[data-theme="cinza-industrial"] .sige-btn-primary:active,
+html[data-theme="cinza-industrial"] .btn-modal-salvar:active,
+html[data-theme="cinza-industrial"] .btn.salvar:active,
+html[data-theme="cinza-industrial"] .btn-salvar:active,
+html[data-theme="cinza-industrial"] .submit-btn:active,
+html[data-theme="cinza-industrial"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* ─────────────────────────────────────────────────────────
+   5. AZUL CORPORATIVO — Navy + sky blue
+   Borda #378ADD clara sobre fundo médio → hover: brilho profissional
+───────────────────────────────────────────────────────── */
+html[data-theme="azul-corporativo"] .sige-btn-primary,
+html[data-theme="azul-corporativo"] .btn-modal-salvar,
+html[data-theme="azul-corporativo"] .btn.salvar,
+html[data-theme="azul-corporativo"] .btn-salvar,
+html[data-theme="azul-corporativo"] .submit-btn,
+html[data-theme="azul-corporativo"] .btn-acao.salvar {
+    background: linear-gradient(90deg, #185FA5 0%, #378ADD 100%);
+    border: 2.5px solid #378ADD;
+    color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(55, 138, 221, 0.32);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+html[data-theme="azul-corporativo"] .sige-btn-primary:hover,
+html[data-theme="azul-corporativo"] .btn-modal-salvar:hover,
+html[data-theme="azul-corporativo"] .btn.salvar:hover,
+html[data-theme="azul-corporativo"] .btn-salvar:hover,
+html[data-theme="azul-corporativo"] .submit-btn:hover,
+html[data-theme="azul-corporativo"] .btn-acao.salvar:hover {
+    background: linear-gradient(90deg, #0D3A72 0%, #185FA5 100%);
+    border-color: #5BA3E8;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 26px rgba(55, 138, 221, 0.48),
+                0 0 16px rgba(91, 163, 232, 0.22);
+    filter: brightness(1.05);
+}
+
+html[data-theme="azul-corporativo"] .sige-btn-primary:active,
+html[data-theme="azul-corporativo"] .btn-modal-salvar:active,
+html[data-theme="azul-corporativo"] .btn.salvar:active,
+html[data-theme="azul-corporativo"] .btn-salvar:active,
+html[data-theme="azul-corporativo"] .submit-btn:active,
+html[data-theme="azul-corporativo"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(55, 138, 221, 0.28);
+}
+
+/* ─────────────────────────────────────────────────────────
+   6. ÂMBAR & NOITE — Dourado âmbar no dark
+   Fundo escuro → borda âmbar #EF9F27 ultra visível
+   cor do texto: quase preto para legibilidade no âmbar claro
+───────────────────────────────────────────────────────── */
+html[data-theme="ambar-noite"] .sige-btn-primary,
+html[data-theme="ambar-noite"] .btn-modal-salvar,
+html[data-theme="ambar-noite"] .btn.salvar,
+html[data-theme="ambar-noite"] .btn-salvar,
+html[data-theme="ambar-noite"] .submit-btn,
+html[data-theme="ambar-noite"] .btn-acao.salvar {
+    background: linear-gradient(135deg, #EF9F27 0%, #FAC775 100%);
+    border: 2.5px solid #F5BD5A;
+    color: #0D0A06;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(239, 159, 39, 0.40),
+                0 0 0 0 rgba(255, 200, 100, 0);
+    font-weight: 700;
+}
+
+html[data-theme="ambar-noite"] .sige-btn-primary:hover,
+html[data-theme="ambar-noite"] .btn-modal-salvar:hover,
+html[data-theme="ambar-noite"] .btn.salvar:hover,
+html[data-theme="ambar-noite"] .btn-salvar:hover,
+html[data-theme="ambar-noite"] .submit-btn:hover,
+html[data-theme="ambar-noite"] .btn-acao.salvar:hover {
+    background: linear-gradient(135deg, #FFBE45 0%, #FFD580 100%);
+    border-color: #FFD166;
+    color: #0D0A06;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 14px 36px rgba(239, 159, 39, 0.60),
+                0 0 28px rgba(255, 200, 100, 0.40);
+    filter: brightness(1.08);
+}
+
+html[data-theme="ambar-noite"] .sige-btn-primary:active,
+html[data-theme="ambar-noite"] .btn-modal-salvar:active,
+html[data-theme="ambar-noite"] .btn.salvar:active,
+html[data-theme="ambar-noite"] .btn-salvar:active,
+html[data-theme="ambar-noite"] .submit-btn:active,
+html[data-theme="ambar-noite"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 3px 12px rgba(239, 159, 39, 0.35);
+}
+
+/* ─────────────────────────────────────────────────────────
+   7. JARDIM FOSCO — Verde botânico
+   Gradiente musgo → borda verde #8BA32D bem saturada
+───────────────────────────────────────────────────────── */
+html[data-theme="jardim-fosco"] .sige-btn-primary,
+html[data-theme="jardim-fosco"] .btn-modal-salvar,
+html[data-theme="jardim-fosco"] .btn.salvar,
+html[data-theme="jardim-fosco"] .btn-salvar,
+html[data-theme="jardim-fosco"] .submit-btn,
+html[data-theme="jardim-fosco"] .btn-acao.salvar {
+    background: linear-gradient(135deg, #8BA32D 0%, #627411 100%);
+    border: 2.5px solid #A8C431;
+    color: #ffffff;
+    border-radius: 999px;
+    box-shadow: 0 5px 16px rgba(139, 163, 45, 0.35);
+    font-weight: 700;
+}
+
+html[data-theme="jardim-fosco"] .sige-btn-primary:hover,
+html[data-theme="jardim-fosco"] .btn-modal-salvar:hover,
+html[data-theme="jardim-fosco"] .btn.salvar:hover,
+html[data-theme="jardim-fosco"] .btn-salvar:hover,
+html[data-theme="jardim-fosco"] .submit-btn:hover,
+html[data-theme="jardim-fosco"] .btn-acao.salvar:hover {
+    background: linear-gradient(135deg, #9DBB34 0%, #738518 100%);
+    border-color: #C5E040;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 30px rgba(139, 163, 45, 0.52),
+                0 0 18px rgba(168, 196, 49, 0.30);
+    filter: brightness(1.07);
+}
+
+html[data-theme="jardim-fosco"] .sige-btn-primary:active,
+html[data-theme="jardim-fosco"] .btn-modal-salvar:active,
+html[data-theme="jardim-fosco"] .btn.salvar:active,
+html[data-theme="jardim-fosco"] .btn-salvar:active,
+html[data-theme="jardim-fosco"] .submit-btn:active,
+html[data-theme="jardim-fosco"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.97);
+    box-shadow: 0 3px 10px rgba(139, 163, 45, 0.28);
+}
+
+/* ─────────────────────────────────────────────────────────
+   8. TERRA & MUSGO — Terracota / argila
+   Gradiente terracota → borda musgo #6B8E23 contrastante
+───────────────────────────────────────────────────────── */
+html[data-theme="terra-musgo"] .sige-btn-primary,
+html[data-theme="terra-musgo"] .btn-modal-salvar,
+html[data-theme="terra-musgo"] .btn.salvar,
+html[data-theme="terra-musgo"] .btn-salvar,
+html[data-theme="terra-musgo"] .submit-btn,
+html[data-theme="terra-musgo"] .btn-acao.salvar {
+    background: linear-gradient(135deg, #D2691E 0%, #8B4513 100%);
+    border: 2.5px solid #6B8E23;
+    color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 5px 16px rgba(139, 69, 19, 0.30),
+                0 0 0 1px rgba(107, 142, 35, 0.15);
+    font-weight: 700;
+}
+
+html[data-theme="terra-musgo"] .sige-btn-primary:hover,
+html[data-theme="terra-musgo"] .btn-modal-salvar:hover,
+html[data-theme="terra-musgo"] .btn.salvar:hover,
+html[data-theme="terra-musgo"] .btn-salvar:hover,
+html[data-theme="terra-musgo"] .submit-btn:hover,
+html[data-theme="terra-musgo"] .btn-acao.salvar:hover {
+    background: linear-gradient(135deg, #C1601A 0%, #7A3C10 100%);
+    border-color: #8DB82A;
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 12px 28px rgba(139, 69, 19, 0.45),
+                0 0 18px rgba(107, 142, 35, 0.30);
+    filter: brightness(1.06);
+}
+
+html[data-theme="terra-musgo"] .sige-btn-primary:active,
+html[data-theme="terra-musgo"] .btn-modal-salvar:active,
+html[data-theme="terra-musgo"] .btn.salvar:active,
+html[data-theme="terra-musgo"] .btn-salvar:active,
+html[data-theme="terra-musgo"] .submit-btn:active,
+html[data-theme="terra-musgo"] .btn-acao.salvar:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 3px 10px rgba(139, 69, 19, 0.28);
+}

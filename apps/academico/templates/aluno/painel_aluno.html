@@ -20,9 +20,20 @@
             <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋</h1>
             <p class="header-sub">{{ aluno.turma.nome }} · {{ aluno.turma.get_turno_display }}</p>
         </div>
-        <button onclick="imprimirBoletim()" class="btn-imprimir">
-            <i class="fa-solid fa-print"></i> Imprimir Boletim
-        </button>
+        <div class="header-acoes">
+            <a href="{% url 'acervo_biblioteca' %}" class="btn-imprimir" title="Ver Acervo Digital">
+                <i class="fa-solid fa-book-open"></i> Biblioteca
+            </a>
+            <a href="{% url 'visualizar_saude_aluno' aluno.id %}" class="btn-imprimir btn-declaracao" title="Minha Ficha Médica">
+                <i class="fa-solid fa-heart-pulse"></i> Minha Saúde
+            </a>
+            <a href="{% url 'gerar_declaracao_matricula' aluno.id %}" target="_blank" class="btn-imprimir btn-declaracao">
+                <i class="fa-solid fa-file-contract"></i> Declaração
+            </a>
+            <a href="{% url 'gerar_boletim_pdf' aluno.id %}" target="_blank" class="btn-imprimir">
+                <i class="fa-solid fa-file-pdf"></i> Imprimir Boletim
+            </a>
+        </div>
     </div>
 
     {# ════════════════ CARDS DE RESUMO ════════════════ #}
@@ -141,6 +152,27 @@
 
         {# ════════════════ COLUNA DIREITA ════════════════ #}
         <div class="coluna-direita">
+
+            {# Mural de Avisos #}
+            <div class="card-grafico card-mural">
+                <h3><i class="fa-solid fa-bullhorn"></i> Mural de Avisos</h3>
+                {% if comunicados %}
+                <div class="lista-mural">
+                    {% for c in comunicados %}
+                    <div class="item-mural {% if c.importancia == 'ALTA' %}urgente{% endif %}">
+                        <div class="mural-head">
+                            <span class="mural-tag">{{ c.get_publico_alvo_display }}</span>
+                            <span class="mural-data">{{ c.data_publicacao|date:"d M" }}</span>
+                        </div>
+                        <h4>{{ c.titulo }}</h4>
+                        <p>{{ c.conteudo|truncatechars:100 }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="vazio-mural">Nenhum aviso no momento.</p>
+                {% endif %}
+            </div>
 
             <div class="card-grafico card-notificacoes">
                 <h3><i class="fa-solid fa-bell"></i> Notificações {% if notificacoes_nao_lidas %}<span class="contador-notificacoes">({{ notificacoes_nao_lidas }})</span>{% endif %}</h3>

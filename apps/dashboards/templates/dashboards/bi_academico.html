@@ -1,0 +1,106 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}BI Acadêmico{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bi-container { padding: 30px; }
+    .bi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+    .bi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; }
+    .bi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .btn-exportar { background: var(--accent-emerald); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-container">
+    <div class="bi-header">
+        <div>
+            <h1><i class="fa-solid fa-chart-pie"></i> Business Intelligence Acadêmico</h1>
+            <p style="color: var(--text-muted);">Painel de indicadores oficiais · Ano Letivo {{ ano_referencia }}</p>
+        </div>
+        <a href="{% url 'exportar_notas_csv' %}" class="btn-exportar">
+            <i class="fa-solid fa-file-csv"></i> Exportar Dados (CSV)
+        </a>
+    </div>
+
+    <div class="bi-grid">
+        <div class="bi-card">
+            <h3><i class="fa-solid fa-graduation-cap"></i> Média de Desempenho por Turma</h3>
+            <div style="height: 300px; margin-top: 1rem;">
+                <canvas id="graficoTurmas"></canvas>
+            </div>
+        </div>
+        
+        <div class="bi-card">
+            <h3><i class="fa-solid fa-user-check"></i> Taxa de Frequência (%)</h3>
+            <div style="height: 300px; margin-top: 1rem;">
+                <canvas id="graficoFrequencia"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Configurações Globais
+    Chart.defaults.color = '#8b97bb';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const dados = {{ dados_turmas|safe }};
+    const labels = dados.map(d => d.nome);
+    
+    // Gráfico de Médias
+    const ctxNotas = document.getElementById('graficoTurmas').getContext('2d');
+    new Chart(ctxNotas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Média Geral',
+                data: dados.map(d => d.media_geral || 0),
+                backgroundColor: 'rgba(124, 111, 255, 0.4)',
+                borderColor: 'var(--accent-violet)',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 10, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Gráfico de Frequência
+    const ctxFreq = document.getElementById('graficoFrequencia').getContext('2d');
+    new Chart(ctxFreq, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Frequência %',
+                data: dados.map(d => d.taxa_frequencia || 0),
+                backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                borderColor: 'var(--accent-emerald)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: 'var(--accent-emerald)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 100, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

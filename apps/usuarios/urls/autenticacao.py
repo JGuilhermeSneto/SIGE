@@ -1,8 +1,5 @@
 """
 Rotas de login, logout e fluxo de redefinição de senha (e-mail + token).
-
-O que é: ``urlpatterns`` expostas na raiz do site junto com ``perfis``.
-Usa views genéricas do ``django.contrib.auth`` para reset de senha.
 """
 
 from django.contrib.auth import views as auth_views
@@ -13,7 +10,7 @@ urlpatterns = [
     # Autenticação
     path("login/", autenticacao.login_view, name="login"),
     path("logout/", autenticacao.logout_view, name="logout"),
-    
+
     # Reset de Senha
     path(
         "senha/resetar/",

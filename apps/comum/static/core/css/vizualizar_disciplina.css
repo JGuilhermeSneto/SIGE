@@ -298,3 +298,91 @@ html[data-theme="default"] {
   .tabela-notas thead th,
   .tabela-notas tbody td { padding: 11px 12px; font-size: .78rem; }
 }
+
+/* ============================================================
+   CINZA INDUSTRIAL — Notas em preto para máximo contraste
+   O tema tem fundo claro cinza; os rgba pastéis ficam invisíveis.
+   Substituição: preto (#111315) em todos os bimestres.
+   Headers: tons de cinza-escuro distintos por coluna.
+============================================================ */
+html[data-theme="cinza-industrial"] .tabela-notas thead th.bim1 { color: #111315; }
+html[data-theme="cinza-industrial"] .tabela-notas thead th.bim2 { color: #2c3136; }
+html[data-theme="cinza-industrial"] .tabela-notas thead th.bim3 { color: #3d4148; }
+html[data-theme="cinza-industrial"] .tabela-notas thead th.bim4 { color: #4f5560; }
+
+html[data-theme="cinza-industrial"] .tabela-notas tbody td:nth-child(2) {
+    color: #111315 !important;
+    font-weight: 700;
+}
+html[data-theme="cinza-industrial"] .tabela-notas tbody td:nth-child(3) {
+    color: #111315 !important;
+    font-weight: 700;
+}
+html[data-theme="cinza-industrial"] .tabela-notas tbody td:nth-child(4) {
+    color: #111315 !important;
+    font-weight: 700;
+}
+html[data-theme="cinza-industrial"] .tabela-notas tbody td:nth-child(5) {
+    color: #111315 !important;
+    font-weight: 700;
+}
+
+/* Classe .nota-table-val também usada no template */
+html[data-theme="cinza-industrial"] .nota-table-val {
+    color: #111315 !important;
+    font-weight: 700;
+}
+
+/* ============================================================
+   AZUL CORPORATIVO — Notas com cores vibrantes e contrastantes
+   O tema tem fundo claro (#F3F7FF); os accents são tons médios
+   de azul que se misturam. Usa cores saturadas distintas por bimestre.
+   B1: índigo-escuro  B2: verde-escuro  B3: laranja-queimado  B4: roxo-escuro
+============================================================ */
+html[data-theme="azul-corporativo"] .tabela-notas thead th.bim1 { color: #185FA5; }
+html[data-theme="azul-corporativo"] .tabela-notas thead th.bim2 { color: #1a6b3f; }
+html[data-theme="azul-corporativo"] .tabela-notas thead th.bim3 { color: #b05a00; }
+html[data-theme="azul-corporativo"] .tabela-notas thead th.bim4 { color: #6a1b9a; }
+
+html[data-theme="azul-corporativo"] .tabela-notas tbody td:nth-child(2) {
+    color: #185FA5 !important;  /* azul-corporativo médio — 1º Bimestre */
+    font-weight: 700;
+}
+html[data-theme="azul-corporativo"] .tabela-notas tbody td:nth-child(3) {
+    color: #1a6b3f !important;  /* verde-escuro — 2º Bimestre */
+    font-weight: 700;
+}
+html[data-theme="azul-corporativo"] .tabela-notas tbody td:nth-child(4) {
+    color: #b05a00 !important;  /* laranja-queimado — 3º Bimestre */
+    font-weight: 700;
+}
+html[data-theme="azul-corporativo"] .tabela-notas tbody td:nth-child(5) {
+    color: #6a1b9a !important;  /* roxo-escuro — 4º Bimestre */
+    font-weight: 700;
+}
+
+/* Classe .nota-table-val — usada no template como fallback */
+html[data-theme="azul-corporativo"] .nota-table-val {
+    color: #0D3A72 !important;  /* navy escuro — contraste máximo sobre azul-claro */
+    font-weight: 700;
+}
+
+/* Linha hover mantém legibilidade */
+html[data-theme="cinza-industrial"] .tabela-notas tbody tr:hover td,
+html[data-theme="azul-corporativo"] .tabela-notas tbody tr:hover td {
+    filter: brightness(0.88);
+}
+
+/* ── Responsivo — notas em mobile ── */
+@media (max-width: 680px) {
+  /* Cinza Industrial mobile: fonte maior para leitura das notas */
+  html[data-theme="cinza-industrial"] .tabela-notas tbody td:nth-child(n+2),
+  html[data-theme="cinza-industrial"] .nota-table-val {
+      font-size: .88rem;
+  }
+  /* Azul Corporativo mobile: idem */
+  html[data-theme="azul-corporativo"] .tabela-notas tbody td:nth-child(n+2),
+  html[data-theme="azul-corporativo"] .nota-table-val {
+      font-size: .88rem;
+  }
+}

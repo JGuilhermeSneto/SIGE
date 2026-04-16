@@ -1,0 +1,86 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if editando %}Editar{% else %}Novo{% endif %} Item de Patrimônio — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Administrativo · Patrimônio</span>
+            <h1>{% if editando %}Editar{% else %}Cadastrar{% endif %} <span class="nome-destaque">Ativo</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-formulario-limpo">
+            <form method="POST" class="sige-form-padrao">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.tombamento.id_for_label }}">Número de Tombamento</label>
+                        {{ form.tombamento }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.nome.id_for_label }}">Nome do Item</label>
+                        {{ form.nome }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.categoria.id_for_label }}">Categoria</label>
+                        {{ form.categoria }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.unidade.id_for_label }}">Unidade/Campus Destino</label>
+                        {{ form.unidade }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.estado_conservacao.id_for_label }}">Estado de Conservação</label>
+                        {{ form.estado_conservacao }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.data_aquisicao.id_for_label }}">Data de Aquisição</label>
+                        {{ form.data_aquisicao }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.valor_aquisicao.id_for_label }}">Valor de Aquisição (R$)</label>
+                        {{ form.valor_aquisicao }}
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-sige-primario">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Ativo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".flatpickr", {
+            dateFormat: "Y-m-d",
+            locale: "pt"
+        });
+    });
+</script>
+{% endblock %}

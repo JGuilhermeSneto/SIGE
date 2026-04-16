@@ -1,0 +1,129 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Infraestrutura e Patrimônio — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Administrativo · Infraestrutura</span>
+            <h1>Gestão de <span class="nome-destaque">Ativos e Estoque</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'cadastrar_patrimonio' %}" class="btn-sige-primario">
+                <i class="fa-solid fa-plus"></i> Novo Bem
+            </a>
+            <a href="{% url 'registrar_movimentacao' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-truck-ramp-box"></i> Movimentar Estoque
+            </a>
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="barra-busca-gestao">
+        <form method="get" class="busca-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Buscar por nome, tombamento ou item..." onchange="this.form.submit()">
+        </form>
+    </div>
+
+    <div class="tab-container">
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('patrimonio')">Patrimônio (Bens Duráveis)</button>
+            <button class="tab-btn" onclick="switchTab('estoque')">Estoque (Consumíveis)</button>
+        </div>
+
+        <!-- ABA PATRIMÔNIO -->
+        <div id="tab-patrimonio" class="tab-content active">
+            <div class="card-listagem">
+                <table class="tabela-sige">
+                    <thead>
+                        <tr>
+                            <th>Tombamento</th>
+                            <th>Nome</th>
+                            <th>Categoria</th>
+                            <th>Unidade</th>
+                            <th>Estado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in patrimonios %}
+                        <tr>
+                            <td><code>{{ p.tombamento }}</code></td>
+                            <td><strong>{{ p.nome }}</strong></td>
+                            <td>{{ p.categoria.nome }}</td>
+                            <td>{{ p.unidade.nome }}</td>
+                            <td>
+                                <span class="status-badge 
+                                    {% if p.estado_conservacao == 'NOVO' or p.estado_conservacao == 'BOM' %}status-aprovado
+                                    {% elif p.estado_conservacao == 'REGULAR' %}status-recuperacao
+                                    {% else %}status-reprovado{% endif %}">
+                                    {{ p.get_estado_conservacao_display }}
+                                </span>
+                            </td>
+                            <td class="acoes-tabela">
+                                <a href="{% url 'editar_patrimonio' p.id %}" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ABA ESTOQUE -->
+        <div id="tab-estoque" class="tab-content">
+            <div class="card-listagem">
+                <table class="tabela-sige">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Unidade/Campus</th>
+                            <th>Quantidade Atual</th>
+                            <th>Unidade Medida</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in saldos_estoque %}
+                        <tr>
+                            <td><strong>{{ s.item.nome }}</strong></td>
+                            <td>{{ s.unidade.nome }}</td>
+                            <td><span style="font-size: 1.1rem; font-weight: 800;">{{ s.quantidade }}</span></td>
+                            <td>{{ s.item.unidade_medida }}</td>
+                            <td>
+                                {% if s.quantidade <= s.item.estoque_minimo %}
+                                <span class="status-badge status-reprovado">Crítico</span>
+                                {% else %}
+                                <span class="status-badge status-aprovado">OK</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        document.getElementById('tab-' + tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+</script>
+{% endblock %}

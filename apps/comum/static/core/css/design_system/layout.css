@@ -35,7 +35,8 @@
 .logo-menu {
     height: 26px;
     width: auto;
-    transition: transform var(--transition-mid);
+    transition: transform var(--transition-mid), filter var(--transition-mid);
+    filter: var(--logo-filter, none);
 }
 
 .brand-link:hover .logo-menu {
@@ -234,22 +235,40 @@
     .menu-lateral {
         left: -100%;
         box-shadow: var(--shadow-lg);
+        /* FIX: Força fundo sólido no mobile para evitar sobreposição visual */
+        background: var(--bg-surface) !important;
+        /* Garante que o gradiente não herde transparência indesejada */
+        background-image: none !important;
+        border-right: 1px solid var(--border-mid);
+        z-index: 1001; /* Fica acima de tudo, exceto o header se necessário */
     }
     .menu-lateral.ativo { left: 0; }
-    .area-conteudo { padding-left: 0; }
-    .pagina-conteudo { padding: 20px 16px 32px; }
+    .area-conteudo { padding-left: 0 !important; }
+    .pagina-conteudo { padding: 16px 14px 32px; }
 
+    /* Overlay aprimorado para bloquear interação com o fundo */
     .menu-lateral.ativo::after {
         content: '';
         position: fixed; 
         inset: 0;
-        left: var(--menu-width);
-        background: rgba(0, 0, 0, 0.55);
+        left: 0; /* Cobre tudo para escurecer o fundo corretamente */
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
         z-index: -1;
+        pointer-events: all;
     }
 }
 
 @media (max-width: 480px) {
-    .brand-link h2 { display: none; }
-    .pagina-conteudo { padding: 14px 12px 24px; }
+    .brand-link h2, .brand-link span { display: none; }
+    .menu-principal { padding: 0 12px; }
+    .pagina-conteudo { padding: 12px 10px 24px; }
+    
+    /* Garante que elementos flex não fiquem exprimidos */
+    .menu-icones { gap: 2px; }
+}
+
+@media (max-width: 360px) {
+    .pagina-conteudo { padding-left: 8px; padding-right: 8px; }
 }

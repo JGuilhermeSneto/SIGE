@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Novo Livro — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Acervo · Gestão</span>
+            <h1>Cadastrar <span class="nome-destaque">Novo Livro</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-formulario-limpo">
+            <form method="POST" enctype="multipart/form-data" class="sige-form-padrao">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="{{ form.titulo.id_for_label }}">Título da Obra</label>
+                        {{ form.titulo }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.autor.id_for_label }}">Autor(a)</label>
+                        {{ form.autor }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.isbn.id_for_label }}">ISBN (Opcional)</label>
+                        {{ form.isbn }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.editora.id_for_label }}">Editora</label>
+                        {{ form.editora }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.ano_publicacao.id_for_label }}">Ano de Publicação</label>
+                        {{ form.ano_publicacao }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.quantidade_total.id_for_label }}">Quantidade em Acervo</label>
+                        {{ form.quantidade_total }}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.capa.id_for_label }}">Imagem da Capa</label>
+                        {{ form.capa }}
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn-sige-primario">
+                        <i class="fa-solid fa-floppy-disk"></i> Salvar Livro
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Gestão de Empréstimos — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label">Biblioteca · Administração</span>
+            <h1>Controle de <span class="nome-destaque">Empréstimos</span></h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'novo_emprestimo' %}" class="btn-sige-primario">
+                <i class="fa-solid fa-plus"></i> Novo Empréstimo
+            </a>
+            <a href="javascript:history.back()" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar
+            </a>
+        </div>
+    </header>
+
+    <div class="conteudo-geral">
+        <div class="card-listagem">
+            {% if emprestimos %}
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Livro</th>
+                        <th>Destinatário</th>
+                        <th>Data Empréstimo</th>
+                        <th>Previsão Devolução</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in emprestimos %}
+                    <tr {% if e.data_devolucao_prevista < hoje %}style="background: hsla(350, 85%, 60%, 0.05);"{% endif %}>
+                        <td><strong>{{ e.livro.titulo }}</strong></td>
+                        <td>
+                            {% if e.usuario_aluno %}
+                            <span class="tag-sige">Aluno</span> {{ e.usuario_aluno.nome_completo }}
+                            {% else %}
+                            <span class="tag-sige" style="color: var(--accent-violet);">Prof</span> {{ e.usuario_professor.nome_completo }}
+                            {% endif %}
+                        </td>
+                        <td>{{ e.data_emprestimo|date:"d/m/Y" }}</td>
+                        <td>
+                            <span class="{% if e.data_devolucao_prevista < hoje and e.status != 'RESERVA' %}status-badge status-reprovado{% elif e.status == 'RESERVA' %}status-badge status-recuperacao{% else %}status-badge status-aprovado{% endif %}">
+                                {% if e.status == 'RESERVA' %}Reserva até:{% else %}Devolução:{% endif %}
+                                {{ e.data_devolucao_prevista|date:"d/m/Y" }}
+                                {% if e.data_devolucao_prevista < hoje and e.status != 'RESERVA' %} (ATRASADO){% endif %}
+                            </span>
+                        </td>
+                        <td class="acoes-tabela">
+                            {% if e.status == 'RESERVA' %}
+                            <form action="{% url 'confirmar_retirada' e.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sige-primario" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">
+                                    <i class="fa-solid fa-hand-holding-hand"></i> Confirmar Retirada
+                                </button>
+                            </form>
+                            {% else %}
+                            <form action="{% url 'registrar_devolucao' e.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-sige-primario" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">
+                                    <i class="fa-solid fa-check"></i> Devolver
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="vazio-state">
+                <i class="fa-solid fa-bookmark"></i>
+                <p>Nenhum empréstimo ativo no momento.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

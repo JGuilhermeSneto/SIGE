@@ -205,7 +205,7 @@ def excluir_professor(request, professor_id):
 def listar_alunos(request):
     """Lista alunos."""
     query = request.GET.get("q", "")
-    alunos = Aluno.objects.all().select_related("user", "turma")
+    alunos = Aluno.objects.all().select_related("user", "turma", "ficha_medica")
     if query:
         alunos = alunos.filter(nome_completo__icontains=query)
     return render(request, "aluno/listar_alunos.html", {
