@@ -154,45 +154,53 @@
         <div class="coluna-direita">
 
             {# Mural de Avisos #}
-            <div class="card-grafico card-mural">
-                <h3><i class="fa-solid fa-bullhorn"></i> Mural de Avisos</h3>
+            <section class="mural-box card-mural-sidebar" style="margin-bottom: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--border-mid)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
+                </h3>
                 {% if comunicados %}
-                <div class="lista-mural">
+                <div class="lista-mural-compacta">
                     {% for c in comunicados %}
-                    <div class="item-mural {% if c.importancia == 'ALTA' %}urgente{% endif %}">
-                        <div class="mural-head">
-                            <span class="mural-tag">{{ c.get_publico_alvo_display }}</span>
-                            <span class="mural-data">{{ c.data_publicacao|date:"d M" }}</span>
+                    <div class="item-mural-side {% if c.importancia == 'ALTA' %}urgente{% endif %}" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
+                            <span class="tag-mural" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.65rem; border: 1px solid {% if c.publico_alvo == 'GLOBAL' %}var(--accent-violet); color: var(--accent-violet); background: rgba(124, 111, 255, 0.1);{% elif c.publico_alvo == 'ALUNOS' %}var(--accent-cyan); color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1);{% elif c.publico_alvo == 'PROFESSORES' %}var(--accent-emerald); color: var(--accent-emerald); background: rgba(52, 211, 153, 0.1);{% elif c.publico_alvo == 'GESTORES' %}var(--accent-amber); color: var(--accent-amber); background: rgba(251, 191, 36, 0.1);{% else %}var(--border-subtle); color: var(--text-muted); background: var(--bg-elevated);{% endif %}">
+                                {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-globe" style="margin-right:3px;"></i>{% endif %}{{ c.get_publico_alvo_display }}
+                            </span>
+                            <span>{{ c.data_publicacao|date:"d/m" }}</span>
                         </div>
-                        <h4>{{ c.titulo }}</h4>
-                        <p>{{ c.conteudo|truncatechars:100 }}</p>
+                        <h4 style="font-size: 0.85rem; margin-bottom: 4px; {% if c.importancia == 'ALTA' %}color: var(--status-reprovado);{% endif %}">{{ c.titulo }}</h4>
+                        <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">{{ c.conteudo|truncatechars:60 }}</p>
                     </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="vazio-mural">Nenhum aviso no momento.</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Nenhum aviso no momento.</p>
                 {% endif %}
-            </div>
+            </section>
 
-            <div class="card-grafico card-notificacoes">
-                <h3><i class="fa-solid fa-bell"></i> Notificações {% if notificacoes_nao_lidas %}<span class="contador-notificacoes">({{ notificacoes_nao_lidas }})</span>{% endif %}</h3>
+            <section class="mural-box card-notificacoes-sidebar" style="margin-bottom: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--border-mid)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'">
+                <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-bell" style="color: var(--accent-amber);"></i> Notificações {% if notificacoes_nao_lidas %}<span class="contador-notificacoes" style="background: var(--accent-ruby); color: white; border-radius: 50%; font-size: 0.7rem; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">{{ notificacoes_nao_lidas }}</span>{% endif %}
+                </h3>
                 {% if notificacoes_recentes %}
-                <div class="lista-notificacoes">
+                <div class="lista-mural-compacta">
                     {% for n in notificacoes_recentes %}
-                    <a href="{% url 'marcar_notificacao_lida' n.id %}"
-                        class="item-notificacao {% if not n.lida %}nao-lida{% endif %}">
-                        <div class="item-notificacao-head">
-                            <strong>{{ n.titulo }}</strong>
+                    <a href="{% url 'marcar_notificacao_lida' n.id %}" style="display: block; text-decoration: none; color: inherit; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;" class="item-notificacao-side {% if not n.lida %}nao-lida{% endif %}">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
+                            <strong style="color: {% if not n.lida %}var(--text-primary){% else %}var(--text-muted){% endif %}">
+                                {% if n.tipo == 'NOTA' %}<i class="fa-solid fa-star" style="color: var(--accent-emerald); margin-right: 4px;"></i>{% elif n.tipo == 'CHAMADA' %}<i class="fa-solid fa-calendar-xmark" style="color: #f87171; margin-right: 4px;"></i>{% elif n.tipo == 'CORRECAO' %}<i class="fa-solid fa-pen-to-square" style="color: var(--accent-amber); margin-right: 4px;"></i>{% elif n.tipo == 'GABARITO' %}<i class="fa-solid fa-check-double" style="color: var(--accent-cyan); margin-right: 4px;"></i>{% else %}<i class="fa-solid fa-bell" style="margin-right: 4px;"></i>{% endif %}
+                                {{ n.titulo }}
+                            </strong>
                             <span>{{ n.criado_em|date:"d/m H:i" }}</span>
                         </div>
-                        <p>{{ n.mensagem }}</p>
+                        <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4; {% if not n.lida %}font-weight: 500;{% endif %}">{{ n.mensagem }}</p>
                     </a>
                     {% endfor %}
                 </div>
                 {% else %}
-                <p class="vazio-notificacoes">Sem notificações por enquanto.</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Sem notificações por enquanto.</p>
                 {% endif %}
-            </div>
+            </section>
 
             {# Gráfico de desempenho #}
             <div class="card-grafico">

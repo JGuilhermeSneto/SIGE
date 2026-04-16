@@ -11,11 +11,14 @@ def visualizar_saude_aluno(request, aluno_id):
     """Exibe a ficha médica de um aluno. Acessível por Gestores e Professores."""
     aluno = get_object_or_404(Aluno, id=aluno_id)
     
-    # Validação de permissão: Gestor ou Professor do Aluno
+    # Validação de permissão: Gestor, Professor do Aluno ou o próprio Aluno
     eh_gestor = is_super_ou_gestor(request.user)
-    eh_professor = hasattr(request.user, 'professor') and aluno.turma.disciplinas.filter(professor=request.user.professor).exists()
+    eh_professor = False
+    if hasattr(request.user, 'professor') and hasattr(aluno, 'turma') and aluno.turma:
+        eh_professor = aluno.turma.disciplinas.filter(professor=request.user.professor).exists()
+    eh_proprio_aluno = hasattr(request.user, 'aluno') and request.user.aluno.id == aluno.id
     
-    if not (eh_gestor or eh_professor):
+    if not (eh_gestor or eh_professor or eh_proprio_aluno):
         messages.error(request, "Você não tem permissão para ver dados de saúde deste aluno.")
         return redirect('painel_usuarios')
 

@@ -1,44 +1,49 @@
 # Roadmap de Implementação — SIGE (Sistema Integrado de Gestão Escolar)
 
-Este documento serve como guia para o desenvolvimento das próximas grandes funcionalidades do sistema, divididas entre a fase atual e versões futuras.
+Este documento serve como guia de maturidade para o desenvolvimento do sistema, com features agrupadas de acordo com as entregas consolidadas e as fases futuras.
 
-## 🚀 Fase Atual: Expansão Administrativa e Pedagógica
-Foco em comunicação, gestão de ativos e ferramentas de produtividade.
+## ✅ Entregas Recentes (Concluídas)
+Foco massivo em usabilidade, segurança patrimonial, assistência e comunicação.
 
-### 1. Comunicação e Murais
-*   **Mural de Avisos Global**: Postagens visíveis para todos os usuários no dashboard.
-*   **Avisos Segmentados**: Filtros para enviar mensagens apenas para Professores, Alunos ou Gestores.
-*   **Notificações de Sistema**: Sistema de logs visuais para eventos acadêmicos.
+### 1. Comunicação, Murais e Design System 
+*   **Mural de Avisos Dinâmico**: Postagens visíveis segmentadas com highlight visual (Gestores, Professores, Alunos e Global).
+*   **Notificações de Sistema**: Lógica de logs visuais com ícones interativos por categoria (Faltas, Notas, etc).
+*   **Design System Premium**: Unificação de todos os painéis utilizando os `tokens.css` (Mural Sidebar, Card Totals com animações de elevação).
 
-### 2. Emissão de Documentos (Secretaria Digital)
-*   **Boletim Escolar PDF**: Geração de boletins formatados para impressão.
-*   **Declaração de Matrícula**: Documento oficial com QR Code de autenticidade.
-*   **Histórico Parcial**: Emissão de registros de notas acumuladas.
+### 2. Emissão de Documentos Digitais
+*   **Boletim Escolar PDF**: Geração via `ReportLab` garantindo layout de alta resolução, pronto para Secretaria.
+*   **Declaração de Matrícula**: Documentação formal validada pelo sistema.
 
-### 3. Patrimônio e Estoque
-*   **Controle de Ativos**: Cadastro de equipamentos (computadores, mesas, cadeiras) com número de tombamento.
-*   **Gestão de Insumos**: Controle de estoque de materiais (toner, papel, limpeza) com alerta de estoque baixo.
+### 3. Assistência Acadêmica (Adiantado da V3.0)
+*   **Biblioteca Digital Automática**: Gestão do acervo literário com lógica paramétrica de limite (2 livros por aluno).
+*   **Saúde Escolar (Ficha Médica)**: Prontuário, medicamentos e alertas de alergia/PCD com visão restritiva de segurança (Professor da classe, Gestor, Próprio Aluno).
 
-### 4. Relatórios e BI (Business Intelligence)
-*   **Dashboard Gerencial**: Gráficos de taxa de aprovação/reprovação.
-*   **Análise de Evasão**: Relatórios de alunos com baixa frequência.
-*   **Distribuição de Desempenho**: Gráficos por disciplina e turma.
+---
+
+## 🚀 Fase Atual (Em Desenvolvimento)
+O que nossa equipe de desenvolvimento deve focar a partir deste sprint:
+
+### 1. Patrimônio e Históricos
+*   **Histórico Escolar Parcial**: Relatório acumulativo do discente (pendente de consolidação).
+*   **Gestão de Estoque Total**: Fechar o fluxo do controle de Insumos da infraestrutura no painel gerencial.
+
+### 2. Dashboards de Análise (Business Intelligence)
+*   **Dashboard Gerencial Avançado**: Integração total de gráficos de evasão e relatórios de fluxo demográfico.
 
 ---
 
 ## 📅 Versões Futuras: Ecossistema Completo
 
-### Versão 2.0: Financeiro e RH
-*   Geração de Boletos e integração com PIX.
-*   Gestão de Inadimplência e planos de pagamento.
-*   Folha de pagamento e carga horária docente.
+### Versão 2.0: Financeiro e RH Escolar
+*   Geração de Boletos e recebimentos automatizados via API PIX.
+*   Gestão de Inadimplência, acionamento de devedores e planos de pagamento.
+*   Folha de pagamento atrelada à carga horária e alocação do docente.
 
-### Versão 3.0: Recursos e Assistência
-*   Módulo de Biblioteca (Acervo e Empréstimos).
-*   Saúde Escolar (Prontuário e vacinação).
-*   Gestão de Estágios e Convênios.
+### Versão 3.0: Convênios Internos
+*   Gestão de Estágios, Termos de Compromisso e Convênios.
+*   Expansão de Ficha Multidisciplinar (Psicologia e Nutrição).
 
 ### Versão 4.0: Integrações Avançadas e IA
-*   Integração com Google Classroom / Microsoft Teams.
-*   Análise Preditiva de desempenho com IA.
-*   App Mobile Nativo (Sincronização Offline).
+*   Sincronização Bidirecional (Microsoft Teams / Google Classroom).
+*   **Health Score Preditivo**: Rede Neural avaliando o cruzamento de faltas e comportamento avaliativo para prevenir evasão *antes* que ocorra.
+*   App Mobile Nativo (PWA instalado nas lojas) com uso de caching local.

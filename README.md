@@ -44,21 +44,19 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 
 ### ✨ Atualizações recentes (Abr/2026)
 
-- **Perfil / Avatar**
-  - fluxo de edição de foto estabilizado (preview local + persistência apenas no salvar);
-  - avatar no `base.html` com fonte única e atualização consistente.
-- **Calendário escolar**
-  - suporte visual para evento e aula suspensa sem sobrescrever cores-base de tipo (feriado, prova, recesso etc.);
-  - tooltip padronizado (`Evento`, `Aula suspensa`, `Evento + Aula suspensa`);
-  - geração de base anual preserva dias já ajustados manualmente.
-- **Atividades / Gabarito**
-  - controle de liberação manual do gabarito por professor;
-  - liberação automática por prazo final mantida;
-  - status de gabarito visível na listagem de atividades.
-- **Correção individual**
-  - nota parcial da correção atualiza em tempo real na tela.
-- **Notificações para aluno**
-  - criação de notificações persistentes para: nota, chamada, correção e gabarito.
+- **Sistema de Biblioteca & Reservas**
+  - Workflow completo de reserva de livros, gestão de acervo e tela de confirmação para o gestor.
+  - Limite inteligente de 2 livros por aluno com integração no frontend.
+- **Design System Premium**
+  - Padronização de todo o sistema em três temas principais: "Indigo Profundo", "Cinza Industrial" e "Azul Corporativo".
+  - Padronização global dos botões (Próximo, Salvar) garantindo alto contraste e interatividade fluida por componente.
+  - Atualização do "Mural de Avisos" e "Notificações" usando o layout em `card-mural-sidebar`.
+- **Gestão Acadêmica e Saúde**
+  - Alunos agora têm autonomia para visualizar a própria ficha médica no sistema ("Minha Saúde").
+  - Otimização do dashboard acadêmico utilizando ORM aggregations.
+  - Calendário dinâmico com tooltip padronizado para sobreposição de status (ex: aula suspensa e evento).
+- **Notificações & Atividades**
+  - Sistema de avisos integrado por público-alvo e alertas visuais persistentes para correções de provas, notas e faltas.
 
 ---
 

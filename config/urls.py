@@ -22,6 +22,19 @@ from django.urls import URLPattern, URLResolver, include, path
 from config.api_views import dashboard_resumo, ping
 from config.jwt_views import EmailTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.routers import DefaultRouter
+
+from apps.comunicacao.api import ComunicadoViewSet
+from apps.academico.api import NotificacaoAlunoViewSet
+from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
+from apps.saude.api import SaudeViewSet
+
+router = DefaultRouter()
+router.register(r'comunicados', ComunicadoViewSet, basename='api-comunicados')
+router.register(r'notificacoes', NotificacaoAlunoViewSet, basename='api-notificacoes')
+router.register(r'biblioteca/acervo', BibliotecaViewSet, basename='api-biblioteca-acervo')
+router.register(r'biblioteca/meus-livros', MeusEmprestimosViewSet, basename='api-biblioteca-meus-livros')
+router.register(r'saude/minha-ficha', SaudeViewSet, basename='api-saude-ficha')
 
 urlpatterns: list[URLPattern | URLResolver] = [
     path("admin/", admin.site.urls),
@@ -29,6 +42,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/dashboard/resumo/", dashboard_resumo, name="api-dashboard-resumo"),
     path("api/token/", EmailTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("api/", include(router.urls)),
     path("", include("apps.usuarios.urls")),
     path("academico/", include("apps.academico.urls")),
     path("calendario/", include("apps.calendario.urls")),

@@ -135,7 +135,7 @@
       </section>
 
       {# ── Mural de Avisos ── #}
-      <section class="mural-box card-mural-sidebar" style="margin-bottom: 20px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px;">
+      <section class="mural-box card-mural-sidebar" style="margin-bottom: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--border-mid)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'">
         <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
           <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
         </h3>
@@ -144,7 +144,9 @@
             {% for c in comunicados %}
               <div class="item-mural-side {% if c.importancia == 'ALTA' %}urgente{% endif %}" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
                 <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
-                  <span class="tag-mural">{{ c.get_publico_alvo_display }}</span>
+                  <span class="tag-mural" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.65rem; border: 1px solid {% if c.publico_alvo == 'GLOBAL' %}var(--accent-violet); color: var(--accent-violet); background: rgba(124, 111, 255, 0.1);{% elif c.publico_alvo == 'ALUNOS' %}var(--accent-cyan); color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1);{% elif c.publico_alvo == 'PROFESSORES' %}var(--accent-emerald); color: var(--accent-emerald); background: rgba(52, 211, 153, 0.1);{% elif c.publico_alvo == 'GESTORES' %}var(--accent-amber); color: var(--accent-amber); background: rgba(251, 191, 36, 0.1);{% else %}var(--border-subtle); color: var(--text-muted); background: var(--bg-elevated);{% endif %}">
+                    {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-globe" style="margin-right:3px;"></i>{% endif %}{{ c.get_publico_alvo_display }}
+                  </span>
                   <span>{{ c.data_publicacao|date:"d/m" }}</span>
                 </div>
                 <h4 style="font-size: 0.85rem; margin-bottom: 4px; {% if c.importancia == 'ALTA' %}color: var(--status-reprovado);{% endif %}">{{ c.titulo }}</h4>
