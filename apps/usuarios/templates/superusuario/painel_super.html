@@ -75,6 +75,22 @@
           <p class="card-label">Disciplinas</p>
           <h2 class="card-valor">{{ total_disciplinas }}</h2>
         </article>
+
+        <article class="card">
+          <div class="card-icone" style="color: var(--accent-amber);">
+            <i class="fa-solid fa-file-medical"></i>
+          </div>
+          <p class="card-label">Atestados Pendentes</p>
+          <h2 class="card-valor" style="color: var(--accent-amber);">{{ atestados_pendentes_count }}</h2>
+        </article>
+
+        <article class="card">
+          <div class="card-icone" style="color: var(--accent-cyan);">
+            <i class="fa-solid fa-book-open"></i>
+          </div>
+          <p class="card-label">Livros no Acervo</p>
+          <h2 class="card-valor" style="color: var(--accent-cyan);">{{ total_livros }}</h2>
+        </article>
       </section>
 
       {# ── Barra de resumo ── #}
@@ -225,10 +241,66 @@
     </aside>
 
   </div>
+
+  {# ════════ BI DASHBOARD ════════ #}
+  <div class="bi-section">
+    <div id="bi-data" hidden
+      data-turmas-labels='{{ bi_turmas_labels }}'
+      data-turmas-data='{{ bi_turmas_data }}'
+      data-status-labels='{{ bi_status_labels }}'
+      data-status-data='{{ bi_status_data }}'
+      data-evolucao-labels='{{ bi_evolucao_labels }}'
+      data-evolucao-data='{{ bi_evolucao_data }}'
+      data-atestado-labels='{{ bi_atestado_labels }}'
+      data-atestado-data='{{ bi_atestado_data }}'>
+    </div>
+
+    <header class="bi-section-header">
+      <i class="fa-solid fa-chart-line" style="color: var(--accent-violet); font-size: 1.1rem;"></i>
+      <h2>Análise Escolar</h2>
+      <span class="bi-badge">Business Intelligence</span>
+    </header>
+
+    <div class="charts-grid">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <span class="chart-card-title"><i class="fa-solid fa-users"></i> Alunos por Turma</span>
+        </div>
+        <canvas id="chartTurmas"></canvas>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <span class="chart-card-title"><i class="fa-solid fa-circle-half-stroke"></i> Situação das Matrículas</span>
+        </div>
+        <canvas id="chartStatus"></canvas>
+      </div>
+    </div>
+
+    <div class="charts-grid full-width" style="margin-top: 18px;">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <span class="chart-card-title"><i class="fa-solid fa-arrow-trend-up"></i> Evolução de Matrículas por Ano</span>
+        </div>
+        <canvas id="chartEvolucao"></canvas>
+      </div>
+    </div>
+
+    <div class="charts-grid full-width" style="margin-top: 18px;">
+      <div class="chart-card">
+        <div class="chart-card-header">
+          <span class="chart-card-title"><i class="fa-solid fa-file-medical"></i> Atestados Médicos por Status</span>
+        </div>
+        <canvas id="chartAtestados" style="height: 180px !important;"></canvas>
+      </div>
+    </div>
+  </div>
+
 </section>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{% static 'core/js/dashboard_bi.js' %}"></script>
 <script>
   function toggleMuralSuper() {
     const mural = document.getElementById('mural-avisos-super');
@@ -236,8 +308,6 @@
     const isCollapsed = mural.classList.contains('collapsed');
     localStorage.setItem('mural_super_collapsed', isCollapsed);
   }
-
-  // Restaurar estado ao carregar
   document.addEventListener('DOMContentLoaded', function() {
     const isCollapsed = localStorage.getItem('mural_super_collapsed') === 'true';
     if (isCollapsed) {

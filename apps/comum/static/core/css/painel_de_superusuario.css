@@ -675,3 +675,97 @@ line-height: 1;
     display: none;
   }
 }
+
+/* ════════════════════════════════════════════
+   BI DASHBOARD — Gráficos Analíticos
+════════════════════════════════════════════ */
+
+.bi-section {
+  margin-top: 32px;
+}
+
+.bi-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.bi-section-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: .02em;
+}
+
+.bi-section-header .bi-badge {
+  font-size: .68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(124, 111, 255, .15);
+  color: var(--accent-violet);
+  border: 1px solid rgba(124, 111, 255, .25);
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.charts-grid.full-width {
+  grid-template-columns: 1fr;
+}
+
+.chart-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow .25s ease, border-color .25s ease;
+}
+
+.chart-card:hover {
+  border-color: rgba(124, 111, 255, .25);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .25);
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chart-card-title {
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: .09em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-card-title i {
+  font-size: .9rem;
+  color: var(--accent-violet);
+}
+
+.chart-card canvas {
+  height: 240px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}

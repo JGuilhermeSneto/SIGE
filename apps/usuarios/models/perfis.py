@@ -57,6 +57,15 @@ class Professor(PessoaBase):
 
 class Aluno(PessoaBase):
     """Representa um aluno."""
+
+    STATUS_MATRICULA_CHOICES = [
+        ("ATIVO",       "Ativo"),
+        ("INATIVO",     "Inativo"),
+        ("EVADIDO",     "Evadido"),
+        ("TRANSFERIDO", "Transferido"),
+        ("FORMADO",     "Formado"),
+    ]
+
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="aluno", help_text="Usuário vinculado ao aluno"
     )
@@ -65,10 +74,17 @@ class Aluno(PessoaBase):
     responsavel2 = models.CharField(max_length=255, blank=True, help_text="Nome do segundo responsável")
     possui_necessidade_especial = models.BooleanField(default=False, help_text="Indica se possui necessidade especial")
     descricao_necessidade = models.TextField(blank=True, help_text="Descrição da necessidade especial")
+    status_matricula = models.CharField(
+        max_length=15,
+        choices=STATUS_MATRICULA_CHOICES,
+        default="ATIVO",
+        help_text="Situação atual da matrícula do aluno",
+    )
     turma = models.ForeignKey(
         "academico.Turma",
         on_delete=models.CASCADE, related_name="alunos", help_text="Turma do aluno"
     )
+
 
     class Meta:
         db_table = 'core_aluno'
