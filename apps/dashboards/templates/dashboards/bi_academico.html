@@ -126,9 +126,42 @@
             </ul>
         </div>
     </div>
+
+    <!-- ══ NOVOS GRÁFICOS: Matrículas & Tendências ══ -->
+    <h2 style="color: var(--text-primary); margin: 36px 0 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-chart-bar" style="color: var(--accent-violet);"></i>
+        Matrículas & Tendências
+        <span style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:2px 8px;border-radius:20px;background:rgba(124,111,255,.12);color:var(--accent-violet);border:1px solid rgba(124,111,255,.2);">novo</span>
+    </h2>
+
+    <div class="bi-grid">
+        <!-- Status de Matrícula -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-circle-half-stroke"></i> Situação das Matrículas</h3>
+            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 250px;">
+                <canvas id="graficoStatusMatricula"></canvas>
+            </div>
+        </div>
+
+        <!-- Alunos por Turma -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-users"></i> Alunos por Turma</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="graficoAlunosTurma"></canvas>
+            </div>
+        </div>
+
+        <!-- Evolução Anual -->
+        <div class="bi-card" style="grid-column: span 2;">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-arrow-trend-up"></i> Evolução de Matrículas por Ano</h3>
+            <div style="flex-grow: 1; min-height: 220px;">
+                <canvas id="graficoEvolucao"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
     Chart.defaults.color = '#8b97bb';
     Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
@@ -188,6 +221,82 @@
             }]
         },
         options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    // ── Novos Gráficos: Situação das Matrículas ──
+    const statusLabels   = {{ bi_status_labels|safe }};
+    const statusData     = {{ bi_status_data|safe }};
+    const evolucaoLabels = {{ bi_evolucao_labels|safe }};
+    const evolucaoData   = {{ bi_evolucao_data|safe }};
+
+    const statusColors = [
+        'rgba(52,211,153,.75)',   // ATIVO - emerald
+        'rgba(251,191,36,.75)',   // INATIVO - amber
+        'rgba(248,113,113,.75)',  // EVADIDO - red
+        'rgba(56,189,248,.75)',   // TRANSFERIDO - sky
+        'rgba(124,111,255,.75)',  // FORMADO - violet
+    ];
+
+    new Chart(document.getElementById('graficoStatusMatricula'), {
+        type: 'doughnut',
+        data: {
+            labels: statusLabels,
+            datasets: [{
+                data: statusData,
+                backgroundColor: statusColors,
+                borderColor: 'var(--bg-surface)',
+                borderWidth: 3,
+                hoverOffset: 8,
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'bottom' } } }
+    });
+
+    const alunosTurmaLabels = dadosTurmas.map(d => d.nome);
+    const alunosTurmaData   = dadosTurmas.map(d => d.media_geral ? Math.round(d.media_geral) : 0);
+
+    new Chart(document.getElementById('graficoAlunosTurma'), {
+        type: 'bar',
+        data: {
+            labels: alunosTurmaLabels,
+            datasets: [{
+                label: 'Média Geral',
+                data: alunosTurmaData,
+                backgroundColor: 'rgba(124,111,255,.55)',
+                borderColor: '#7c6fff',
+                borderWidth: 2,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, grid: { color: primaryGridColor } }, y: { grid: { display: false } } }
+        }
+    });
+
+    new Chart(document.getElementById('graficoEvolucao'), {
+        type: 'line',
+        data: {
+            labels: evolucaoLabels,
+            datasets: [{
+                label: 'Total de Alunos Matriculados',
+                data: evolucaoData,
+                borderColor: '#22d3ee',
+                backgroundColor: 'rgba(34,211,238,.12)',
+                borderWidth: 2.5,
+                pointBackgroundColor: '#22d3ee',
+                pointRadius: 5,
+                fill: true,
+                tension: 0.4,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, grid: { color: primaryGridColor } }, x: { grid: { display: false } } }
+        }
     });
 </script>
 {% endblock %}

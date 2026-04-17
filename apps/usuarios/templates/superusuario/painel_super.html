@@ -242,65 +242,32 @@
 
   </div>
 
-  {# ════════ BI DASHBOARD ════════ #}
-  <div class="bi-section">
-    <div id="bi-data" hidden
-      data-turmas-labels='{{ bi_turmas_labels }}'
-      data-turmas-data='{{ bi_turmas_data }}'
-      data-status-labels='{{ bi_status_labels }}'
-      data-status-data='{{ bi_status_data }}'
-      data-evolucao-labels='{{ bi_evolucao_labels }}'
-      data-evolucao-data='{{ bi_evolucao_data }}'
-      data-atestado-labels='{{ bi_atestado_labels }}'
-      data-atestado-data='{{ bi_atestado_data }}'>
-    </div>
-
-    <header class="bi-section-header">
-      <i class="fa-solid fa-chart-line" style="color: var(--accent-violet); font-size: 1.1rem;"></i>
-      <h2>Análise Escolar</h2>
-      <span class="bi-badge">Business Intelligence</span>
-    </header>
-
-    <div class="charts-grid">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <span class="chart-card-title"><i class="fa-solid fa-users"></i> Alunos por Turma</span>
-        </div>
-        <canvas id="chartTurmas"></canvas>
-      </div>
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <span class="chart-card-title"><i class="fa-solid fa-circle-half-stroke"></i> Situação das Matrículas</span>
-        </div>
-        <canvas id="chartStatus"></canvas>
-      </div>
-    </div>
-
-    <div class="charts-grid full-width" style="margin-top: 18px;">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <span class="chart-card-title"><i class="fa-solid fa-arrow-trend-up"></i> Evolução de Matrículas por Ano</span>
-        </div>
-        <canvas id="chartEvolucao"></canvas>
-      </div>
-    </div>
-
-    <div class="charts-grid full-width" style="margin-top: 18px;">
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <span class="chart-card-title"><i class="fa-solid fa-file-medical"></i> Atestados Médicos por Status</span>
-        </div>
-        <canvas id="chartAtestados" style="height: 180px !important;"></canvas>
-      </div>
-    </div>
+  {# ════ CTA — Atalho para o Painel BI ════ #}
+  <div style="margin-top: 28px; text-align: center;">
+    <a href="{% url 'dashboard_bi_academico' %}" style="
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, rgba(124,111,255,.15), rgba(34,211,238,.1));
+      border: 1px solid rgba(124, 111, 255, .35);
+      border-radius: 12px;
+      color: var(--accent-violet);
+      font-weight: 700;
+      font-size: .9rem;
+      text-decoration: none;
+      transition: all .25s ease;
+    " onmouseover="this.style.background='linear-gradient(135deg,rgba(124,111,255,.25),rgba(34,211,238,.18))';"
+       onmouseout="this.style.background='linear-gradient(135deg,rgba(124,111,255,.15),rgba(34,211,238,.1))';"
+    >
+      <i class="fa-solid fa-chart-pie" style="font-size: 1.1rem;"></i>
+      Ver Análise Completa no Painel BI
+      <i class="fa-solid fa-arrow-right" style="font-size: .85rem;"></i>
+    </a>
   </div>
 
 </section>
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script src="{% static 'core/js/dashboard_bi.js' %}"></script>
 <script>
   function toggleMuralSuper() {
     const mural = document.getElementById('mural-avisos-super');
