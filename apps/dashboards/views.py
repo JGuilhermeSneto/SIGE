@@ -61,27 +61,45 @@ def dashboard_bi_academico(request):
 
     # 3. Fluxo Demográfico e Extras
     demografia_turnos = list(Aluno.objects.values('turma__turno').annotate(total=Count('id')))
-    
-    # Livros Emprestados Ativos (Reservas e Ativos)
     livros_circulacao = Emprestimo.objects.filter(data_devolucao_real__isnull=True).count()
-    livros_atrasados = Emprestimo.objects.filter(status='ATRASADO').count()
-    
-    # Saúde Restitiva 
+    livros_atrasados  = Emprestimo.objects.filter(status='ATRASADO').count()
     alunos_pcd = Aluno.objects.filter(possui_necessidade_especial=True).count()
 
+    # 4. Status de Matrícula (campo real no model)
+    STATUS_MAP = {
+        "ATIVO": "Ativos", "INATIVO": "Inativos",
+        "EVADIDO": "Evadidos", "TRANSFERIDO": "Transferidos", "FORMADO": "Formados",
+    }
+    status_qs   = Aluno.objects.values("status_matricula").annotate(total=Count("id"))
+    status_dict = {row["status_matricula"]: row["total"] for row in status_qs}
+    bi_status_labels = list(STATUS_MAP.values())
+    bi_status_data   = [status_dict.get(k, 0) for k in STATUS_MAP]
+
+    # 5. Evolução de Matrículas por Ano (últimos 5 anos)
+    todos_anos = sorted(set(Aluno.objects.values_list("turma__ano", flat=True).distinct()))[-5:]
+    bi_evolucao_labels = [str(a) for a in todos_anos]
+    bi_evolucao_data   = [Aluno.objects.filter(turma__ano=a).count() for a in todos_anos]
+
+    import json
     contexto = {
         'dados_turmas': list(dados_turmas),
         'ano_referencia': ano_atual,
         'risco_evasao': {
             'critico': total_risco,
             'saudavel': total_saudaveis,
-            'lista_criticos': alunos_em_risco[:10]  
+            'lista_criticos': alunos_em_risco[:10]
         },
         'demografia_turnos': demografia_turnos,
         'extra_saude': alunos_pcd,
-        'extra_biblioteca': {'ativo': livros_circulacao, 'atrasado': livros_atrasados}
+        'extra_biblioteca': {'ativo': livros_circulacao, 'atrasado': livros_atrasados},
+        # Novos dados BI de status de matrícula
+        'bi_status_labels': json.dumps(bi_status_labels),
+        'bi_status_data':   json.dumps(bi_status_data),
+        'bi_evolucao_labels': json.dumps(bi_evolucao_labels),
+        'bi_evolucao_data':   json.dumps(bi_evolucao_data),
     }
     return render(request, 'dashboards/bi_academico.html', contexto)
+
 
 @login_required
 def exportar_notas_csv(request):
