@@ -71,27 +71,28 @@ def dashboard_bi_academico(request):
         "EVADIDO": "Evadidos", "TRANSFERIDO": "Transferidos", "FORMADO": "Formados",
     }
     status_qs   = Aluno.objects.values("status_matricula").annotate(total=Count("id"))
-    status_dict = {row["status_matricula"]: row["total"] for row in status_qs}
+    status_dict = {row["status_matricula"]: row["total"] for row in status_qs if row["status_matricula"]}
     bi_status_labels = list(STATUS_MAP.values())
     bi_status_data   = [status_dict.get(k, 0) for k in STATUS_MAP]
 
     # 5. Evolução de Matrículas por Ano (últimos 5 anos)
-    todos_anos = sorted(set(Aluno.objects.values_list("turma__ano", flat=True).distinct()))[-5:]
+    alunos_com_ano = Aluno.objects.exclude(turma__ano__isnull=True)
+    todos_anos = sorted(set(alunos_com_ano.values_list("turma__ano", flat=True).distinct()))[-5:]
     bi_evolucao_labels = [str(a) for a in todos_anos]
     bi_evolucao_data   = [Aluno.objects.filter(turma__ano=a).count() for a in todos_anos]
 
     import json
     contexto = {
-        'dados_turmas': list(dados_turmas),
+        'dados_turmas': json.dumps(list(dados_turmas)),
         'ano_referencia': ano_atual,
         'risco_evasao': {
             'critico': total_risco,
             'saudavel': total_saudaveis,
             'lista_criticos': alunos_em_risco[:10]
         },
-        'demografia_turnos': demografia_turnos,
+        'demografia_turnos': json.dumps(demografia_turnos),
         'extra_saude': alunos_pcd,
-        'extra_biblioteca': {'ativo': livros_circulacao, 'atrasado': livros_atrasados},
+        'extra_biblioteca': json.dumps({'ativo': livros_circulacao, 'atrasado': livros_atrasados}),
         # Novos dados BI de status de matrícula
         'bi_status_labels': json.dumps(bi_status_labels),
         'bi_status_data':   json.dumps(bi_status_data),

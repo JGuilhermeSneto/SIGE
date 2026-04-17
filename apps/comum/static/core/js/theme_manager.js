@@ -18,7 +18,7 @@
    * Applies theme to document and persists to localStorage
    */
   function applyTheme(theme) {
-    const t = THEMES.has(theme) ? theme : 'indigo-profundo';
+    const t = THEMES.has(theme) ? theme : 'cinza-industrial';
     document.documentElement.setAttribute('data-theme', t);
     
     // Update active state in UI
@@ -81,7 +81,7 @@
     });
 
     // 5. Initial Sync
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'indigo-profundo';
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'cinza-industrial';
     applyTheme(currentTheme);
   }
 

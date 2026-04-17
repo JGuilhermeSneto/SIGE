@@ -197,7 +197,7 @@
         <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 15px; line-height: 1.5;">
             Existem <strong style="color: var(--text-primary);">{{ atestados_pendentes_count }}</strong> atestados aguardando sua revisão e justificativa de faltas.
         </p>
-        <a href="{% url 'gestao_atestados' %}" class="btn-sige-primario" style="background: #f87171; width: 100%; justify-content: center; height: 38px; font-size: 0.8rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(248, 113, 113, 0.2);">
+        <a href="{% url 'gestao_atestados' %}" class="btn-sige-ruby" style="width: 100%;">
             <i class="fa-solid fa-list-check"></i> Revisar Agora
         </a>
       </section>
@@ -244,20 +244,7 @@
 
   {# ════ CTA — Atalho para o Painel BI ════ #}
   <div style="margin-top: 28px; text-align: center;">
-    <a href="{% url 'dashboard_bi_academico' %}" style="
-      display: inline-flex; align-items: center; gap: 10px;
-      padding: 14px 28px;
-      background: linear-gradient(135deg, rgba(124,111,255,.15), rgba(34,211,238,.1));
-      border: 1px solid rgba(124, 111, 255, .35);
-      border-radius: 12px;
-      color: var(--accent-violet);
-      font-weight: 700;
-      font-size: .9rem;
-      text-decoration: none;
-      transition: all .25s ease;
-    " onmouseover="this.style.background='linear-gradient(135deg,rgba(124,111,255,.25),rgba(34,211,238,.18))';"
-       onmouseout="this.style.background='linear-gradient(135deg,rgba(124,111,255,.15),rgba(34,211,238,.1))';"
-    >
+    <a href="{% url 'dashboard_bi_academico' %}" class="btn-sige-primario" style="padding: 14px 42px; font-size: 1rem; background: var(--ac-gradient-vibrant); border: none;">
       <i class="fa-solid fa-chart-pie" style="font-size: 1.1rem;"></i>
       Ver Análise Completa no Painel BI
       <i class="fa-solid fa-arrow-right" style="font-size: .85rem;"></i>

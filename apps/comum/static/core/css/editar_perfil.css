@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
+/* Local theme fallback — will be overridden by global themes.css */
 html[data-theme="default"] {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
@@ -77,12 +78,12 @@ html[data-theme="default"] {
 }
 
 .perfil-sem-foto {
-  background: rgba(124,111,255,.15);
-  border: 3px solid rgba(124,111,255,.25);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  border: 3px solid color-mix(in srgb, var(--primary) 25%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--accent-violet);
+  color: var(--primary);
   font-size: 2.8rem;
   border-radius: 50%;
 }
@@ -106,7 +107,7 @@ html[data-theme="default"] {
 .btn-editar-foto {
   bottom: 2px;
   right: 2px;
-  background: var(--accent-violet);
+  background: var(--primary);
   z-index: 2;
 }
 .btn-editar-foto:hover {
@@ -147,9 +148,9 @@ html[data-theme="default"] {
 }
 
 #opcao-alterar {
-  color: var(--accent-violet);
+  color: var(--primary);
 }
-#opcao-alterar:hover { background: rgba(124,111,255,.1); }
+#opcao-alterar:hover { background: color-mix(in srgb, var(--primary) 10%, transparent); }
 
 #opcao-remover {
   color: var(--accent-red);
@@ -346,13 +347,13 @@ hr {
 }
 
 .btn-acao.editar {
-  background: rgba(124,111,255,.12);
-  border-color: rgba(124,111,255,.3);
-  color: var(--accent-violet);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--primary) 30%, transparent);
+  color: var(--primary);
 }
 .btn-acao.editar:hover {
-  background: rgba(124,111,255,.2);
-  border-color: var(--accent-violet);
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+  border-color: var(--primary);
   transform: translateY(-2px);
 }
 

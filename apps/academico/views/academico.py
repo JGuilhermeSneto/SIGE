@@ -402,9 +402,29 @@ def marcar_notificacao_lida(request, notificacao_id):
     if not notificacao.lida:
         notificacao.lida = True
         notificacao.save(update_fields=["lida"])
+    
+    # Se houver um parâmetro 'next' na URL, priorizamos ele (para quando clica no check de lida sem querer navegar)
+    next_url = request.GET.get('next')
+    if next_url:
+        return redirect(next_url)
+
     if notificacao.url_destino:
         return redirect(notificacao.url_destino)
     return redirect_user(request.user)
+
+@login_required
+def marcar_todas_notificacoes_lidas(request):
+    """Marca todas as notificações do usuário como lidas."""
+    Notificacao.objects.filter(usuario=request.user, lida=False).update(lida=True)
+    messages.success(request, "Todas as notificações foram marcadas como lidas.")
+    return redirect(request.GET.get('next') or redirect_user(request.user))
+
+@login_required
+def excluir_notificacao(request, notificacao_id):
+    """Exclui uma notificação específica."""
+    notificacao = get_object_or_404(Notificacao, id=notificacao_id, usuario=request.user)
+    notificacao.delete()
+    return redirect(request.GET.get('next') or redirect_user(request.user))
 
 from ..services.atividade_servico import AtividadeServico
 from ..selectors.atividade_seletores import AtividadeSeletores

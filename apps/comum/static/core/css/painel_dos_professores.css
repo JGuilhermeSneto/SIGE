@@ -6,6 +6,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
+/* Local theme fallback — will be overridden by global themes.css */
 html[data-theme="default"] {
   --bg-base: #090e1a;
   --bg-surface: #0f1729;
@@ -14,7 +15,6 @@ html[data-theme="default"] {
   --border-subtle: rgba(255, 255, 255, .06);
   --border-mid: rgba(255, 255, 255, .11);
   --accent-violet: #7c6fff;
-  /* Default-only page accent */
   --accent-cyan: #22d3ee;
   --accent-emerald: #34d399;
   --accent-amber: #fbbf24;
@@ -237,23 +237,23 @@ html[data-theme="default"] {
 }
 
 .card:nth-child(1) .card-icone {
-  background: rgba(251, 191, 36, .1);
-  border: 1px solid rgba(251, 191, 36, .2);
+  background: color-mix(in srgb, var(--accent-amber) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-amber) 20%, transparent);
 }
 
 .card:nth-child(2) .card-icone {
-  background: rgba(52, 211, 153, .1);
-  border: 1px solid rgba(52, 211, 153, .2);
+  background: color-mix(in srgb, var(--accent-emerald) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-emerald) 20%, transparent);
 }
 
 .card:nth-child(3) .card-icone {
-  background: rgba(34, 211, 238, .1);
-  border: 1px solid rgba(34, 211, 238, .2);
+  background: color-mix(in srgb, var(--accent-cyan) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-cyan) 20%, transparent);
 }
 
 .card:nth-child(4) .card-icone {
-  background: rgba(248, 113, 113, .1);
-  border: 1px solid rgba(248, 113, 113, .2);
+  background: color-mix(in srgb, var(--accent-ruby) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-ruby) 20%, transparent);
 }
 
 .card-icone i {
@@ -262,19 +262,19 @@ html[data-theme="default"] {
 }
 
 .card:nth-child(1) .card-icone i {
-  color: rgba(251, 191, 36, .85);
+  color: color-mix(in srgb, var(--accent-amber) 85%, #000);
 }
 
 .card:nth-child(2) .card-icone i {
-  color: rgba(52, 211, 153, .85);
+  color: color-mix(in srgb, var(--accent-emerald) 85%, #000);
 }
 
 .card:nth-child(3) .card-icone i {
-  color: rgba(34, 211, 238, .85);
+  color: color-mix(in srgb, var(--accent-cyan) 85%, #000);
 }
 
 .card:nth-child(4) .card-icone i {
-  color: rgba(248, 113, 113, .85);
+  color: color-mix(in srgb, var(--accent-ruby) 85%, #000);
 }
 
 .card:nth-child(1):hover .card-icone i {

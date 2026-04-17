@@ -161,12 +161,12 @@ a { text-decoration: none !important; color: inherit; }
   transition: background .25s, color .25s, border-color .25s;
 }
 .passo-item.ativo .passo-num {
-  background: rgba(var(--theme-primary-rgb), .18);
+  background: color-mix(in srgb, var(--theme-primary) 18%, transparent);
   border-color: var(--theme-primary);
   color: var(--theme-primary);
 }
 .passo-item.completo .passo-num {
-  background: rgba(var(--accent-success-rgb), .18);
+  background: color-mix(in srgb, var(--accent-success) 18%, transparent);
   border-color: var(--accent-success);
   color: var(--accent-success);
 }
@@ -211,7 +211,7 @@ a { text-decoration: none !important; color: inherit; }
   position: absolute;
   top: -80px; right: -80px;
   width: 280px; height: 280px;
-  background: radial-gradient(circle, rgba(var(--theme-primary-rgb), .06) 0%, transparent 70%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--theme-primary) 6%, transparent) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -227,8 +227,8 @@ a { text-decoration: none !important; color: inherit; }
 .form-card-icone {
   width: 40px; height: 40px;
   border-radius: var(--radius-sm);
-  background: rgba(var(--theme-primary-rgb), .12);
-  border: 1px solid rgba(var(--theme-primary-rgb), .2);
+  background: color-mix(in srgb, var(--theme-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 20%, transparent);
   display: flex; align-items: center; justify-content: center;
   font-size: 16px;
   color: var(--theme-primary);
@@ -331,12 +331,12 @@ a { text-decoration: none !important; color: inherit; }
 .caixa-texto input:not([type="checkbox"]):focus,
 .caixa-texto select:focus {
   border-color: var(--theme-primary);
-  box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), .15);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 15%, transparent);
   background: var(--bg-hover);
 }
 .caixa-texto input.campo-erro {
   border-color: var(--accent-danger);
-  box-shadow: 0 0 0 3px rgba(var(--accent-danger-rgb), .1);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-danger) 10%, transparent);
 }
 
 .erro-inline {
@@ -413,7 +413,7 @@ a { text-decoration: none !important; color: inherit; }
 }
 .botao-upload:hover {
   border-color: var(--theme-primary);
-  background: rgba(var(--theme-primary-rgb), .08);
+  background: color-mix(in srgb, var(--theme-primary) 8%, transparent);
   color: var(--theme-primary);
 }
 .botao-upload input[type="file"] { display: none; }
@@ -475,30 +475,30 @@ a { text-decoration: none !important; color: inherit; }
   border-radius: var(--radius-md);
   border: none;
   background: var(--theme-primary);
-  color: #090e1a; /* Escuro para legibilidade nas cores brilhantes como amber, cyan, emerald */
+  color: #fff;
   font-size: .88rem;
   font-weight: 700;
   font-family: 'DM Sans', sans-serif;
   cursor: pointer;
   transition: background .2s, transform .15s, box-shadow .2s;
-  box-shadow: 0 4px 16px rgba(var(--theme-primary-rgb), .3);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--theme-primary) 30%, transparent);
   margin-left: auto;
 }
 .btn:hover {
   filter: brightness(1.1);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(var(--theme-primary-rgb), .4);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--theme-primary) 40%, transparent);
 }
 .btn:active { transform: translateY(0); }
 
 .btn.salvar {
   background: var(--accent-success);
-  color: #090e1a;
-  box-shadow: 0 4px 16px rgba(var(--accent-success-rgb), .25);
+  color: #fff;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-success) 25%, transparent);
 }
 .btn.salvar:hover {
   filter: brightness(1.1);
-  box-shadow: 0 6px 20px rgba(var(--accent-success-rgb), .35);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-success) 35%, transparent);
 }
 .btn.salvar i { color: #090e1a; }
 
@@ -509,8 +509,8 @@ a { text-decoration: none !important; color: inherit; }
   grid-column: span 3;
   padding: 12px 16px;
   border-radius: var(--radius-md);
-  background: rgba(var(--accent-danger-rgb), .08);
-  border: 1px solid rgba(var(--accent-danger-rgb), .2);
+  background: color-mix(in srgb, var(--accent-danger) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-danger) 20%, transparent);
   color: var(--accent-danger);
   font-size: .83rem;
 }

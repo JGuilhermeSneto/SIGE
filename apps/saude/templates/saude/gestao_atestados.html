@@ -15,19 +15,14 @@
         border-radius: var(--radius-md);
         border: 1px solid var(--border-subtle);
     }
-    .btn-filtro {
-        padding: 8px 16px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-decoration: none;
-        color: var(--text-secondary);
-        border: 1px solid var(--border-mid);
-    }
-    .btn-filtro.active {
-        background: var(--accent-violet);
-        color: white;
-        border-color: var(--accent-violet);
+    .filtro-atesta {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        background: var(--bg-surface);
+        padding: 1rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
     }
 </style>
 {% endblock %}
@@ -76,7 +71,7 @@
                     <td style="padding: 1.2rem;">{{ atest.data_inicio|date:"d/m/Y" }} - {{ atest.data_fim|date:"d/m/Y" }}</td>
                     <td style="padding: 1.2rem; color: var(--text-muted);">{{ atest.data_submissao|date:"d/m/Y H:i" }}</td>
                     <td style="padding: 1.2rem; text-align: right;">
-                        <a href="{% url 'revisar_atestado' atest.id %}" class="btn-sige-primario" style="font-size: 0.75rem; padding: 6px 14px;">
+                        <a href="{% url 'revisar_atestado' atest.id %}" class="btn-sige-primario">
                             <i class="fa-solid fa-file-signature"></i> Revisar
                         </a>
                     </td>

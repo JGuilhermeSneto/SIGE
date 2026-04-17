@@ -13,9 +13,9 @@
 }
 
 .sige-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-    border-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.2);
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: var(--shadow-lg);
+    border-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.5);
 }
 
 /* WIDGETS (Side Cards / Collapsible) */
@@ -250,11 +250,20 @@
 .sige-btn-primary {
     background: var(--primary);
     color: white;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm), inset 0 2px 0 rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .sige-btn-primary:hover {
     background: var(--primary-dark);
-    box-shadow: var(--shadow-glow);
+    box-shadow: var(--shadow-glow), 0 8px 15px rgba(0, 0, 0, 0.2);
+    transform: translateY(-2px) scale(1.04);
+}
+
+.sige-btn-primary:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: var(--shadow-sm), inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .sige-btn-outline {
@@ -282,7 +291,7 @@
 
 .sige-input:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1);
+    animation: liquidFocus 1.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* AVATAR & DROPDOWN */
@@ -375,9 +384,9 @@
     letter-spacing: 0.05em;
 }
 
-.sige-badge-success { background: hsla(160, 65%, 52%, 0.2); color: var(--accent-emerald); }
-.sige-badge-warning { background: hsla(43, 96%, 56%, 0.2); color: var(--accent-amber); }
-.sige-badge-danger  { background: hsla(350, 85%, 60%, 0.2); color: var(--accent-ruby); }
+.sige-badge-success { background: hsla(150, 100%, 45%, 0.25); color: var(--accent-emerald); border: 1px solid hsla(150, 100%, 45%, 0.4); }
+.sige-badge-warning { background: hsla(45, 100%, 55%, 0.25); color: var(--accent-amber); border: 1px solid hsla(45, 100%, 55%, 0.4); }
+.sige-badge-danger  { background: hsla(0, 100%, 65%, 0.25); color: var(--accent-ruby); border: 1px solid hsla(0, 100%, 65%, 0.4); }
 
 /* VALIDATION FEEDBACK */
 .valid { color: var(--accent-emerald) !important; }

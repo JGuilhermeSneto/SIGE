@@ -23,6 +23,28 @@ body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Smooth theme switching */
+    transition: background var(--transition-slow), color var(--transition-slow);
+}
+
+/* Custom Theme-Aware Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-mid);
+    border-radius: 10px;
+    border: 2px solid var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
 }
 
 /* Base Element Styling */

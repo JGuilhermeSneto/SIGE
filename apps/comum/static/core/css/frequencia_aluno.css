@@ -306,11 +306,6 @@
   animation: fadeUp .4s .1s ease both;
   margin-bottom: 1.5rem;
 }
-.hist-card::before {
-  content: ''; display: block; height: 2px;
-  background: linear-gradient(90deg, var(--accent-violet), transparent 70%);
-}
-
 .hist-card__head {
   display: grid;
   grid-template-columns: 1fr 70px 80px 70px 110px;
@@ -396,4 +391,48 @@
   .disc-grid  { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .freq-header { padding: .9rem 1.1rem; }
+}
+
+/* ============================================================
+   CINZA INDUSTRIAL — Alto Contraste para Alertas de Risco 
+   O vermelho suave (#fda4af) fica invisível no cinza claro.
+   Substituição: Vermelhos "Blood" com bordas sólidas.
+============================================================ */
+html[data-theme="cinza-industrial"] .alerta-risco {
+    background: #fef2f2; /* Fundo levemente rosado mas claro */
+    border: 2px solid #b91c1c; /* Borda Vermelho Forte */
+    border-left-width: 5px;
+    color: #7f1d1d; /* Texto Vinho para contraste máximo */
+    box-shadow: 0 4px 15px rgba(185, 28, 28, 0.1);
+}
+
+html[data-theme="cinza-industrial"] .alerta-risco strong {
+    color: #b91c1c;
+    font-weight: 800;
+}
+
+html[data-theme="cinza-industrial"] .alerta-risco i {
+    color: #b91c1c;
+}
+
+/* Saturação de badges e progressão de risco no Cinza */
+html[data-theme="cinza-industrial"] .badge-risco,
+html[data-theme="cinza-industrial"] .progress-pct.risco {
+    color: #dc2626 !important;
+    font-weight: 900;
+}
+
+html[data-theme="cinza-industrial"] .progress-bar__fill.risco {
+    background: #b91c1c;
+}
+
+html[data-theme="cinza-industrial"] .stat-card__icon--red {
+    background: #fee2e2;
+    border: 2px solid #ef4444;
+    color: #b91c1c;
+}
+
+html[data-theme="cinza-industrial"] .disc-card.em-risco {
+    border: 2.5px solid #ef4444;
+    background: #fffafa;
 }

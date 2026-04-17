@@ -1,4 +1,5 @@
 """Serviço unificado para criação de notificações para todos os perfis (Aluno, Professor, Gestor)."""
+from django.db import models
 from django.contrib.auth import get_user_model
 from ..models.desempenho import Notificacao
 

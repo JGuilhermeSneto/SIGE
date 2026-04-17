@@ -5,6 +5,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap');
 
+/* Local theme fallback — will be overridden by global themes.css */
 html[data-theme="default"] {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
@@ -94,7 +95,7 @@ body {
 
 .splash-ring-track {
   fill: none;
-  stroke: rgba(124, 111, 255, .12);
+  stroke: color-mix(in srgb, var(--primary) 12%, transparent);
   stroke-width: 3;
 }
 
@@ -110,7 +111,7 @@ body {
 
 .splash-ring-glow {
   fill: none;
-  stroke: rgba(124, 111, 255, .4);
+  stroke: color-mix(in srgb, var(--primary) 40%, transparent);
   stroke-width: 5;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -128,12 +129,16 @@ body {
   height: 46px;
   object-fit: contain;
   animation: pulseLogo 2s ease infinite;
-  filter: drop-shadow(0 0 4px rgba(124, 111, 255, .3));
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--primary) 30%, transparent));
 }
 
 html[data-theme="cinza-industrial"] .splash-logo,
 html[data-theme="azul-corporativo"] .splash-logo {
-  filter: brightness(0) drop-shadow(0 0 4px rgba(124, 111, 255, .3));
+  filter: brightness(0) drop-shadow(0 0 8px rgba(0, 0, 0, 0.2));
+}
+
+html[data-theme="indigo-profundo"] .splash-logo {
+  filter: drop-shadow(0 0 12px var(--accent-violet));
 }
 
 /* Caso não haja imagem: ícone CSS de chapéu de formatura */
@@ -154,7 +159,7 @@ html[data-theme="azul-corporativo"] .splash-logo {
   width: 46px; height: 10px;
   background: var(--accent-violet);
   border-radius: 3px;
-  box-shadow: 0 0 12px rgba(124, 111, 255, .6);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent-violet) 60%, transparent);
 }
 
 /* Topo do chapéu (pirâmide) */
@@ -589,9 +594,9 @@ html[data-theme="azul-corporativo"] .splash-logo {
 }
 
 .field-wrap.focused .field-box { 
-  border-color: rgba(124, 111, 255, .6);
+  border-color: var(--accent-violet);
   background-color: var(--bg-hover);
-  box-shadow: 0 0 0 4px rgba(124, 111, 255, 0.12);
+  animation: liquidFocus 1.8s infinite;
 }
 
 /* A classe .field-wrap.focused não força mais 100%, acompanha a digitação */
@@ -698,32 +703,37 @@ html[data-theme="azul-corporativo"] .splash-logo {
 ═════════════════════════════════════════*/
 .btn-entrar {
   width: 100%;
-  padding: 13px;
+  padding: 14px;
   background: var(--accent-violet);
-  border: none;
+  border: 3px solid rgba(0,0,0,0.1);
   border-radius: var(--radius-md);
   color: #fff;
   font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: .88rem;
-  font-weight: 700;
-  letter-spacing: .12em;
+  font-size: .92rem;
+  font-weight: 800;
+  letter-spacing: .08em;
   cursor: pointer;
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-top: 4px;
-  margin-bottom: 16px;
-  transition: background .2s, transform .2s, box-shadow .2s;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
   animation: fadeUp .4s .35s ease both;
 }
 
 .btn-entrar:hover {
-  background: #9b8fff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(124, 111, 255, .32);
+  background: #6366f1;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(124, 111, 255, .4);
+}
+
+.btn-entrar:active {
+  transform: translateY(1px) scale(0.98);
 }
 
 /* Ícone de seta dentro do botão anima ao hover */
@@ -839,6 +849,41 @@ html[data-theme="azul-corporativo"] .splash-logo {
   40%      { transform: translateX(10px); }
   60%      { transform: translateX(-6px); }
   80%      { transform: translateX(6px); }
+}
+
+/* ============================================================
+   TEMA CINZA INDUSTRIAL — Restauração da Splash Screen Antiga
+   Remove neons violeta/cyan e foca no estilo industrial (Dark Gray/Steel)
+============================================================ */
+html[data-theme="cinza-industrial"] .splash-ring-glow {
+    stroke: rgba(100, 116, 139, 0.5); /* Steel Gray */
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.1));
+}
+
+html[data-theme="cinza-industrial"] .splash-nome {
+    background: none;
+    -webkit-text-fill-color: #111315;
+    color: #111315;
+    font-weight: 900;
+}
+
+html[data-theme="cinza-industrial"] .splash-logo-css::before {
+    background: #475569;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+html[data-theme="cinza-industrial"] .splash-logo-css::after {
+    background: #0f172a;
+    box-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+html[data-theme="cinza-industrial"] .splash-progress-fill {
+    background: linear-gradient(90deg, #1e293b, #64748b) !important;
+}
+
+html[data-theme="cinza-industrial"] .splash-sub {
+    color: #475569;
+    font-weight: 800;
 }
 
 @keyframes floatParticle {

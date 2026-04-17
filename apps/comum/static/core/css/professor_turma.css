@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
+/* Local theme fallback — will be overridden by global themes.css */
 html[data-theme="default"] {
   --bg-base:        #090e1a;
   --bg-surface:     #0f1729;
@@ -111,7 +112,7 @@ html[data-theme="default"] {
   cursor: pointer;
   outline: none;
 }
-.filtro-ano select option { background: #131e33; color: var(--text-primary); }
+.filtro-ano select option { background: var(--bg-elevated); color: var(--text-primary); }
 
 .form-busca {
   display: flex;
@@ -232,9 +233,9 @@ html[data-theme="default"] {
 }
 
 .badge-ano {
-  background: rgba(124,111,255,.15);
-  color: var(--accent-violet);
-  border: 1px solid rgba(124,111,255,.25);
+  background: color-mix(in srgb, var(--primary) 15%, transparent);
+  color: var(--primary);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
 }
 
 .badge-turno {
@@ -277,13 +278,13 @@ html[data-theme="default"] {
   color: var(--accent-violet);
   text-decoration: none;
   padding: .48rem .9rem;
-  border: 1px solid rgba(124,111,255,.3);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
   border-radius: var(--radius-sm);
   transition: background .2s, border-color .2s, color .2s;
 }
 .btn-ver-disciplinas:hover {
-  background: rgba(124,111,255,.12);
-  border-color: var(--accent-violet);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-color: var(--primary);
 }
 .btn-ver-disciplinas i { font-size: 11px; }
 

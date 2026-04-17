@@ -6,6 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 /* ── Design Tokens (default-only; other themes come from design_system/tokens.css + themes.css) ── */
+/* Local theme fallback — will be overridden by global themes.css */
 html[data-theme="default"] {
   --bg-base: #090e1a;
   --bg-surface: #0f1729;
@@ -55,8 +56,8 @@ html[data-theme="default"] {
   padding: 0 24px;
 
   background: linear-gradient(180deg,
-      #0b1224 0%,
-      #090e1a 100%);
+      var(--bg-elevated) 0%,
+      var(--bg-surface) 100%);
 
   border-bottom: 1px solid var(--border-subtle);
 }
@@ -192,8 +193,8 @@ html[data-theme="default"] {
   width: 240px;
 
   background: linear-gradient(180deg,
-      #0b1224 0%,
-      #090e1a 100%);
+      var(--bg-elevated) 0%,
+      var(--bg-surface) 100%);
 
   border-right: 1px solid var(--border-subtle);
   padding: 26px 16px;
