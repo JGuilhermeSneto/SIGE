@@ -18,6 +18,220 @@
     border-color: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.2);
 }
 
+/* WIDGETS (Side Cards / Collapsible) */
+.sige-widget {
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    padding: 1.2rem;
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-mid);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.sige-widget:hover {
+    border-color: var(--border-mid);
+}
+
+.sige-widget-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: margin var(--transition-fast);
+}
+
+.sige-widget-header h3 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sige-widget-toggle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    transition: transform var(--transition-mid), color var(--transition-mid);
+}
+
+.sige-widget-body {
+    margin-top: 1.2rem;
+    transition: all var(--transition-mid);
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Collapsed State */
+.sige-widget.collapsed {
+    max-height: 52px; /* Just header + padding */
+    background: var(--bg-elevated);
+}
+
+.sige-widget.collapsed .sige-widget-header {
+    margin-bottom: 0;
+}
+
+.sige-widget.collapsed .sige-widget-body {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    margin-top: 0;
+    transform: translateY(-10px);
+}
+
+.sige-widget.collapsed .sige-widget-toggle {
+    transform: rotate(-180deg);
+    color: var(--accent-violet);
+}
+
+/* MURAL ITEMS (Inside sige-widget) */
+.lista-mural-compacta {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-mural-side {
+    position: relative;
+    padding: 1.15rem 1rem;
+    background: transparent;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-mid);
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.item-mural-side:hover {
+    background: var(--bg-hover);
+    transform: translateX(6px);
+    border-color: var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+}
+
+.item-mural-side.urgente {
+    background: hsla(350, 85%, 60%, 0.05);
+}
+
+.item-mural-side.urgente:hover {
+    background: hsla(350, 85%, 60%, 0.08);
+    border-color: hsla(350, 85%, 60%, 0.25);
+    box-shadow: 0 4px 15px hsla(350, 85%, 60%, 0.1);
+}
+
+.item-mural-side::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 1.15rem; bottom: 1.15rem;
+    width: 4px;
+    border-radius: 0 4px 4px 0;
+    transition: all var(--transition-mid);
+    background: var(--border-subtle); /* Fallback */
+}
+
+.item-mural-side.urgente::before {
+    background: var(--accent-ruby) !important;
+    box-shadow: 0 0 12px hsla(350, 85%, 60%, 0.6) !important;
+}
+
+/* Glows Semânticos por Tipo */
+.mural-tipo-global::before      { background: var(--accent-violet);  box-shadow: 0 0 10px hsla(245, 100%, 72%, 0.4); }
+.mural-tipo-alunos::before      { background: var(--accent-cyan);    box-shadow: 0 0 10px hsla(189, 85%, 54%, 0.4); }
+.mural-tipo-professores::before { background: var(--accent-emerald); box-shadow: 0 0 10px hsla(160, 65%, 52%, 0.4); }
+.mural-tipo-gestores::before    { background: var(--accent-amber);   box-shadow: 0 0 10px hsla(43, 96%, 56%, 0.4); }
+
+/* Icon Animations on Hover */
+.item-mural-side:hover .tag-mural i {
+    animation: icon-pop-subtle 0.4s ease forwards;
+}
+
+.tag-mural.publico-global i { transition: transform 0.5s ease; }
+.item-mural-side:hover .tag-mural.publico-global i {
+    transform: rotate(360deg);
+}
+
+@keyframes icon-pop-subtle {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3) translateY(-2px); }
+    100% { transform: scale(1.1) translateY(-1px); }
+}
+
+.item-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.tag-mural {
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+}
+
+.tag-mural i { font-size: 0.7rem; }
+
+/* Category specific tags with modern color-mix vibe */
+.tag-mural.publico-global { border-color: hsla(245, 100%, 72%, 0.3); color: var(--accent-violet); background: hsla(245, 100%, 72%, 0.08); }
+.tag-mural.publico-alunos { border-color: hsla(189, 85%, 54%, 0.3); color: var(--accent-cyan); background: hsla(189, 85%, 54%, 0.08); }
+.tag-mural.publico-professores { border-color: hsla(160, 65%, 52%, 0.3); color: var(--accent-emerald); background: hsla(160, 65%, 52%, 0.08); }
+.tag-mural.publico-gestores { border-color: hsla(43, 96%, 56%, 0.3); color: var(--accent-amber); background: hsla(43, 96%, 56%, 0.08); }
+
+.item-mural-side h4 {
+    font-family: var(--font-display);
+    font-size: 0.88rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+
+.item-mural-side p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.8;
+}
+
+.item-mural-side .data {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.vazio-mural {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.vazio-mural i {
+  display: block;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.5;
+}
+
+
+
 /* BUTTONS */
 .sige-btn {
     padding: 0.6rem 1.2rem;

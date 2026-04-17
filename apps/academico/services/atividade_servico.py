@@ -58,6 +58,19 @@ class AtividadeServico:
                         entrega=entrega, questao=q,
                         defaults={'texto_resposta': texto}
                     )
+        # Notifica o professor da disciplina
+        try:
+            if atividade.disciplina.professor:
+                NotificacaoServico.criar(
+                    user=atividade.disciplina.professor.user,
+                    tipo="ENTREGA",
+                    titulo="Nova entrega recebida",
+                    mensagem=f"{aluno.nome_completo} entregou a atividade '{atividade.titulo}'.",
+                    url_destino=f"/academico/disciplinas/{atividade.disciplina.id}/atividades/{atividade.id}/notas/"
+                )
+        except Exception:
+            pass
+
         return entrega
 
     @staticmethod
@@ -141,10 +154,12 @@ class AtividadeServico:
         entrega.feedback_professor = data_post.get("obs_geral", "")
         entrega.status = data_post.get("status", "CORRIGIDO")
         entrega.save()
+        
+        # Notifica o aluno
         NotificacaoServico.criar(
-            aluno=entrega.aluno,
+            user=entrega.aluno.user,
             tipo="CORRECAO",
-            titulo="Correção disponível",
+            titulo="Atividade Corrigida",
             mensagem=f"Sua entrega de '{atividade.titulo}' foi corrigida pelo professor.",
             url_destino=f"/academico/meu-painel/atividades/{atividade.id}/entregar/",
         )

@@ -26,6 +26,18 @@ def acervo_biblioteca(request):
     })
 
 @login_required
+def detalhe_livro(request, pk):
+    """Exibe os detalhes de um livro específico do acervo."""
+    livro = get_object_or_404(Livro, pk=pk)
+    
+    return render(request, 'biblioteca/detalhe_livro.html', {
+        'livro': livro,
+        'nome_exibicao': get_nome_exibicao(request.user),
+        'foto_perfil_url': get_foto_perfil(request.user),
+        'is_gestor': is_super_ou_gestor(request.user),
+    })
+
+@login_required
 @user_passes_test(is_super_ou_gestor)
 def gerenciar_emprestimos(request):
     """Painel de controle de empréstimos e reservas (Somente Gestores)."""
@@ -151,11 +163,16 @@ def atualizar_status_leitura(request):
     if status_leitura not in VALIDOS:
         return JsonResponse({'ok': False, 'erro': 'Status inválido.'}, status=400)
 
-    aluno = getattr(request.user, 'aluno', None)
-    if not aluno:
-        return JsonResponse({'ok': False, 'erro': 'Apenas alunos podem atualizar.'}, status=403)
+    from apps.usuarios.utils.perfis import get_user_profile
+    perfil = get_user_profile(request.user)
+    
+    if isinstance(perfil, Aluno):
+        emprestimo = get_object_or_404(Emprestimo, pk=emprestimo_id, usuario_aluno=perfil, status='DEVOLVIDO')
+    elif isinstance(perfil, Professor):
+        emprestimo = get_object_or_404(Emprestimo, pk=emprestimo_id, usuario_professor=perfil, status='DEVOLVIDO')
+    else:
+        return JsonResponse({'ok': False, 'erro': 'Apenas alunos e professores podem atualizar.'}, status=403)
 
-    emprestimo = get_object_or_404(Emprestimo, pk=emprestimo_id, usuario_aluno=aluno, status='DEVOLVIDO')
     emprestimo.status_leitura = status_leitura
     emprestimo.save(update_fields=['status_leitura'])
     return JsonResponse({'ok': True})

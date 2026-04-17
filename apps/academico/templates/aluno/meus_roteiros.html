@@ -26,6 +26,29 @@
     .timeline-date { font-weight: bold; color: var(--text-primary); margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
     .timeline-horario { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 10px; }
     .timeline-card { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; border: 1px solid var(--border-subtle); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+    /* Avatares */
+    .prof-avatar-sidebar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 1px solid var(--border-mid);
+        background: var(--bg-surface);
+        flex-shrink: 0;
+    }
+    .prof-avatar-sidebar img { width: 100%; height: 100%; object-fit: cover; }
+    
+    .prof-avatar-main {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 2px solid var(--accent-cyan);
+        background: var(--bg-surface);
+        flex-shrink: 0;
+    }
+    .prof-avatar-main img { width: 100%; height: 100%; object-fit: cover; }
 </style>
 {% endblock %}
 
@@ -40,9 +63,18 @@
         
         <h3 style="margin-top: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase;"><i class="fa-solid fa-list"></i> Minhas Matérias</h3>
         {% for disc in disciplinas %}
-            <a href="?disciplina={{ disc.id }}" class="disciplina-item {% if disciplina_ativa and disc.id == disciplina_ativa.id %}active{% endif %}">
-                <div style="font-size: 1.1rem; margin-bottom: 3px;">{{ disc.nome }}</div>
-                <div style="font-size: 0.8rem; opacity: 0.7;">Prof(a). {{ disc.professor.nome_completo|truncatewords:2 }}</div>
+            <a href="?disciplina={{ disc.id }}" class="disciplina-item {% if disciplina_ativa and disc.id == disciplina_ativa.id %}active{% endif %}" style="display: flex; align-items: center; gap: 12px;">
+                <div class="prof-avatar-sidebar">
+                    {% if disc.professor.foto %}
+                        <img src="{{ disc.professor.foto.url }}" alt="{{ disc.professor.nome_completo }}">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-muted);"><i class="fa-solid fa-user"></i></div>
+                    {% endif %}
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 1rem; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ disc.nome }}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Prof. {{ disc.professor.nome_completo }}</div>
+                </div>
             </a>
         {% empty %}
             <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhuma disciplina vinculada.</p>
@@ -56,9 +88,20 @@
                 <i class="fa-solid fa-map-location-dot" style="color: var(--accent-cyan);"></i> Trilha Educacional: {{ disciplina_ativa.nome }}
             </h2>
             
-            <p style="color: var(--text-muted); margin-bottom: 30px;">
-                Veja abaixo o que o(a) professor(a) <strong>{{ disciplina_ativa.professor.nome_completo }}</strong> preparou de material ou assuntos para as aulas (Passadas e Futuras).
-            </p>
+            <div style="display: flex; align-items: center; gap: 20px; padding: 20px; background: rgba(34, 211, 238, 0.05); border-radius: 12px; border-left: 4px solid var(--accent-cyan); margin-bottom: 30px;">
+                <div class="prof-avatar-main">
+                    {% if disciplina_ativa.professor.foto %}
+                        <img src="{{ disciplina_ativa.professor.foto.url }}" alt="{{ disciplina_ativa.professor.nome_completo }}">
+                    {% else %}
+                        <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--text-muted);"><i class="fa-solid fa-user"></i></div>
+                    {% endif %}
+                </div>
+                <div style="flex: 1;">
+                    <p style="color: var(--text-primary); margin: 0; font-size: 1rem; line-height: 1.4;">
+                        Veja abaixo o que o(a) professor(a) <strong>{{ disciplina_ativa.professor.nome_completo }}</strong> preparou de material ou assuntos para as aulas (Passadas e Futuras).
+                    </p>
+                </div>
+            </div>
 
             <!-- Timeline do Aluno -->
             <div class="timeline">

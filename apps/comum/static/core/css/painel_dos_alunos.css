@@ -475,90 +475,13 @@
 .coluna-direita > *:nth-child(2) { animation-delay: .2s; }
 .coluna-direita > *:nth-child(3) { animation-delay: .28s; }
 
-/* ── Mural de Avisos ── */
-.card-mural {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-}
-.lista-mural {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.item-mural {
-  padding: 10px;
-  border-left: 3px solid var(--accent-cyan);
-  background: rgba(34, 211, 238, 0.03);
-  border-radius: 4px 8px 8px 4px;
-  transition: transform .2s, background .2s;
-}
-.item-mural:hover {
-  transform: translateX(4px);
-  background: rgba(34, 211, 238, 0.06);
-}
-.item-mural.urgente {
-  border-left-color: #f87171;
-  background: rgba(248, 113, 113, 0.04);
-}
-.mural-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
-}
-.mural-tag {
-  font-size: .62rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  text-transform: uppercase;
-}
-.mural-data {
-  font-size: .65rem;
-  color: var(--text-muted);
-}
-.item-mural h4 {
-  font-size: .82rem;
-  font-weight: 700;
-  margin-bottom: 2px;
-  color: var(--text-primary);
-}
-.item-mural p {
-  font-size: .75rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
-  margin: 0;
-}
-.vazio-mural {
-  font-size: .78rem;
-  color: var(--text-muted);
-  text-align: center;
-  font-style: italic;
-}
+/* Mural content styles moved to compact-list standard or handled in components.css */
 
 /* ── Gráfico de desempenho ── */
-.card-grafico {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  transition: border-color .22s, transform .22s, box-shadow .22s;
-}
-
-.card-grafico:hover {
-  border-color: var(--border-mid);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
-}
-
-.card-grafico h3 {
-  font-size: .65rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: .11em;
-  margin-bottom: 14px;
+#graficoDesempenho {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100%;
 }
 
 .card-notificacoes h3 i {
@@ -625,19 +548,10 @@
   color: var(--accent-violet);
 }
 
-/* ── Calendário ── (Estilos unificados via calendario_menu.css) */
-.calendario-box {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-  overflow: hidden;
-  transition: border-color .22s;
-  animation: fadeUp .38s .3s ease both;
-}
-
-.calendario-box:hover { 
-  border-color: var(--border-mid); 
+/* ── Calendário Inner Styles ── */
+.calendario-link {
+  text-decoration: none;
+  color: inherit;
 }
 .calendario-link {
   text-decoration: none;

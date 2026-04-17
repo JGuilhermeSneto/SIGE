@@ -134,29 +134,42 @@
         </div>
       </section>
 
-      {# ── Mural de Avisos ── #}
-      <section class="mural-box card-mural-sidebar" style="margin-bottom: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--border-mid)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
-        </h3>
-        {% if comunicados %}
-          <div class="lista-mural-compacta">
-            {% for c in comunicados %}
-              <div class="item-mural-side {% if c.importancia == 'ALTA' %}urgente{% endif %}" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
-                  <span class="tag-mural" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.65rem; border: 1px solid {% if c.publico_alvo == 'GLOBAL' %}var(--accent-violet); color: var(--accent-violet); background: rgba(124, 111, 255, 0.1);{% elif c.publico_alvo == 'ALUNOS' %}var(--accent-cyan); color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1);{% elif c.publico_alvo == 'PROFESSORES' %}var(--accent-emerald); color: var(--accent-emerald); background: rgba(52, 211, 153, 0.1);{% elif c.publico_alvo == 'GESTORES' %}var(--accent-amber); color: var(--accent-amber); background: rgba(251, 191, 36, 0.1);{% else %}var(--border-subtle); color: var(--text-muted); background: var(--bg-elevated);{% endif %}">
-                    {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-globe" style="margin-right:3px;"></i>{% endif %}{{ c.get_publico_alvo_display }}
-                  </span>
-                  <span>{{ c.data_publicacao|date:"d/m" }}</span>
+      {# ── Mural de Avisos (Padronizado via sige-widget) ── #}
+      <section class="sige-widget" id="mural-avisos-super">
+        <header class="sige-widget-header" onclick="toggleMuralSuper()">
+          <h3>
+            <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
+          </h3>
+          <i class="fa-solid fa-chevron-up sige-widget-toggle"></i>
+        </header>
+        
+        <div class="sige-widget-body">
+          {% if comunicados %}
+            <div class="lista-mural-compacta">
+              {% for c in comunicados %}
+                <div class="item-mural-side mural-tipo-{{ c.publico_alvo|lower }} {% if c.importancia == 'ALTA' %}urgente{% endif %}">
+                  <div class="item-meta">
+                    <span class="tag-mural publico-{{ c.publico_alvo|lower }}">
+                      {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-earth-americas"></i>
+                      {% elif c.publico_alvo == 'ALUNOS' %}<i class="fa-solid fa-user-graduate"></i>
+                      {% elif c.publico_alvo == 'PROFESSORES' %}<i class="fa-solid fa-person-chalkboard"></i>
+                      {% elif c.publico_alvo == 'GESTORES' %}<i class="fa-solid fa-user-tie"></i>
+                      {% endif %}
+                      {{ c.get_publico_alvo_display }}
+                    </span>
+                    <span class="data">{{ c.data_publicacao|date:"d/m" }}</span>
+                  </div>
+                  <h4>{{ c.titulo }}</h4>
+                  <p>{{ c.conteudo|truncatechars:60 }}</p>
                 </div>
-                <h4 style="font-size: 0.85rem; margin-bottom: 4px; {% if c.importancia == 'ALTA' %}color: var(--status-reprovado);{% endif %}">{{ c.titulo }}</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">{{ c.conteudo|truncatechars:60 }}</p>
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Nenhum aviso no momento.</p>
-        {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="vazio-mural">
+              <p>Nenhum aviso no momento.</p>
+            </div>
+          {% endif %}
+        </div>
       </section>
 
       {# ── Gestão de Documentos (Atestados) ── #}
@@ -216,5 +229,20 @@
 {% endblock %}
 
 {% block extra_js %}
-{# O calendário é inicializado globalmente pelo calendar.js #}
+<script>
+  function toggleMuralSuper() {
+    const mural = document.getElementById('mural-avisos-super');
+    mural.classList.toggle('collapsed');
+    const isCollapsed = mural.classList.contains('collapsed');
+    localStorage.setItem('mural_super_collapsed', isCollapsed);
+  }
+
+  // Restaurar estado ao carregar
+  document.addEventListener('DOMContentLoaded', function() {
+    const isCollapsed = localStorage.getItem('mural_super_collapsed') === 'true';
+    if (isCollapsed) {
+      document.getElementById('mural-avisos-super').classList.add('collapsed');
+    }
+  });
+</script>
 {% endblock %}

@@ -73,15 +73,9 @@
                             </div>
 
                             <!-- AÇÕES DA DISCIPLINA -->
-                            <div class="disciplina-acoes" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <div class="disciplina-acoes">
                                 <a href="{% url 'visualizar_disciplinas' item.disciplina.id %}" class="btn-ver-detalhes">
-                                    <i class="fas fa-eye"></i> Ver Detalhes
-                                </a>
-                                <a href="{% url 'listar_atividades' item.disciplina.id %}" class="btn-ver-detalhes" style="background-color: var(--accent-violet); color: white; border-color: var(--accent-violet);">
-                                    <i class="fas fa-tasks"></i> Atividades/Provas
-                                </a>
-                                <a href="{% url 'listar_materiais_professor' item.disciplina.id %}" class="btn-ver-detalhes" style="background-color: var(--accent-emerald); color: white; border-color: var(--accent-emerald);">
-                                    <i class="fas fa-folder-open"></i> Materiais
+                                    <i class="fas fa-eye" style="margin-right: 8px;"></i> Abrir Diário de Classe
                                 </a>
                             </div>
                         </div>

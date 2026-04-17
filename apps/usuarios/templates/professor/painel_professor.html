@@ -25,17 +25,24 @@
       </h1>
     </div>
 
-    <form method="get" class="filtro-ano-painel">
-      <span class="icone-cal"><i class="fa-solid fa-calendar-days"></i></span>
-      <label for="filtro-select">Ano Letivo</label>
-      <select id="filtro-select" name="ano" onchange="this.form.submit()">
-        {% for ano in anos_disponiveis %}
-          <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
-            {{ ano }}
-          </option>
-        {% endfor %}
-      </select>
-    </form>
+    <div class="header-acoes" style="display: flex; gap: 10px;">
+      <a href="{% url 'acervo_biblioteca' %}" class="filtro-ano-painel" style="text-decoration: none; padding: .5rem .9rem; border-color: var(--accent-cyan); background: rgba(34, 211, 238, 0.05);">
+        <span class="icone-cal" style="color: var(--accent-cyan);"><i class="fa-solid fa-book-open"></i></span>
+        <label style="color: var(--accent-cyan); cursor: pointer;">Biblioteca</label>
+      </a>
+
+      <form method="get" class="filtro-ano-painel">
+        <span class="icone-cal"><i class="fa-solid fa-calendar-days"></i></span>
+        <label for="filtro-select">Ano Letivo</label>
+        <select id="filtro-select" name="ano" onchange="this.form.submit()">
+          {% for ano in anos_disponiveis %}
+            <option value="{{ ano }}" {% if ano == ano_filtro %}selected{% endif %}>
+              {{ ano }}
+            </option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
   </header>
 
   {# ════════════════ CONTEÚDO PRINCIPAL ════════════════ #}
@@ -45,7 +52,7 @@
     <section class="coluna-esquerda">
 
       {# ── Cards de totais ── #}
-      <section class="cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+      <section class="cards">
         <article class="card">
           <a href="{% url 'disciplinas_professor' %}" class="card-link-wrapper">
             <div class="card-icone">
@@ -76,13 +83,13 @@
           </a>
         </article>
 
-        <article class="card" style="border-bottom: 3px solid var(--accent-violet);">
+        <article class="card" style="border-bottom: 3px solid #f87171;">
           <a href="{% url 'meus_planejamentos' %}" class="card-link-wrapper">
-            <div class="card-icone" style="color: var(--accent-violet);">
+            <div class="card-icone" style="color: #f87171; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2);">
               <i class="fa-solid fa-pen-ruler"></i>
             </div>
             <p class="card-label">Planejamentos</p>
-            <h2 class="card-valor" style="font-size: 1rem; margin-top: 5px;">Acessar Diário</h2>
+            <h2 class="card-valor" style="font-size: 1rem; margin-top: 5px; color: #f87171;">Acessar Diário</h2>
           </a>
         </article>
 
@@ -102,6 +109,99 @@
           <p class="resumo-item-label">Suas Turmas</p>
           <p class="resumo-item-valor">{{ total_turmas }}</p>
         </div>
+      </section>
+ 
+      {# ── Biblioteca (Empréstimos) ── #}
+      <section class="secao-biblioteca" style="margin-top: 30px;">
+        <p class="secao-titulo" style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 15px;">
+            <span><i class="fa-solid fa-book-bookmark" style="color: var(--accent-cyan); margin-right: 8px;"></i> Livros em Minha Posse</span>
+            <a href="{% url 'acervo_biblioteca' %}" style="font-size: 0.75rem; color: var(--accent-cyan); text-decoration: none;">Ver Acervo</a>
+        </p>
+
+        {% if meus_emprestimos %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+            {% for emprestimo in meus_emprestimos %}
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; padding: 15px; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                {% if emprestimo.livro.capa %}
+                    <img src="{{ emprestimo.livro.capa.url }}" alt="{{ emprestimo.livro.titulo }}" style="width: 60px; height: 85px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                {% else %}
+                    <div style="width: 60px; height: 85px; background: var(--bg-elevated); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                {% endif %}
+                <div style="display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
+                    <div>
+                        <h4 style="margin: 0 0 4px 0; font-size: 0.9rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ emprestimo.livro.titulo }}">{{ emprestimo.livro.titulo }}</h4>
+                        <p style="margin: 0 0 8px 0; font-size: 0.7rem; color: var(--text-muted);">Autor: {{ emprestimo.livro.autor }}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                        <span style="font-size: 0.65rem; font-weight: bold; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; display: inline-block; width: fit-content; {% if emprestimo.status == 'RESERVA' %}background: rgba(251, 191, 36, 0.1); color: var(--accent-amber);{% elif emprestimo.status == 'ATRASADO' %}background: rgba(244, 63, 94, 0.1); color: #f87171;{% else %}background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan);{% endif %}">
+                            {% if emprestimo.status == 'ATIVO' %}Em Posse
+                            {% elif emprestimo.status == 'ATRASADO' %}Atrasado!
+                            {% elif emprestimo.status == 'RESERVA' %}Reservado
+                            {% else %}{{ emprestimo.get_status_display }}{% endif %}
+                        </span>
+                        <span style="font-size: 0.7rem; color: {% if emprestimo.status == 'ATRASADO' %}#f87171{% else %}var(--text-secondary){% endif %};">
+                            {% if emprestimo.status == 'RESERVA' %}Retirar até: {% else %}Devolver em: {% endif %}<strong>{{ emprestimo.data_devolucao_prevista|date:"d/m" }}</strong>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="background: rgba(255,255,255,0.02); border: 1px dashed var(--border-subtle); border-radius: 12px; padding: 25px; text-align: center; color: var(--text-muted);">
+            <i class="fa-solid fa-book-open" style="font-size: 2rem; opacity: 0.3; margin-bottom: 8px; display: block;"></i>
+            <h4 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 0.9rem;">Nenhum livro com você</h4>
+            <p style="margin: 0; font-size: 0.75rem;">Explore o acervo digital e reserve sua próxima leitura.</p>
+        </div>
+        {% endif %}
+
+        {# ── Histórico de Leituras ── #}
+        {% if livros_devolvidos %}
+        <p class="secao-titulo" style="display: flex; align-items: center; gap: 8px; margin-top: 25px; font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">
+            <i class="fa-solid fa-book-circle-arrow-right" style="color: var(--accent-emerald);"></i> Histórico de Leituras
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for dev in livros_devolvidos %}
+            <div class="card-devolvido" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; align-items: center; gap: 12px; padding: 10px 14px; transition: border-color 0.2s; overflow: hidden;">
+                {% if dev.livro.capa %}
+                    <img src="{{ dev.livro.capa.url }}" alt="{{ dev.livro.titulo }}" style="width: 36px; height: 50px; object-fit: cover; border-radius: 4px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                {% else %}
+                    <div style="width: 36px; height: 50px; background: var(--bg-elevated); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1rem;">
+                        <i class="fa-solid fa-book"></i>
+                    </div>
+                {% endif %}
+
+                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <h4 style="margin: 0; font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0;" title="{{ dev.livro.titulo }}">{{ dev.livro.titulo }}</h4>
+                        <span class="badge-leitura badge-leitura-{{ dev.status_leitura|lower }}" id="badge-{{ dev.id }}" style="flex-shrink: 0; font-size: 0.6rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; border: 1px solid transparent; display: inline-flex; align-items: center; gap: 4px;
+                            {% if dev.status_leitura == 'FINALIZADO' %}background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); border-color: rgba(52, 211, 153, 0.3);
+                            {% elif dev.status_leitura == 'LENDO' %}background: rgba(34, 211, 238, 0.12); color: var(--accent-cyan); border-color: rgba(34, 211, 238, 0.3);
+                            {% else %}background: rgba(255,255,255,0.04); color: var(--text-muted); border-color: var(--border-subtle);{% endif %}">
+                            {% if dev.status_leitura == 'FINALIZADO' %}<i class="fa-solid fa-circle-check"></i> Finalizado
+                            {% elif dev.status_leitura == 'LENDO' %}<i class="fa-solid fa-book-open"></i> Lendo
+                            {% else %}<i class="fa-regular fa-clock"></i> Devolvido{% endif %}
+                        </span>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                        <p style="margin: 0; font-size: 0.68rem; color: var(--text-muted);">
+                            Devolvido em <strong>{{ dev.data_devolucao_real|date:"d/m/Y" }}</strong>
+                        </p>
+                        <select class="select-leitura" data-emprestimo-id="{{ dev.id }}" onchange="atualizarLeitura(this)" style="font-size: 0.65rem; padding: 2px 5px; border-radius: 4px; border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-secondary); cursor: pointer; height: 22px;">
+                            <option value="">— Atualizar status</option>
+                            <option value="FINALIZADO" {% if dev.status_leitura == 'FINALIZADO' %}selected{% endif %}>Finalizei a Leitura</option>
+                            <option value="LENDO"      {% if dev.status_leitura == 'LENDO'      %}selected{% endif %}>Estava Lendo</option>
+                            <option value="NAO_INFORMADO" {% if dev.status_leitura == 'NAO_INFORMADO' %}selected{% endif %}>Só Devolvi</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
       </section>
     </section>
 
@@ -145,29 +245,42 @@
         </div>
       </section>
 
-      {# ── Mural de Avisos ── #}
-      <section class="mural-box card-mural-sidebar" style="margin-bottom: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: all 0.3s ease;" onmouseover="this.style.borderColor='var(--border-mid)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'">
-        <h3 style="font-size: 1rem; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
-          <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
-        </h3>
-        {% if comunicados %}
-          <div class="lista-mural-compacta">
-            {% for c in comunicados %}
-              <div class="item-mural-side {% if c.importancia == 'ALTA' %}urgente{% endif %}" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
-                  <span class="tag-mural" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.65rem; border: 1px solid {% if c.publico_alvo == 'GLOBAL' %}var(--accent-violet); color: var(--accent-violet); background: rgba(124, 111, 255, 0.1);{% elif c.publico_alvo == 'ALUNOS' %}var(--accent-cyan); color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1);{% elif c.publico_alvo == 'PROFESSORES' %}var(--accent-emerald); color: var(--accent-emerald); background: rgba(52, 211, 153, 0.1);{% elif c.publico_alvo == 'GESTORES' %}var(--accent-amber); color: var(--accent-amber); background: rgba(251, 191, 36, 0.1);{% else %}var(--border-subtle); color: var(--text-muted); background: var(--bg-elevated);{% endif %}">
-                    {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-globe" style="margin-right:3px;"></i>{% endif %}{{ c.get_publico_alvo_display }}
-                  </span>
-                  <span>{{ c.data_publicacao|date:"d/m" }}</span>
+      {# ── Mural de Avisos (Padronizado via sige-widget) ── #}
+      <section class="sige-widget" id="mural-avisos-professor">
+        <header class="sige-widget-header" onclick="toggleMuralProfessor()">
+          <h3>
+            <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
+          </h3>
+          <i class="fa-solid fa-chevron-up sige-widget-toggle"></i>
+        </header>
+
+        <div class="sige-widget-body">
+          {% if comunicados %}
+            <div class="lista-mural-compacta">
+              {% for c in comunicados %}
+                <div class="item-mural-side mural-tipo-{{ c.publico_alvo|lower }} {% if c.importancia == 'ALTA' %}urgente{% endif %}" data-com-id="{{ c.id }}">
+                  <div class="item-meta">
+                    <span class="tag-mural publico-{{ c.publico_alvo|lower }}">
+                      {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-earth-americas"></i>
+                      {% elif c.publico_alvo == 'ALUNOS' %}<i class="fa-solid fa-user-graduate"></i>
+                      {% elif c.publico_alvo == 'PROFESSORES' %}<i class="fa-solid fa-person-chalkboard"></i>
+                      {% elif c.publico_alvo == 'GESTORES' %}<i class="fa-solid fa-user-tie"></i>
+                      {% endif %}
+                      {{ c.get_publico_alvo_display }}
+                    </span>
+                    <span class="data">{{ c.data_publicacao|date:"d/m" }}</span>
+                  </div>
+                  <h4>{{ c.titulo }}</h4>
+                  <p>{{ c.conteudo|truncatechars:60 }}</p>
                 </div>
-                <h4 style="font-size: 0.85rem; margin-bottom: 4px; {% if c.importancia == 'ALTA' %}color: var(--status-reprovado);{% endif %}">{{ c.titulo }}</h4>
-                <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">{{ c.conteudo|truncatechars:60 }}</p>
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px;">Nenhum aviso no momento.</p>
-        {% endif %}
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="vazio-mural">
+              <p>Nenhum aviso no momento.</p>
+            </div>
+          {% endif %}
+        </div>
       </section>
 
       {# ── Visão geral rápida ── #}
@@ -212,5 +325,77 @@
 {% endblock %}
 
 {% block extra_js %}
-{# O calendário é inicializado globalmente pelo calendar.js #}
+<script>
+  function toggleMuralProfessor() {
+    const mural = document.getElementById('mural-avisos-professor');
+    mural.classList.toggle('collapsed');
+    const isCollapsed = mural.classList.contains('collapsed');
+    localStorage.setItem('mural_professor_collapsed', isCollapsed);
+  }
+
+  // Restaurar estado ao carregar
+  document.addEventListener('DOMContentLoaded', function() {
+    const isCollapsed = localStorage.getItem('mural_professor_collapsed') === 'true';
+    if (isCollapsed) {
+      document.getElementById('mural-avisos-professor').classList.add('collapsed');
+    }
+  });
+
+  // ── Atualizar Status de Leitura (AJAX) ──
+  function atualizarLeitura(selectEl) {
+      const val = selectEl.value;
+      if (!val) return;
+      const id  = selectEl.dataset.emprestimoId;
+      const badge = document.getElementById('badge-' + id);
+      const card  = selectEl.closest('.card-devolvido');
+
+      const icons = {
+          'FINALIZADO':    '<i class="fa-solid fa-circle-check"></i> Finalizado',
+          'LENDO':         '<i class="fa-solid fa-book-open"></i> Lendo',
+          'NAO_INFORMADO': '<i class="fa-regular fa-clock"></i> Devolvido'
+      };
+      const classes = {
+          'FINALIZADO':    'badge-leitura-finalizado',
+          'LENDO':         'badge-leitura-lendo',
+          'NAO_INFORMADO': 'badge-leitura-nao_informado'
+      };
+
+      fetch('{% url "atualizar_status_leitura" %}', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+          },
+          body: JSON.stringify({ emprestimo_id: id, status_leitura: val })
+      })
+      .then(r => r.json())
+      .then(data => {
+          if (data.ok) {
+              badge.className = 'badge-leitura ' + (classes[val] || '');
+              badge.innerHTML = icons[val] || val;
+              card.style.borderColor = val === 'FINALIZADO' ? 'rgba(52,211,153,0.4)' :
+                                       val === 'LENDO'      ? 'rgba(56,189,248,0.4)' :
+                                       '';
+              setTimeout(() => { card.style.borderColor = ''; }, 1800);
+          }
+      })
+      .catch(() => {});
+  }
+
+  function toggleMuralProfessor() {
+    const mural = document.getElementById('mural-avisos-professor');
+    mural.classList.toggle('collapsed');
+    const isCollapsed = mural.classList.contains('collapsed');
+    localStorage.setItem('mural_prof_collapsed', isCollapsed);
+  }
+
+  // Restaurar estado ao carregar
+  document.addEventListener('DOMContentLoaded', function() {
+    const isCollapsed = localStorage.getItem('mural_prof_collapsed') === 'true';
+    if (isCollapsed) {
+      const el = document.getElementById('mural-avisos-professor');
+      if (el) el.classList.add('collapsed');
+    }
+  });
+</script>
 {% endblock %}

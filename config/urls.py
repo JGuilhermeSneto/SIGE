@@ -25,13 +25,13 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
 
 from apps.comunicacao.api import ComunicadoViewSet
-from apps.academico.api import NotificacaoAlunoViewSet
+from apps.academico.api import NotificacaoViewSet
 from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
 from apps.saude.api import SaudeViewSet
 
 router = DefaultRouter()
 router.register(r'comunicados', ComunicadoViewSet, basename='api-comunicados')
-router.register(r'notificacoes', NotificacaoAlunoViewSet, basename='api-notificacoes')
+router.register(r'notificacoes', NotificacaoViewSet, basename='api-notificacoes')
 router.register(r'biblioteca/acervo', BibliotecaViewSet, basename='api-biblioteca-acervo')
 router.register(r'biblioteca/meus-livros', MeusEmprestimosViewSet, basename='api-biblioteca-meus-livros')
 router.register(r'saude/minha-ficha', SaudeViewSet, basename='api-saude-ficha')

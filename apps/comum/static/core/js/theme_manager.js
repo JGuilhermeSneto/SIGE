@@ -1,79 +1,94 @@
 /* ============================================================
-   SIGE — Theme Manager v2.1
-   Persists theme + applies to <html data-theme="...">
-   Supports 8 complete themes with localStorage persistence
+   SIGE — Theme Hub Manager v3.0
+   Rebuilt for Premium Switcher Component
+   Supports curated themes: Indigo, Cinza, Azul
 ============================================================ */
 
 (() => {
   const STORAGE_KEY = 'sige_theme';
   const THEMES = new Set([
-    'indigo-profundo',      // Dark (antigo 'default')
-    'cinza-industrial',     // Light Minimal (antigo 'gray')
-    'azul-corporativo',     // Corporate Blue with borders
+    'indigo-profundo',
+    'cinza-industrial',
+    'azul-corporativo'
   ]);
-
-  const THEME_NAMES = {
-    'indigo-profundo': 'Indigo Profundo',
-    'cinza-industrial': 'Cinza Industrial',
-    'azul-corporativo': 'Azul Corporativo'
-  };
 
   let initialized = false;
 
+  /**
+   * Applies theme to document and persists to localStorage
+   */
   function applyTheme(theme) {
     const t = THEMES.has(theme) ? theme : 'indigo-profundo';
     document.documentElement.setAttribute('data-theme', t);
+    
+    // Update active state in UI
+    document.querySelectorAll('.theme-option').forEach(opt => {
+      opt.classList.toggle('current', opt.dataset.theme === t);
+    });
+
     try {
       localStorage.setItem(STORAGE_KEY, t);
     } catch (e) {
-      // ignore (privacy modes / restrictive browsers)
+      console.warn('Storage blocked:', e);
     }
     return t;
   }
 
-  function getThemeName(themeId) {
-    return THEME_NAMES[themeId] || themeId;
-  }
-
-  function initThemeSelector() {
+  /**
+   * Initializes the Hub logic (clicks, toggles, sync)
+   */
+  function initThemeHub() {
     if (initialized) return;
+    
+    const trigger = document.getElementById('theme-hub-trigger');
+    const panel = document.getElementById('theme-hub-panel');
+    const options = document.querySelectorAll('.theme-option');
+
+    if (!trigger || !panel) return;
     initialized = true;
 
-    const select = document.getElementById('theme-select');
-    if (!select) return;
-
-    // Clear existing options to prevent duplicates
-    select.innerHTML = '';
-
-    // Populate select with all themes (sorted alphabetically)
-    Array.from(THEMES).sort().forEach(themeId => {
-      const option = document.createElement('option');
-      option.value = themeId;
-      option.textContent = getThemeName(themeId);
-      select.appendChild(option);
+    // 1. Toggle Panel
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      panel.classList.toggle('active');
     });
 
-    // sync UI with current attribute / localStorage
-    let current = document.documentElement.getAttribute('data-theme') || 'indigo-profundo';
-    if (!THEMES.has(current)) {
-      try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (stored && THEMES.has(stored)) current = stored;
-      } catch (e) {
-        // ignore
+    // 2. Close Panel on outside click
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && !trigger.contains(e.target)) {
+        panel.classList.remove('active');
       }
-      current = applyTheme(current);
-    }
-    select.value = current;
-
-    // Listen for theme changes
-    select.addEventListener('change', () => {
-      applyTheme(select.value);
     });
+
+    // 3. Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') panel.classList.remove('active');
+    });
+
+    // 4. Handle Theme Selection
+    options.forEach(opt => {
+      opt.addEventListener('click', () => {
+        const themeToApply = opt.dataset.theme;
+        applyTheme(themeToApply);
+        
+        // Add a "success" micro-animation
+        opt.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          opt.style.transform = '';
+          panel.classList.remove('active');
+        }, 150);
+      });
+    });
+
+    // 5. Initial Sync
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'indigo-profundo';
+    applyTheme(currentTheme);
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    initThemeSelector();
-  });
+  // Ensure initialization on load
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeHub);
+  } else {
+    initThemeHub();
+  }
 })();
-

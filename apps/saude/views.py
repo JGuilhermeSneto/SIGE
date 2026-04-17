@@ -7,6 +7,7 @@ from django.utils import timezone
 from apps.usuarios.models.perfis import Aluno, Professor
 from apps.usuarios.utils.perfis import is_super_ou_gestor, get_nome_exibicao, get_foto_perfil
 from datetime import timedelta
+from apps.academico.services.notificacao_servico import NotificacaoServico
 
 @login_required
 def visualizar_saude_aluno(request, aluno_id):
@@ -91,6 +92,15 @@ def enviar_atestado(request):
             atestado = form.save(commit=False)
             atestado.usuario = request.user
             atestado.save()
+            
+            # Notifica os gestores
+            NotificacaoServico.notificar_gestores(
+                tipo="ATESTADO",
+                titulo="Novo atestado recebido",
+                mensagem=f"O usuário {request.user.username} enviou um novo atestado para análise.",
+                url_destino="/saude/gestao-atestados/"
+            )
+            
             messages.success(request, "Atestado enviado com sucesso! Aguarde a análise da gestão.")
             return redirect('listar_atestados_aluno')
     else:
@@ -182,8 +192,15 @@ def revisar_atestado(request, atestado_id):
                 
                 else:
                     messages.success(request, "Atestado aprovado com sucesso.")
-            else:
-                messages.warning(request, "Atestado rejeitado.")
+            # Notifica o usuário do resultado
+            status_label = "Aprovado" if atestado.status == 'APROVADO' else "Rejeitado"
+            NotificacaoServico.criar(
+                user=atestado.usuario,
+                tipo="ATESTADO",
+                titulo=f"Atestado {status_label}",
+                mensagem=f"Seu atestado enviado em {atestado.data_submissao.strftime('%d/%m')} foi {status_label.lower()} pela gestão.",
+                url_destino="/saude/meus-atestados/"
+            )
                 
             return redirect('gestao_atestados')
     else:

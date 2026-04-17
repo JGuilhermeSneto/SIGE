@@ -13,8 +13,14 @@ User = get_user_model()
 
 class LoginForm(forms.Form):
     """Formulário de login utilizando e-mail e senha."""
-    email = forms.EmailField(widget=forms.EmailInput(attrs={"placeholder": "E-mail"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"placeholder": "Senha"}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        "placeholder": "E-mail",
+        "style": "background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important;"
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        "placeholder": "Senha",
+        "style": "background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important;"
+    }))
     user = None
 
     def clean(self):

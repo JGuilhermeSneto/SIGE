@@ -15,7 +15,7 @@ from ..models.academico import (
     Questao, Alternativa, EntregaAtividade, RespostaAluno,
     MaterialDidatico
 )
-from ..models.desempenho import NotificacaoAluno
+from ..models.desempenho import Notificacao
 from ..models.desempenho import Nota, NotaAtividade, Frequencia
 from apps.usuarios.models.perfis import Professor, Aluno
 from ..forms.academico import DisciplinaForm, AtividadeProfessorForm, MaterialDidaticoForm
@@ -135,9 +135,16 @@ def visualizar_grade_professor(request, turma_id):
     if not hasattr(request.user, "professor"): return redirect("login")
     turma = get_object_or_404(Turma, id=turma_id)
     discs = Disciplina.objects.filter(turma=turma, professor=request.user.professor)
+    minhas_disciplinas = [d.nome.strip().lower() for d in discs]
+    
     return render(request, "professor/visualizar_grade_professor.html", {
-        "turma": turma, "grade_horario": _get_grade_horario_turma(turma), "nomes_dias": NOMES_DIAS, "disciplinas_professor": discs,
-        "nome_exibicao": get_nome_exibicao(request.user), "foto_perfil_url": get_foto_perfil(request.user),
+        "turma": turma, 
+        "grade_horario": _get_grade_horario_turma(turma), 
+        "nomes_dias": NOMES_DIAS, 
+        "disciplinas_professor": discs,
+        "minhas_disciplinas_nomes": minhas_disciplinas,
+        "nome_exibicao": get_nome_exibicao(request.user), 
+        "foto_perfil_url": get_foto_perfil(request.user),
     })
 
 @login_required
@@ -327,7 +334,7 @@ def lancar_notas_atividade(request, disciplina_id, atividade_id):
                         defaults={"valor": valor_decimal, "observacao": obs}
                     )
                     NotificacaoServico.criar(
-                        aluno=aluno,
+                        user=aluno.user,
                         tipo="NOTA",
                         titulo="Nota lançada",
                         mensagem=f"Sua nota em '{atividade.titulo}' foi lançada: {nota_obj.valor}.",
@@ -390,16 +397,14 @@ def listar_atividades_aluno(request):
 
 @login_required
 def marcar_notificacao_lida(request, notificacao_id):
-    """Marca notificação do aluno como lida e redireciona ao destino."""
-    if not hasattr(request.user, "aluno"):
-        return redirect("painel_aluno")
-    notificacao = get_object_or_404(NotificacaoAluno, id=notificacao_id, aluno=request.user.aluno)
+    """Marca uma notificação como lida e redireciona ao destino."""
+    notificacao = get_object_or_404(Notificacao, id=notificacao_id, usuario=request.user)
     if not notificacao.lida:
         notificacao.lida = True
         notificacao.save(update_fields=["lida"])
     if notificacao.url_destino:
         return redirect(notificacao.url_destino)
-    return redirect("painel_aluno")
+    return redirect_user(request.user)
 
 from ..services.atividade_servico import AtividadeServico
 from ..selectors.atividade_seletores import AtividadeSeletores

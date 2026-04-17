@@ -102,32 +102,40 @@ class NotaAtividade(models.Model):
         return f"{self.aluno} - {self.atividade.titulo}: {self.valor if self.valor is not None else 'N/A'}"
 
 
-class NotificacaoAluno(models.Model):
-    """Notificações exibidas para alunos no painel."""
+class Notificacao(models.Model):
+    """Notificações unificadas exibidas para todos os usuários (Alunos, Professores, Gestores) no painel."""
 
     TIPO_CHOICES = [
+        # Acadêmico (Alunos)
         ("NOTA", "Nota lançada"),
-        ("CHAMADA", "Chamada"),
-        ("CORRECAO", "Correção"),
-        ("GABARITO", "Gabarito"),
+        ("CHAMADA", "Chamada Realizada"),
+        ("CORRECAO", "Atividade Corrigida"),
+        ("GABARITO", "Gabarito Disponível"),
+        # Gestão (Professores)
+        ("ENTREGA", "Nova Entrega de Atividade"),
+        # Saúde/Administrativo (Gestores)
+        ("ATESTADO", "Novo Atestado Enviado"),
+        # Geral
+        ("SISTEMA", "Mensagem do Sistema"),
+        ("MENSAGEM", "Nova Mensagem"),
     ]
 
-    aluno = models.ForeignKey("usuarios.Aluno", on_delete=models.CASCADE, related_name="notificacoes")
+    usuario = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="notificacoes")
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     titulo = models.CharField(max_length=120)
-    mensagem = models.CharField(max_length=255)
+    mensagem = models.TextField() # Aumentado para suportar detalhes
     url_destino = models.CharField(max_length=255, blank=True)
     lida = models.BooleanField(default=False)
     criado_em = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = "core_notificacaoaluno"
+        db_table = "core_notificacao" # Novo nome de tabela para o sistema unificado
         ordering = ["-criado_em"]
-        verbose_name = "Notificação do aluno"
-        verbose_name_plural = "Notificações dos alunos"
+        verbose_name = "Notificação"
+        verbose_name_plural = "Notificações"
 
     def __str__(self):
-        return f"{self.aluno.nome_completo} - {self.titulo}"
+        return f"{self.usuario.username} - {self.titulo}"
 
 # Mantendo o alias Presenca para compatibilidade
 Presenca = Frequencia

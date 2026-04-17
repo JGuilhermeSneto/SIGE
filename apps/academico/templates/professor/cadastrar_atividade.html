@@ -29,10 +29,15 @@ textarea.form-control { resize: vertical; }
 {% block content %}
 <div class="main-area">
     <div class="centro-wrapper">
-        <div class="header-painel">
+        <div class="header-painel" style="display: flex; justify-content: space-between; align-items: flex-start;">
             <div class="header-esquerda">
                 <span class="header-label">{{ disciplina.nome }}</span>
                 <h1>Cadastrar <span class="destaque">Atividade</span></h1>
+            </div>
+            <div class="header-acoes">
+                <a href="{% url 'listar_atividades' disciplina.id %}" class="btn-cancel" style="padding: 10px 20px; border-radius: var(--radius-md); border: 1px solid var(--border-mid); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                </a>
             </div>
         </div>
 

@@ -15,7 +15,7 @@ from apps.academico.utils.academico import _get_grade_horario_turma
 
 from ..models.perfis import Professor, Aluno
 from apps.academico.models.academico import Turma, Disciplina
-from apps.academico.models.desempenho import NotificacaoAluno
+from apps.academico.models.desempenho import Notificacao
 from apps.comunicacao.models.comunicado import Comunicado
 from django.db.models import Q
 from django.utils import timezone
@@ -133,6 +133,16 @@ def painel_professor(request):
             Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
         )[:5],
     }
+    
+    from apps.biblioteca.models.biblioteca import Emprestimo
+    contexto["meus_emprestimos"] = Emprestimo.objects.filter(
+        usuario_professor=professor
+    ).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
+    
+    contexto["livros_devolvidos"] = Emprestimo.objects.filter(
+        usuario_professor=professor, 
+        status='DEVOLVIDO'
+    ).select_related('livro').order_by('-data_devolucao_real')[:10]
 
     return render(request, "professor/painel_professor.html", contexto)
 
@@ -235,8 +245,8 @@ def painel_aluno(request):
         "situacao_classe":       situacao_classe,
         "total_notas_lancadas":  total_notas_lancadas,
         "total_notas_possiveis": total_notas_possiveis,
-        "notificacoes_recentes": NotificacaoAluno.objects.filter(aluno=aluno).order_by("-criado_em")[:8],
-        "notificacoes_nao_lidas": NotificacaoAluno.objects.filter(aluno=aluno, lida=False).count(),
+        "notificacoes_recentes": Notificacao.objects.filter(usuario=request.user).order_by("-criado_em")[:8],
+        "notificacoes_nao_lidas": Notificacao.objects.filter(usuario=request.user, lida=False).count(),
         "comunicados": Comunicado.objects.filter(
             Q(publico_alvo__in=['GLOBAL', 'ALUNOS']),
             Q(data_expiracao__gte=timezone.now().date()) | Q(data_expiracao__isnull=True)
@@ -256,3 +266,12 @@ def painel_usuarios(request):
         "nome_exibicao":     get_nome_exibicao(request.user),
         "foto_perfil_url":   get_foto_perfil(request.user),
     })
+
+
+@login_required
+def dashboard_redirect(request):
+    """URL central 'dashboard' que redireciona para o painel correto do usuário."""
+    from ..utils.perfis import redirect_user
+    from django.shortcuts import redirect
+    target = redirect_user(request.user)
+    return redirect(target)

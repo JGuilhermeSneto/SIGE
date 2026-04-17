@@ -268,6 +268,35 @@
         border: 1px dashed var(--border-mid);
     }
 
+    .btn-voltar {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: rgba(124, 111, 255, 0.08); /* Uso de violeta sutil conforme padrão */
+        border: 1px solid rgba(124, 111, 255, 0.2);
+        border-radius: var(--radius-md);
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-voltar:hover {
+        background: rgba(124, 111, 255, 0.15);
+        border-color: var(--accent-violet);
+        color: var(--text-primary);
+        transform: translateX(-3px);
+    }
+
+    .btn-voltar i {
+        font-size: 0.85rem;
+        color: var(--accent-violet);
+    }
+
     @media (max-width: 640px) {
         .atividade-footer {
             justify-content: stretch;
@@ -295,7 +324,10 @@
             </div>
         </div>
 
-        <div class="header-acoes">
+        <div class="header-acoes" style="display: flex; gap: 10px; align-items: center;">
+            <a href="{% url 'visualizar_disciplinas' disciplina.id %}" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Diário
+            </a>
             {% if is_professor %}
             <a href="{% url 'cadastrar_atividade' disciplina.id %}" class="btn-magic">
                 <i class="fa-solid fa-plus"></i> Adicionar Atividade/Prova

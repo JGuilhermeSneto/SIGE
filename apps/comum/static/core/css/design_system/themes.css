@@ -4,59 +4,122 @@
    Applied via: <html data-theme="...">
 ============================================================ */
 
-/* Theme Switcher UI (topbar) */
-.theme-switcher {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 10px;
-    margin-right: 6px;
-    border-radius: 999px;
-    border: 1px solid var(--border-subtle);
-    background: var(--bg-elevated);
-    color: var(--text-secondary);
-    transition: transform var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+/* Theme Hub (New Redesign) */
+.sige-theme-hub {
     position: relative;
-    z-index: 10001;
+    margin-right: 15px;
 }
 
-.theme-switcher:hover {
-    transform: translateY(-1px);
+.theme-hub-btn {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all var(--transition-mid);
+    box-shadow: var(--shadow-sm);
+}
+
+.theme-hub-btn:hover {
+    transform: translateY(-2px) rotate(15deg);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-md);
+    color: var(--primary);
+}
+
+.theme-hub-panel {
+    position: absolute;
+    top: calc(100% + 15px);
+    right: 0;
+    width: 230px;
+    background: var(--bg-surface);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-mid);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(255,255,255,0.05);
+    padding: 16px;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 10005;
+    animation: hubSlideDown 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.theme-hub-panel.active {
+    display: flex;
+}
+
+.theme-hub-header {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    padding-bottom: 8px;
+    border-bottom: 0.5px solid var(--border-subtle);
+}
+
+.theme-hub-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px;
+    background: color-mix(in srgb, var(--bg-elevated) 40%, transparent);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.theme-option:hover {
     background: var(--bg-hover);
-    border-color: var(--border-mid);
+    transform: translateX(4px);
+    border-color: var(--border-subtle);
+}
+
+.theme-option.current {
+    background: color-mix(in srgb, var(--primary) 10%, transparent);
+    border-color: var(--primary);
+    box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.theme-swatch {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px var(--border-mid);
+    flex-shrink: 0;
+}
+
+.swatch-indigo { background: linear-gradient(135deg, #4F46E5, #6366F1) !important; }
+.swatch-cinza  { background: linear-gradient(135deg, #708090, #94A3B8) !important; }
+.swatch-azul   { background: linear-gradient(135deg, #1565C0, #4A90E2) !important; }
+
+.theme-label {
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--text-primary);
 }
 
-.theme-switcher i {
-    font-size: 0.95rem;
-    opacity: 0.9;
-}
-
-.theme-switcher select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background: transparent;
-    border: none;
-    outline: none;
-    font-weight: 700;
-    font-size: 0.82rem;
-    letter-spacing: 0.02em;
-    padding-right: 16px;
-    cursor: pointer;
-    position: relative;
-    z-index: 10002;
-}
-
-.theme-switcher select:focus-visible {
-    outline: 2px solid hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.35);
-    outline-offset: 2px;
-    border-radius: 999px;
-}
-
-.theme-switcher select:focus,
-.theme-switcher select:active {
-    z-index: 99999 !important;
+@keyframes hubSlideDown {
+    from { opacity: 0; transform: translateY(-12px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Global "theme signature" hooks */
@@ -984,73 +1047,75 @@ html[data-theme="azul-corporativo"] {
     color-scheme: light;
     --logo-filter: brightness(0);
 
-    --ac-lightest: #F3F7FF;
-    --ac-light: #B5D4F4;
-    --ac-sky: #378ADD;
-    --ac-medium: #185FA5;
-    --ac-dark: #0D3A72;
-    --ac-darkest: #071E3D;
+    --ac-lightest: #F0F7FF;
+    --ac-light: #CDE2F7;
+    --ac-sky: #4A90E2;
+    --ac-medium: #1565C0;
+    --ac-dark: #0D47A1;
+    --ac-darkest: #002171;
 
-    --bg-base: var(--ac-lightest);
-    --bg-surface: color-mix(in srgb, var(--ac-light) 70%, var(--ac-lightest) 30%);
-    --bg-elevated: color-mix(in srgb, var(--ac-sky) 15%, var(--ac-lightest) 85%);
-    --bg-hover: color-mix(in srgb, var(--ac-sky) 22%, var(--ac-lightest) 78%);
-    --bg-input: color-mix(in srgb, var(--ac-light) 50%, var(--ac-lightest) 50%);
+    --bg-base: linear-gradient(135deg, #F0F7FF 0%, #E3F2FD 50%, #BBDEFB 100%);
+    --bg-surface: rgba(255, 255, 255, 0.90);
+    --bg-elevated: rgba(255, 255, 255, 0.95);
+    --bg-hover: rgba(227, 242, 253, 0.95);
+    --bg-input: #ffffff;
 
-    --text-primary: var(--ac-darkest);
-    --text-secondary: var(--ac-dark);
-    --text-muted: var(--ac-medium);
+    --text-primary: #011E3A;
+    --text-secondary: #1A3G5A;
+    --text-muted: #546E7A;
 
-    --border-subtle: rgba(13, 58, 114, 0.08);
-    --border-mid: rgba(13, 58, 114, 0.16);
+    --border-subtle: rgba(21, 101, 192, 0.40);
+    --border-mid: rgba(21, 101, 192, 0.70);
 
-    --primary-h: 217;
-    --primary-s: 85%;
+    --primary-h: 210;
+    --primary-s: 79%;
     --primary-l: 45%;
     --primary: var(--ac-medium);
-    --primary-dark: var(--ac-darkest);
+    --primary-dark: var(--ac-dark);
     --primary-light: var(--ac-sky);
 
-    --accent-violet: var(--ac-dark);
-    --accent-cyan: var(--ac-sky);
-    --accent-emerald: color-mix(in srgb, var(--ac-medium) 60%, #4a90e2 40%);
-    --accent-amber: var(--ac-medium);
-    --accent-ruby: #d32f2f;
+    --accent-violet: #7E57C2;
+    --accent-cyan: #26C6DA;
+    --accent-emerald: #66BB6A;
+    --accent-amber: #FFA726;
+    --accent-ruby: #EF5350;
 
-    --header-bg: linear-gradient(90deg, rgba(243, 247, 255, 0.98), rgba(181, 212, 244, 0.92));
-    --header-bg-scrolled: linear-gradient(90deg, rgba(243, 247, 255, 0.99), rgba(181, 212, 244, 0.96));
-    --sidebar-bg-top: linear-gradient(180deg, var(--ac-lightest), rgba(181, 212, 244, 0.70));
-    --sidebar-bg-bottom: linear-gradient(180deg, rgba(181, 212, 244, 0.70), var(--ac-light));
+    --header-bg: rgba(240, 247, 255, 0.95);
+    --header-bg-scrolled: rgba(240, 247, 255, 0.98);
+    --sidebar-bg-top: linear-gradient(180deg, #F0F7FF, rgba(21, 101, 192, 0.08));
+    --sidebar-bg-bottom: linear-gradient(180deg, rgba(21, 101, 192, 0.08), rgba(21, 101, 192, 0.12));
 
-    --radius-sm: 6px;
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 32px;
 
-    --shadow-sm: 0 4px 12px rgba(13, 58, 114, 0.10);
-    --shadow-md: 0 8px 24px rgba(13, 58, 114, 0.12);
-    --shadow-lg: 0 16px 48px rgba(13, 58, 114, 0.14);
-    --shadow-glow: rgba(55, 138, 221, 0.25) 0 0 16px;
+    --shadow-sm: 0 4px 12px rgba(21, 101, 192, 0.12);
+    --shadow-md: 0 12px 32px rgba(21, 101, 192, 0.16);
+    --shadow-lg: 0 20px 48px rgba(21, 101, 192, 0.22);
+    --shadow-glow: rgba(21, 101, 192, 0.35) 0 0 20px;
 
-    --transition-fast: .14s ease-in-out;
-    --transition-mid: .22s ease-in-out;
-    --transition-slow: .32s ease-in-out;
+    --transition-fast: .16s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-mid: .26s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: .42s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --font-main: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, sans-serif;
-    --font-display: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', Roboto, sans-serif;
+    --font-main: 'Inter', system-ui, sans-serif;
+    --font-display: 'Plus Jakarta Sans', sans-serif;
 }
 
 html[data-theme="azul-corporativo"] .sige-card {
-    background: linear-gradient(180deg, rgba(243, 247, 255, 0.85) 0%, rgba(181, 212, 244, 0.65) 100%);
-    border: 1px solid rgba(55, 138, 221, 0.20);
-    box-shadow: 0 4px 16px rgba(13, 58, 114, 0.08);
+    background: linear-gradient(180deg, #ffffff 0%, #F5FBFF 100%);
+    border: 2px solid rgba(21, 101, 192, 0.55);
+    box-shadow: 0 10px 30px rgba(21, 101, 192, 0.18);
 }
 
 html[data-theme="azul-corporativo"] .sige-btn-primary {
-    background: linear-gradient(90deg, var(--ac-medium), var(--ac-sky));
+    background: linear-gradient(135deg, var(--ac-medium), var(--ac-dark));
+    border: 2.5px solid var(--ac-darkest);
     color: #ffffff;
-    font-weight: 600;
-    letter-spacing: 0.02em;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    box-shadow: 0 6px 20px rgba(0, 33, 113, 0.25);
 }
 
 html[data-theme="azul-corporativo"] .sige-btn-primary:hover {

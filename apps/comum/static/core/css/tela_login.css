@@ -131,6 +131,11 @@ body {
   filter: drop-shadow(0 0 4px rgba(124, 111, 255, .3));
 }
 
+html[data-theme="cinza-industrial"] .splash-logo,
+html[data-theme="azul-corporativo"] .splash-logo {
+  filter: brightness(0) drop-shadow(0 0 4px rgba(124, 111, 255, .3));
+}
+
 /* Caso não haja imagem: ícone CSS de chapéu de formatura */
 .splash-logo-css {
   position: relative;
@@ -507,6 +512,7 @@ body {
   object-fit: contain;
   display: block;
   z-index: 2;
+  filter: var(--logo-filter, none);
 }
 
 /* ── Divider ── */
@@ -556,7 +562,9 @@ body {
   transition: color .2s;
 }
 
-.field-wrap.focused .field-label { color: var(--accent-violet); }
+.field-wrap.focused .field-label { 
+  color: var(--accent-violet); 
+}
 .field-wrap.error   .field-label { color: var(--accent-red); }
 
 .field-box {
@@ -567,34 +575,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: border-color .25s, background .25s;
-}
-
-/* O contorno progredindo por todas as bordas do input! */
-.field-box::after {
-  content: '';
-  position: absolute;
-  inset: -1px; /* Garante cobertura total da borda do container */
-  border-radius: var(--radius-md);
-  padding: 1px;
-  background: conic-gradient(
-    from 135deg, 
-    var(--accent-violet) 0%, 
-    var(--accent-cyan) var(--input-progress, 0%), 
-    transparent var(--input-progress, 0%),
-    transparent 100%
-  );
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask:         linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: destination-out;
-  mask-composite: exclude;
-  pointer-events: none;
-  transition: --input-progress 0.15s ease-out;
-  z-index: 0;
-  /* FIX: Evita jitter e artefatos de renderização */
-  -webkit-backface-visibility: hidden;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+  transition: border-color .3s ease, background-color .3s ease, box-shadow .3s ease;
 }
 
 .field-accent {
@@ -607,7 +588,12 @@ body {
   pointer-events: none;
 }
 
-.field-wrap.focused .field-box    { border-color: rgba(124, 111, 255, .35); background: var(--bg-hover); }
+.field-wrap.focused .field-box { 
+  border-color: rgba(124, 111, 255, .6);
+  background-color: var(--bg-hover);
+  box-shadow: 0 0 0 4px rgba(124, 111, 255, 0.12);
+}
+
 /* A classe .field-wrap.focused não força mais 100%, acompanha a digitação */
 .field-wrap.error   .field-box    { border-color: rgba(248, 113, 113, .4); }
 .field-wrap.error   .field-accent { width: 100%; background: var(--accent-red); }
@@ -619,51 +605,55 @@ body {
   padding: 0 0 0 14px;
   pointer-events: none;
   flex-shrink: 0;
-  transition: color .25s, transform .3s cubic-bezier(.34, 1.56, .64, 1);
-  /* FIX: eleva acima do ::after (z-index: 0) para evitar overlay de cor */
-  position: relative;
-  z-index: 1;
+  transition: color .2s;
 }
 
 .field-wrap.focused #icon-email {
   color: var(--accent-violet);
-  transform: scale(1.25) rotate(-5deg);
-  filter: drop-shadow(0 0 4px rgba(124,111,255,.6));
 }
 
 /* ── Ícone de cadeado: balança quando idle, abre ao focar ── */
 #icon-password {
-  animation: lockJiggle 4s infinite ease-in-out;
+  /* Mantido limpo */
 }
 
 .field-wrap.focused #icon-password {
-  animation: lockOpen .4s cubic-bezier(.34,1.56,.64,1) forwards;
   color: var(--accent-cyan);
-  filter: drop-shadow(0 0 4px rgba(34,211,238,.5));
 }
 
 .field-box input {
   flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
   color: var(--text-primary);
   font-family: 'Inter', sans-serif;
   font-size: .92rem;
   font-weight: 400;
   padding: 12px 12px 12px 10px;
   width: 100%;
-  /* FIX: eleva acima do ::after para evitar overlay */
-  position: relative;
-  z-index: 1;
+}
+
+.field-box input:focus,
+.field-box input:focus-visible,
+.field-box input:active {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
 }
 
 .field-box input::placeholder { color: var(--text-muted); }
 
 .field-box input:-webkit-autofill,
-.field-box input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 100px var(--bg-elevated) inset;
+.field-box input:-webkit-autofill:focus,
+.field-box input:-webkit-autofill:hover,
+.field-box input:-webkit-autofill:active {
   -webkit-text-fill-color: var(--text-primary);
+  /* The transparent trick for autofill */
+  -webkit-box-shadow: 0 0 0px 1000px transparent inset;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .toggle-pw {

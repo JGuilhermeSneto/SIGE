@@ -23,7 +23,10 @@
     <h1><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Frequência</h1>
     <p>{{ disciplina.nome }} &mdash; {{ disciplina.turma }}</p>
   </div>
-  <div class="freq-header__action">
+  <div class="freq-header__action" style="display: flex; gap: 10px;">
+    <a href="{% url 'visualizar_disciplinas' disciplina.id %}" style="background: rgba(148, 163, 184, 0.1); color: var(--text-secondary); border-color: var(--border-mid);">
+      <i class="fa-solid fa-arrow-left"></i> Voltar ao Diário
+    </a>
     <a href="{% url 'lancar_chamada' disciplina.id %}">
       <i class="fa-solid fa-plus"></i> Nova chamada
     </a>

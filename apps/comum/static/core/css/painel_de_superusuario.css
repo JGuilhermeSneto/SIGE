@@ -524,8 +524,12 @@ line-height: 1;
   transition: border-color .22s;
 }
 
-.info-rapida:hover {
-  border-color: var(--border-mid);
+.info-rapida:hover { border-color: var(--border-mid); }
+
+/* ── Content specific for Mural side-card ── */
+.lista-mural-compacta {
+  display: flex;
+  flex-direction: column;
 }
 
 .info-rapida-titulo {

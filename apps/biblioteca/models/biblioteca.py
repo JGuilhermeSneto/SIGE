@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 from apps.usuarios.models.perfis import Aluno, Professor
 
 class Livro(models.Model):
@@ -14,6 +15,8 @@ class Livro(models.Model):
     # Suporte Online/Digital
     arquivo_digital = models.FileField(upload_to='biblioteca/digitais/', blank=True, null=True, verbose_name="Arquivo PDF/Digital")
     url_digital = models.URLField(blank=True, null=True, verbose_name="Link para E-book/Conteúdo Online")
+    
+    data_cadastro = models.DateTimeField(default=timezone.now, verbose_name="Data de Entrada no Acervo")
     
     # quantidade_disponivel será calculada via property ou campo denormalizado
     

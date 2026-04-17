@@ -7,37 +7,9 @@
 <link rel="stylesheet" href="{% static 'core/css/painel_dos_alunos.css' %}">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-/* ── Widgets Recolhíveis ── */
-.widget-colapsavel .widget-body {
-    overflow: hidden;
-    max-height: 600px;
-    transition: max-height 0.38s cubic-bezier(0.4, 0, 0.2, 1),
-                opacity 0.3s ease,
-                padding 0.3s ease;
-    opacity: 1;
-}
-.widget-colapsavel.recolhido .widget-body {
-    max-height: 0 !important;
-    opacity: 0;
-    pointer-events: none;
-}
-.widget-colapsavel h3,
-.widget-colapsavel .widget-header {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-    user-select: none;
-    margin-bottom: 0 !important;
-}
-.widget-colapsavel.recolhido h3,
-.widget-colapsavel.recolhido .widget-header {
-    margin-bottom: 0 !important;
-}
-.widget-colapsavel:not(.recolhido) h3,
-.widget-colapsavel:not(.recolhido) .widget-header {
-    margin-bottom: 12px !important;
-}
+.widget-colapsavel i { font-size: 0.75rem; transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+.collapsed .widget-colapsavel i { transform: rotate(-180deg); }
+
 .btn-colapso {
     background: none;
     border: none;
@@ -117,6 +89,33 @@
     padding: 1px 5px;
     border-radius: 4px;
     line-height: 1.6;
+}
+/* ── Avatares de Professores ── */
+.professor-avatar-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1.5px solid var(--border-mid);
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.professor-avatar-mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.professor-avatar-mini .avatar-fallback {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+.disciplina-card:hover .professor-avatar-mini {
+    border-color: var(--accent-violet);
+    transform: scale(1.1);
 }
 </style>
 {% endblock %}
@@ -233,10 +232,18 @@
                 {% for item in disciplinas_com_notas %}
                 <div class="disciplina-card">
                     <div class="disciplina-header" onclick="toggleNotas(this)">
-                        <span class="disciplina-dot"></span>
-                        <div class="disciplina-info">
-                            <h3>{{ item.disciplina.nome }}</h3>
-                            <p>Prof. {{ item.disciplina.professor.nome_completo }}</p>
+                        <div class="disciplina-info" style="display: flex; align-items: center; gap: 12px;">
+                            <div class="professor-avatar-mini" title="Prof. {{ item.disciplina.professor.nome_completo }}">
+                                {% if item.disciplina.professor.foto %}
+                                    <img src="{{ item.disciplina.professor.foto.url }}" alt="{{ item.disciplina.professor.nome_completo }}">
+                                {% else %}
+                                    <div class="avatar-fallback"><i class="fa-solid fa-user"></i></div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <h3 style="margin: 0; font-size: 1rem;">{{ item.disciplina.professor.nome_completo }}</h3>
+                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">{{ item.disciplina.nome }}</p>
+                            </div>
                         </div>
 
                         <div class="disciplina-media">
@@ -425,60 +432,68 @@
         {# ════════════════ COLUNA DIREITA ════════════════ #}
         <div class="coluna-direita">
 
-            {# Mural de Avisos — Recolhível #}
-            <section id="widget-mural" class="mural-box card-mural-sidebar widget-colapsavel" style="margin-bottom: 20px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: border-color 0.3s ease, transform 0.3s ease;" onmouseover="this.style.borderColor='var(--border-mid)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-subtle)'; this.style.transform='translateY(0)'">
-                <h3 style="font-size: 1rem;" onclick="toggleWidget('widget-mural', 'mural'); marcarMuralLido()">
-                    <span style="display:flex; align-items:center; gap:8px;">
+            {# Mural de Avisos (Padronizado via sige-widget) ── #}
+            <section class="sige-widget" id="widget-mural">
+                <header class="sige-widget-header" onclick="toggleWidget('widget-mural', 'mural'); marcarMuralLido()">
+                    <h3>
                         <i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural de Avisos
                         <span class="mural-badge-novo" id="mural-badge-novo" title="Avisos novos"></span>
-                    </span>
-                    <button class="btn-colapso" aria-label="Recolher/Expandir" tabindex="-1">
-                        <i class="fa-solid fa-chevron-up"></i>
-                    </button>
-                </h3>
-                <div class="widget-body">
+                    </h3>
+                    <i class="fa-solid fa-chevron-up sige-widget-toggle"></i>
+                </header>
+
+                <div class="sige-widget-body">
                     {% if comunicados %}
-                    <div class="lista-mural-compacta" style="margin-top: 12px;">
-                        {% for c in comunicados %}
-                        <div class="item-mural-side {% if c.importancia == 'ALTA' %}urgente{% endif %}" data-com-id="{{ c.id }}" style="margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; position: relative;">
-                            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">
-                                <span class="tag-mural" style="padding: 3px 8px; border-radius: 6px; font-weight: 700; font-size: 0.65rem; border: 1px solid {% if c.publico_alvo == 'GLOBAL' %}var(--accent-violet); color: var(--accent-violet); background: rgba(124, 111, 255, 0.1);{% elif c.publico_alvo == 'ALUNOS' %}var(--accent-cyan); color: var(--accent-cyan); background: rgba(34, 211, 238, 0.1);{% elif c.publico_alvo == 'PROFESSORES' %}var(--accent-emerald); color: var(--accent-emerald); background: rgba(52, 211, 153, 0.1);{% elif c.publico_alvo == 'GESTORES' %}var(--accent-amber); color: var(--accent-amber); background: rgba(251, 191, 36, 0.1);{% else %}var(--border-subtle); color: var(--text-muted); background: var(--bg-elevated);{% endif %}">
-                                    {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-globe" style="margin-right:3px;"></i>{% endif %}{{ c.get_publico_alvo_display }}
-                                </span>
-                                <span>{{ c.data_publicacao|date:"d/m" }}</span>
-                            </div>
-                            <h4 style="font-size: 0.85rem; margin-bottom: 4px; {% if c.importancia == 'ALTA' %}color: var(--status-reprovado);{% endif %}">{{ c.titulo }}</h4>
-                            <p style="font-size: 0.8rem; color: var(--text-dim); line-height: 1.4;">{{ c.conteudo|truncatechars:60 }}</p>
+                        <div class="lista-mural-compacta">
+                            {% for c in comunicados %}
+                                <div class="item-mural-side mural-tipo-{{ c.publico_alvo|lower }} {% if c.importancia == 'ALTA' %}urgente{% endif %}" data-com-id="{{ c.id }}">
+                                    <div class="item-meta">
+                                        <span class="tag-mural publico-{{ c.publico_alvo|lower }}">
+                                            {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-earth-americas"></i>
+                                            {% elif c.publico_alvo == 'ALUNOS' %}<i class="fa-solid fa-user-graduate"></i>
+                                            {% elif c.publico_alvo == 'PROFESSORES' %}<i class="fa-solid fa-person-chalkboard"></i>
+                                            {% elif c.publico_alvo == 'GESTORES' %}<i class="fa-solid fa-user-tie"></i>
+                                            {% endif %}
+                                            {{ c.get_publico_alvo_display }}
+                                        </span>
+                                        <span class="data">{{ c.data_publicacao|date:"d/m" }}</span>
+                                    </div>
+                                    <h4>{{ c.titulo }}</h4>
+                                    <p>{{ c.conteudo|truncatechars:60 }}</p>
+                                </div>
+                            {% endfor %}
                         </div>
-                        {% endfor %}
-                    </div>
                     {% else %}
-                    <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; padding: 10px; margin-top: 12px;">Nenhum aviso no momento.</p>
+                        <div class="vazio-mural">
+                            <p>Nenhum aviso no momento.</p>
+                        </div>
                     {% endif %}
                 </div>
             </section>
-
-            {# Gráfico de desempenho — Recolhível #}
-            <div id="widget-desempenho" class="card-grafico widget-colapsavel">
-                <h3 onclick="toggleWidget('widget-desempenho', 'desempenho')" style="display:flex; align-items:center; justify-content:space-between;">
-                    <span><i class="fa-solid fa-chart-bar"></i> Meu Desempenho</span>
-                    <button class="btn-colapso" aria-label="Recolher/Expandir" tabindex="-1">
-                        <i class="fa-solid fa-chevron-up"></i>
-                    </button>
-                </h3>
-                <div class="widget-body">
-                    <canvas id="graficoDesempenho" style="margin-top: 12px;"></canvas>
+            {# Gráfico de desempenho (Padronizado via sige-widget) ── #}
+            <section id="widget-desempenho" class="sige-widget">
+                <header class="sige-widget-header" onclick="toggleWidget('widget-desempenho', 'desempenho')">
+                    <h3><i class="fa-solid fa-chart-bar" style="color: var(--accent-emerald);"></i> Meu Desempenho</h3>
+                    <i class="fa-solid fa-chevron-up sige-widget-toggle"></i>
+                </header>
+                <div class="sige-widget-body">
+                    <canvas id="graficoDesempenho"></canvas>
                 </div>
-            </div>
+            </section>
 
-            {# Calendário #}
-            <section class="calendario-box">
-                <a href="{% url 'visualizar_calendario' %}" class="calendario-header-link calendario-link">
-                    <header class="calendario-cabecalho">
-                    <h2 id="cal-mes-nome">{{ mes_nome }}</h2>
-                    <span class="calendario-ano" id="cal-ano">{{ ano_calendario }}</span>
-                    </header>
+            {# Calendário (Padronizado via sige-widget) ── #}
+            <section class="sige-widget" id="widget-calendario">
+              <header class="sige-widget-header" onclick="toggleWidget('widget-calendario', 'calendario')">
+                <a href="{% url 'visualizar_calendario' %}" class="calendario-link-header" style="text-decoration: none; color: inherit; flex: 1;">
+                  <h3 style="margin: 0;">
+                    <i class="fa-solid fa-calendar-days" style="color: var(--accent-violet);"></i> {{ mes_nome }}
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">{{ ano_calendario }}</span>
+                  </h3>
                 </a>
+                <i class="fa-solid fa-chevron-up sige-widget-toggle"></i>
+              </header>
+
+              <div class="sige-widget-body">
                 <div class="calendario-grade" id="cal-grade">
                     <div class="nome-dia">D</div>
                     <div class="nome-dia">S</div>
@@ -497,7 +512,7 @@
                 </div>
                 
                 {# Legenda Mini Padronizada #}
-                <div class="mini-legenda legenda-quebra">
+                <div class="mini-legenda legenda-quebra" style="margin-top: 15px;">
                     <span class="leg-item"><i class="dot-letivo"></i> Letivo</span>
                     <span class="leg-item"><i class="dot-evento"></i> Evento</span>
                     <span class="leg-item"><i class="dot-feriado"></i> Feriado</span>
@@ -506,7 +521,9 @@
                     <span class="leg-item"><i class="dot-sabado"></i> Sáb. Letivo</span>
                     <span class="leg-item"><i class="dot-recesso"></i> Recesso</span>
                 </div>
+              </div>
             </section>
+
 
         </div>
 
@@ -696,8 +713,8 @@ window.onclick = function(event) {
 function toggleWidget(widgetId, storageKey) {
     const widget = document.getElementById(widgetId);
     if (!widget) return;
-    const recolhido = widget.classList.toggle('recolhido');
-    try { localStorage.setItem('sige_widget_' + storageKey, recolhido ? '1' : '0'); } catch(e) {}
+    const isCollapsed = widget.classList.toggle('collapsed');
+    try { localStorage.setItem('sige_widget_' + storageKey, isCollapsed ? '1' : '0'); } catch(e) {}
 }
 
 // Restaurar estado salvo ao carregar
@@ -710,7 +727,7 @@ function toggleWidget(widgetId, storageKey) {
         try {
             if (localStorage.getItem('sige_widget_' + w.key) === '1') {
                 var el = document.getElementById(w.id);
-                if (el) el.classList.add('recolhido');
+                if (el) el.classList.add('collapsed');
             }
         } catch(e) {}
     });

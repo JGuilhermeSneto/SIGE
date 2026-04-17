@@ -11,7 +11,8 @@ urlpatterns = [
     path("app/vite/", react_app.app_vite_shell, name="app_vite"),
 
     # Dashboards (Painéis)
-    path("", paineis.painel_usuarios, name="painel_usuarios"),  # ← ADICIONADO
+    path("", paineis.painel_usuarios, name="painel_usuarios"),
+    path("dashboard/", paineis.dashboard_redirect, name="dashboard"),
     path("painel/super/", paineis.painel_super, name="painel_super"),
     path("painel/gestor/", paineis.painel_super, name="painel_gestor"),
     path("painel/professor/", paineis.painel_professor, name="painel_professor"),

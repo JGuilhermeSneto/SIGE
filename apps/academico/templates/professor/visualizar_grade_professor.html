@@ -24,6 +24,11 @@
         <span>{{ turma.nome }}</span>
       </div>
     </div>
+    <div class="header-acoes">
+      <a href="{% url 'disciplinas_turma' turma.id %}" class="btn-voltar-primario">
+        <i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i> Voltar às Turmas
+      </a>
+    </div>
   </header>
 
   {# ════════════════ GRADE CARD (Registration Style) ════════════════ #}
@@ -67,20 +72,45 @@
             {% for horario, dias in grade_horario.items %}
               <tr>
                 <td class="celula-horario">{{ horario }}</td>
-                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.segunda %}minha-disciplina{% endif %}{% endfor %}">
+                
+                {# Segunda #}
+                <td class="{% if dias.segunda.strip.lower and dias.segunda.strip.lower in minhas_disciplinas_nomes %}minha-disciplina{% endif %}">
                   {{ dias.segunda|default:"—" }}
+                  {% if dias.segunda.strip.lower and dias.segunda.strip.lower in minhas_disciplinas_nomes %}
+                    <i class="fa-solid fa-chalkboard-user icone-minha-aula"></i>
+                  {% endif %}
                 </td>
-                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.terca %}minha-disciplina{% endif %}{% endfor %}">
+
+                {# Terça #}
+                <td class="{% if dias.terca.strip.lower and dias.terca.strip.lower in minhas_disciplinas_nomes %}minha-disciplina{% endif %}">
                   {{ dias.terca|default:"—" }}
+                  {% if dias.terca.strip.lower and dias.terca.strip.lower in minhas_disciplinas_nomes %}
+                    <i class="fa-solid fa-chalkboard-user icone-minha-aula"></i>
+                  {% endif %}
                 </td>
-                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.quarta %}minha-disciplina{% endif %}{% endfor %}">
+
+                {# Quarta #}
+                <td class="{% if dias.quarta.strip.lower and dias.quarta.strip.lower in minhas_disciplinas_nomes %}minha-disciplina{% endif %}">
                   {{ dias.quarta|default:"—" }}
+                  {% if dias.quarta.strip.lower and dias.quarta.strip.lower in minhas_disciplinas_nomes %}
+                    <i class="fa-solid fa-chalkboard-user icone-minha-aula"></i>
+                  {% endif %}
                 </td>
-                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.quinta %}minha-disciplina{% endif %}{% endfor %}">
+
+                {# Quinta #}
+                <td class="{% if dias.quinta.strip.lower and dias.quinta.strip.lower in minhas_disciplinas_nomes %}minha-disciplina{% endif %}">
                   {{ dias.quinta|default:"—" }}
+                  {% if dias.quinta.strip.lower and dias.quinta.strip.lower in minhas_disciplinas_nomes %}
+                    <i class="fa-solid fa-chalkboard-user icone-minha-aula"></i>
+                  {% endif %}
                 </td>
-                <td class="{% for disc in disciplinas_professor %}{% if disc.nome == dias.sexta %}minha-disciplina{% endif %}{% endfor %}">
+
+                {# Sexta #}
+                <td class="{% if dias.sexta.strip.lower and dias.sexta.strip.lower in minhas_disciplinas_nomes %}minha-disciplina{% endif %}">
                   {{ dias.sexta|default:"—" }}
+                  {% if dias.sexta.strip.lower and dias.sexta.strip.lower in minhas_disciplinas_nomes %}
+                    <i class="fa-solid fa-chalkboard-user icone-minha-aula"></i>
+                  {% endif %}
                 </td>
               </tr>
             {% endfor %}
@@ -90,12 +120,16 @@
 
       <div class="legenda">
         <div class="legenda-item">
-          <span class="legenda-cor destaque"></span>
-          <span>Suas disciplinas</span>
+          <span class="legenda-cor destaque" style="border-left: 3px solid var(--theme-primary); background: rgba(var(--theme-primary-rgb), .12); display: flex; align-items: center; justify-content: center;">
+            <i class="fa-solid fa-chalkboard-user" style="font-size: 0.5rem; opacity: 0.5; color: var(--theme-primary);"></i>
+          </span>
+          <strong>Minhas Aulas</strong>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">(Destaque em azul com ícone)</span>
         </div>
         <div class="legenda-item">
           <span class="legenda-cor normal"></span>
-          <span>Outras matérias</span>
+          <strong>Outros Professores</strong>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">(Grade geral da turma)</span>
         </div>
       </div>
 

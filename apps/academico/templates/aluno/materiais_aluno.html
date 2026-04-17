@@ -54,14 +54,39 @@
 
     .disciplina-header .professor-tag {
         font-size: 0.8rem;
-        color: var(--text-muted);
+        color: var(--text-primary);
         background: var(--bg-elevated);
-        padding: 6px 14px;
-        border-radius: 20px;
+        padding: 4px 14px 4px 4px;
+        border-radius: 30px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         border: 1px solid var(--border-mid);
+        font-weight: 700;
+    }
+
+    .prof-avatar-tag {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 1.5px solid var(--primary);
+        background: var(--bg-surface);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .prof-avatar-tag img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .prof-avatar-tag i {
+        font-size: 0.7rem;
+        color: var(--text-muted);
     }
 
     .materiais-grid {
@@ -174,7 +199,13 @@
                 <div class="disciplina-header">
                     <h2>{{ disc.nome }}</h2>
                     <span class="professor-tag">
-                        <i class="fa-solid fa-chalkboard-user"></i> 
+                        <div class="prof-avatar-tag">
+                            {% if disc.professor.foto %}
+                                <img src="{{ disc.professor.foto.url }}" alt="{{ disc.professor.nome_completo }}">
+                            {% else %}
+                                <i class="fa-solid fa-user"></i>
+                            {% endif %}
+                        </div>
                         {{ disc.professor.nome_completo }}
                     </span>
                 </div>

@@ -262,8 +262,11 @@ def excluir_aluno(request, aluno_id):
 
 # ==================== GESTORES ====================
 
+def pode_gerenciar_gestores(u):
+    return u.is_superuser or (hasattr(u, "gestor") and u.gestor.cargo in ("diretor", "vice_diretor"))
+
 @login_required
-@user_passes_test(is_superuser)
+@user_passes_test(pode_gerenciar_gestores)
 def cadastrar_editar_gestor(request, gestor_id=None):
     """Dashboard Gestão."""
     gestor = get_object_or_404(Gestor, id=gestor_id) if gestor_id else None
@@ -280,7 +283,7 @@ def cadastrar_editar_gestor(request, gestor_id=None):
     })
 
 @login_required
-@user_passes_test(is_superuser)
+@user_passes_test(pode_gerenciar_gestores)
 def listar_gestores(request):
     """Lista gestores."""
     query = request.GET.get("q", "")
@@ -291,7 +294,7 @@ def listar_gestores(request):
     })
 
 @login_required
-@user_passes_test(is_superuser)
+@user_passes_test(pode_gerenciar_gestores)
 def excluir_gestor(request, gestor_id):
     """Remove gestor."""
     gestor = get_object_or_404(Gestor, id=gestor_id)

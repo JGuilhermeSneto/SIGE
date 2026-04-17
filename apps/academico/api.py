@@ -2,26 +2,23 @@ from rest_framework import serializers, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models.desempenho import NotificacaoAluno
+from .models.desempenho import Notificacao
 
-class NotificacaoAlunoSerializer(serializers.ModelSerializer):
+class NotificacaoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = NotificacaoAluno
+        model = Notificacao
         fields = ['id', 'tipo', 'titulo', 'mensagem', 'url_destino', 'lida', 'criado_em']
 
-class NotificacaoAlunoViewSet(viewsets.ModelViewSet):
+class NotificacaoViewSet(viewsets.ModelViewSet):
     """
-    API endpoint para listar e gerenciar notificações do aluno autenticado.
-    Acesso restrito: Apenas alunos podem visualizar suas próprias notificações.
+    API endpoint para listar e gerenciar notificações do usuário autenticado.
+    Acesso universal: Qualquer usuário autenticado vê suas próprias notificações.
     """
-    serializer_class = NotificacaoAlunoSerializer
+    serializer_class = NotificacaoSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        if hasattr(user, 'aluno'):
-            return NotificacaoAluno.objects.filter(aluno=user.aluno).order_by('-criado_em')
-        return NotificacaoAluno.objects.none()
+        return Notificacao.objects.filter(usuario=self.request.user).order_by('-criado_em')
 
     @action(detail=True, methods=['post'])
     def marcar_lida(self, request, pk=None):
@@ -32,8 +29,5 @@ class NotificacaoAlunoViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def marcar_todas_lidas(self, request):
-        user = self.request.user
-        if hasattr(user, 'aluno'):
-            NotificacaoAluno.objects.filter(aluno=user.aluno, lida=False).update(lida=True)
-            return Response({'status': 'todas notificações marcadas como lidas'}, status=status.HTTP_200_OK)
-        return Response({'status': 'erro'}, status=status.HTTP_400_BAD_REQUEST)
+        Notificacao.objects.filter(usuario=self.request.user, lida=False).update(lida=True)
+        return Response({'status': 'todas notificações marcadas como lidas'}, status=status.HTTP_200_OK)

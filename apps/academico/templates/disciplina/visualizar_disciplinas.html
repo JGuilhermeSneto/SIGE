@@ -3,7 +3,7 @@
 {# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
-{% load get_item %}
+{% load custom_tags %}
 
 {% block title %}Detalhes: {{ disciplina.nome|default:"Disciplina" }}{% endblock %}
 
@@ -85,9 +85,11 @@
             <span class="info-label">Professor(a) Responsável</span>
             <div class="info-value">
                 {% if disciplina.professor %}
-                    <div class="badge-professor">
-                        <i class="fa-solid fa-user-tie" style="color: var(--accent-violet); font-size: 0.8rem;"></i>
-                        <span>{{ disciplina.professor.nome_completo }}</span>
+                    <div class="badge-professor" style="padding: 3px 14px 3px 5px; gap: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); background: var(--bg-surface);">
+                        <img src="{{ disciplina.professor.user|foto_perfil_url }}" 
+                             alt="Foto de {{ disciplina.professor.nome_completo }}"
+                             style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-violet); background: var(--bg-hover);">
+                        <span style="font-weight: 700; color: var(--text-primary); font-size: 0.9rem;">{{ disciplina.professor.nome_completo }}</span>
                     </div>
                 {% else %}
                     <span style="color: var(--accent-ruby); font-style: italic;">Não atribuído</span>
@@ -113,7 +115,7 @@
     <div style="width: 100%; height: 1px; background: var(--border-subtle); margin: 20px 0;"></div>
 
     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap; gap: 15px;">
-        <div style="display: flex; gap: 10px;">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
             <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">
                 <i class="fa-solid fa-pen-to-square" style="margin-right: 8px;"></i> Gerenciar Notas
             </a>
@@ -121,8 +123,11 @@
                 <i class="fa-solid fa-clipboard-user" style="margin-right: 8px;"></i> Registro de Frequência
             </a>
             {% if is_professor or is_gestor_ou_super %}
+            <a class="disciplina" href="{% url 'listar_atividades' disciplina.id %}" style="background: hsla(260, 65%, 52%, 0.1); color: var(--accent-violet); border-color: var(--accent-violet);">
+                <i class="fa-solid fa-tasks" style="margin-right: 8px;"></i> Atividades e Provas
+            </a>
             <a class="disciplina" href="{% url 'listar_materiais_professor' disciplina.id %}" style="background: hsla(160, 65%, 52%, 0.1); color: var(--accent-emerald); border-color: var(--accent-emerald);">
-                <i class="fa-solid fa-folder-open" style="margin-right: 8px;"></i> Materiais de Aula
+                <i class="fa-solid fa-folder-open" style="margin-right: 8px;"></i> Arquivos / Materiais
             </a>
             {% endif %}
         </div>
@@ -155,11 +160,19 @@
         {% with nota=notas_dict|get_item:aluno.id %}
         <tr>
           <td>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--text-secondary); border: 1px solid var(--border-subtle);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <!-- Número de chamada -->
+                <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--bg-hover); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--text-muted); border: 1px solid var(--border-subtle); flex-shrink: 0; font-weight: 700;">
                     {{ forloop.counter }}
                 </div>
-                {{ aluno.nome_completo }}
+                
+                <!-- Foto de Perfil -->
+                <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 2px solid var(--bg-surface); box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex-shrink: 0;">
+                    <img src="{{ aluno.user|foto_perfil_url }}" alt="Foto de {{ aluno.nome_completo }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+
+                <!-- Nome -->
+                <span style="font-weight: 500; color: var(--text-primary); margin-left: 5px;">{{ aluno.nome_completo }}</span>
             </div>
           </td>
 

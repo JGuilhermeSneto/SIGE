@@ -111,8 +111,11 @@
 
 {% block content %}
 <div class="main-area">
-    <div class="header-painel">
-        <h1>{% if material %}Editar <span class="destaque">Material</span>{% else %}Novo <span class="destaque">Material</span>{% endif %}</h1>
+    <div class="header-painel" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="margin-bottom: 0;">{% if material %}Editar <span class="destaque">Material</span>{% else %}Novo <span class="destaque">Material</span>{% endif %}</h1>
+        <a href="{% url 'listar_materiais_professor' disciplina.id %}" class="btn-cancel" style="padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border-mid); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
+            <i class="fa-solid fa-arrow-left"></i> Voltar
+        </a>
     </div>
 
     <div class="form-container">

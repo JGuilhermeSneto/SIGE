@@ -41,10 +41,15 @@
     <h1><i class="fa-solid fa-clipboard-list"></i> Lançar Chamada</h1>
     <p>{{ disciplina.nome }} &mdash; {{ disciplina.turma }}</p>
   </div>
-  {# Link para o histórico de chamadas da disciplina #}
-  <a href="{% url 'historico_frequencia' disciplina.id %}" class="btn-header">
-    <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
-  </a>
+  {# Links de navegação do cabeçalho #}
+  <div style="display: flex; gap: 10px;">
+    <a href="{% url 'visualizar_disciplinas' disciplina.id %}" class="btn-header" style="background: rgba(148, 163, 184, 0.1); color: var(--text-secondary); border-color: var(--border-mid);">
+      <i class="fa-solid fa-arrow-left"></i> Voltar ao Diário
+    </a>
+    <a href="{% url 'historico_frequencia' disciplina.id %}" class="btn-header">
+      <i class="fa-solid fa-clock-rotate-left"></i> Ver histórico
+    </a>
+  </div>
 </div>
 
 

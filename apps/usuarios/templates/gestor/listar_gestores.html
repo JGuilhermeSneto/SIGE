@@ -11,6 +11,7 @@
 {# ============================================================ #}
 {% extends 'core/base.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block title %}Gestores{% endblock %}
 {% block header_title %}Gestores{% endblock %}
@@ -38,14 +39,12 @@
 
     <h1 class="titulo-pagina">Gestores</h1>
 
-    {# Botão de cadastrar novo gestor — visível apenas para superusuário #}
-    {% if user.is_superuser %}
-      <a href="{% url 'cadastrar_gestor' %}">
-        <button class="btn-adicionar">
-          Adicionar Gestor
-        </button>
-      </a>
-    {% endif %}
+    {# Botão de cadastrar novo gestor #}
+    <a href="{% url 'cadastrar_gestor' %}">
+      <button class="btn-adicionar">
+        Adicionar Gestor
+      </button>
+    </a>
   </div>
 
   {# ── Card principal com tabela ── #}
@@ -75,10 +74,6 @@
             <td>{{ gestor.user.email }}</td>
 
             <td class="coluna-acoes">
-              {# FIX: apenas superusuário pode editar/excluir gestores         #}
-              {# A view listar_gestores é protegida por @user_passes_test(is_superuser) #}
-              {# mas o template também deve ocultar botões para outros perfis  #}
-              {% if user.is_superuser %}
               <div class="acoes-grupo">
                 {# Editar gestor #}
                 <a href="{% url 'editar_gestor' gestor.id %}" class="acao-btn" title="Editar">
@@ -100,7 +95,6 @@
                   <i class="fa-solid fa-trash acao-excluir"></i>
                 </a>
               </div>
-              {% endif %}
             </td>
           </tr>
 

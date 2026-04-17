@@ -100,6 +100,40 @@ html[data-theme="gray"] {
 .header-breadcrumb a:hover { color: var(--text-primary); }
 .header-breadcrumb i { font-size: .6rem; }
 
+.header-acoes {
+  display: flex;
+  align-items: center;
+}
+
+.btn-voltar-primario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(129, 140, 248, 0.08);
+  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-voltar-primario:hover {
+  background: rgba(129, 140, 248, 0.15);
+  border-color: var(--theme-primary);
+  color: var(--text-primary);
+  transform: translateX(-3px);
+}
+
+.btn-voltar-primario i {
+  font-size: 0.75rem;
+  color: var(--theme-primary);
+}
+
 /* ════════════════════════════════════════
    CARD DA GRADE (Estilo Registration)
 ═════════════════════════════════════════*/
@@ -235,11 +269,20 @@ html[data-theme="gray"] {
 }
 
 .minha-disciplina {
-  background: rgba(var(--theme-primary-rgb), .08);
+  background: rgba(var(--theme-primary-rgb), .1) !important;
   color: var(--theme-primary) !important;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
+  font-weight: 700;
   position: relative;
+  border-left: 4px solid var(--theme-primary) !important;
+}
+
+.icone-minha-aula {
+  position: absolute;
+  right: 6px;
+  top: 4px;
+  font-size: 0.65rem;
+  color: var(--theme-primary);
+  opacity: 0.5;
 }
 
 /* ── Legenda ── */
@@ -253,14 +296,32 @@ html[data-theme="gray"] {
 .legenda-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: .72rem;
-  color: var(--text-muted);
+  gap: 10px;
+  font-size: .8rem;
+  color: var(--text-secondary);
 }
 
-.legenda-cor { width: 12px; height: 12px; border-radius: 3px; }
-.legenda-cor.destaque { background: var(--theme-primary); opacity: .4; }
-.legenda-cor.normal { background: var(--bg-elevated); border: 1px solid var(--border-mid); }
+.legenda-item strong {
+  color: var(--text-primary);
+  font-size: 0.82rem;
+}
+
+.legenda-cor { 
+  width: 14px; 
+  height: 14px; 
+  border-radius: 4px; 
+  flex-shrink: 0;
+}
+
+.legenda-cor.destaque { 
+  background: rgba(var(--theme-primary-rgb), .12); 
+  border-left: 3px solid var(--theme-primary);
+}
+
+.legenda-cor.normal { 
+  background: var(--bg-elevated); 
+  border: 1px solid var(--border-mid); 
+}
 
 /* ── Animações ── */
 @keyframes fadeUp {
