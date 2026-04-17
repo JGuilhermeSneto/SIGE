@@ -112,6 +112,32 @@ html[data-theme="default"] {
   background: var(--bg-elevated);
 }
 
+.btn-acervo {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem 1rem;
+  border: 1px solid var(--border-mid);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--accent-cyan);
+  font-size: .8rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s, color .2s, border-color .2s, transform .2s;
+}
+
+.btn-acervo:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-acervo i {
+  color: var(--accent-cyan);
+}
+
 .filtro-ano-painel .icone-cal {
   font-size: 12px;
   opacity: .92;
