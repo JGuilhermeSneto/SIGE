@@ -40,7 +40,10 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 | **`apps.usuarios`** | Autenticação, perfis e painéis por papel. | Login, reset de senha, cadastro/edição de perfis, dashboards (superusuário, gestor, professor, aluno). |
 | **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, grade horária, notas, frequência, atividades, relatórios. |
 | **`apps.calendario`** | Calendário acadêmico e eventos. | Visualização mensal, integração com utilitários de grade em `apps.academico`. |
-| **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, **estáticos globais** em `static/core/`. |
+| **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, **estáticos globais** em `static/core/`, Design System (tokens, components, themes). |
+| **`apps.biblioteca`** | Gestão do acervo escolar. | Cadastro de livros, empréstimos, devoluções, detalhamento completo por livro (autor, editora, data de cadastro). |
+| **`apps.comunicacao`** | Comunicados institucionais. | Mural de avisos com segmentação de público e controle de expiração por data. |
+| **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, medicamentos, atestados médicos com fluxo de aprovação e automação pedagógica. |
 
 ### ✨ Atualizações recentes (Abr/2026)
 
@@ -48,13 +51,14 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
   - Workflow unificado para envio de atestados (Alunos, Professores e Gestores).
   - **Automação Inteligente**: A aprovação de atestado de professor suspende automaticamente as aulas previstas no período; para alunos, justifica faltas e bloqueia lançamentos indevidos na chamada.
   - Indicadores Visuais: Badge **[DE ATESTADO]** na folha de chamada e marcador **(SUSPENSA)** na grade horária semanal.
-- **Sistema de Notificações Globais**
-  - Notificações em tempo real no menu lateral para gestores, indicando volume de documentos pendentes.
-  - Integração do módulo de saúde em todas as barras laterais do sistema.
-- **Design System Premium**
-  - Padronização de todo o sistema em três temas principais: "Indigo Profundo", "Cinza Industrial" e "Azul Corporativo".
-  - Padronização global dos botões (Próximo, Salvar) garantindo alto contraste e interatividade fluida por componente.
-  - Atualização do "Mural de Avisos" e "Notificações" usando o layout em `card-mural-sidebar`.
+- **Biblioteca Digital — Detalhamento de Acervo**
+  - Página de detalhes por livro com dados completos: título, autor, editora, ano de publicação, ISBN e data de cadastro no acervo.
+  - Adicionado campo `data_cadastro` no model `Livro` com migration.
+  - Fotos de perfil dos professores exibidas em listagens de atividades e grade horária.
+- **Design System Premium — Temas & Login**
+  - Padronização em três temas: "Indigo Profundo", "Cinza Industrial" e "Azul Corporativo".
+  - Logo da splash screen agora fica **preta** automaticamente nos temas claros (via `brightness(0)` injetado diretamente no HTML).
+  - **Animações de Input Reformuladas**: os campos de e-mail e senha da tela de login exibem um *glow ring* sutil ao serem selecionados, com barra de progresso colorida ao digitar e troca de ícone (envelope/cadeado). O bug de sobreposição do foco nativo do navegador foi corrigido injetando `outline: none !important` e estilos inline diretamente no widget Django.
 - **Otimizações de Dashboard**
   - Alunos e professores visualizam sua saúde escolar com total autonomia.
   - Calendário dinâmico personalizado: exibe suspensões de aula individuais e eventos globais no mesmo dashboard.
@@ -174,10 +178,16 @@ Localmente você pode ainda usar **Black** e **isort** (presentes no `requiremen
 
 ## 🛣️ 7. Futuras Melhorias e Roadmap
 
-* [ ] **API**: consolidar e documentar endpoints com Django REST Framework.
-* [ ] **BI / dashboards**: gráficos de desempenho (ex.: Chart.js).
-* [ ] **Notificações**: alertas sobre notas e faltas.
+* [x] **Sistema de Notificações**: alertas sobre atestados e comunicados globais (entregue).
+* [x] **Biblioteca Digital**: acervo com empréstimos e página de detalhes (entregue).
+* [🚀] **BI / Dashboards Gerenciais**: gráficos de desempenho escolar via Chart.js — *sprint ativo*.
+* [ ] **Histórico Escolar**: relatório acumulativo por aluno.
+* [ ] **Gestão de Estoque**: controle de insumos da infraestrutura.
+* [ ] **API REST**: consolidar e documentar endpoints com Django REST Framework.
 * [ ] **Multi-tenant**: várias escolas na mesma instância, se necessário.
+* [ ] **Versão 2.0 — Financeiro**: geração de boletos, gestão de inadimplência, folha de pagamento.
+* [ ] **Versão 3.0 — Convênios**: gestão de estágios e expansão multidisciplinar.
+* [ ] **Versão 4.0 — IA & Mobile**: health score preditivo de evasão, PWA nativo.
 
 ---
 
@@ -219,6 +229,8 @@ Localmente você pode ainda usar **Black** e **isort** (presentes no `requiremen
 > As migrations recentes incluem:
 > - `academico.0003_atividadeprofessor_gabarito_liberacao`
 > - `academico.0004_notificacaoaluno`
+> - `academico.0009_notificacao_delete_notificacaoaluno`
+> - `biblioteca.0004_livro_data_cadastro`
 
 Para MySQL no ambiente institucional, consulte também `instruções.md`.
 
