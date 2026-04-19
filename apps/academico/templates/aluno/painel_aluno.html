@@ -105,7 +105,6 @@
     }
 
     @keyframes mural-badge-pulse {
-
         0%,
         100% {
             transform: scale(1);
@@ -291,6 +290,8 @@
                     <i class="fa-solid fa-book-open"></i> Minhas Disciplinas e Notas
                 </p>
 
+                <p style="font-size: 0.8rem; color: red; display: none;">Debug: Mês: {{ mes_nome }}, Disciplinas: {{ disciplinas_com_notas|length }}, Empréstimos: {{ meus_emprestimos|length }}</p>
+
                 <div class="lista-disciplinas">
                     {% for item in disciplinas_com_notas %}
                     <div class="disciplina-card">
@@ -306,10 +307,7 @@
                                     {% endif %}
                                 </div>
                                 <div>
-                                    <h3 style="margin: 0; font-size: 1rem;">{{ item.disciplina.professor.nome_completo
-                                        }}</h3>
-                                    <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">{{
-                                        item.disciplina.nome }}</p>
+                                    <h3 style="margin: 0; font-size: 1rem;">{{ item.disciplina.nome }} - {{ item.disciplina.professor.nome_completo|default:"Professor não informado" }}</h3>
                                 </div>
                             </div>
 
@@ -375,19 +373,15 @@
                                 <div class="mini-materiais-lista"
                                     style="display: flex; flex-direction: column; gap: 6px;">
                                     {% for mat in item.materiais_recentes %}
-                                    <a href="{% if mat.tipo == 'LINK' %}{{ mat.url }}{% elif mat.tipo == 'ARQUIVO' %}{{ mat.arquivo.url }}{% elif mat.tipo == 'LIVRO' %}{% if mat.livro.arquivo_digital %}{{ mat.livro.arquivo_digital.url }}{% elif mat.livro.url_digital %}{{ mat.livro.url_digital }}{% else %}{% url 'acervo_biblioteca' %}{% endif %}{% else %}#{% endif %}"
-                                        class="mini-material-link"
-                                        style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); font-size: 0.8rem; padding: 6px 10px; background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border-subtle); transition: all 0.2s;"
-                                        {% if mat.tipo != 'LIVRO' or mat.livro.arquivo_digital or mat.livro.url_digital %}target="_blank"{% endif %}>
+                                    <a href="{% url 'acervo_biblioteca' %}" class="mini-material-link"
+                                        style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-primary); font-size: 0.8rem; padding: 6px 10px; background: var(--bg-surface); border-radius: 8px; border: 1px solid var(--border-subtle); transition: all 0.2s;">
                                         <span
                                             style="width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; flex-shrink: 0; {% if mat.tipo == 'LINK' %}background: rgba(139, 92, 246, 0.1); color: var(--accent-violet);{% elif mat.tipo == 'ARQUIVO' %}background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald);{% else %}background: rgba(251, 191, 36, 0.1); color: var(--accent-amber);{% endif %}">
                                             {% if mat.tipo == 'LINK' %}<i class="fa-solid fa-link"></i>
                                             {% elif mat.tipo == 'ARQUIVO' %}<i class="fa-solid fa-file-pdf"></i>
                                             {% else %}<i class="fa-solid fa-book"></i>{% endif %}
                                         </span>
-                                        <span
-                                            style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{
-                                            mat.titulo }}</span>
+                                        <span style="font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ mat.titulo }}</span>
                                         <i class="fa-solid fa-chevron-right"
                                             style="margin-left: auto; font-size: 0.5rem; opacity: 0.4;"></i>
                                     </a>
@@ -411,11 +405,11 @@
 
                 {% if meus_emprestimos %}
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
-                    {% for emprestimo in meus_emprestimos %}
+                    {% for emprestado in meus_emprestimos %}
                     <div
                         style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; padding: 15px; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                        {% if emprestimo.livro.capa %}
-                        <img src="{{ emprestimo.livro.capa.url }}" alt="{{ emprestimo.livro.titulo }}"
+                        {% if emprestado.livro.capa %}
+                        <img src="{{ emprestado.livro.capa.url }}" alt="{{ emprestado.livro.titulo }}"
                             style="width: 60px; height: 85px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         {% else %}
                         <div
@@ -427,22 +421,20 @@
                             style="display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
                             <div>
                                 <h4 style="margin: 0 0 4px 0; font-size: 0.95rem; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                                    title="{{ emprestimo.livro.titulo }}">{{ emprestimo.livro.titulo }}</h4>
-                                <p style="margin: 0 0 8px 0; font-size: 0.75rem; color: var(--text-muted);">Autor: {{
-                                    emprestimo.livro.autor }}</p>
+                                    title="{{ emprestado.livro.titulo }}">{{ emprestado.livro.titulo }}</h4>
+                                <p style="margin: 0 0 8px 0; font-size: 0.75rem; color: var(--text-muted);">Autor: {{ emprestado.livro.autor|default:"Autor não informado" }}</p>
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <span
-                                    style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; width: fit-content; {% if emprestimo.status == 'RESERVA' %}background: rgba(251, 191, 36, 0.1); color: var(--accent-amber);{% elif emprestimo.status == 'ATRASADO' %}background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby);{% else %}background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan);{% endif %}">
-                                    {% if emprestimo.status == 'ATIVO' %}Em Posse
-                                    {% elif emprestimo.status == 'ATRASADO' %}Atrasado!
-                                    {% elif emprestimo.status == 'RESERVA' %}Reservado
-                                    {% else %}{{ emprestimo.get_status_display }}{% endif %}
+                                    style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; display: inline-block; width: fit-content; {% if emprestado.status == 'RESERVA' %}background: rgba(251, 191, 36, 0.1); color: var(--accent-amber);{% elif emprestado.status == 'ATRASADO' %}background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby);{% else %}background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan);{% endif %}">
+                                    {% if emprestado.status == 'ATIVO' %}Em Posse
+                                    {% elif emprestado.status == 'ATRASADO' %}Atrasado!
+                                    {% elif emprestado.status == 'RESERVA' %}Reservado
+                                    {% else %}{{ emprestado.get_status_display }}{% endif %}
                                 </span>
-                                {# ✅ CORREÇÃO: endif na mesma linha, sem quebra #}
-                                <span style="font-size: 0.75rem; color: {% if emprestimo.status == 'ATRASADO' %}var(--accent-ruby){% else %}var(--text-dim){% endif %};">
-                                    {% if emprestimo.status == 'RESERVA' %}Retirar até:{% else %}Devolver em:{% endif %}
-                                    <strong>{{ emprestimo.data_devolucao_prevista|date:"d/m" }}</strong>
+                                <span style="font-size: 0.75rem; color: {% if emprestado.status == 'ATRASADO' %}var(--accent-ruby){% else %}var(--text-dim){% endif %};">
+                                    {% if emprestado.status == 'RESERVA' %}Retirar até:{% else %}Devolver em:{% endif %}
+                                    <strong>{{ emprestado.data_devolucao_prevista|date:"d/m" }}</strong>
                                 </span>
                             </div>
                         </div>
@@ -489,9 +481,8 @@
                                     title="{{ dev.livro.titulo }}">{{ dev.livro.titulo }}</h4>
                                 <span class="badge-leitura badge-leitura-{{ dev.status_leitura|lower }}"
                                     id="badge-{{ dev.id }}" style="flex-shrink: 0;">
-                                    {% if dev.status_leitura == 'FINALIZADO' %}<i class="fa-solid fa-circle-check"></i>
-                                    Finalizado
-                                    {% elif dev.status_leitura == 'LENDO' %}<i class="fa-solid fa-book-open"></i> Lendo
+                                    {% if dev.status_leitura == "FINALIZADO" %}<i class="fa-solid fa-circle-check"></i> Finalizado
+                                    {% elif dev.status_leitura == "LENDO" %}<i class="fa-solid fa-book-open"></i> Lendo
                                     {% else %}<i class="fa-regular fa-clock"></i> Devolvido{% endif %}
                                 </span>
                             </div>
@@ -508,9 +499,9 @@
                                     onchange="atualizarLeitura(this)"
                                     style="font-size: 0.68rem; padding: 3px 6px; border-radius: 6px; border: 1px solid var(--border-mid); background: var(--bg-elevated); color: var(--text-secondary); cursor: pointer; flex-shrink: 0; width: 120px;">
                                     <option value="">— Atualizar status</option>
-                                    <option value="FINALIZADO" {% if dev.status_leitura == 'FINALIZADO' %}selected{% endif %}>Finalizei a Leitura</option>
-                                    <option value="LENDO" {% if dev.status_leitura == 'LENDO' %}selected{% endif %}>Estava Lendo</option>
-                                    <option value="NAO_INFORMADO" {% if dev.status_leitura == 'NAO_INFORMADO' %}selected{% endif %}>Só Devolvi</option>
+                                    <option value="FINALIZADO" {% if dev.status_leitura == "FINALIZADO" %}selected{% endif %}>Finalizei a Leitura</option>
+                                    <option value="LENDO" {% if dev.status_leitura == "LENDO" %}selected{% endif %}>Estava Lendo</option>
+                                    <option value="NAO_INFORMADO" {% if dev.status_leitura == "NAO_INFORMADO" %}selected{% endif %}>Só Devolvi</option>
                                 </select>
                             </div>
 
@@ -546,8 +537,7 @@
                                 <span class="tag-mural publico-{{ c.publico_alvo|lower }}">
                                     {% if c.publico_alvo == 'GLOBAL' %}<i class="fa-solid fa-earth-americas"></i>
                                     {% elif c.publico_alvo == 'ALUNOS' %}<i class="fa-solid fa-user-graduate"></i>
-                                    {% elif c.publico_alvo == 'PROFESSORES' %}<i
-                                        class="fa-solid fa-person-chalkboard"></i>
+                                    {% elif c.publico_alvo == 'PROFESSORES' %}<i class="fa-solid fa-person-chalkboard"></i>
                                     {% elif c.publico_alvo == 'GESTORES' %}<i class="fa-solid fa-user-tie"></i>
                                     {% endif %}
                                     {{ c.get_publico_alvo_display }}
@@ -566,6 +556,7 @@
                     {% endif %}
                 </div>
             </section>
+
             {# Gráfico de desempenho (Padronizado via sige-widget) ── #}
             <section id="widget-desempenho" class="sige-widget">
                 <header class="sige-widget-header" onclick="toggleWidget('widget-desempenho', 'desempenho')">
@@ -583,10 +574,8 @@
                     <a href="{% url 'visualizar_calendario' %}" class="calendario-link-header"
                         style="text-decoration: none; color: inherit; flex: 1;">
                         <h3 style="margin: 0;">
-                            <i class="fa-solid fa-calendar-days" style="color: var(--accent-violet);"></i> {{ mes_nome
-                            }}
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">{{
-                                ano_calendario }}</span>
+                            <i class="fa-solid fa-calendar-days" style="color: var(--accent-violet);"></i> {{ mes_nome }}
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">{{ ano_calendario }}</span>
                         </h3>
                     </a>
                     <i class="fa-solid fa-chevron-up sige-widget-toggle"></i>
@@ -622,7 +611,6 @@
                     </div>
                 </div>
             </section>
-
 
         </div>
 
@@ -859,12 +847,12 @@
                 type: 'bar',
                 data: {
                     labels: [
-                        {% for item in disciplinas_com_notas %}'{{ item.disciplina.nome|truncatechars:15 }}'{% if not forloop.last %},{% endif %}{% endfor %}
+                        {% for item in disciplinas_com_notas %}'{{ item.disciplina.nome|truncatechars:15 }}'{% if not forloop.last %}, {% endif %}{% endfor %}
                     ],
                     datasets: [{
                         label: 'Média',
                         data: [
-                            {% for item in disciplinas_com_notas %}{{ item.nota.media|default:"0"|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}
+                            {% for item in disciplinas_com_notas %}{{ item.nota.media|default:"0"|unlocalize }}{% if not forloop.last %}, {% endif %}{% endfor %}
                         ],
                         backgroundColor: 'rgba(66, 133, 244, 0.7)',
                         borderColor: 'rgba(66, 133, 244, 1)',
@@ -938,7 +926,7 @@
 
 <script>
     // ── Notificações do Mural de Avisos (localStorage) ──
-    const COMUNICADOS_ATUAIS = [{% for c in comunicados %}{{ c.id }}{% if not forloop.last %},{% endif %}{% endfor %}];
+    const COMUNICADOS_ATUAIS = [{% for c in comunicados %}{{ c.id }}{% if not forloop.last %}, {% endif %}{% endfor %}];
 
     const STORAGE_KEY_MURAL = 'sige_mural_vistos_{{ request.user.id }}';
 

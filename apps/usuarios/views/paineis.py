@@ -278,7 +278,7 @@ def painel_aluno(request):
     agora = datetime.now()
     ano_atual = agora.year
     MESES = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    mes_nome = MESES[agora.month - 1].upper()
+    mes_nome = MESES[agora.month - 1].title()
 
     from apps.biblioteca.models.biblioteca import Emprestimo
     emprestimos = Emprestimo.objects.filter(usuario_aluno=aluno).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
