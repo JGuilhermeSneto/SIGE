@@ -11,4 +11,6 @@ urlpatterns = [
     path('gestao/devolucao/<int:pk>/', views.registrar_devolucao, name='registrar_devolucao'),
     path('livro/novo/', views.cadastrar_livro, name='cadastrar_livro'),
     path('api/status-leitura/', views.atualizar_status_leitura, name='atualizar_status_leitura'),
+    path('minhas-leituras/', views.minhas_leituras, name='minhas_leituras'),
+    path('leituras/aluno/<int:pk>/', views.minhas_leituras, name='historico_leituras_aluno'),
 ]

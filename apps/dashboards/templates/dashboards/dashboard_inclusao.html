@@ -1,0 +1,193 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard de Inclusão & Acessibilidade{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bi-container { padding: 30px; }
+    
+    .bi-card { 
+        background: var(--bg-surface); 
+        border: 1px solid var(--border-subtle); 
+        border-radius: var(--radius-lg); 
+        padding: 24px; 
+        display: flex; 
+        flex-direction: column; 
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .bi-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 4px;
+        background: var(--ac-gradient-vibrant);
+        z-index: 2;
+    }
+
+    .bi-card.pcd::before { background: var(--accent-violet); }
+    .bi-card.alergia::before { background: var(--accent-ruby); }
+    .bi-card.saude::before { background: var(--accent-emerald); }
+
+    .bi-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; gap: 15px; flex-wrap: wrap; }
+    
+    /* Top Metrics */
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .metric-card { 
+        background: var(--bg-surface); 
+        padding: 24px; 
+        border-radius: var(--radius-lg); 
+        border: 1px solid var(--border-subtle);
+        border-left: 4px solid var(--border-subtle); 
+        box-shadow: var(--shadow-sm);
+    }
+    .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 8px; letter-spacing: 0.05em; }
+    .metric-value { font-size: 2.2rem; color: var(--text-primary); font-weight: 800; margin: 0; letter-spacing: -0.02em; }
+    
+    /* Charts Grid */
+    .bi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; }
+
+    .alerta-item {
+        padding: 15px;
+        background: rgba(var(--accent-ruby-rgb), 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(var(--accent-ruby-rgb), 0.1);
+        border-left: 4px solid var(--accent-ruby);
+        margin-bottom: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-container">
+    <div class="bi-header">
+        <div>
+            <h1 style="color: var(--text-primary); margin-bottom: 5px;"><i class="fa-solid fa-universal-access" style="color: var(--accent-violet)"></i> Painel de Inclusão & Saúde</h1>
+            <p style="color: var(--text-muted); margin: 0;">Análise demográfica de acessibilidade e monitoramento preventivo</p>
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{% url 'gestao_atestados' %}" class="sige-btn-outline" style="border-radius: 50px; padding: 10px 25px;">
+                <i class="fa-solid fa-file-medical"></i> Ver Atestados
+            </a>
+        </div>
+    </div>
+
+    <!-- KPIs Topo -->
+    <div class="metrics-grid">
+        <div class="metric-card" style="border-left-color: var(--accent-violet);">
+            <p class="metric-title">Alunos PCD</p>
+            <p class="metric-value">{{ stats.pcd }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">{{ stats.percentual_pcd }}% do corpo discente</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-ruby);">
+            <p class="metric-title">Risco Alérgico</p>
+            <p class="metric-value">{{ stats.alergias }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Alunos com restrições registradas</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-emerald);">
+            <p class="metric-title">Total de Alunos</p>
+            <p class="metric-value">{{ stats.total }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Base ativa monitorada</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-cyan);">
+            <p class="metric-title">Documentação</p>
+            <p class="metric-value">100%</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Acesso restrito à gestão</p>
+        </div>
+    </div>
+
+    <div class="bi-grid">
+        <!-- Distribuição Sanguínea -->
+        <div class="bi-card saude">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-droplet" style="color: var(--accent-ruby)"></i> Distribuição Sanguínea</h3>
+            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 250px;">
+                <canvas id="chartSanguineo"></canvas>
+            </div>
+        </div>
+
+        <!-- Alertas de Saúde Urgentes -->
+        <div class="bi-card alergia" style="grid-column: span 1;">
+            <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-biohazard" style="color: var(--accent-ruby)"></i> Alertas de Saúde Críticos</h3>
+            <div style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                {% for alerta in alertas_criticos %}
+                <div class="alerta-item">
+                    <div>
+                        <span style="display: block; font-weight: 700; color: var(--text-primary); font-size: 0.9rem;">{{ alerta.aluno }}</span>
+                        <span style="font-size: 0.8rem; color: var(--accent-ruby); font-weight: 600;">Alergia: {{ alerta.alergia|truncatechars:40 }}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="display: block; font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase;">Medicação</span>
+                        <span style="font-size: 0.8rem; color: var(--text-secondary);">{{ alerta.medicamento|truncatechars:20 }}</span>
+                    </div>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Nenhum alerta crítico registrado.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Gráfico de Tipos de PCD (Simulado ou Real baseado em descrição) -->
+        <div class="bi-card pcd" style="grid-column: span 1;">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-wheelchair" style="color: var(--accent-violet)"></i> Espectro de Inclusão</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="chartPCD"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+    Chart.defaults.color = '#8b97bb';
+    const gridColor = 'rgba(255,255,255,0.06)';
+
+    // Tipos Sanguíneos
+    new Chart(document.getElementById('chartSanguineo'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ sanguineo_labels|safe }},
+            datasets: [{
+                data: {{ sanguineo_data|safe }},
+                backgroundColor: ['#f87171', '#fb923c', '#fbbf24', '#34d399', '#22d3ee', '#818cf8', '#a78bfa', '#f472b6'],
+                borderWidth: 0,
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '65%',
+            plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 15 } } }
+        }
+    });
+
+    // Gráfico PCD (Simplificado)
+    new Chart(document.getElementById('chartPCD'), {
+        type: 'bar',
+        data: {
+            labels: ['PCD Ativos', 'Sem Necessidades'],
+            datasets: [{
+                label: 'Total de Alunos',
+                data: [{{ stats.pcd }}, {{ stats.total }} - {{ stats.pcd }}],
+                backgroundColor: ['rgba(167, 139, 250, 0.8)', 'rgba(56, 189, 248, 0.2)'],
+                borderColor: ['#a78bfa', '#38bdf8'],
+                borderWidth: 1,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { stepSize: 1 } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

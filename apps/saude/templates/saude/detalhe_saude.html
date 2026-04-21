@@ -37,22 +37,56 @@
 
     <div class="medical-card">
         <div class="info-principal">
+            {# ── CARTÃO DIGITAL PREMIUM (GLASSMORPHISM) ── #}
+            <div class="sige-glass-card" style="padding: 2rem; margin-bottom: 2rem; border-left: 5px solid var(--accent-ruby);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                    <div>
+                        <span style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: var(--accent-ruby); font-weight: 800; display: block; margin-bottom: 5px;">SIGE Health Management</span>
+                        <h2 style="margin: 0; font-size: 1.8rem; color: var(--text-primary);">Cartão Digital de Saúde</h2>
+                    </div>
+                    <div style="font-size: 2.5rem; color: var(--accent-ruby); opacity: 0.8; animation: heartBeat 1.5s infinite;">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 2rem;">
+                    <div class="glass-info">
+                        <span class="data-label" style="display: block; margin-bottom: 5px;">Tipo Sanguíneo</span>
+                        <span class="data-value" style="font-size: 1.4rem; color: var(--accent-ruby);">{{ ficha.get_tipo_sanguineo_display|default:"--" }}</span>
+                    </div>
+                    <div class="glass-info">
+                        <span class="data-label" style="display: block; margin-bottom: 5px;">Status Inclusivo</span>
+                        <span class="data-value" style="font-size: 1.1rem; color: var(--text-primary);">
+                            {% if aluno.possui_necessidade_especial %}
+                            <i class="fa-solid fa-universal-access" style="color: var(--accent-violet);"></i> PCD Ativo
+                            {% else %}
+                            Padronizado
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="glass-info">
+                        <span class="data-label" style="display: block; margin-bottom: 5px;">Fator de Alerta</span>
+                        <span class="data-value" style="font-size: 1rem; color: {% if ficha.alergias %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};">
+                            {% if ficha.alergias %}Risco Alérgico{% else %}Seguro / Nominal{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
             <!-- ALERGIAS E ALERTAS -->
-            {% if ficha.alergias or ficha.condicoes_pcd %}
-            <div class="alerta-saude">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <strong>ATENÇÃO:</strong> 
-                {% if ficha.alergias %}Alergia(s): {{ ficha.alergias }}{% endif %}
-                {% if ficha.condicoes_pcd %}| PCD: {{ ficha.detalhes_pcd }}{% endif %}
+            {% if ficha.alergias or aluno.possui_necessidade_especial %}
+            <div class="alerta-saude sige-glass" style="border: 1px solid rgba(255,255,255,0.1); border-left: 4px solid var(--accent-ruby);">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-ruby);"></i>
+                <strong style="color: var(--text-primary);">ALERTA CRÍTICO:</strong> 
+                <span style="color: var(--text-secondary);">
+                    {% if ficha.alergias %}Alergia(s): {{ ficha.alergias }}{% endif %}
+                    {% if aluno.possui_necessidade_especial %}| PCD: {{ aluno.descricao_necessidade }}{% endif %}
+                </span>
             </div>
             {% endif %}
 
             <div class="info-group">
-                <h3><i class="fa-solid fa-notes-medical"></i> Informações Clínicas</h3>
-                <div class="data-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="data-row"><span class="data-label">Tipo Sanguíneo</span><span class="data-value">{{ ficha.get_tipo_sanguineo_display|default:"Não informado" }}</span></div>
-                    <div class="data-row"><span class="data-label">PCD/Deficiência</span><span class="data-value">{% if ficha.condicoes_pcd %}Sim{% else %}Não{% endif %}</span></div>
-                </div>
+                <h3><i class="fa-solid fa-notes-medical"></i> Detalhes Clínicos Adicionais</h3>
                 <div class="data-row" style="flex-direction: column; align-items: flex-start;">
                     <span class="data-label">Medicamentos Contínuos</span>
                     <p class="data-value">{% if ficha.medicamentos_continuos %}{{ ficha.medicamentos_continuos }}{% else %}Nenhum registrado{% endif %}</p>
@@ -61,14 +95,29 @@
                     <span class="data-label">Observações Médicas</span>
                     <p class="data-value" style="font-weight: 400; font-size: 0.9rem;">{{ ficha.observacoes_medicas|default:"Sem observações extras." }}</p>
                 </div>
+
+                {% if ficha.comprovante_pcd and is_gestor %}
+                <div style="margin-top: 20px; padding: 15px; background: rgba(var(--accent-cyan-rgb), 0.05); border-radius: 12px; border: 1px dashed var(--accent-cyan); display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fa-solid fa-file-medical" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                        <div>
+                            <strong style="display: block; font-size: 0.85rem; color: var(--text-primary);">Laudo / Comprovante PCD</strong>
+                            <small style="color: var(--text-muted);">Documento disponível para consulta</small>
+                        </div>
+                    </div>
+                    <a href="{{ ficha.comprovante_pcd.url }}" target="_blank" class="btn-sige-primario" style="padding: 8px 16px; font-size: 0.75rem; background: var(--accent-cyan); box-shadow: 0 4px 10px rgba(var(--accent-cyan-rgb), 0.3);">
+                        <i class="fa-solid fa-eye"></i> Visualizar Documento
+                    </a>
+                </div>
+                {% endif %}
             </div>
 
             <div class="info-group">
-                <h3><i class="fa-solid fa-syringe"></i> Histórico de Vacinas</h3>
+                <h3><i class="fa-solid fa-syringe"></i> Histórico de Vacinação</h3>
                 {% if ficha.vacinas.all %}
-                <table class="tabela-sige">
+                <table class="tabela-sige" style="background: transparent;">
                     <thead>
-                        <tr><th>Vacina</th><th>Data dose</th><th>Lote</th></tr>
+                        <tr><th style="background: rgba(255,255,255,0.02);">Vacina</th><th style="background: rgba(255,255,255,0.02);">Data dose</th><th style="background: rgba(255,255,255,0.02);">Lote</th></tr>
                     </thead>
                     <tbody>
                         {% for v in ficha.vacinas.all %}
@@ -77,26 +126,28 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p class="data-value" style="opacity: 0.5;">Nenhuma vacina registrada.</p>
+                <p class="data-value" style="opacity: 0.5; text-align: center; padding: 20px;">Nenhuma vacina registrada.</p>
                 {% endif %}
             </div>
         </div>
 
         <div class="info-contato">
-            <div class="info-group">
-                <h3><i class="fa-solid fa-phone"></i> Emergência</h3>
+            <div class="info-group sige-glass" style="border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg);">
+                <h3 style="color: var(--accent-emerald);"><i class="fa-solid fa-phone-flip"></i> Emergência 24h</h3>
                 <div class="data-row" style="flex-direction: column; align-items: flex-start;">
                     <span class="data-label">Contato Principal</span>
-                    <span class="data-value">{{ ficha.contato_emergencia_nome|default:"Não informado" }}</span>
+                    <span class="data-value" style="font-size: 1.1rem;">{{ ficha.contato_emergencia_nome|default:"Não informado" }}</span>
                 </div>
                 <div class="data-row" style="flex-direction: column; align-items: flex-start;">
                     <span class="data-label">Telefone</span>
-                    <span class="data-value" style="color: var(--accent-emerald); font-size: 1.2rem;">{{ ficha.contato_emergencia_fone|default:"-" }}</span>
+                    <a href="tel:{{ ficha.contato_emergencia_fone }}" class="data-value" style="color: var(--accent-emerald); font-size: 1.4rem; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-square-phone"></i> {{ ficha.contato_emergencia_fone|default:"-" }}
+                    </a>
                 </div>
             </div>
             
-            <div class="info-group">
-                <p style="font-size: 0.75rem; color: var(--text-muted);">Última atualização em: {{ ficha.ultima_atualizacao|date:"d/m/Y H:i" }}</p>
+            <div class="info-group" style="text-align: center; background: transparent; border: none;">
+                <p style="font-size: 0.75rem; color: var(--text-muted);">Sincronizado via SIGE Database<br>Última atualização: {{ ficha.ultima_atualizacao|date:"d/m/Y H:i" }}</p>
             </div>
         </div>
     </div>

@@ -61,32 +61,33 @@
     background: var(--primary);
     color: white;
     padding: 0.8rem 1.5rem;
-    border-radius: var(--radius-md);
+    border-radius: 48px;
+    border: 2.5px solid rgba(0, 0, 0, 0.1);
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.2s;
-    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-mid);
+    box-shadow: var(--shadow-sm), inset 0 2px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-sige-primario:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
     box-shadow: var(--shadow-glow);
     filter: brightness(1.1);
 }
 
 .btn-sige-secundario {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-mid);
+    background: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.05);
+    border: 2.5px solid var(--border-mid);
     color: var(--text-primary);
     padding: 0.8rem 1.5rem;
-    border-radius: var(--radius-md);
+    border-radius: 48px;
     font-weight: 600;
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    transition: all 0.2s;
+    transition: all var(--transition-mid);
 }
 
 .btn-sige-secundario:hover {

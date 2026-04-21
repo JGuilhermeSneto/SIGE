@@ -10,11 +10,14 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from datetime import datetime
+from django.db import transaction
 
 from ..models.perfis import Professor, Aluno, Gestor
 from apps.academico.models.academico import Turma
 from ..forms.perfis import ProfessorForm, AlunoForm, GestorForm
 from apps.academico.forms.academico import TurmaForm
+from apps.saude.forms import FichaMedicaForm
+from apps.saude.models.ficha_medica import FichaMedica
 from ..utils.perfis import get_nome_exibicao, get_foto_perfil, is_super_ou_gestor
 from apps.academico.utils.filtros import _get_anos_filtro
 
@@ -218,34 +221,72 @@ def listar_alunos(request):
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def cadastrar_aluno(request):
-    """Matrícula aluno."""
+    """Matrícula aluno e cria ficha médica."""
     if request.method == "POST":
         form = AlunoForm(request.POST, request.FILES, request=request)
-        if form.is_valid():
-            aluno = form.save()
-            messages.success(request, f"Aluno(a) {aluno.nome_completo} cadastrado(a) com sucesso!")
-            return redirect("listar_alunos")
+        form_saude = FichaMedicaForm(request.POST, request.FILES)
+        
+        if form.is_valid() and form_saude.is_valid():
+            try:
+                with transaction.atomic():
+                    aluno = form.save()
+                    # Vincula a ficha médica ao aluno e salva
+                    ficha = form_saude.save(commit=False)
+                    ficha.aluno = aluno
+                    # Sincroniza o flag PCD da Ficha com o perfil Aluno
+                    ficha.condicoes_pcd = aluno.possui_necessidade_especial
+                    ficha.save()
+                    
+                    messages.success(request, f"Aluno(a) {aluno.nome_completo} cadastrado(a) com sucesso!")
+                    return redirect("listar_alunos")
+            except Exception as e:
+                messages.error(request, f"Erro ao salvar: {str(e)}")
     else:
         form = AlunoForm(request=request)
+        form_saude = FichaMedicaForm()
+        
     return render(request, "aluno/cadastrar_aluno.html", {
-        "form": form, "nome_exibicao": get_nome_exibicao(request.user), "foto_perfil_url": get_foto_perfil(request.user),
+        "form": form, 
+        "form_saude": form_saude,
+        "nome_exibicao": get_nome_exibicao(request.user), 
+        "foto_perfil_url": get_foto_perfil(request.user),
     })
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def editar_aluno(request, aluno_id):
-    """Edita prontuário."""
+    """Edita prontuário e ficha médica."""
     aluno = get_object_or_404(Aluno, id=aluno_id)
+    # Busca a ficha médica ou cria uma nova se não existir
+    ficha_medica = getattr(aluno, 'ficha_medica', None)
+    
     if request.method == "POST":
         form = AlunoForm(request.POST, request.FILES, instance=aluno, request=request)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Aluno atualizado!")
-            return redirect("listar_alunos")
+        form_saude = FichaMedicaForm(request.POST, request.FILES, instance=ficha_medica)
+        
+        if form.is_valid() and form_saude.is_valid():
+            try:
+                with transaction.atomic():
+                    aluno_salvo = form.save()
+                    ficha = form_saude.save(commit=False)
+                    ficha.aluno = aluno_salvo
+                    ficha.condicoes_pcd = aluno_salvo.possui_necessidade_especial
+                    ficha.save()
+                    
+                    messages.success(request, "Aluno e Ficha Médica atualizados!")
+                    return redirect("listar_alunos")
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar: {str(e)}")
     else:
         form = AlunoForm(instance=aluno, request=request)
+        form_saude = FichaMedicaForm(instance=ficha_medica)
+        
     return render(request, "aluno/cadastrar_aluno.html", {
-        "form": form, "aluno": aluno, "nome_exibicao": get_nome_exibicao(request.user), "foto_perfil_url": get_foto_perfil(request.user),
+        "form": form, 
+        "form_saude": form_saude,
+        "aluno": aluno, 
+        "nome_exibicao": get_nome_exibicao(request.user), 
+        "foto_perfil_url": get_foto_perfil(request.user),
     })
 
 @login_required

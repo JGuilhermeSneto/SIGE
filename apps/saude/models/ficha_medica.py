@@ -17,6 +17,7 @@ class FichaMedica(models.Model):
     medicamentos_continuos = models.TextField(blank=True, null=True)
     condicoes_pcd = models.BooleanField(default=False, verbose_name="Possui deficiência?")
     detalhes_pcd = models.CharField(max_length=255, blank=True, null=True)
+    comprovante_pcd = models.FileField(upload_to='saude/pcd/', blank=True, null=True, verbose_name="Comprovante PCD")
     contato_emergencia_nome = models.CharField(max_length=100, blank=True, null=True)
     contato_emergencia_fone = models.CharField(max_length=20, blank=True, null=True)
     observacoes_medicas = models.TextField(blank=True, null=True)

@@ -110,10 +110,16 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <i class="fa-solid fa-user"></i>
           {{ aluno.nome_completo }}
+          {% if aluno.ficha_medica.condicoes_pcd or aluno.possui_necessidade_especial %}
+            <i class="fa-solid fa-universal-access" style="color: var(--accent-violet); font-size: 0.95rem;" title="Aluno PCD: {{ aluno.ficha_medica.detalhes_pcd|default:aluno.descricao_necessidade|default:'Necessidade não especificada' }}"></i>
+          {% endif %}
+          {% if aluno.ficha_medica.alergias %}
+            <i class="fa-solid fa-biohazard" style="color: var(--accent-ruby); font-size: 0.95rem; margin-left: 3px;" title="Alergia(s): {{ aluno.ficha_medica.alergias }}"></i>
+          {% endif %}
         </div>
         {% if aluno.user_id in ids_usuarios_de_atestado %}
-          <span class="badge-atestado" style="background: var(--accent-ruby); color: white; font-size: 0.65rem; padding: 2px 8px; border-radius: 4px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; margin-left: 30px;">
-            <i class="fa-solid fa-file-medical"></i> DE ATESTADO
+          <span class="badge-atestado" style="background: #0ea5e9; color: white; font-size: 0.65rem; padding: 3px 10px; border-radius: 20px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; margin-left: 15px; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3);">
+            <i class="fa-solid fa-file-medical"></i> ATESTADO APROVADO
           </span>
         {% endif %}
       </div>

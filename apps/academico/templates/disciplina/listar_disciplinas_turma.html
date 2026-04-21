@@ -98,10 +98,14 @@
                         <td>
                             {% if disciplina.professor %}
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--accent-dim); display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: var(--accent); font-weight: 700; border: 1px solid var(--accent-glow);">
-                                        {{ disciplina.professor.nome_completo|slice:":1" }}
+                                    <div style="width: 28px; height: 28px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1.5px solid var(--border-mid); box-shadow: 0 0 10px rgba(124, 111, 255, 0.15);">
+                                        {% if disciplina.professor.foto %}
+                                            <img src="{{ disciplina.professor.foto.url }}" alt="{{ disciplina.professor.nome_completo }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        {% else %}
+                                            <span style="font-size: 0.7rem; color: var(--accent-violet); font-weight: 700;">{{ disciplina.professor.nome_completo|slice:":1" }}</span>
+                                        {% endif %}
                                     </div>
-                                    <span style="color: var(--text-secondary);">{{ disciplina.professor.nome_completo }}</span>
+                                    <span style="color: var(--text-secondary); font-weight: 500;">{{ disciplina.professor.nome_completo }}</span>
                                 </div>
                             {% else %}
                                 <span style="color: var(--rose); font-style: italic; font-size: 0.85rem;">

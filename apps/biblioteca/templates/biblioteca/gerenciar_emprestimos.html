@@ -65,9 +65,14 @@
                                 </button>
                             </form>
                             {% else %}
-                            <form action="{% url 'registrar_devolucao' e.id %}" method="POST" style="display:inline;">
+                            <form action="{% url 'registrar_devolucao' e.id %}" method="POST" style="display:flex; align-items: center; gap: 8px;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-sige-primario" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">
+                                <select name="estado_conservacao" style="padding: 0.35rem; font-size: 0.7rem; border-radius: 6px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary);">
+                                    <option value="OTIMO">Ótimo</option>
+                                    <option value="RAZOAVEL">Razoável</option>
+                                    <option value="DANIFICADO">Danificado</option>
+                                </select>
+                                <button type="submit" class="btn-sige-primario" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; white-space: nowrap;">
                                     <i class="fa-solid fa-check"></i> Devolver
                                 </button>
                             </form>

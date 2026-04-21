@@ -1,5 +1,5 @@
-/* ============================================================
-   SIGE — Advanced Theme System (9 Complete Themes)
+﻿/* ============================================================
+   SIGE ÔÇö Advanced Theme System (9 Complete Themes)
    Each theme completely different: colors, icons, animations, borders, fonts
    Applied via: <html data-theme="...">
 ============================================================ */
@@ -162,13 +162,13 @@ html[data-theme] .nav-lateral a.ativo::before {
 }
 
 /* ============================================================
-   SAVE BUTTONS — Global System
+   SAVE BUTTONS ÔÇö Global System
    Cobre todos os seletores: .btn.salvar, .btn-salvar,
    .btn-modal-salvar, .sige-btn-primary, .submit-btn, .btn-acao.salvar
    Borda destacada + hover com contraste + active press
 ============================================================ */
 
-/* Selector union — aplica a TODOS os botões de salvar */
+/* Selector union ÔÇö aplica a TODOS os bot├Áes de salvar */
 html[data-theme] .sige-btn-primary,
 html[data-theme] .btn-modal-salvar,
 html[data-theme] .btn.salvar,
@@ -186,7 +186,7 @@ html[data-theme] .btn-acao.salvar {
     letter-spacing: 0.025em;
     border-radius: var(--radius-md, 8px);
     cursor: pointer;
-    /* Border destacada — identifica visualmente o botão de salvar */
+    /* Border destacada ÔÇö identifica visualmente o bot├úo de salvar */
     border: 2.5px solid color-mix(in srgb, var(--primary) 100%, transparent);
     background: var(--primary);
     color: #ffffff;
@@ -202,7 +202,7 @@ html[data-theme] .btn-acao.salvar {
     text-decoration: none;
 }
 
-/* Anel de foco — acessibilidade */
+/* Anel de foco ÔÇö acessibilidade */
 html[data-theme] .sige-btn-primary::after,
 html[data-theme] .btn-modal-salvar::after,
 html[data-theme] .btn.salvar::after,
@@ -228,7 +228,7 @@ html[data-theme] .btn-acao.salvar:focus-visible::after {
     opacity: 1;
 }
 
-/* ——— HOVER — Contraste máximo, escura o bg e destaca a sombra ——— */
+/* ÔÇöÔÇöÔÇö HOVER ÔÇö Contraste m├íximo, escura o bg e destaca a sombra ÔÇöÔÇöÔÇö */
 html[data-theme] .sige-btn-primary:hover,
 html[data-theme] .btn-modal-salvar:hover,
 html[data-theme] .btn.salvar:hover,
@@ -245,7 +245,7 @@ html[data-theme] .btn-acao.salvar:hover {
     text-decoration: none;
 }
 
-/* ——— ACTIVE — press feedback ——— */
+/* ÔÇöÔÇöÔÇö ACTIVE ÔÇö press feedback ÔÇöÔÇöÔÇö */
 html[data-theme] .sige-btn-primary:active,
 html[data-theme] .btn-modal-salvar:active,
 html[data-theme] .btn.salvar:active,
@@ -258,11 +258,11 @@ html[data-theme] .btn-acao.salvar:active {
 }
 
 /* ============================================================
-   SIGE BUTTON SYSTEM — Global Components
+   SIGE BUTTON SYSTEM ÔÇö Global Components
    Standardizes .btn-sige-primario, .btn-sige-secundario, .btn-sige-ruby
 ============================================================ */
 
-/* Primary Button — Theme Principal */
+/* Primary Button ÔÇö Theme Principal */
 html[data-theme] .btn-sige-primario {
     display: inline-flex;
     align-items: center;
@@ -289,7 +289,7 @@ html[data-theme] .btn-sige-primario:hover {
     color: #ffffff;
 }
 
-/* Secondary Button — Theme Bordered */
+/* Secondary Button ÔÇö Theme Bordered */
 html[data-theme] .btn-sige-secundario {
     display: inline-flex;
     align-items: center;
@@ -314,7 +314,7 @@ html[data-theme] .btn-sige-secundario:hover {
     background: var(--bg-elevated);
 }
 
-/* Ruby Alert Button — High Priority */
+/* Ruby Alert Button ÔÇö High Priority */
 html[data-theme] .btn-sige-ruby {
     display: inline-flex;
     align-items: center;
@@ -341,7 +341,7 @@ html[data-theme] .btn-sige-ruby:hover {
     color: #ffffff;
 }
 
-/* Filter Button — Pill secondary style */
+/* Filter Button ÔÇö Pill secondary style */
 html[data-theme] .btn-filtro {
     display: inline-flex;
     align-items: center;
@@ -371,9 +371,9 @@ html[data-theme] .btn-filtro.active {
 }
 
 /* ============================================================
-   NEXT BUTTONS (WIZARD) — Global System
-   .btn-proximo — Botões de navegação "Próximo" nos wizards
-   Cor distinta do botão Salvar: fundo accent-cyan/complementar
+   NEXT BUTTONS (WIZARD) ÔÇö Global System
+   .btn-proximo ÔÇö Bot├Áes de navega├º├úo "Pr├│ximo" nos wizards
+   Cor distinta do bot├úo Salvar: fundo accent-cyan/complementar
    Borda destacada + seta animada no hover + active press
    Usado em: cadastrar_aluno, cadastrar_professor, cadastrar_gestor
 ============================================================ */
@@ -392,10 +392,10 @@ html[data-theme] .btn-proximo {
     cursor: pointer;
     white-space: nowrap;
     text-decoration: none;
-    /* Fundo distinto: em vez da cor primária (salvar), usa cor de acento para diferenciar */
+    /* Fundo distinto: em vez da cor prim├íria (salvar), usa cor de acento para diferenciar */
     background: color-mix(in srgb, var(--accent-cyan, var(--primary)) 80%, var(--primary) 20%);
     color: #ffffff;
-    /* Borda de alto contraste — torna o botão claramente visível */
+    /* Borda de alto contraste ÔÇö torna o bot├úo claramente vis├¡vel */
     border: 2.5px solid color-mix(in srgb, var(--accent-cyan, var(--primary)) 60%, #ffffff 40%);
     box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-cyan, var(--primary)) 35%, transparent),
                 0 1px 4px rgba(0, 0, 0, 0.14),
@@ -408,7 +408,7 @@ html[data-theme] .btn-proximo {
     overflow: hidden;
 }
 
-/* Anel de foco — acessibilidade */
+/* Anel de foco ÔÇö acessibilidade */
 html[data-theme] .btn-proximo::after {
     content: "";
     position: absolute;
@@ -424,7 +424,7 @@ html[data-theme] .btn-proximo:focus-visible::after {
     opacity: 1;
 }
 
-/* Seta desliza para a direita no hover — feedback visual intuitivo */
+/* Seta desliza para a direita no hover ÔÇö feedback visual intuitivo */
 html[data-theme] .btn-proximo:hover {
     background: color-mix(in srgb, var(--accent-cyan, var(--primary)) 70%, #000 18%);
     border-color: color-mix(in srgb, var(--accent-cyan, var(--primary)) 85%, #ffffff 30%);
@@ -437,7 +437,7 @@ html[data-theme] .btn-proximo:hover {
     text-decoration: none;
 }
 
-/* Active — feedback de clique */
+/* Active ÔÇö feedback de clique */
 html[data-theme] .btn-proximo:active {
     transform: translateY(1px) scale(0.97);
     box-shadow: 0 2px 8px color-mix(in srgb, var(--accent-cyan, var(--primary)) 28%, transparent);
@@ -445,9 +445,9 @@ html[data-theme] .btn-proximo:active {
     gap: 0.55rem;
 }
 
-/* ——— Sobrescrições por tema para melhor contraste ——— */
+/* ÔÇöÔÇöÔÇö Sobrescri├º├Áes por tema para melhor contraste ÔÇöÔÇöÔÇö */
 
-/* Indigo Profundo — acento é azul-roxo, fundo escuro: usa variante mais luminosa */
+/* Indigo Profundo ÔÇö acento ├® azul-roxo, fundo escuro: usa variante mais luminosa */
 html[data-theme="indigo-profundo"] .btn-proximo {
     background: hsl(217, 91%, 60%);
     border-color: hsl(217, 91%, 75%);
@@ -462,7 +462,7 @@ html[data-theme="indigo-profundo"] .btn-proximo:hover {
                 0 3px 10px rgba(0, 0, 0, 0.28);
 }
 
-/* Cinza Industrial — monocromático: usa azul-ardósia vivo para contraste máximo */
+/* Cinza Industrial ÔÇö monocrom├ítico: usa azul-ard├│sia vivo para contraste m├íximo */
 html[data-theme="cinza-industrial"] .btn-proximo {
     background: #2F6FAD;
     border-color: #4A8FCC;
@@ -478,7 +478,7 @@ html[data-theme="cinza-industrial"] .btn-proximo:hover {
                 0 3px 8px rgba(0, 0, 0, 0.24);
 }
 
-/* Azul Corporativo — já é azul profissional: usa variante mais saturada */
+/* Azul Corporativo ÔÇö j├í ├® azul profissional: usa variante mais saturada */
 html[data-theme="azul-corporativo"] .btn-proximo {
     background: color-mix(in srgb, var(--primary) 90%, #00aaff 10%);
     border-color: color-mix(in srgb, var(--primary) 65%, #ffffff 35%);
@@ -504,7 +504,7 @@ html[data-theme] .btn-voltar {
     border-radius: var(--radius-md);
 }
 
-/* .btn-modal-salvar — agora coberto pelo bloco global de botões de salvar acima */
+/* .btn-modal-salvar ÔÇö agora coberto pelo bloco global de bot├Áes de salvar acima */
 
 html[data-theme] .btn-modal-cancelar:hover {
     border-color: color-mix(in srgb, var(--primary) 35%, var(--border-mid));
@@ -527,7 +527,7 @@ html[data-theme] .sige-badge-danger {
 
 /* ============================================================
    1. INDIGO PROFUNDO (Dark Mode Professional)
-   Antigo "default" — Deep blues, minimal borders, purple accents
+   Antigo "default" ÔÇö Deep blues, minimal borders, purple accents
 ============================================================ */
 html[data-theme="indigo-profundo"] {
     color-scheme: dark;
@@ -557,7 +557,7 @@ html[data-theme="indigo-profundo"] {
     --shadow-glow: rgba(124, 111, 255, 0.4) 0 0 35px;
 }
 
-/* Indigo Profundo — High-Contrast Enhancements */
+/* Indigo Profundo ÔÇö High-Contrast Enhancements */
 html[data-theme="indigo-profundo"] .sige-card {
     border: 2px solid var(--border-subtle);
     box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(124, 111, 255, 0.05);
@@ -580,7 +580,7 @@ html[data-theme="indigo-profundo"] .nav-lateral a.ativo {
     box-shadow: 0 0 20px rgba(124, 111, 255, 0.15);
 }
 
-/* Indigo Profundo — Select Visibility Fix */
+/* Indigo Profundo ÔÇö Select Visibility Fix */
 html[data-theme="indigo-profundo"] .theme-switcher select {
     color: #eef2ff;
     background-color: rgba(15, 23, 41, 0.95);
@@ -606,7 +606,7 @@ html[data-theme="indigo-profundo"] .theme-switcher select:hover {
 
 /* ============================================================
    2. BRISA AQUA (Aquatic Flow)
-   Antigo "cyan" — Water flow theme with aquatic gradients, wave effects, liquid motion
+   Antigo "cyan" ÔÇö Water flow theme with aquatic gradients, wave effects, liquid motion
    REDESIGN: Liquid water theme with flowing gradients, ripple effects, aquatic depth
 ============================================================ */
 html[data-theme="brisa-aqua"] {
@@ -786,7 +786,7 @@ html[data-theme="brisa-aqua"] .nav-lateral a:hover {
     box-shadow: inset 0 0 12px rgba(0, 212, 212, 0.15);
 }
 
-/* BRISA AQUA — Icons Radical Styling */
+/* BRISA AQUA ÔÇö Icons Radical Styling */
 html[data-theme="brisa-aqua"] .icone-btn {
     background: rgba(0, 212, 212, 0.08);
     color: var(--c-turq-dark);
@@ -843,7 +843,7 @@ html[data-theme="brisa-aqua"] .card-tabela {
     animation: sigeAquaFlowIn .36s cubic-bezier(0.25, 1.0, 0.25, 1) both;
 }
 
-/* BRISA AQUA — Icons Aquatic Styling */
+/* BRISA AQUA ÔÇö Icons Aquatic Styling */
 html[data-theme="brisa-aqua"] .icone-btn {
     background: linear-gradient(135deg, rgba(0, 188, 212, 0.12), rgba(77, 208, 225, 0.08));
     color: var(--aq-ocean-dark);
@@ -898,8 +898,8 @@ html[data-theme="brisa-aqua"] .icone-menu:hover {
 }
 
 /* ============================================================
-   3. CÉU SERENO (Atmospheric Sky Gradient)
-   Antigo "sky" — Atmospheric sky gradient, cloud effects, serene blues
+   3. C├ëU SERENO (Atmospheric Sky Gradient)
+   Antigo "sky" ÔÇö Atmospheric sky gradient, cloud effects, serene blues
    REDESIGN: Sky gradient background, cloud-like effects, atmospheric depth
 ============================================================ */
 html[data-theme="ceu-sereno"] {
@@ -1046,7 +1046,7 @@ html[data-theme="ceu-sereno"] .calendar-day {
     border-left: 4px solid rgba(70, 130, 180, 0.55);
 }
 
-/* CÉU SERENO — Icons Radical Styling */
+/* C├ëU SERENO ÔÇö Icons Radical Styling */
 html[data-theme="ceu-sereno"] .icone-btn {
     background: rgba(0, 136, 204, 0.08);
     color: var(--cs-navy);
@@ -1097,7 +1097,7 @@ html[data-theme="ceu-sereno"] .icone-menu:hover {
 
 /* ============================================================
    4. CINZA INDUSTRIAL (Monochrome Sharp)
-   Antigo "gray" — Minimal, hard edges, technical style, no animation
+   Antigo "gray" ÔÇö Minimal, hard edges, technical style, no animation
 ============================================================ */
 html[data-theme="cinza-industrial"] {
     color-scheme: light;
@@ -1165,7 +1165,7 @@ html[data-theme="cinza-industrial"] {
     --font-display: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-/* CINZA INDUSTRIAL — Painéis com bordas grossas e demarcadas */
+/* CINZA INDUSTRIAL ÔÇö Pain├®is com bordas grossas e demarcadas */
 html[data-theme="cinza-industrial"] .sige-card,
 html[data-theme="cinza-industrial"] .sige-widget,
 html[data-theme="cinza-industrial"] .card-tabela,
@@ -1234,7 +1234,7 @@ html[data-theme="cinza-industrial"] .menu-principal {
     border-bottom: 4px solid #000000;
 }
 
-/* CINZA INDUSTRIAL — Icon Magnetic & Vibrant Styling */
+/* CINZA INDUSTRIAL ÔÇö Icon Magnetic & Vibrant Styling */
 html[data-theme="cinza-industrial"] .icone-btn {
     background: #FFFFFF;
     color: #000000;
@@ -1269,46 +1269,19 @@ html[data-theme="cinza-industrial"] i {
 /* Monochromatic warnings */
 html[data-theme="cinza-industrial"] .sige-badge-warning {
     background: #000;
-}
-/* Customização específica para o botão de BI no tema Industrial */
-html[data-theme="cinza-industrial"] .btn-sige-primario {
-    background: #f1f3f5 !important;
-    color: #000000 !important;
-    border: 1.5px solid #111315 !important;
-    border-radius: 4px !important;
-    box-shadow: none !important;
-    font-weight: 800 !important;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    transition: all 0.1s linear !important;
-}
-
-html[data-theme="cinza-industrial"] .btn-sige-primario:hover {
-    background: #111315 !important;
-    color: #ffffff !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.1) !important;
+    color: #fff;
+    border: 2px solid #000;
+    font-weight: 800;
 }
 
 /* ============================================================
    6. AZUL CORPORATIVO (Corporate B2B)
+   New theme #2 ÔÇö Professional blues, straight lines, trust
+   Palette: #F3F7FF ┬À #B5D4F4 ┬À #378ADD ┬À #185FA5 ┬À #0D3A72 ┬À #071E3D
 ============================================================ */
 html[data-theme="azul-corporativo"] {
     color-scheme: light;
     --logo-filter: brightness(0);
-
-    /* --- Ancient Azul Palette (v1.0 Vibrant) --- */
-    --ac-lightest: #F0F7FF;
-    --ac-light: #CDE2F7;
-    --ac-sky: #4A90E2;
-    --ac-medium: #1565C0;
-    --ac-dark: #0D47A1;
-    --ac-darkest: #002171;
-
-    /* Multi-color Signature (The 'Variety' requested) */
-    --ac-gradient-vibrant: linear-gradient(90deg, #2979FF, #00E5FF, #00E676);
-    --ac-gradient-warm: linear-gradient(90deg, #FFD600, #FF6D00, #FF1744);
-    --ac-gradient-atmospheric: linear-gradient(90deg, #F0F7FF, #E3F2FD);
 
     --bg-base: linear-gradient(135deg, #F0F7FF 0%, #E3F2FD 50%, #BBDEFB 100%);
     --bg-surface: rgba(255, 255, 255, 0.90);
@@ -1336,7 +1309,16 @@ html[data-theme="azul-corporativo"] {
     --accent-amber: #ffd600;
     --accent-ruby: #ff1744;
 
-    /* --- Ancient Shapes (Ultra-Rounded) --- */
+    /* Multi-color Signature (Vibrant Mix) */
+    --ac-gradient-vibrant: linear-gradient(90deg, #2979FF, #00E5FF, #00E676);
+    --ac-gradient-warm: linear-gradient(90deg, #FFD600, #FF6D00, #FF1744);
+    --ac-gradient-atmospheric: linear-gradient(90deg, #F0F7FF, #E3F2FD);
+
+    --header-bg: rgba(240, 247, 255, 0.95);
+    --header-bg-scrolled: rgba(240, 247, 255, 0.98);
+    --sidebar-bg-top: linear-gradient(180deg, #F0F7FF, rgba(21, 101, 192, 0.08));
+    --sidebar-bg-bottom: linear-gradient(180deg, rgba(21, 101, 192, 0.08), rgba(21, 101, 192, 0.12));
+
     --radius-sm: 12px;
     --radius-md: 20px;
     --radius-lg: 32px;
@@ -1345,7 +1327,7 @@ html[data-theme="azul-corporativo"] {
     --shadow-sm: 0 4px 12px rgba(21, 101, 192, 0.12);
     --shadow-md: 0 12px 32px rgba(21, 101, 192, 0.16);
     --shadow-lg: 0 20px 48px rgba(21, 101, 192, 0.22);
-    --shadow-glow: rgba(41, 121, 255, 0.35) 0 0 25px;
+    --shadow-glow: rgba(21, 101, 192, 0.35) 0 0 20px;
 
     --transition-fast: .16s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-mid: .26s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1362,43 +1344,33 @@ html[data-theme="azul-corporativo"] .sige-card {
     box-shadow: 0 12px 32px rgba(21, 101, 192, 0.12);
     position: relative;
     overflow: hidden;
-    border-radius: var(--radius-lg);
 }
 
 html[data-theme="azul-corporativo"] .sige-card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 5px;
     background: var(--ac-gradient-vibrant);
     z-index: 2;
 }
 
-html[data-theme="azul-corporativo"] .sige-btn-primary,
-html[data-theme="azul-corporativo"] .btn-modal-salvar,
-html[data-theme="azul-corporativo"] .btn.salvar,
-html[data-theme="azul-corporativo"] .btn-salvar,
-html[data-theme="azul-corporativo"] .submit-btn,
-html[data-theme="azul-corporativo"] .btn-acao.salvar,
-html[data-theme="azul-corporativo"] .btn-primary {
-    background: var(--ac-gradient-vibrant) !important;
-    border: none !important;
-    color: #ffffff !important;
-    font-weight: 900 !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
-    box-shadow: 0 8px 20px rgba(41, 121, 255, 0.35) !important;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-    border-radius: 999px !important;
+html[data-theme="azul-corporativo"] .sige-btn-primary {
+    background: var(--ac-gradient-vibrant);
+    border: none;
+    color: #ffffff;
+    font-weight: 900;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 20px rgba(41, 121, 255, 0.35);
+    transition: all 0.3s ease;
 }
 
-html[data-theme="azul-corporativo"] .sige-btn-primary:hover,
-html[data-theme="azul-corporativo"] .btn-modal-salvar:hover,
-html[data-theme="azul-corporativo"] .btn.salvar:hover,
-html[data-theme="azul-corporativo"] .btn-salvar:hover,
-html[data-theme="azul-corporativo"] .submit-btn:hover {
-    filter: brightness(1.1) !important;
-    transform: translateY(-4px) scale(1.04) !important;
-    box-shadow: 0 14px 30px rgba(41, 121, 255, 0.5), 0 0 18px rgba(0, 229, 255, 0.4) !important;
+html[data-theme="azul-corporativo"] .sige-btn-primary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(41, 121, 255, 0.5), 0 0 15px rgba(0, 229, 255, 0.4);
 }
 
 html[data-theme="azul-corporativo"] .nav-lateral a.ativo {
@@ -1407,60 +1379,154 @@ html[data-theme="azul-corporativo"] .nav-lateral a.ativo {
     color: #1565C0;
     font-weight: 800;
     box-shadow: 0 0 20px rgba(0, 188, 212, 0.1);
-    border-radius: 20px;
 }
 
+html[data-theme="azul-corporativo"] .icone-btn {
+    border: 2px solid rgba(21, 101, 192, 0.25);
+    box-shadow: 0 2px 8px rgba(21, 101, 192, 0.1);
+}
+
+html[data-theme="azul-corporativo"] .sige-input,
+html[data-theme="azul-corporativo"] .form-control {
+    border: 2px solid rgba(21, 101, 192, 0.3);
+}
+
+/* AZUL CORPORATIVO ÔÇö Vibrant Icons & Glows */
 html[data-theme="azul-corporativo"] .icone-btn {
     background: rgba(21, 101, 192, 0.08);
     color: #1565C0;
     transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 50% !important;
-    border: 2px solid rgba(21, 101, 192, 0.15);
 }
 
 html[data-theme="azul-corporativo"] .icone-btn:hover {
     background: var(--ac-gradient-vibrant);
     color: #ffffff;
-    transform: scale(1.25) translateY(-5px) rotate(8deg);
-    box-shadow: 0 8px 25px rgba(41, 121, 255, 0.5);
+    transform: scale(1.2) translateY(-4px);
+    box-shadow: 0 8px 25px rgba(41, 121, 255, 0.5), 0 0 15px rgba(0, 229, 255, 0.3);
 }
 
-/* Ancient Signature Animation */
-@keyframes sigeAncientCorporativoEntrance {
-    0% { opacity: 0; transform: translateY(15px) scale(0.98); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
+html[data-theme="azul-corporativo"] .icone-btn:hover i {
+    animation: sigeAzulPulse 0.4s ease-out;
+}
+
+@keyframes sigeAzulPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+html[data-theme="azul-corporativo"] .icone-menu:hover {
+    background: rgba(0, 229, 255, 0.15);
+    color: var(--accent-cyan);
+    transform: scale(1.15) translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+}
+
+@keyframes sigeCorporateIconPulse {
+    0% {
+        transform: scale(0.85) translateY(10px);
+        opacity: 0.60;
+    }
+
+    50% {
+        transform: scale(1.10) translateY(-2px);
+    }
+
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+html[data-theme="azul-corporativo"] .sige-btn,
+html[data-theme="azul-corporativo"] .btn,
+html[data-theme="azul-corporativo"] button,
+html[data-theme="azul-corporativo"] .btn-adicionar,
+html[data-theme="azul-corporativo"] .btn-voltar,
+html[data-theme="azul-corporativo"] .voltar,
+html[data-theme="azul-corporativo"] .voltar-btn,
+html[data-theme="azul-corporativo"] .btn-sige-primario,
+html[data-theme="azul-corporativo"] .btn-sige-secundario,
+html[data-theme="azul-corporativo"] .freq-header__action a,
+html[data-theme="azul-corporativo"] .header-detalhes .voltar,
+html[data-theme="azul-corporativo"] .btn-salvar,
+html[data-theme="azul-corporativo"] .btn-excluir,
+html[data-theme="azul-corporativo"] .btn-limpar,
+html[data-theme="azul-corporativo"] .btn-acao,
+html[data-theme="azul-corporativo"] .btn-filtro,
+html[data-theme="azul-corporativo"] .status-badge,
+html[data-theme="azul-corporativo"] .submit-btn,
+html[data-theme="azul-corporativo"] input[type="button"],
+html[data-theme="azul-corporativo"] input[type="submit"] {
+    border-radius: var(--radius-xl) !important;
+}
+
+/* AZUL CORPORATIVO ÔÇö Status Vibrancy */
+html[data-theme="azul-corporativo"] .status-badge {
+    padding: 6px 16px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    font-size: 0.7rem !important;
+}
+
+html[data-theme="azul-corporativo"] .status-aprovado {
+    background: rgba(0, 200, 83, 0.12) !important;
+    color: var(--accent-emerald) !important;
+    border: 1.5px solid rgba(0, 200, 83, 0.25);
+}
+
+html[data-theme="azul-corporativo"] .status-pendente {
+    background: rgba(0, 188, 212, 0.12) !important;
+    color: var(--accent-cyan) !important;
+    border: 1.5px solid rgba(0, 188, 212, 0.25);
+}
+
+html[data-theme="azul-corporativo"] .status-rejeitado {
+    background: rgba(255, 23, 68, 0.12) !important;
+    color: var(--accent-ruby) !important;
+    border: 1.5px solid rgba(255, 23, 68, 0.25);
+}
+
+html[data-theme="azul-corporativo"] .sige-input,
+html[data-theme="azul-corporativo"] .form-control {
+    border: 2px solid var(--border-subtle);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: var(--radius-md) !important;
+}
+
+html[data-theme="azul-corporativo"] body.layout-base {
+    background: var(--bg-base);
+}
+
+html[data-theme="azul-corporativo"] .menu-principal {
+    background: #ffffff !important;
+    border-bottom: 3px solid var(--accent-cyan);
+    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.1);
+}
+
+@keyframes sigeCorporativoSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 html[data-theme="azul-corporativo"] .sige-card,
 html[data-theme="azul-corporativo"] .calendar-container,
 html[data-theme="azul-corporativo"] .card-tabela {
-    animation: sigeAncientCorporativoEntrance .40s ease-out both;
+    animation: sigeCorporativoSlideIn .30s ease-in-out both;
 }
-
-html[data-theme="azul-corporativo"] .sige-input,
-html[data-theme="azul-corporativo"] .form-control {
-    border: 2px solid rgba(21, 101, 192, 0.25);
-    background: #ffffff;
-    border-radius: 30px !important;
-}
-
-html[data-theme="azul-corporativo"] .menu-principal {
-    background: #ffffff !important;
-    border-bottom: 3.5px solid var(--accent-cyan);
-    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.1);
-}
-
-html[data-theme="azul-corporativo"] .status-badge {
-    border-radius: 20px !important;
-    font-weight: 800;
-    padding: 4px 14px;
-}
-
 
 /* ============================================================
-   7. ÂMBAR & NOITE (Amber Dark — High Contrast Editorial)
-   New theme #3 — Dark background with warm amber accents
-   Palette: #0D0A06 · #1C1509 · #BA7517 · #EF9F27 · #FAC775 · #FAEEDA
+   7. ├éMBAR & NOITE (Amber Dark ÔÇö High Contrast Editorial)
+   New theme #3 ÔÇö Dark background with warm amber accents
+   Palette: #0D0A06 ┬À #1C1509 ┬À #BA7517 ┬À #EF9F27 ┬À #FAC775 ┬À #FAEEDA
 ============================================================ */
 html[data-theme="ambar-noite"] {
     color-scheme: dark;
@@ -1599,7 +1665,7 @@ html[data-theme="ambar-noite"] .calendar-day {
     color: rgba(239, 200, 150, 0.95);
 }
 
-/* ÂMBAR & NOITE — Icons Radical Styling */
+/* ├éMBAR & NOITE ÔÇö Icons Radical Styling */
 html[data-theme="ambar-noite"] .icone-btn {
     background: rgba(239, 159, 39, 0.12);
     color: var(--an-amber);
@@ -1660,9 +1726,9 @@ html[data-theme="ambar-noite"] .dia.atual {
 }
 
 /* ============================================================
-   8. JARDIM FOSCO (Muted Green — Botanical)
-   New theme #4 — Soft greens, calming, nature-inspired
-   Palette: #F1F5C9 · #BFCC84 · #8BA32D · #627411 · #42510D · #222202
+   8. JARDIM FOSCO (Muted Green ÔÇö Botanical)
+   New theme #4 ÔÇö Soft greens, calming, nature-inspired
+   Palette: #F1F5C9 ┬À #BFCC84 ┬À #8BA32D ┬À #627411 ┬À #42510D ┬À #222202
 ============================================================ */
 html[data-theme="jardim-fosco"] {
     color-scheme: light;
@@ -1740,7 +1806,7 @@ html[data-theme="jardim-fosco"] .sige-btn-primary:hover {
     box-shadow: var(--shadow-glow);
 }
 
-/* JARDIM FOSCO — Icons Radical Styling */
+/* JARDIM FOSCO ÔÇö Icons Radical Styling */
 html[data-theme="jardim-fosco"] .icone-btn {
     background: rgba(139, 163, 45, 0.12);
     color: var(--jf-dark);
@@ -1824,7 +1890,7 @@ html[data-theme="jardim-fosco"] .card-tabela {
 
 /* ============================================================
    8. TERRA & MUSGO (Earth Clay)
-   New theme — Clay earth theme with terracotta, moss textures, natural earth tones
+   New theme ÔÇö Clay earth theme with terracotta, moss textures, natural earth tones
    REDESIGN: Terracotta clay theme with moss accents, earthy textures, natural warmth
 ============================================================ */
 html[data-theme="terra-musgo"] {
@@ -2005,7 +2071,7 @@ html[data-theme="terra-musgo"] {
         box-shadow: inset -3px 0 12px rgba(166, 211, 162, 0.18);
     }
 
-    /* TERRA MUSGO — Icons Radical Styling */
+    /* TERRA MUSGO ÔÇö Icons Radical Styling */
     html[data-theme="terra-musgo"] .icone-btn {
         background: rgba(107, 165, 135, 0.11);
         color: var(--tm-forest);
@@ -2094,7 +2160,7 @@ html[data-theme="terra-musgo"] {
     }
 
     /* ============================================================
-   SHARED COMPONENTS — Heavily Themed
+   SHARED COMPONENTS ÔÇö Heavily Themed
 ============================================================ */
 
     /* Tables */
@@ -2202,11 +2268,11 @@ html[data-theme="terra-musgo"] {
     }
 
     /* ============================================================
-   CALENDÁRIOS — Aumento de Contraste por Tema
-   Garante visibilidade em todos os temas (dias marcados ou não)
+   CALEND├üRIOS ÔÇö Aumento de Contraste por Tema
+   Garante visibilidade em todos os temas (dias marcados ou n├úo)
 ============================================================ */
 
-    /* Brisa Aqua — Aumentar contraste da cor do texto */
+    /* Brisa Aqua ÔÇö Aumentar contraste da cor do texto */
     html[data-theme="brisa-aqua"] .calendar-day {
         background: color-mix(in srgb, rgba(127, 255, 212, 0.35), transparent);
         color: var(--text-primary);
@@ -2218,7 +2284,7 @@ html[data-theme="terra-musgo"] {
         font-weight: 900;
     }
 
-    /* Céu Sereno — Redesign: Azul vibrante com gradiente */
+    /* C├®u Sereno ÔÇö Redesign: Azul vibrante com gradiente */
     html[data-theme="ceu-sereno"] .calendar-day {
         background: linear-gradient(135deg, rgba(173, 216, 230, 0.70) 0%, rgba(135, 206, 235, 0.55) 100%);
         color: var(--text-primary);
@@ -2241,7 +2307,7 @@ html[data-theme="terra-musgo"] {
         transform: translateY(-2px);
     }
 
-    /* Azul Corporativo — Melhorar fundo e contraste */
+    /* Azul Corporativo ÔÇö Melhorar fundo e contraste */
     html[data-theme="azul-corporativo"] .calendar-day {
         background: color-mix(in srgb, rgba(181, 212, 244, 0.50), transparent);
         color: var(--text-primary);
@@ -2255,7 +2321,7 @@ html[data-theme="terra-musgo"] {
 
 
 
-    /* Cinza Industrial — Melhorar fundo com mais definição */
+    /* Cinza Industrial ÔÇö Melhorar fundo com mais defini├º├úo */
     html[data-theme="cinza-industrial"] .calendar-day {
         background: color-mix(in srgb, rgba(192, 192, 192, 0.50), transparent);
         color: var(--text-primary);
@@ -2267,7 +2333,7 @@ html[data-theme="terra-musgo"] {
         font-weight: 900;
     }
 
-    /* Jardim Fosco — Redesign: Verde botânico com mais destaque */
+    /* Jardim Fosco ÔÇö Redesign: Verde bot├ónico com mais destaque */
     html[data-theme="jardim-fosco"] .calendar-day {
         background: linear-gradient(135deg, rgba(155, 180, 60, 0.68) 0%, rgba(139, 163, 45, 0.55) 100%);
         color: #1a2408;
@@ -2290,7 +2356,7 @@ html[data-theme="terra-musgo"] {
         transform: translateY(-2px);
     }
 
-    /* Jardim Fosco — Calendário: Dia Atual (Hoje) */
+    /* Jardim Fosco ÔÇö Calend├írio: Dia Atual (Hoje) */
     html[data-theme="jardim-fosco"] .calendar-day.today {
         background: linear-gradient(135deg, rgba(98, 116, 17, 0.95) 0%, rgba(62, 75, 10, 0.90) 100%);
         border: 3px solid #42510D;
@@ -2303,7 +2369,7 @@ html[data-theme="terra-musgo"] {
         text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
 
-    /* Jardim Fosco — Dia Letivo (Normal) */
+    /* Jardim Fosco ÔÇö Dia Letivo (Normal) */
     html[data-theme="jardim-fosco"] .day-di_letivo {
         border-left: 4px solid #627411;
     }
@@ -2313,7 +2379,7 @@ html[data-theme="terra-musgo"] {
         box-shadow: 0 0 10px rgba(155, 180, 60, 0.7);
     }
 
-    /* Jardim Fosco — Feriado */
+    /* Jardim Fosco ÔÇö Feriado */
     html[data-theme="jardim-fosco"] .day-feriado {
         background: linear-gradient(135deg, rgba(220, 100, 100, 0.40) 0%, rgba(200, 80, 80, 0.35) 100%);
         border: 2px solid #D95252;
@@ -2330,7 +2396,7 @@ html[data-theme="terra-musgo"] {
         box-shadow: 0 0 10px rgba(192, 57, 43, 0.7);
     }
 
-    /* Jardim Fosco — Prova */
+    /* Jardim Fosco ÔÇö Prova */
     html[data-theme="jardim-fosco"] .day-prova {
         background: linear-gradient(135deg, rgba(255, 193, 7, 0.35) 0%, rgba(255, 152, 0, 0.30) 100%);
         border: 2px solid #FFA500;
@@ -2347,7 +2413,7 @@ html[data-theme="terra-musgo"] {
         box-shadow: 0 0 10px rgba(255, 140, 0, 0.7);
     }
 
-    /* Jardim Fosco — Sábado Letivo */
+    /* Jardim Fosco ÔÇö S├íbado Letivo */
     html[data-theme="jardim-fosco"] .day-sabado_letivo {
         background: linear-gradient(135deg, rgba(100, 200, 255, 0.35) 0%, rgba(80, 180, 240, 0.30) 100%);
         border: 2px solid #64C8FF;
@@ -2364,7 +2430,7 @@ html[data-theme="terra-musgo"] {
         box-shadow: 0 0 10px rgba(0, 153, 255, 0.7);
     }
 
-    /* Jardim Fosco — Recesso */
+    /* Jardim Fosco ÔÇö Recesso */
     html[data-theme="jardim-fosco"] .day-recesso {
         background: linear-gradient(135deg, rgba(156, 100, 200, 0.35) 0%, rgba(130, 80, 180, 0.30) 100%);
         border: 2px dashed #9C64C8;
@@ -2382,14 +2448,14 @@ html[data-theme="terra-musgo"] {
         box-shadow: 0 0 8px rgba(124, 58, 237, 0.6);
     }
 
-    /* Jardim Fosco — Evento */
+    /* Jardim Fosco ÔÇö Evento */
     html[data-theme="jardim-fosco"] .day-evento {
         box-shadow: 0 0 0 2px #34D399, inset 0 1px 3px rgba(98, 116, 17, 0.3);
         background: linear-gradient(135deg, rgba(155, 180, 60, 0.70) 0%, rgba(139, 163, 45, 0.60) 100%);
     }
 
     html[data-theme="jardim-fosco"] .calendar-day.day-evento::after {
-        content: "●";
+        content: "ÔùÅ";
         position: absolute;
         bottom: 4px;
         right: 6px;
@@ -2402,7 +2468,7 @@ html[data-theme="terra-musgo"] {
         text-shadow: 0 0 4px rgba(52, 211, 153, 0.8);
     }
 
-    /* Jardim Fosco — Aula Suspensa */
+    /* Jardim Fosco ÔÇö Aula Suspensa */
     html[data-theme="jardim-fosco"] .day-aula_suspensa {
         outline: 2px dashed #60A5FA;
         outline-offset: -3px;
@@ -2415,7 +2481,7 @@ html[data-theme="terra-musgo"] {
     }
 
     html[data-theme="jardim-fosco"] .calendar-day.day-aula_suspensa::after {
-        content: "⊠";
+        content: "Ôèá";
         position: absolute;
         bottom: 4px;
         right: 6px;
@@ -2424,7 +2490,7 @@ html[data-theme="terra-musgo"] {
         text-shadow: 0 0 4px rgba(96, 165, 250, 0.8);
     }
 
-    /* Jardim Fosco — Fim de Semana */
+    /* Jardim Fosco ÔÇö Fim de Semana */
     html[data-theme="jardim-fosco"] .day-fim_semana {
         background: rgba(191, 204, 132, 0.3);
         border: 2px solid rgba(155, 180, 60, 0.4);
@@ -2432,14 +2498,14 @@ html[data-theme="terra-musgo"] {
         opacity: 0.80;
     }
 
-    /* Jardim Fosco — Dias Fora do Mês */
+    /* Jardim Fosco ÔÇö Dias Fora do M├¬s */
     html[data-theme="jardim-fosco"] .day-not-current-month {
         opacity: 0.15;
         cursor: default;
         background: rgba(139, 163, 45, 0.15);
     }
 
-    /* Terra Musgo — Redesign: Sage com sombra e máximo destaque */
+    /* Terra Musgo ÔÇö Redesign: Sage com sombra e m├íximo destaque */
     html[data-theme="terra-musgo"] .calendar-day {
         background: linear-gradient(135deg, rgba(172, 196, 173, 0.80) 0%, rgba(152, 175, 155, 0.70) 100%);
         color: #1a2408;
@@ -2463,18 +2529,18 @@ html[data-theme="terra-musgo"] {
     }
 
 /* ============================================================
-   BOTÕES DE SALVAR — Overrides por Tema
-   Cada tema recebe: borda na cor da paleta, hover glow específico,
+   BOT├òES DE SALVAR ÔÇö Overrides por Tema
+   Cada tema recebe: borda na cor da paleta, hover glow espec├¡fico,
    border-radius coerente com a geometria do tema.
    Seletores cobertos em todos os temas:
-     .sige-btn-primary · .btn-modal-salvar · .btn.salvar
-     .btn-salvar · .submit-btn · .btn-acao.salvar
+     .sige-btn-primary ┬À .btn-modal-salvar ┬À .btn.salvar
+     .btn-salvar ┬À .submit-btn ┬À .btn-acao.salvar
 ============================================================ */
 
-/* ─────────────────────────────────────────────────────────
-   1. INDIGO PROFUNDO — Roxo elétrico / violeta
-   Fundo escuro → borda vibrante #7C6FFF → hover: indigo mais claro
-───────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   1. INDIGO PROFUNDO ÔÇö Roxo el├®trico / violeta
+   Fundo escuro ÔåÆ borda vibrante #7C6FFF ÔåÆ hover: indigo mais claro
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="indigo-profundo"] .sige-btn-primary,
 html[data-theme="indigo-profundo"] .btn-modal-salvar,
 html[data-theme="indigo-profundo"] .btn.salvar,
@@ -2513,10 +2579,10 @@ html[data-theme="indigo-profundo"] .btn-acao.salvar:active {
     box-shadow: 0 2px 10px rgba(99, 88, 232, 0.30);
 }
 
-/* ─────────────────────────────────────────────────────────
-   2. BRISA AQUA — Turquesa / ciano profundo
-   Gradiente aquático → borda ciano vibrante #00D4FF
-───────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   2. BRISA AQUA ÔÇö Turquesa / ciano profundo
+   Gradiente aqu├ítico ÔåÆ borda ciano vibrante #00D4FF
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="brisa-aqua"] .sige-btn-primary,
 html[data-theme="brisa-aqua"] .btn-modal-salvar,
 html[data-theme="brisa-aqua"] .btn.salvar,
@@ -2555,10 +2621,10 @@ html[data-theme="brisa-aqua"] .btn-acao.salvar:active {
     box-shadow: 0 3px 10px rgba(0, 188, 212, 0.30);
 }
 
-/* ─────────────────────────────────────────────────────────
-   3. CÉU SERENO — Azul céu / steel blue
-   Gradiente sky → borda #0EA5E9 bem identificável
-───────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   3. C├ëU SERENO ÔÇö Azul c├®u / steel blue
+   Gradiente sky ÔåÆ borda #0EA5E9 bem identific├ível
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="ceu-sereno"] .sige-btn-primary,
 html[data-theme="ceu-sereno"] .btn-modal-salvar,
 html[data-theme="ceu-sereno"] .btn.salvar,
@@ -2596,11 +2662,11 @@ html[data-theme="ceu-sereno"] .btn-acao.salvar:active {
     box-shadow: 0 2px 8px rgba(0, 119, 190, 0.28);
 }
 
-/* ─────────────────────────────────────────────────────────
-   4. CINZA INDUSTRIAL — Verde-azul escuro (teal corporate)
-   Tema monocromático → borda teal #2F8C8C para contraste máximo
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   4. CINZA INDUSTRIAL ÔÇö Verde-azul escuro (teal corporate)
+   Tema monocrom├ítico ÔåÆ borda teal #2F8C8C para contraste m├íximo
    com texto uppercase e bordas retas
-───────────────────────────────────────────────────────── */
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="cinza-industrial"] .sige-btn-primary,
 html[data-theme="cinza-industrial"] .btn-modal-salvar,
 html[data-theme="cinza-industrial"] .btn.salvar,
@@ -2641,7 +2707,37 @@ html[data-theme="cinza-industrial"] .btn-acao.salvar:active {
     transform: translateY(0) scale(0.98);
 }
 
-/* Azul Corporativo — Ancient V1.0 Sky Logic */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   5. AZUL CORPORATIVO ÔÇö Vibrant & Pill (Premium Restoration)
+   Vibrant Blue-Cyan gradients + Pill rounding
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
+html[data-theme="azul-corporativo"] .sige-btn-primary,
+html[data-theme="azul-corporativo"] .btn-modal-salvar,
+html[data-theme="azul-corporativo"] .btn.salvar,
+html[data-theme="azul-corporativo"] .btn-salvar,
+html[data-theme="azul-corporativo"] .submit-btn,
+html[data-theme="azul-corporativo"] .btn-acao.salvar {
+    background: var(--ac-gradient-vibrant);
+    border: none;
+    color: #ffffff;
+    border-radius: var(--radius-xl) !important;
+    box-shadow: 0 4px 14px rgba(41, 121, 255, 0.4);
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html[data-theme="azul-corporativo"] .sige-btn-primary:hover,
+html[data-theme="azul-corporativo"] .btn-modal-salvar:hover,
+html[data-theme="azul-corporativo"] .btn.salvar:hover,
+html[data-theme="azul-corporativo"] .btn-salvar:hover,
+html[data-theme="azul-corporativo"] .submit-btn:hover,
+html[data-theme="azul-corporativo"] .btn-acao.salvar:hover {
+    filter: brightness(1.15);
+    transform: translateY(-4px) scale(1.04);
+    box-shadow: 0 12px 30px rgba(41, 121, 255, 0.55), 
+                0 0 20px rgba(0, 229, 255, 0.4);
+}
 
 html[data-theme="azul-corporativo"] .nav-lateral a:hover {
     background: rgba(0, 229, 255, 0.12);
@@ -2658,11 +2754,11 @@ html[data-theme="azul-corporativo"] .card-tabela thead th {
     border-bottom: 2px solid var(--accent-cyan);
 }
 
-/* ─────────────────────────────────────────────────────────
-   6. ÂMBAR & NOITE — Dourado âmbar no dark
-   Fundo escuro → borda âmbar #EF9F27 ultra visível
-   cor do texto: quase preto para legibilidade no âmbar claro
-───────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   6. ├éMBAR & NOITE ÔÇö Dourado ├ómbar no dark
+   Fundo escuro ÔåÆ borda ├ómbar #EF9F27 ultra vis├¡vel
+   cor do texto: quase preto para legibilidade no ├ómbar claro
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="ambar-noite"] .sige-btn-primary,
 html[data-theme="ambar-noite"] .btn-modal-salvar,
 html[data-theme="ambar-noite"] .btn.salvar,
@@ -2703,10 +2799,10 @@ html[data-theme="ambar-noite"] .btn-acao.salvar:active {
     box-shadow: 0 3px 12px rgba(239, 159, 39, 0.35);
 }
 
-/* ─────────────────────────────────────────────────────────
-   7. JARDIM FOSCO — Verde botânico
-   Gradiente musgo → borda verde #8BA32D bem saturada
-───────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   7. JARDIM FOSCO ÔÇö Verde bot├ónico
+   Gradiente musgo ÔåÆ borda verde #8BA32D bem saturada
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="jardim-fosco"] .sige-btn-primary,
 html[data-theme="jardim-fosco"] .btn-modal-salvar,
 html[data-theme="jardim-fosco"] .btn.salvar,
@@ -2745,10 +2841,10 @@ html[data-theme="jardim-fosco"] .btn-acao.salvar:active {
     box-shadow: 0 3px 10px rgba(139, 163, 45, 0.28);
 }
 
-/* ─────────────────────────────────────────────────────────
-   8. TERRA & MUSGO — Terracota / argila
-   Gradiente terracota → borda musgo #6B8E23 contrastante
-───────────────────────────────────────────────────────── */
+/* ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+   8. TERRA & MUSGO ÔÇö Terracota / argila
+   Gradiente terracota ÔåÆ borda musgo #6B8E23 contrastante
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ */
 html[data-theme="terra-musgo"] .sige-btn-primary,
 html[data-theme="terra-musgo"] .btn-modal-salvar,
 html[data-theme="terra-musgo"] .btn.salvar,

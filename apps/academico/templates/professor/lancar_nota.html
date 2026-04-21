@@ -81,7 +81,22 @@
                     {{ aluno.nome_completo|slice:":1" }}
                   </div>
                   <div class="aluno-detalhes">
-                    <span class="aluno-nome">{{ aluno.nome_completo }}</span>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <span class="aluno-nome">{{ aluno.nome_completo }}</span>
+                      
+                      <!-- Indicadores de Saúde/Inclusão -->
+                      {% if aluno.ficha_medica.condicoes_pcd or aluno.possui_necessidade_especial %}
+                          <i class="fa-solid fa-universal-access" 
+                             style="color: var(--accent-violet); font-size: 0.75rem; cursor: help;" 
+                             title="PCD: {{ aluno.ficha_medica.detalhes_pcd|default:aluno.descricao_necessidade|default:'Necessidades especiais registradas' }}"></i>
+                      {% endif %}
+                      
+                      {% if aluno.ficha_medica.alergias %}
+                          <i class="fa-solid fa-biohazard" 
+                             style="color: var(--accent-ruby); font-size: 0.75rem; cursor: help;" 
+                             title="Alergias: {{ aluno.ficha_medica.alergias }}"></i>
+                      {% endif %}
+                    </div>
                     <span class="aluno-sub">Matriculado</span>
                   </div>
                 </div>

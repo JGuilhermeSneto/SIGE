@@ -40,6 +40,12 @@ class Emprestimo(models.Model):
         ('RESERVA', 'Reserva'),
     ]
 
+    ESTADO_CONSERVACAO_CHOICES = [
+        ('OTIMO',     'Ótimo / Perfeito'),
+        ('RAZOAVEL',  'Razoável / Uso normal'),
+        ('DANIFICADO', 'Danificado / Requer reparo'),
+    ]
+
     livro = models.ForeignKey(Livro, on_delete=models.CASCADE, related_name='emprestimos')
     usuario_aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, null=True, blank=True)
     usuario_professor = models.ForeignKey(Professor, on_delete=models.CASCADE, null=True, blank=True)
@@ -60,6 +66,14 @@ class Emprestimo(models.Model):
         choices=STATUS_LEITURA_CHOICES,
         default='NAO_INFORMADO',
         verbose_name='Status de Leitura'
+    )
+    
+    estado_conservacao = models.CharField(
+        max_length=10,
+        choices=ESTADO_CONSERVACAO_CHOICES,
+        blank=True,
+        null=True,
+        verbose_name='Estado de Conservação na Devolução'
     )
 
     def __str__(self):

@@ -63,6 +63,12 @@
             <div></div>
         {% endif %}
 
+        {% if entrega.feedback_professor %}
+            <div class="sige-badge sige-badge-accent" style="text-transform: none; gap: 5px; font-size: 0.68rem;">
+                <i class="fa-solid fa-comment-dots"></i> Correção
+            </div>
+        {% endif %}
+
         <a href="{% url 'entregar_atividade' atv.id %}" class="btn-entregar">
             {% if entrega %}
                 {% if atv.exibir_gabarito_para_aluno %}

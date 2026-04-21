@@ -38,7 +38,7 @@
             <div class="passo-num">2</div>
             <div class="passo-info">
                 <span class="passo-label">Etapa 2</span>
-                <span class="passo-nome">Filiação e NE</span>
+                <span class="passo-nome">Filiação e Saúde</span>
             </div>
         </div>
         <div class="passo-item" id="passo-3">
@@ -121,14 +121,51 @@
             </div>
             <div class="caixa-texto full">
                 <label class="checkbox-container">
-                    {{ form.possui_necessidade_especial }}
+                    {{ form.possui_necessidade_especial|attr:"id:id_pcd_toggle" }}
                     <span>Possui necessidade especial?</span>
                 </label>
             </div>
-            <div class="caixa-texto full" id="descricao-ne-container" style="display:none;">
-                <label>Descrição da necessidade</label>
-                {{ form.descricao_necessidade }}
+            
+            <div id="pcd-details-container" style="display:none; width: 100%; gap: 20px; flex-wrap: wrap;">
+                <div class="caixa-texto full">
+                    <label>Descrição da necessidade</label>
+                    {{ form.descricao_necessidade }}
+                </div>
+                <div class="caixa-texto full">
+                    <label>Comprovante/Laudo PCD <span style="font-size: 0.7rem; color: var(--text-muted);">(PDF ou Imagem)</span></label>
+                    {{ form_saude.comprovante_pcd }}
+                </div>
             </div>
+
+            <div style="width: 100%; height: 1px; background: var(--border-subtle); margin: 10px 0;"></div>
+
+            <div class="caixa-texto">
+                <label>Tipo Sanguíneo</label>
+                {{ form_saude.tipo_sanguineo }}
+            </div>
+            <div class="caixa-texto">
+                <label>Alergias</label>
+                {{ form_saude.alergias }}
+            </div>
+            <div class="caixa-texto full">
+                <label>Medicamentos Contínuos</label>
+                {{ form_saude.medicamentos_continuos }}
+            </div>
+
+            <div style="width: 100%; height: 1px; background: var(--border-subtle); margin: 10px 0;"></div>
+            <div class="caixa-texto full">
+                <span style="font-size: 0.7rem; font-weight: 800; color: var(--accent-ruby); text-transform: uppercase; letter-spacing: 0.05em;">Contatos de Emergência</span>
+            </div>
+
+            <div class="caixa-texto">
+                <label>Nome do Contato</label>
+                {{ form_saude.contato_emergencia_nome|attr:"placeholder:Responsável ou Parente" }}
+            </div>
+            <div class="caixa-texto">
+                <label>Telefone de Emergência</label>
+                {{ form_saude.contato_emergencia_fone|attr:"placeholder:(00) 00000-0000" }}
+            </div>
+
             <div class="botoes">
                 <button type="button" class="btn-voltar-tab" onclick="voltarEtapa(2)"><i class="fa-solid fa-arrow-left"></i> Anterior</button>
                 <button type="button" class="btn btn-proximo" onclick="validarEtapa(2)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
@@ -236,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
         isEdition: {{ aluno.pk|yesno:"true,false" }},
         stepsMeta: {
             1: { icone: 'fa-user', titulo: 'Dados Pessoais', desc: 'Preencha as informações básicas do discente' },
-            2: { icone: 'fa-users', titulo: 'Filiação e NE', desc: 'Informações de filiação e necessidades especiais' },
+            2: { icone: 'fa-heart-pulse', titulo: 'Filiação e Saúde', desc: 'Informações de filiação, PCD e saúde' },
             3: { icone: 'fa-location-dot', titulo: 'Endereço', desc: 'Informe a localização do discente' },
             4: { icone: 'fa-school', titulo: 'Alocação', desc: 'Turma, senha e foto de perfil' }
         }

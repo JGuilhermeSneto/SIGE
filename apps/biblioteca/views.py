@@ -79,10 +79,22 @@ def novo_emprestimo(request):
 @user_passes_test(is_super_ou_gestor)
 def registrar_devolucao(request, pk):
     emprestimo = get_object_or_404(Emprestimo, pk=pk)
-    emprestimo.data_devolucao_real = timezone.now().date()
-    emprestimo.status = 'DEVOLVIDO'
-    emprestimo.save()
-    messages.success(request, f"Livro '{emprestimo.livro.titulo}' devolvido com sucesso!")
+    
+    if request.method == "POST":
+        estado = request.POST.get('estado_conservacao', 'OTIMO')
+        emprestimo.data_devolucao_real = timezone.now().date()
+        emprestimo.status = 'DEVOLVIDO'
+        emprestimo.estado_conservacao = estado
+        emprestimo.save()
+        
+        status_msg = f"Livro '{emprestimo.livro.titulo}' devolvido!"
+        if estado == 'DANIFICADO':
+            status_msg += " (AVISO: Livro marcado como DANIFICADO)"
+            
+        messages.success(request, status_msg)
+        return redirect('gerenciar_emprestimos')
+    
+    # Se for GET, redireciona pois a devolução agora exige o form/modal no gerenciar
     return redirect('gerenciar_emprestimos')
 
 @login_required
@@ -176,3 +188,32 @@ def atualizar_status_leitura(request):
     emprestimo.status_leitura = status_leitura
     emprestimo.save(update_fields=['status_leitura'])
     return JsonResponse({'ok': True})
+
+@login_required
+def minhas_leituras(request, pk=None):
+    """Visualiza o histórico de biblioteca do usuário logado ou de um aluno específico (Gestores)."""
+    if pk and is_super_ou_gestor(request.user):
+        aluno = get_object_or_404(Aluno, pk=pk)
+        perfil = aluno
+        context_label = f"Histórico de {aluno.nome_completo}"
+    else:
+        perfil = get_user_profile(request.user)
+        context_label = "Minha Jornada Literária"
+    
+    if isinstance(perfil, Aluno):
+        emprestimos_ativos = Emprestimo.objects.filter(usuario_aluno=perfil).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
+        historico = Emprestimo.objects.filter(usuario_aluno=perfil, status='DEVOLVIDO').select_related('livro').order_by('-data_devolucao_real')
+    elif isinstance(perfil, Professor):
+        emprestimos_ativos = Emprestimo.objects.filter(usuario_professor=perfil).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
+        historico = Emprestimo.objects.filter(usuario_professor=perfil, status='DEVOLVIDO').select_related('livro').order_by('-data_devolucao_real')
+    else:
+        return render(request, "core/sem_perfil.html")
+
+    return render(request, 'biblioteca/minhas_leituras.html', {
+        'ativos': emprestimos_ativos,
+        'historico': historico,
+        'nome_exibicao': get_nome_exibicao(request.user),
+        'foto_perfil_url': get_foto_perfil(request.user),
+        'titulo_personalizado': context_label,
+        'is_gestor_visualizando': pk is not None
+    })

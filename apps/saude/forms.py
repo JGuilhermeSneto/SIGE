@@ -4,15 +4,20 @@ from .models.ficha_medica import FichaMedica, RegistroVacina, AtestadoMedico
 class FichaMedicaForm(forms.ModelForm):
     class Meta:
         model = FichaMedica
-        exclude = ['aluno']
+        fields = [
+            'tipo_sanguineo', 'alergias', 'medicamentos_continuos', 
+            'condicoes_pcd', 'detalhes_pcd', 'comprovante_pcd',
+            'contato_emergencia_nome', 'contato_emergencia_fone', 'observacoes_medicas'
+        ]
         widgets = {
-            'tipo_sanguineo': forms.Select(attrs={'class': 'select-sige'}),
-            'alergias': forms.Textarea(attrs={'class': 'input-sige', 'rows': 3, 'placeholder': 'Ex: Amendoim, Penicilina...'}),
-            'medicamentos_continuos': forms.Textarea(attrs={'class': 'input-sige', 'rows': 2}),
-            'detalhes_pcd': forms.TextInput(attrs={'class': 'input-sige'}),
-            'contato_emergencia_nome': forms.TextInput(attrs={'class': 'input-sige'}),
-            'contato_emergencia_fone': forms.TextInput(attrs={'class': 'input-sige'}),
-            'observacoes_medicas': forms.Textarea(attrs={'class': 'input-sige', 'rows': 3}),
+            'tipo_sanguineo': forms.Select(),
+            'alergias': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Ex: Amendoim, Penicilina...'}),
+            'medicamentos_continuos': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Remédios de uso diário'}),
+            'detalhes_pcd': forms.TextInput(),
+            'comprovante_pcd': forms.FileInput(),
+            'contato_emergencia_nome': forms.TextInput(),
+            'contato_emergencia_fone': forms.TextInput(),
+            'observacoes_medicas': forms.Textarea(attrs={'rows': 3}),
         }
 
 class RegistroVacinaForm(forms.ModelForm):

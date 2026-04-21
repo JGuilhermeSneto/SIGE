@@ -42,7 +42,7 @@ def visualizar_disciplinas(request, disciplina_id):
 
     turma = disciplina.turma
     from apps.usuarios.models.perfis import Aluno
-    alunos = Aluno.objects.filter(turma=turma).select_related("user").order_by("nome_completo")
+    alunos = Aluno.objects.filter(turma=turma).select_related("user", "ficha_medica").order_by("nome_completo")
     notas = Nota.objects.filter(disciplina=disciplina).select_related("aluno")
     notas_dict = {nota.aluno.id: nota for nota in notas}
 

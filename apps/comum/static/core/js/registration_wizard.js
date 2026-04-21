@@ -33,11 +33,13 @@ const RegistrationWizard = {
         }
 
         // NE Toggles
-        const neCheckbox = document.querySelector('input[name="possui_necessidade_especial"]');
+        const neCheckbox = document.querySelector('input[name="possui_necessidade_especial"]') || document.getElementById('id_pcd_toggle');
         if (neCheckbox) {
             neCheckbox.addEventListener('change', (e) => {
-                const container = document.getElementById('descricao-ne-container');
-                if (container) container.style.display = e.target.checked ? 'block' : 'none';
+                const container = document.getElementById('pcd-details-container') || document.getElementById('descricao-ne-container');
+                if (container) {
+                    container.style.display = e.target.checked ? 'flex' : 'none';
+                }
             });
         }
     },

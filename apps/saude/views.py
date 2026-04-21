@@ -43,7 +43,7 @@ def editar_ficha_medica(request, aluno_id):
     ficha, _ = FichaMedica.objects.get_or_create(aluno=aluno)
     
     if request.method == "POST":
-        form = FichaMedicaForm(request.POST, instance=ficha)
+        form = FichaMedicaForm(request.POST, request.FILES, instance=ficha)
         if form.is_valid():
             form.save()
             messages.success(request, f"Ficha médica de {aluno.nome_completo} atualizada!")

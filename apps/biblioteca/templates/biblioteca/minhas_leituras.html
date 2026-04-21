@@ -1,0 +1,197 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Minhas Leituras — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    .titulo-historico {
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 2rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .shelf-section {
+        margin-bottom: 4rem;
+    }
+
+    .shelf-title {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--accent-violet);
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .shelf-title::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--border-subtle), transparent);
+    }
+
+    .leitura-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 1.5rem;
+        display: flex;
+        gap: 1.5rem;
+        transition: all var(--transition-mid);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .leitura-card:hover {
+        border-color: var(--border-mid);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .capa-mini {
+        width: 80px;
+        height: 110px;
+        border-radius: 8px;
+        object-fit: cover;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .fallback-capa {
+        width: 80px;
+        height: 110px;
+        background: var(--bg-elevated);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+    }
+
+    .leitura-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .status-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .badge-conservacao {
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    .cons-otimo { background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald); border: 1px solid rgba(52, 211, 153, 0.3); }
+    .cons-razoavel { background: rgba(251, 191, 36, 0.1); color: var(--accent-amber); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .cons-danificado { background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    .grid-leituras {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label"><i class="fa-solid fa-book-bookmark"></i> Diário de Leitura</span>
+            <h1 class="titulo-historico">{{ titulo_personalizado|default:"Minha Jornada Literária" }}</h1>
+        </div>
+        <div class="header-acoes">
+            <a href="{% url 'acervo_biblioteca' %}" class="btn-sige-primario">
+                <i class="fa-solid fa-magnifying-glass"></i> Explorar Acervo
+            </a>
+            <a href="{% url 'dashboard' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-chevron-left"></i> Voltar ao Painel
+            </a>
+        </div>
+    </div>
+
+    {# ── LIVROS ATIVOS ── #}
+    <div class="shelf-section">
+        <h3 class="shelf-title"><i class="fa-solid fa-book-open"></i> Lendo Agora</h3>
+        {% if ativos %}
+        <div class="grid-leituras">
+            {% for e in ativos %}
+            <div class="leitura-card">
+                {% if e.livro.capa %}
+                <img src="{{ e.livro.capa.url }}" class="capa-mini" alt="{{ e.livro.titulo }}">
+                {% else %}
+                <div class="fallback-capa"><i class="fa-solid fa-book"></i></div>
+                {% endif %}
+                <div class="leitura-info">
+                    <h4 style="margin: 0; font-size: 1.1rem;">{{ e.livro.titulo }}</h4>
+                    <p style="margin: 4px 0 10px 0; font-size: 0.85rem; color: var(--text-muted);">{{ e.livro.autor }}</p>
+                    <div class="status-row">
+                        <span class="status-badge {% if e.status == 'ATRASADO' %}status-reprovado{% else %}status-aprovado{% endif %}">
+                            Devolver até {{ e.data_devolucao_prevista|date:"d/m" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); font-style: italic;">Nenhum livro retirado no momento.</p>
+        {% endif %}
+    </div>
+
+    {# ── HISTÓRICO COMPLETO ── #}
+    <div class="shelf-section">
+        <h3 class="shelf-title"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Leituras</h3>
+        {% if historico %}
+        <div class="grid-leituras">
+            {% for h in historico %}
+            <div class="leitura-card">
+                {% if h.livro.capa %}
+                <img src="{{ h.livro.capa.url }}" class="capa-mini" alt="{{ h.livro.titulo }}">
+                {% else %}
+                <div class="fallback-capa"><i class="fa-solid fa-book"></i></div>
+                {% endif %}
+                <div class="leitura-info">
+                    <h4 style="margin: 0; font-size: 1rem; opacity: 0.9;">{{ h.livro.titulo }}</h4>
+                    <p style="margin: 2px 0 8px 0; font-size: 0.8rem; color: var(--text-dim);">Finalizado em {{ h.data_devolucao_real|date:"d/m/Y" }}</p>
+                    <div class="status-row">
+                        <span class="badge-leitura badge-leitura-{{ h.status_leitura|lower }}" style="font-size: 0.6rem;">
+                            {{ h.get_status_leitura_display }}
+                        </span>
+                        {% if h.estado_conservacao %}
+                        <span class="badge-conservacao cons-{{ h.estado_conservacao|lower }}">
+                            Estado: {{ h.get_estado_conservacao_display }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); font-style: italic;">Você ainda não completou nenhuma leitura registrada.</p>
+        {% endif %}
+    </div>
+
+</section>
+{% endblock %}

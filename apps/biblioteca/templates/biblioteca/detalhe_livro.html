@@ -189,7 +189,7 @@
 
 {% block content %}
 <div class="main-area">
-    <a href="{% url 'acervo_biblioteca' %}" class="btn-voltar">
+    <a href="{% url 'acervo_biblioteca' %}" class="sige-btn sige-btn-outline" style="margin-bottom: 25px;">
         <i class="fa-solid fa-arrow-left"></i> Voltar para o Acervo
     </a>
 
@@ -243,21 +243,21 @@
 
             <div class="acoes-container">
                 {% if livro.exemplares_disponiveis > 0 %}
-                    <a href="{% url 'reservar_livro' livro.id %}" class="btn-acao btn-reservar">
+                    <a href="{% url 'reservar_livro' livro.id %}" class="sige-btn sige-btn-primary" style="flex: 1;">
                         <i class="fa-solid fa-bookmark"></i> Reservar Físico
                     </a>
                 {% else %}
-                    <button class="btn-acao btn-reservar" style="opacity: 0.5; cursor: not-allowed;" disabled>
+                    <button class="sige-btn sige-btn-primary" style="opacity: 0.5; cursor: not-allowed; flex: 1;" disabled>
                         <i class="fa-solid fa-bookmark"></i> Indisponível
                     </button>
                 {% endif %}
 
                 {% if livro.arquivo_digital %}
-                    <a href="{{ livro.arquivo_digital.url }}" target="_blank" class="btn-acao btn-digital">
+                    <a href="{{ livro.arquivo_digital.url }}" target="_blank" class="sige-btn sige-btn-outline" style="flex: 1;">
                         <i class="fa-solid fa-file-pdf"></i> Ler PDF
                     </a>
                 {% elif livro.url_digital %}
-                    <a href="{{ livro.url_digital }}" target="_blank" class="btn-acao btn-digital">
+                    <a href="{{ livro.url_digital }}" target="_blank" class="sige-btn sige-btn-outline" style="flex: 1;">
                         <i class="fa-solid fa-link"></i> Acessar Online
                     </a>
                 {% endif %}

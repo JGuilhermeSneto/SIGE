@@ -6,14 +6,88 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
 <style>
-    .grid-livros { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-    .card-livro { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; transition: all 0.2s; position: relative; }
-    .card-livro:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); border-color: var(--primary); }
-    .capa-livro { height: 180px; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: var(--text-muted); }
-    .info-livro { padding: 1.2rem; }
-    .info-livro h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text-primary); }
-    .info-livro p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; }
-    .badge-estoque { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; font-weight: 600; }
+    .grid-livros { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+        gap: 2.5rem; 
+        margin-top: 3rem; 
+    }
+    
+    .card-livro { 
+        background: var(--bg-surface); 
+        border: 1px solid var(--border-subtle); 
+        border-radius: var(--radius-lg); 
+        overflow: hidden; 
+        transition: all var(--transition-mid) cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .card-livro:hover { 
+        transform: translateY(-12px) scale(1.03); 
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 25px rgba(124, 111, 255, 0.2); 
+        border-color: rgba(255, 255, 255, 0.3); 
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(15px) saturate(160%);
+        -webkit-backdrop-filter: blur(15px) saturate(160%);
+        z-index: 10;
+    }
+
+    .capa-livro { 
+        height: 300px; 
+        background: var(--bg-elevated); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 4rem; 
+        color: var(--text-muted); 
+        position: relative;
+        overflow: hidden;
+    }
+
+    .capa-livro::after {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent 20%, transparent 80%, rgba(0,0,0,0.1));
+        pointer-events: none;
+    }
+    
+    .info-livro { 
+        padding: 1.5rem; 
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .info-livro h3 { 
+        font-size: 1.1rem; 
+        margin-bottom: 0.4rem; 
+        color: var(--text-primary); 
+        font-family: var(--font-display);
+        line-height: 1.25;
+    }
+    
+    .info-livro p { 
+        font-size: 0.82rem; 
+        color: var(--text-muted); 
+        margin-bottom: 1.2rem; 
+    }
+
+    .badge-estoque { 
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 10;
+        font-size: 0.65rem; 
+        padding: 4px 10px; 
+        border-radius: 20px; 
+        backdrop-filter: blur(10px);
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
 </style>
 {% endblock %}
 
@@ -33,7 +107,7 @@
                 <i class="fa-solid fa-book-bookmark"></i> Gerenciar Empréstimos
             </a>
             {% endif %}
-            <a href="javascript:history.back()" class="btn-sige-secundario">
+            <a href="javascript:history.back()" class="sige-btn sige-btn-outline">
                 <i class="fa-solid fa-chevron-left"></i> Voltar
             </a>
         </div>
@@ -64,12 +138,12 @@
                     <h3 style="margin-top: 10px;">{{ livro.titulo }}</h3>
                 </a>
                 <p>{{ livro.autor }}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                    <a href="{% url 'detalhe_livro' livro.id %}" style="font-size: 0.75rem; text-decoration: none; color: var(--text-muted); font-weight: 700; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
-                        <i class="fa-solid fa-circle-info"></i> Ver Detalhes
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-top: auto;">
+                    <a href="{% url 'detalhe_livro' livro.id %}" class="sige-btn sige-btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.72rem; flex: 1;">
+                        <i class="fa-solid fa-circle-info"></i> Detalhes
                     </a>
                     {% if livro.exemplares_disponiveis > 0 %}
-                    <a href="{% url 'reservar_livro' livro.id %}" class="btn-sige-primario" style="padding: 0.4rem 0.8rem; font-size: 0.75rem; text-decoration: none;">Reservar</a>
+                    <a href="{% url 'reservar_livro' livro.id %}" class="sige-btn sige-btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.72rem; flex: 1;">Reservar</a>
                     {% endif %}
                 </div>
             </div>

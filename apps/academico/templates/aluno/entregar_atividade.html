@@ -84,6 +84,19 @@
             {% endif %}
         </div>
 
+        {% if entrega.feedback_professor %}
+        <div class="questao-item" style="border: 2px solid var(--accent-violet); background: rgba(139, 92, 246, 0.05); animation: slideDown 0.4s ease-out;">
+            <div class="questao-header" style="margin-bottom: 12px;">
+                <span style="color: var(--accent-violet); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-comment-dots"></i> Detalhes da Correção
+                </span>
+            </div>
+            <p style="margin: 0; font-size: 1rem; color: var(--text-primary); line-height: 1.6; font-weight: 500;">
+                {{ entrega.feedback_professor|linebreaksbr }}
+            </p>
+        </div>
+        {% endif %}
+
         {% if atividade.descricao %}
         <div class="questao-item" style="padding: 20px;">
             <p style="margin: 0; font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">{{ atividade.descricao|linebreaksbr }}</p>

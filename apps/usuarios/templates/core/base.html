@@ -341,6 +341,9 @@
       <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
         <i class="fa-solid fa-book-open"></i> Biblioteca
       </a>
+      <a href="{% url 'dashboard_saude_inclusao' %}" class="{% if request.resolver_match.url_name == 'dashboard_saude_inclusao' %}ativo{% endif %}">
+        <i class="fa-solid fa-chart-pie"></i> Dashboard Inclusão
+      </a>
       <a href="{% url 'gestao_atestados' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
         <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
         {% if global_atestados_pendentes > 0 %}

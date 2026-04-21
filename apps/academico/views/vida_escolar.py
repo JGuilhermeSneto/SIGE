@@ -33,7 +33,7 @@ def lancar_nota(request, disciplina_id):
         messages.error(request, "Acesso negado.")
         return redirect("dashboard")
 
-    alunos = Aluno.objects.filter(turma_id=disciplina.turma_id).select_related("user").order_by("nome_completo")
+    alunos = Aluno.objects.filter(turma_id=disciplina.turma_id).select_related("user", "ficha_medica").order_by("nome_completo")
 
     if request.method == "POST":
         for aluno in alunos:
@@ -49,7 +49,7 @@ def lancar_nota(request, disciplina_id):
             nota_obj.save()
             media_txt = f"{nota_obj.media:.2f}" if nota_obj.media is not None else "N/A"
             NotificacaoServico.criar(
-                aluno=aluno,
+                user=aluno.user,
                 tipo="NOTA",
                 titulo="Notas bimestrais atualizadas",
                 mensagem=f"{disciplina.nome}: suas notas foram atualizadas (média atual {media_txt}).",
@@ -78,7 +78,7 @@ def lancar_chamada(request, disciplina_id):
     try: data_sel = date.fromisoformat(data_str) if data_str else timezone.now().date()
     except: data_sel = timezone.now().date()
 
-    alunos = disciplina.turma.alunos.all().order_by("nome_completo")
+    alunos = disciplina.turma.alunos.all().select_related("user", "ficha_medica").order_by("nome_completo")
     freq_obs = {f.aluno_id: f for f in Frequencia.objects.filter(disciplina=disciplina, data=data_sel)}
     
     # IDs de usuários com atestado aprovado para este dia
@@ -100,7 +100,7 @@ def lancar_chamada(request, disciplina_id):
             status = "Presença registrada" if pres else "Falta registrada"
             detalhe = "Você foi marcado como presente." if pres else "Você foi marcado com falta."
             NotificacaoServico.criar(
-                aluno=aluno,
+                user=aluno.user,
                 tipo="CHAMADA",
                 titulo=status,
                 mensagem=f"{disciplina.nome} ({data_sel.strftime('%d/%m/%Y')}): {detalhe}",

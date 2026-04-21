@@ -1,7 +1,7 @@
 import csv
 import datetime
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.db.models import Avg, Count, Q, Case, When, FloatField, F, Value, ExpressionWrapper, DecimalField
 from django.db.models.functions import Coalesce
@@ -9,8 +9,51 @@ from django.db.models.functions import Coalesce
 from apps.academico.models.academico import Turma, Disciplina
 from apps.academico.models.desempenho import Nota
 from apps.usuarios.models.perfis import Aluno
+from apps.saude.models.ficha_medica import FichaMedica
+from apps.usuarios.utils.perfis import is_super_ou_gestor, get_nome_exibicao, get_foto_perfil
 from apps.biblioteca.models.biblioteca import Emprestimo
 from apps.dashboards.utils.pdf_engine import RelatorioMasterPDF
+
+@login_required
+@user_passes_test(is_super_ou_gestor)
+def dashboard_saude_inclusao(request):
+    """Painel analítico focado em acessibilidade, inclusão e saúde dos alunos."""
+    total_alunos = Aluno.objects.count()
+    total_pcd = Aluno.objects.filter(possui_necessidade_especial=True).count()
+    
+    # Alunos com alergias (vê se o campo não está vazio)
+    fichas_com_alergia = FichaMedica.objects.exclude(alergias__isnull=True).exclude(alergias="")
+    total_alergias = fichas_com_alergia.count()
+    
+    # Detalhes das alergias para a lista de alertas
+    alertas_criticos = []
+    for f in fichas_com_alergia.select_related('aluno')[:15]:
+        alertas_criticos.append({
+            'aluno': f.aluno.nome_completo,
+            'alergia': f.alergias,
+            'medicamento': f.medicamentos_continuos or "N/A"
+        })
+
+    # Distribuição Sanguínea
+    sanguineo_qs = FichaMedica.objects.values('tipo_sanguineo').annotate(total=Count('id'))
+    sanguineo_labels = [row['tipo_sanguineo'] or 'N/A' for row in sanguineo_qs]
+    sanguineo_data = [row['total'] for row in sanguineo_qs]
+
+    import json
+    contexto = {
+        'stats': {
+            'total': total_alunos,
+            'pcd': total_pcd,
+            'alergias': total_alergias,
+            'percentual_pcd': round((total_pcd / total_alunos * 100), 1) if total_alunos > 0 else 0
+        },
+        'alertas_criticos': alertas_criticos,
+        'sanguineo_labels': json.dumps(sanguineo_labels),
+        'sanguineo_data': json.dumps(sanguineo_data),
+        'nome_exibicao': get_nome_exibicao(request.user),
+        'foto_perfil_url': get_foto_perfil(request.user),
+    }
+    return render(request, 'dashboards/dashboard_inclusao.html', contexto)
 
 @login_required
 def dashboard_bi_academico(request):

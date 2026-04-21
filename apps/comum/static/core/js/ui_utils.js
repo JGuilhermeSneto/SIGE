@@ -17,7 +17,7 @@ const masks = {
  */
 function initGlobalMasks() {
     const cpfInputs = document.querySelectorAll('input[name="cpf"], #id_cpf');
-    const telInputs = document.querySelectorAll('input[name="telefone"], #id_telefone');
+    const telInputs = document.querySelectorAll('input[name="telefone"], #id_telefone, input[name*="fone"], input[id*="fone"]');
     const cepInputs = document.querySelectorAll('input[name="cep"], #id_cep');
 
     cpfInputs.forEach(input => input.addEventListener('input', e => e.target.value = masks.cpf(e.target.value)));

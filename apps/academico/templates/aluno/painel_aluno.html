@@ -180,10 +180,41 @@
     <div class="header-painel">
         <div class="header-esquerda">
             <span class="header-label"><i class="fa-solid fa-graduation-cap"></i> SIGE · Painel do Aluno</span>
-            <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋</h1>
+            <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋
+                {% if aluno.possui_necessidade_especial %}<i class="fa-solid fa-universal-access" style="color: var(--accent-cyan); font-size: 1.2rem; vertical-align: middle; margin-left: 10px;" title="Perfil Inclusivo Ativo"></i>{% endif %}
+                {% if aluno.ficha_medica.alergias %}<i class="fa-solid fa-hand-dots" style="color: var(--accent-amber); font-size: 1.2rem; vertical-align: middle; margin-left: 8px;" title="Restrição de Saúde: Alergias"></i>{% endif %}
+            </h1>
             <p class="header-sub">{{ aluno.turma.nome }} · {{ aluno.turma.get_turno_display }}</p>
         </div>
+        <div style="display: flex; gap: 15px;">
+            {% if aluno.possui_necessidade_especial %}
+            <div class="sige-glass-card" style="display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-radius: var(--radius-lg); border: 1px solid rgba(124, 111, 255, 0.2);">
+                <div style="background: rgba(124, 111, 255, 0.2); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-violet);">
+                    <i class="fa-solid fa-universal-access"></i>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-violet); font-weight: 800;">PCD</p>
+                    <p style="margin: 0; font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">{{ aluno.descricao_necessidade|truncatechars:25|default:"Ativo" }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if aluno.ficha_medica.alergias %}
+            <div class="sige-glass-card" style="display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-radius: var(--radius-lg); border: 1px solid rgba(251, 191, 36, 0.2);">
+                <div style="background: rgba(251, 191, 36, 0.2); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-amber);">
+                    <i class="fa-solid fa-hand-dots"></i>
+                </div>
+                <div>
+                    <p style="margin: 0; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-amber); font-weight: 800;">Alergias</p>
+                    <p style="margin: 0; font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">{{ aluno.ficha_medica.alergias|truncatechars:25 }}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
         <div class="header-acoes">
+            <a href="{% url 'minhas_leituras' %}" class="btn-imprimir btn-declaracao" title="Meu Histórico de Livros">
+                <i class="fa-solid fa-book-bookmark"></i> Minhas Leituras
+            </a>
             <a href="{% url 'acervo_biblioteca' %}" class="btn-imprimir" title="Ver Acervo Digital">
                 <i class="fa-solid fa-book-open"></i> Biblioteca
             </a>
@@ -453,9 +484,9 @@
 
                 {# ── Livros Devolvidos ── #}
                 {% if livros_devolvidos %}
-                <p class="secao-titulo" style="display: flex; align-items: center; gap: 8px; margin-top: 28px;">
-                    <i class="fa-solid fa-book-circle-arrow-right" style="color: var(--accent-emerald);"></i> Histórico
-                    de Leituras
+                <p class="secao-titulo" style="display: flex; align-items: center; justify-content: space-between; margin-top: 28px;">
+                    <span><i class="fa-solid fa-book-circle-arrow-right" style="color: var(--accent-emerald);"></i> Histórico de Leituras</span>
+                    <a href="{% url 'minhas_leituras' %}" class="btn-acervo" style="font-size: 0.7rem; padding: 4px 10px;">Ver Tudo</a>
                 </p>
                 <div style="display: flex; flex-direction: column; gap: 12px;">
                     {% for dev in livros_devolvidos %}
