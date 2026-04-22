@@ -1,25 +1,29 @@
-# 🏥 Módulo de Saúde Escolar (SIGE)
+# Módulo de Saúde Escolar
 
-Bem-vindo ao módulo de **Saúde do Aluno** dentro do Sistema Integrado de Gestão Escolar (SIGE). Este módulo foi desenhado para assegurar o amparo clínico, a segurança integrativa e o registro vacinal dos estudantes enquanto estes frequentam as imediações da escola.
+## Visão geral
 
-## 🌟 Funcionalidades e Regras de Negócio
+O app `apps.saude` registra a saúde dos alunos e realiza o fluxo de atestados médicos com segurança e controle.
 
-1. **Ficha Médica Base e Alertas**
-   - Criação de ficha médica acoplada ao Perfil do Aluno (Relação `OneToOneField`).
-   - Mapeamento detalhado do Tipo Sanguíneo e Contato Telefônico de Emergência.
-   - **Campos Vitais de Risco**: Inserção de dados para Medicamentos de uso contínuo, Condições de PCD (Pessoas com Deficiência) e **Alergias severas**. Esses campos desencadeiam ícones de alerta visual no Painel do Professor ao lado do nome do estudante na listagem da pauta.
+## Funcionalidades principais
 
-2. **Carteira de Vacinação**
-   - Banco de registros integrados atrelados à ficha médica para monitoramento de vacinações essenciais e o envio de lotes sazonais.
+- Cadastro de ficha médica e dados de saúde.
+- Registro de alergias, medicamentos e PCD.
+- Envio e aprovação de atestados médicos.
+- Controle de notificações e justificativas de faltas.
 
-3. **Arquitetura de Permissões**
-   - O acesso a informações clínicas é tratado com extremo sigilo. A view `visualizar_saude_aluno` e o painel correspondente só serão abertos nas seguintes condições:
-     - 🎓 **Para o Próprio Estudante**: O aluno tem o direito inalienável de ver seu próprio prontuário gerado pelo estado acadêmico (`eh_proprio_aluno`).
-     - 👨‍🏫 **Professor Ativo na Turma**: O professor tem autorização de consulta clínica APENAS aos alunos que leciona disciplinas do seu grade curricular do ano letivo. O acesso a alunos de outras classes é criptograficamente evitado.
-     - 👔 **Gestor Escolar**: Acesso administrativo Master-level podendo editar e preencher as tabelas no painel `editar_ficha_medica`.
+## Estrutura de pastas
 
-## 💻 Integração e Design System
-O front-end utiliza o esquema dinâmico do `medical-card` e engrenagem isolada sem conflito temático, utilizando elementos do **Design System Premium** (Ícones Fa-solid com tons `Ruby` caso o aluno contenha alergias ou `Emerald/Cyan`).
+- `views.py` — dashboards de saúde e análise de atestados.
+- `forms.py` — formulários de ficha médica e atestados.
+- `models/` — modelos de saúde, atestado e histórico.
+- `templates/` — telas de cadastro, visualização e auditoria.
 
-## 🚀 Próximos Passos
-- Refatoração dos alertas para inclusão em Módulos de Nutrição (Alimentação diferenciada em Refeitórios para alunos alérgicos/restrições).
+## Uso principal
+
+Use este app para tratar dados clínicos escolares e integrar atestados ao fluxo pedagógico.
+
+## Observações
+
+A autorização do professor e dos gestores garante que apenas dados autorizados sejam exibidos.
+
+> Atualizado em 2026-04-22.

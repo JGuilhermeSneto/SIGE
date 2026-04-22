@@ -76,7 +76,7 @@ def lancar_chamada(request, disciplina_id):
 
     data_str = request.GET.get("data") or request.POST.get("data")
     try: data_sel = date.fromisoformat(data_str) if data_str else timezone.now().date()
-    except: data_sel = timezone.now().date()
+    except (ValueError, TypeError): data_sel = timezone.now().date()
 
     alunos = disciplina.turma.alunos.all().select_related("user", "ficha_medica").order_by("nome_completo")
     freq_obs = {f.aluno_id: f for f in Frequencia.objects.filter(disciplina=disciplina, data=data_sel)}

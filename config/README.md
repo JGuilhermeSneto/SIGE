@@ -1,35 +1,29 @@
-# SIGE · Project Configuration (Notas)
+# Configurações do SIGE
 
-Este é o diretório raiz de configuração do Django. Embora o nome da pasta seja `notas/` (devido à inicialização original do projeto), este é o "coração" administrativo que conecta todos os módulos.
+## Visão geral
 
-## Arquivos e Responsabilidades
+O diretório `config/` contém as configurações centrais do Django usadas pelo projeto.
 
-- **`settings.py`**: Configurações centrais do projeto. Utiliza o `python-decouple` para separar segredos (como chaves de API e senhas de banco) em um arquivo `.env` fora do controle de versão.
-- **`urls.py`**: O roteador mestre do sistema. Ele não define lógica, mas inclui os roteadores de cada aplicativo (principalmente o do `core`).
-- **`wsgi.py` / `asgi.py`**: Interfaces de entrada para servidores web (Gunicorn, Uvicorn). O `asgi.py` está preparado para lidar com comunicações assíncronas se necessário no futuro.
-- **`__init__.py`**: Marca este diretório como um pacote Python.
+## Funcionalidades principais
 
-## Diretrizes de Manutenção
+- Definição de `INSTALLED_APPS` e middlewares.
+- Configuração de banco de dados e variáveis de ambiente.
+- Rotas globais via `ROOT_URLCONF`.
+- Integração com `rest_framework`, `corsheaders` e JWT.
 
-1. **Segurança**: Nunca coloque senhas ou chaves secretas diretamente no `settings.py`. Use o arquivo `.env`.
-2. **Ambientes**: O `settings.py` está configurado para alternar entre SQLite (desenvolvimento) e MySQL (produção) automaticamente com base nas variáveis de ambiente.
-3. **Segurança em produção**: mantenha `DEBUG=False`, configure `ALLOWED_HOSTS`, `SECURE_SSL_REDIRECT`, cookies seguros e CORS/CSRF trusted origins para o domínio público.
-4. **Inclusão de Apps**: Sempre adicione novos aplicativos instalados na lista `INSTALLED_APPS` aqui.
+## Estrutura de pastas
 
-## Atualizações recentes relevantes para configuração
+- `settings.py` — configurações de ambiente e dependências.
+- `urls.py` — roteamento principal do sistema.
+- `wsgi.py` / `asgi.py` — pontos de entrada para servidores.
+- `__init__.py` — pacote Python.
 
-- O projeto passou a usar notificações persistentes de aluno (modelo em `apps.academico.models.desempenho`), exigindo migration nova.
-- O domínio de atividades recebeu campos de liberação de gabarito (migration dedicada).
+## Uso principal
 
-### Checklist pós-pull
+Use este app para centralizar configurações e manter o projeto consistente entre ambientes.
 
-Sempre rode:
+## Observações
 
-```bash
-python manage.py migrate
-```
+Mantenha segredos em `.env` e não no repositório.
 
-Migrations recentes esperadas:
-
-- `academico.0003_atividadeprofessor_gabarito_liberacao`
-- `academico.0004_notificacaoaluno`
+> Atualizado em 2026-04-22.

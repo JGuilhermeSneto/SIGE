@@ -65,30 +65,32 @@ def salvar_planejamento(request):
             return JsonResponse({"erro": "Acesso negado."}, status=403)
             
         data_str = request.POST.get('data_aula')
-        horario = request.POST.get('horario_aula')
+        grade_id = request.POST.get('grade_id')
         conteudo = request.POST.get('conteudo')
         disciplina_id = request.POST.get('disciplina_id')
         
+        if not (data_str and grade_id and conteudo and disciplina_id):
+            return JsonResponse({"erro": "Preencha todos os campos antes de salvar."}, status=400)
+
         try:
             data_obj = datetime.strptime(data_str, "%Y-%m-%d").date()
             disciplina = Disciplina.objects.get(id=disciplina_id, professor=professor)
-        except Exception:
-            return JsonResponse({"erro": "Parâmetros inválidos."}, status=400)
+            grade = GradeHorario.objects.get(id=grade_id, disciplina=disciplina)
+        except (ValueError, TypeError, Disciplina.DoesNotExist, GradeHorario.DoesNotExist):
+            return JsonResponse({"erro": "Parâmetros inválidos ou não encontrados."}, status=400)
             
         # VALIDAÇÃO CORE: O Professor dá aula nessa disciplina, nesse dia da semana?
         dia_semana_py = data_obj.weekday()
         dia_str = DIA_MAP.get(dia_semana_py)
         
-        grade = GradeHorario.objects.filter(disciplina=disciplina, dia=dia_str, horario=horario)
-        
-        if not grade.exists():
-            # A trava principal solicitada: Não pode planejar se a Coordenação não reservou esse slot.
-            return JsonResponse({"erro": f"Operação bloqueada: A Grade Horária não mapeia aulas nesta disciplina para {'Sexta' if dia_str == 'sexta' else dia_str} no horário {horario}."}, status=400)
+        if grade.dia != dia_str:
+            # Mensagem mais intuitiva que mostra claramente que o slot e a data escolhida estão em desacordo
+            return JsonResponse({"erro": f"Operação bloqueada: A data escolhida ({data_str}) é {dia_str.title()}, mas o slot selecionado é de {grade.get_dia_display()}."}, status=400)
             
         planejamento, created = PlanejamentoAula.objects.update_or_create(
             disciplina=disciplina,
             data_aula=data_obj,
-            horario_aula=horario,
+            horario_aula=grade.horario,
             defaults={
                 'professor': professor,
                 'turma': disciplina.turma,

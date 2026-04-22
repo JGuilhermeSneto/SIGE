@@ -1,24 +1,32 @@
 # 🚀 SIGE Roadmap & Evolução
 
-Este documento rastreia as melhorias implementadas e os próximos passos para tornar o SIGE uma plataforma referência em gestão escolar inclusiva e de alta performance.
+Este documento traça o estado atual do projeto e as prioridades de evolução com base na arquitetura e nos módulos já entregues.
 
-## ✅ Concluído (Inclusão & Saúde v1.0)
-- **Cadastro Unificado**: Integração da Ficha Médica no fluxo de matrícula do Discente.
-- **Gestão de Laudos PCD**: Sistema seguro de upload e visualização de documentos para gestores.
-- **Sinalização Pedagógica**: Ícones de PCD e Alergia visíveis para professores na lista de alunos e chamada.
-- **Padronização Premium**: Modernização da Ficha Médica (Detalhe e Edição) com Glassmorphism.
-- **Máscaras de Dados**: Aplicação automática de máscaras em telefones de emergência.
+## ✅ Concluído (Base funcional e módulos essenciais)
+- Arquitetura modular em Django com apps separados: `usuarios`, `academico`, `calendario`, `comum`, `comunicacao`, `documentos`, `infraestrutura`, `saude`, `biblioteca`, `dashboards`.
+- Autenticação com perfis e painéis customizados para **Aluno**, **Professor**, **Gestor** e **Superusuário**.
+- Cadastro de turmas, disciplinas, grade horária, planejamento de aulas e controle de frequência.
+- Sistema de comunicação interno com murais segmentados e avisos por público.
+- Geração de documentos em PDF: boletim escolar e declaração de matrícula.
+- Gestão de biblioteca com cadastro de livros, empréstimos e devoluções.
+- Ficha médica e atestados com fluxo de aprovação e automação de justificativas.
+- Registro de patrimônio e movimentações de estoque.
+- Design System e suporte inicial a Vite para front-end moderno.
 
-## 🚧 Em Andamento (Modernização UI/UX)
-- [ ] **Gestão de Atestados**: Atualizar a listagem de atestados para o padrão Premium.
-- [ ] **Painel de Revisão**: Modernizar a interface de análise de atestados médico.
-- [ ] **Auditoria de Botões**: Substituir classes legadas (`btn-sige-primario`) pela nova `sige-btn`.
+## 🚧 Em andamento (Foco atual)
+- Dashboards de BI para gestores com métricas de evasão, desempenho e saúde escolar.
+- Consolidação dos fluxos de infraestrutura e estoque na interface de gestão.
+- Ajustes de integração entre Django e Vite para deploy e desenvolvimento.
+- Documentação dos apps e padronização de READMEs por módulo.
 
-## 📅 Próximas Atualizações (Sugestões)
-1. **Dashboard de Inclusão**: Visão analítica para gestores com estatísticas de alunos PCD, tipos de necessidades e alertas de saúde.
-2. **Histórico de Medicamentos**: Notificações para professores sobre horários de medicamentos contínuos (se autorizado).
-3. **Justificativa Visual**: No diário de classe, exibir um ícone de "Atestado" em faltas que foram justificadas automaticamente pelo sistema.
-4. **Relatórios em PDF**: Gerar ficha médica completa em PDF para pastas físicas e excursões.
+## 📅 Próximas fases (Roadmap de médio prazo)
+1. **Financeiro / Cobrança**: boletos, inadimplência, fluxo de caixa e folha de pagamento.
+2. **Convênios / Estágios**: gestão de parcerias e acordos acadêmicos.
+3. **Histórico de aluno unificado**: consolidação de notas, frequência, atestados e documentos.
+4. **Integrações externas**: Google Classroom, Microsoft Teams e outros serviços educacionais.
+5. **Analytics preditivo**: indicadores de risco de evasão e desempenho com base em dados históricos.
+6. **App móvel / PWA**: experiência mobile para alunos e professores.
 
 ---
-*Atualizado em: 2026-04-21*
+
+*Atualizado em: 2026-04-22*

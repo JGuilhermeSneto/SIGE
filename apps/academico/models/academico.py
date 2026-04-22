@@ -60,11 +60,14 @@ class GradeHorario(models.Model):
         db_table = 'core_gradehorario'
         verbose_name = "Grade de Horário"
         verbose_name_plural = "Grades de Horários"
-        unique_together = ("turma", "dia", "horario")
-        ordering = ["horario", "dia"]
+        # CORREÇÃO: era ("turma", "dia", "horario") — permitia duplicatas por disciplina.
+        # Agora garante que uma disciplina não pode ter o mesmo dia+horário duas vezes.
+        unique_together = ("disciplina", "dia", "horario")
+        ordering = ["dia", "horario"]
 
     def __str__(self):
         return f"{self.turma} | {self.dia} | {self.horario} | {self.disciplina}"
+
 
 class AtividadeProfessor(models.Model):
     """Representa um trabalho, atividade ou prova cadastrado pelo professor."""
@@ -116,6 +119,7 @@ class AtividadeProfessor(models.Model):
     def exibir_gabarito_para_aluno(self):
         return self.possui_gabarito and (self.gabarito_liberado or self.prazo_encerrado)
 
+
 class Questao(models.Model):
     """Questões de uma atividade (objetivas ou discursivas)."""
     TIPO_QUESTAO = [('OBJETIVA', 'Objetiva (Múltipla Escolha)'), ('DISCURSIVA', 'Discursiva (Texto)')]
@@ -131,6 +135,7 @@ class Questao(models.Model):
         verbose_name = "Questão"
         verbose_name_plural = "Questões"
 
+
 class Alternativa(models.Model):
     """Opções para questões objetivas."""
     class Meta:
@@ -141,6 +146,7 @@ class Alternativa(models.Model):
 
     def __str__(self):
         return f"{self.texto} ({'Correta' if self.eh_correta else 'Errada'})"
+
 
 class EntregaAtividade(models.Model):
     """Armazena as entregas feitas pelos alunos."""
@@ -158,6 +164,7 @@ class EntregaAtividade(models.Model):
         unique_together = ("aluno", "atividade")
         ordering = ["-data_entrega"]
 
+
 class RespostaAluno(models.Model):
     """Respostas individuais de cada questão."""
     class Meta:
@@ -169,6 +176,7 @@ class RespostaAluno(models.Model):
     comentario_professor = models.TextField(blank=True, help_text="Correção específica desta questão")
     pontos_atribuidos = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
 
+
 class PlanejamentoAula(models.Model):
     """Diário de classe onde o professor registra o plano/conteúdo que vai ou que foi ministrado via Grade Horária."""
     professor = models.ForeignKey("usuarios.Professor", on_delete=models.CASCADE, related_name="planejamentos_aula")
@@ -176,10 +184,10 @@ class PlanejamentoAula(models.Model):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name="planejamentos_aula")
     data_aula = models.DateField(help_text="Data efetiva da aula")
     horario_aula = models.CharField(max_length=50, help_text="Horário conforme a Grade (Ex: 07:00 - 07:50)")
-    
+
     conteudo = models.TextField(help_text="Descrição do plano de aula ou conteúdo abordado (Markdown opcional)")
     arquivos_apoio = models.FileField(upload_to="planejamentos/materiais/", blank=True, null=True, help_text="Upload de lista de exercícios ou slides da aula")
-    
+
     STATUS_AULA_CHOICES = [
         ('NORMAL', 'Normal'),
         ('SUSPENSA', 'Suspensa'),
@@ -201,6 +209,7 @@ class PlanejamentoAula(models.Model):
     def __str__(self):
         return f"{self.data_aula.strftime('%d/%m/%Y')} | {self.disciplina.nome} | {self.horario_aula}"
 
+
 class MaterialDidatico(models.Model):
     """Representa um material de aula (link, arquivo ou livro da biblioteca)."""
     TIPO_CHOICES = [
@@ -211,19 +220,14 @@ class MaterialDidatico(models.Model):
     disciplina = models.ForeignKey(Disciplina, on_delete=models.CASCADE, related_name="materiais")
     titulo = models.CharField(max_length=200)
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES, default='LINK')
-    
-    # Para LINK
+
     url = models.URLField(blank=True, null=True, help_text="Link externo (YouTube, site, etc.)")
-    
-    # Para ARQUIVO
     arquivo = models.FileField(upload_to='materiais_aula/', blank=True, null=True)
-    
-    # Para LIVRO
     livro = models.ForeignKey(
         'biblioteca.Livro', on_delete=models.SET_NULL, null=True, blank=True,
         help_text="Referência a um livro do acervo"
     )
-    
+
     descricao = models.TextField(blank=True, help_text="Descrição ou instruções do professor")
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)

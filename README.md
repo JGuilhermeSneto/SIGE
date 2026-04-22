@@ -178,18 +178,7 @@ Localmente você pode ainda usar **Black** e **isort** (presentes no `requiremen
 
 ## 🛣️ 7. Futuras Melhorias e Roadmap
 
-* [x] **Sistema de Notificações**: alertas sobre atestados e comunicados globais (entregue).
-* [x] **Biblioteca Digital**: acervo com empréstimos e página de detalhes (entregue).
-* [🚀] **BI / Dashboards Gerenciais**: gráficos de desempenho escolar via Chart.js — *sprint ativo*.
-* [ ] **Histórico Escolar**: relatório acumulativo por aluno.
-* [ ] **Gestão de Estoque**: controle de insumos da infraestrutura.
-* [ ] **API REST**: consolidar e documentar endpoints com Django REST Framework.
-* [ ] **Multi-tenant**: várias escolas na mesma instância, se necessário.
-* [ ] **Versão 2.0 — Financeiro**: geração de boletos, gestão de inadimplência, folha de pagamento.
-* [ ] **Versão 3.0 — Convênios**: gestão de estágios e expansão multidisciplinar.
-* [ ] **Versão 4.0 — IA & Mobile**: health score preditivo de evasão, PWA nativo.
-
----
+O roadmap completo está consolidado em [`ROADMAP.md`](ROADMAP.md). Consulte esse arquivo para o estado atual do projeto, prioridades em desenvolvimento e frentes futuras.
 
 ## 🚀 8. Instalação (Setup Rápido)
 
@@ -338,6 +327,10 @@ Quando estiver pronto para produção:
 
 ```bash
 cd frontend_SIGE/Frontend_SIGE
+```
+
+> Atualizado em 2026 para refletir a documentação atual do projeto e registrar a criação de README adicionais para cada app.
+
 npm run build
 ```
 

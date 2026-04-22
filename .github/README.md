@@ -1,21 +1,26 @@
-# SIGE · Automation & CI/CD
+# CI/CD do SIGE
 
-Este diretório contém as configurações para automação do ciclo de desenvolvimento, integração contínua e segurança.
+## Visão geral
 
-## Conteúdo
+Este diretório documenta as automações de CI e as práticas de integração contínua do projeto.
 
-- **`workflows/`**: Contém arquivos `.yml` que definem as ações do **GitHub Actions**.
-  - No `push` para a branch `main`, são executados: Linting (Flake8), Formatação (Black) e Testes Unitários.
-- **`dependabot.yml`**: Configuração do Dependabot para monitorar e sugerir atualizações de segurança para as bibliotecas listadas no `requirements.txt`.
+## Funcionalidades principais
 
-## Manutenção
+- Pipelines para testes e lint.
+- Integração com Dependabot.
+- Regras de qualidade para PRs.
 
-Sempre que uma nova regra de qualidade de código ou uma nova suíte de testes (ex: testes de UI com Selenium) for adicionada, os arquivos em `workflows/` devem ser atualizados para garantir que o pipeline de CI reflita essas novas exigências.
+## Estrutura de pastas
 
-## Novas áreas sensíveis a CI (Abr/2026)
+- `workflows/` — definições dos fluxos do GitHub Actions.
+- `dependabot.yml` — configuração de atualizações de dependências.
 
-- Fluxos de calendário escolar (evento/aula suspensa/feriado/prova).
-- Fluxos de gabarito (liberação manual e automática por prazo).
-- Notificações de aluno (nota, chamada, correção e gabarito).
+## Uso principal
 
-Recomendação: ampliar gradualmente testes automatizados para esses cenários em PRs futuros.
+Use este arquivo para entender como o projeto valida código em push e pull requests.
+
+## Observações
+
+Atualize os workflows sempre que novos testes ou ferramentas forem adicionados ao projeto.
+
+> Atualizado em 2026-04-22.
