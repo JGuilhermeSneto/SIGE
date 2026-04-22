@@ -81,10 +81,9 @@ class Aluno(PessoaBase):
         help_text="Situação atual da matrícula do aluno",
     )
     turma = models.ForeignKey(
-        "academico.Turma",
+        "apps.academico.Turma",
         on_delete=models.CASCADE, related_name="alunos", help_text="Turma do aluno"
     )
-
 
     class Meta:
         db_table = 'core_aluno'
@@ -93,7 +92,6 @@ class Aluno(PessoaBase):
         verbose_name_plural = "Alunos"
 
     def save(self, *args, **kwargs):
-        # Garante que a turma do aluno seja do app academico
         super().save(*args, **kwargs)
 
     def __str__(self):
