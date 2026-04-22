@@ -61,7 +61,7 @@ sqlparse==0.5.5
 svglib==1.6.0
 tinycss2==1.5.1
 tomlkit==0.14.0
-types-PyYAML==6.0.12.20250915
+types-PyYAML==6.0.12.20260408
 typing_extensions==4.15.0
 tzdata==2025.3
 tzlocal==5.3.1
