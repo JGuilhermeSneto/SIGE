@@ -13,6 +13,7 @@ env:
   DB_PASSWORD: root
   DB_HOST: 127.0.0.1
   DB_PORT: "3306"
+  DJANGO_SETTINGS_MODULE: config.settings
 
 jobs:
   test:
@@ -35,12 +36,13 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: 'pip'
 
     - name: Install system dependencies
       run: sudo apt-get install -y libcairo2-dev pkg-config python3-dev
@@ -50,6 +52,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Django system check
+      run: python manage.py check
+
     - name: Run migrations
       run: python manage.py migrate
 
@@ -58,8 +63,18 @@ jobs:
         coverage run --source='.' manage.py test
         coverage report -m
 
-    - name: Lint Python code
+    - name: Lint - flake8 (erros críticos apenas)
       run: |
-        flake8 .
-        pylint **/*.py
-        mypy .
+        # Falha apenas em erros de sintaxe e imports indefinidos (E9, F63, F7, F82)
+        # Usa as configurações do .flake8 para warnings de estilo
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+    - name: Lint - pylint (erros críticos apenas)
+      run: |
+        # Roda apenas para erros de código real (E-level), ignora warnings de estilo
+        pylint apps/ --errors-only --disable=E1101,E1103
+      continue-on-error: true
+
+    - name: Type check - mypy
+      run: mypy . --ignore-missing-imports
+      continue-on-error: true

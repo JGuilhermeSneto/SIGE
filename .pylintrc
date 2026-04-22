@@ -3,7 +3,7 @@ load-plugins=pylint_django
 ignore=migrations
 
 [DJANGO]
-django-settings-module=notas.settings
+django-settings-module=config.settings
 
 [DESIGN]
 max-module-lines=2000
