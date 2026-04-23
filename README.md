@@ -18,6 +18,8 @@
 
 ![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-green?style=flat-square)
 ![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square)
+![Redis](https://img.shields.io/badge/Redis-Cache-DC382D?style=flat-square)
 
 <br/>
 
@@ -45,23 +47,26 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 | **`apps.comunicacao`** | Comunicados institucionais. | Mural de avisos com segmentação de público e controle de expiração por data. |
 | **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, medicamentos, atestados médicos com fluxo de aprovação e automação pedagógica. |
 
-### ✨ Atualizações recentes (Abr/2026)
-
-- **Sistema de Atestados Universais & Automação Pedagógica**
-  - Workflow unificado para envio de atestados (Alunos, Professores e Gestores).
-  - **Automação Inteligente**: A aprovação de atestado de professor suspende automaticamente as aulas previstas no período; para alunos, justifica faltas e bloqueia lançamentos indevidos na chamada.
-  - Indicadores Visuais: Badge **[DE ATESTADO]** na folha de chamada e marcador **(SUSPENSA)** na grade horária semanal.
-- **Biblioteca Digital — Detalhamento de Acervo**
-  - Página de detalhes por livro com dados completos: título, autor, editora, ano de publicação, ISBN e data de cadastro no acervo.
-  - Adicionado campo `data_cadastro` no model `Livro` com migration.
-  - Fotos de perfil dos professores exibidas em listagens de atividades e grade horária.
+- **Documentação de API Automática (OpenAPI 3.0)**
+  - Integração com `drf-spectacular` para geração de schema automático.
+  - Interfaces interativas disponíveis em `/api/docs/` (Swagger UI) e `/api/redoc/` (Redoc).
+- **Garantia de Qualidade & CI/CD Robusto**
+  - Pipeline do GitHub Actions reformulado com jobs em paralelo: Lint, Security Scan e Tests.
+  - **Deploy Contínuo (CD)**: Automatizado via SSH para servidores de produção após aprovação no CI.
+  - Cobertura de testes atualizada para **53%** com 39 testes unitários e de integração ativos.
+- **Correção Estrutural de Modelos**
+  - Refatoração dos arquivos `__init__.py` nos módulos de models para garantir o registro correto no AppRegistry do Django, eliminando erros de `SystemCheck`.
 - **Design System Premium — Temas & Login**
   - Padronização em três temas: "Indigo Profundo", "Cinza Industrial" e "Azul Corporativo".
-  - Logo da splash screen agora fica **preta** automaticamente nos temas claros (via `brightness(0)` injetado diretamente no HTML).
-  - **Animações de Input Reformuladas**: os campos de e-mail e senha da tela de login exibem um *glow ring* sutil ao serem selecionados, com barra de progresso colorida ao digitar e troca de ícone (envelope/cadeado). O bug de sobreposição do foco nativo do navegador foi corrigido injetando `outline: none !important` e estilos inline diretamente no widget Django.
-- **Otimizações de Dashboard**
-  - Alunos e professores visualizam sua saúde escolar com total autonomia.
-  - Calendário dinâmico personalizado: exibe suspensões de aula individuais e eventos globais no mesmo dashboard.
+  - Logo da splash screen agora fica **preta** automaticamente nos temas claros.
+- **Arquitetura Escalável & Distribuída**
+  - **Docker & Docker Compose**: O ambiente está totalmente conteinerizado, separando os serviços de aplicação, banco de dados (MySQL) e cache (Redis).
+  - **Processamento Assíncrono (Celery)**: Implementação de fila de tarefas para operações pesadas (notificações, PDFs) via Redis.
+  - **Camada de Cache (Redis)**: Otimização de consultas complexas e dashboards de BI.
+- **Segurança Avançada (Enterprise Grade)**
+  - **Brute Force Protection**: Integração com `django-axes` para bloqueio de IPs/usuários após múltiplas falhas de login.
+  - **Content Security Policy (CSP)**: Cabeçalhos de segurança contra XSS e injeção de código malicioso.
+  - **API Throttling**: Limitação de taxa (rate limiting) para evitar abusos na API REST.
 
 ---
 
@@ -104,32 +109,42 @@ As regras de situação acadêmica estão centralizadas em `apps/academico/utils
 
 ---
 
-## 🛠️ 3. Stack Tecnológica & Dependências
+## 🛠️ 3. Stack Tecnológica
 
-Tudo fica em **um único** `requirements.txt`, com blocos comentados (execução × desenvolvimento/CI). Basta `pip install -r requirements.txt` em qualquer máquina.
+O SIGE utiliza tecnologias de ponta para garantir performance, escalabilidade e segurança.
+
+### 💻 Linguagens & Frameworks
+| | | | |
+| :---: | :---: | :---: | :---: |
+| ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) | ![Django](https://img.shields.io/badge/django-%23092e20.svg?style=for-the-badge&logo=django&logoColor=white) | ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) | ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) |
+
+### 🗄️ Banco de Dados & Cache
+| | | | |
+| :---: | :---: | :---: | :---: |
+| ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white) | ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white) | ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=Cloudinary&logoColor=white) | ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) |
+
+### 🚀 Infraestrutura & DevOps
+| | | | |
+| :---: | :---: | :---: | :---: |
+| ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white) | ![Celery](https://img.shields.io/badge/celery-%2337814A.svg?style=for-the-badge&logo=celery&logoColor=white) | ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) |
+
+### 🛡️ Segurança & Qualidade
+| | | | |
+| :---: | :---: | :---: | :---: |
+| ![Sentry](https://img.shields.io/badge/Sentry-362D59?style=for-the-badge&logo=sentry&logoColor=white) | ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white) | ![Bandit](https://img.shields.io/badge/Bandit-Security-yellow?style=for-the-badge) | ![Coverage](https://img.shields.io/badge/Coverage-53%25-green?style=for-the-badge) |
+
+---
 
 <details>
-<summary><b>📦 Catálogo resumido (ver o próprio <code>requirements.txt</code>)</b></summary>
+<summary><b>📦 Lista Completa de Dependências</b></summary>
 
-#### Core
-* [Django 6.0.x](https://www.djangoproject.com/)
-* [python-decouple](https://pypi.org/project/python-decouple/) — variáveis de ambiente e `.env`
-* [python-dotenv](https://pypi.org/project/python-dotenv/)
-
-#### Banco e relatórios
-* [mysqlclient](https://pypi.org/project/mysqlclient/) — MySQL em produção
-* [Pillow](https://python-pillow.org/) — imagens (ex.: perfil)
-* [ReportLab](https://www.reportlab.com/) — PDFs
-
-#### Templates e formulários
-* [django-widget-tweaks](https://github.com/jazzband/django-widget-tweaks)
-
-#### Qualidade de código
-* Black, Flake8, isort, Pylint, pylint-django, Mypy (django-stubs), Coverage
+- **Core**: `Django`, `python-decouple`, `python-dotenv`.
+- **Relatórios**: `ReportLab`, `xhtml2pdf`, `Pillow`.
+- **API**: `djangorestframework`, `simplejwt`, `drf-spectacular`.
+- **Segurança**: `django-csp`, `django-axes`, `zxcvbn`.
+- **Qualidade**: `Black`, `Flake8`, `Pylint`, `Mypy`, `Bandit`, `Pip-audit`.
 
 </details>
-
-O `config/settings.py` registra **REST framework** e **CORS** em `INSTALLED_APPS`; os pacotes correspondentes já estão no `requirements.txt`.
 
 ---
 
@@ -144,7 +159,10 @@ O `config/settings.py` registra **REST framework** e **CORS** em `INSTALLED_APPS
 | `apps/calendario/` | Models e views do calendário; URLs sob `/calendario/`. |
 | `apps/comum/` | Formulários base, templatetags (`custom_tags`, `get_item`), estáticos em `static/core/`. |
 | `.env` / `.env.example` | Segredos e opções de banco (não versionar o `.env`). |
-| `.github/workflows/` | Pipeline CI (testes, migrations MySQL, flake8, pylint, mypy, coverage). |
+| `.github/workflows/` | Pipeline CI (testes, security scan, deploy). |
+| `Dockerfile` / `docker-compose.yml` | Orquestração do ambiente distribuído (App, DB, Redis, Worker). |
+| `SECURITY.md` | Documentação detalhada das camadas de proteção. |
+| `PIPELINE.md` | Manual de operação do workflow de CI/CD. |
 
 ---
 
@@ -163,16 +181,17 @@ Interface em modo escuro baseada em tokens CSS em `apps/comum/static/core/css/de
 ---
 
 ## 🧪 6. Garantia de Qualidade & DevOps
+No GitHub Actions (`.github/workflows/django.yml`), o pipeline é dividido em jobs paralelos para máxima eficiência:
 
-No GitHub Actions (`.github/workflows/django.yml`), em **push** e **pull request** para `main`:
+1.  **🔍 Lint & Style**: Executa `flake8` (com regras customizadas) e `pylint` (modo errors-only) para garantir a saúde do código.
+2.  **🔒 Security Scan**: Utiliza `bandit` para análise estática de vulnerabilidades e `pip-audit` para verificar dependências conhecidas.
+3.  **🧪 Tests & Coverage**: Sobe um container **MySQL 8**, aplica migrações e executa a suíte de testes com `coverage`.
+4.  **🚀 CD (Continuous Deployment)**: Se o CI passar na branch `main`, o deploy é disparado via **SSH** para o servidor de produção automaticamente.
 
-* Serviço **MySQL 8** e `python manage.py migrate`
-* `coverage run --source='.' manage.py test` e `coverage report`
-* `flake8 .`, `pylint **/*.py`, `mypy .`
-
-**Python na CI:** 3.12 (o projeto também pode ser desenvolvido com 3.11+ localmente).
-
-Localmente você pode ainda usar **Black** e **isort** (presentes no `requirements.txt`) antes de commitar.
+**Métricas Atuais:**
+- **Status CI:** 🟢 Passing
+- **Cobertura:** 📊 53%
+- **Python:** 3.12 (compatível com 3.11+)
 
 ---
 
@@ -208,6 +227,13 @@ O roadmap completo está consolidado em [`ROADMAP.md`](ROADMAP.md). Consulte ess
     python manage.py createsuperuser
     python manage.py runserver
     ```
+
+### 🐳 8.1. Rodando com Docker (Recomendado)
+Para subir o ambiente completo (App + MySQL + Redis + Celery):
+```bash
+docker-compose up --build
+```
+Acesse o sistema em `http://localhost:8000`.
 
 > Se você estiver atualizando um banco existente, garanta que as migrations mais recentes foram aplicadas:
 >

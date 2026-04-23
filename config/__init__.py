@@ -1,6 +1,3 @@
-"""
-Pacote de configuração do projeto Django (SIGE).
+from .celery import app as celery_app
 
-O que é: torna a pasta ``config/`` um pacote Python importável, para que
-strings como ``config.settings`` e ``config.urls`` funcionem no Django.
-"""
+__all__ = ('celery_app',)

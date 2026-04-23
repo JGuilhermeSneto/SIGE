@@ -23,6 +23,7 @@ from config.api_views import dashboard_resumo, ping
 from config.jwt_views import EmailTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from apps.comunicacao.api import ComunicadoViewSet
 from apps.academico.api import NotificacaoViewSet
@@ -43,6 +44,12 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/token/", EmailTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include(router.urls)),
+
+    # Documentação da API
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+
     path("", include("apps.usuarios.urls")),
     path("academico/", include("apps.academico.urls")),
     path("calendario/", include("apps.calendario.urls")),

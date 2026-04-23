@@ -19,14 +19,28 @@ Este documento traça o estado atual do projeto e as prioridades de evolução c
 - Ajustes de integração entre Django e Vite para deploy e desenvolvimento.
 - Documentação dos apps e padronização de READMEs por módulo.
 
-## 📅 Próximas fases (Roadmap de médio prazo)
-1. **Financeiro / Cobrança**: boletos, inadimplência, fluxo de caixa e folha de pagamento.
-2. **Convênios / Estágios**: gestão de parcerias e acordos acadêmicos.
-3. **Histórico de aluno unificado**: consolidação de notas, frequência, atestados e documentos.
-4. **Integrações externas**: Google Classroom, Microsoft Teams e outros serviços educacionais.
-5. **Analytics preditivo**: indicadores de risco de evasão e desempenho com base em dados históricos.
-6. **App móvel / PWA**: experiência mobile para alunos e professores.
+## 📅 Próximas fases (Evolução Técnica)
+
+### Fase 1: Inteligência Financeira & Gestão de Receita
+- **Módulo de Faturamento**: Implementação do app `apps.financeiro` com suporte a `ContasAReceber`.
+- **Gateways de Pagamento**: Integração com APIs externas (Asaas/Efí) para emissão de Pix e Boletos.
+- **Automação de Baixa**: Webhooks para atualização automática de status de pagamento.
+
+### Fase 2: Experiência 360º do Aluno
+- **Histórico Unificado**: Timeline cronológica unificando notas, faltas, atestados e acervo.
+- **Portal do Responsável**: Acesso simplificado para acompanhamento de desempenho e financeiro.
+- **Secretaria Digital**: Solicitação de documentos e certidões via interface.
+
+### Fase 3: Analytics, Preditivo e Mobile
+- **Risco de Evasão**: Motor de análise baseado em tendências de notas e frequência.
+- **PWA (Progressive Web App)**: Offline caching, manifest.json e notificações push para mobile.
+- **Integrações EdTech**: Sincronização com Google Classroom e Microsoft Teams.
+
+### Fase 4: Infraestrutura de Nuvem (Custo Zero)
+- **Deployment Desacoplado**: Frontend no **Vercel** e Backend no **Render/Railway**.
+- **Database Serverless**: Migração para **Supabase** ou **Neon** (PostgreSQL).
+- **Object Storage**: Cloudinary ou AWS S3 para persistência de PDFs e imagens.
 
 ---
 
-*Atualizado em: 2026-04-22*
+*Última atualização: 23 de Abril de 2026*
