@@ -55,5 +55,14 @@ services:
       - db
       - redis
 
+  frontend:
+    build:
+      context: ../frontend_SIGE/Frontend_SIGE
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - web
+
 volumes:
   mysql_data:

@@ -43,9 +43,10 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 | **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, grade horária, notas, frequência, atividades, relatórios. |
 | **`apps.calendario`** | Calendário acadêmico e eventos. | Visualização mensal, integração com utilitários de grade em `apps.academico`. |
 | **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, **estáticos globais** em `static/core/`, Design System (tokens, components, themes). |
-| **`apps.biblioteca`** | Gestão do acervo escolar. | Cadastro de livros, empréstimos, devoluções, detalhamento completo por livro (autor, editora, data de cadastro). |
+| **`apps.biblioteca`** | Gestão do acervo escolar. | Cadastro de livros, empréstimos, devoluções e **integração com APIs externas** (OpenLibrary/Google Books) para download automático de capas oficiais. |
 | **`apps.comunicacao`** | Comunicados institucionais. | Mural de avisos com segmentação de público e controle de expiração por data. |
 | **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, medicamentos, atestados médicos com fluxo de aprovação e automação pedagógica. |
+| **`apps.financeiro`** | Gestão financeira e faturamento. | Controle de mensalidades, faturas (pendentes, pagas, atrasadas) e relatórios de KPIs financeiros para gestão. |
 
 - **Documentação de API Automática (OpenAPI 3.0)**
   - Integração com `drf-spectacular` para geração de schema automático.

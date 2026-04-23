@@ -373,7 +373,22 @@
       <a href="{% url 'listar_atestados_aluno' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}">
         <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
       </a>
-{% endif %}
+      {% elif request.user|has_attr:"aluno" %}
+      <a href="{% url 'painel_aluno' %}" class="{% if request.resolver_match.url_name == 'painel_aluno' %}ativo{% endif %}">
+        <i class="fa-solid fa-house"></i> Início
+      </a>
+      <a href="{% url 'listar_faturas' %}" class="{% if request.resolver_match.url_name == 'listar_faturas' %}ativo{% endif %}">
+        <i class="fa-solid fa-file-invoice-dollar"></i> Financeiro
+      </a>
+      {% endif %}
+
+      <!-- Adicionar Financeiro para Gestor -->
+      {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
+      <a href="{% url 'listar_faturas' %}" class="{% if 'fatura' in request.resolver_match.url_name or 'relatorio_financeiro' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
+        <i class="fa-solid fa-money-check-dollar"></i> Financeiro
+      </a>
+      {% endif %}
+
 
     </nav>
   </aside>

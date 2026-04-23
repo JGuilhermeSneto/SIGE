@@ -23,6 +23,10 @@ class LoginForm(forms.Form):
     }))
     user = None
 
+    def __init__(self, *args, request=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.request = request
+
     def clean(self):
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
@@ -33,7 +37,7 @@ class LoginForm(forms.Form):
             user_obj = User.objects.get(email=email)
         except User.DoesNotExist:
             raise ValidationError("E-mail não encontrado.")
-        user = authenticate(username=user_obj.username, password=password)
+        user = authenticate(self.request, username=user_obj.username, password=password)
         if not user:
             raise ValidationError("Senha incorreta.")
         self.user = user

@@ -20,7 +20,7 @@ def login_view(request):
         return redirect(redirect_user(request.user))
 
     if request.method == "POST":
-        form = LoginForm(request.POST)
+        form = LoginForm(request.POST, request=request)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -31,7 +31,7 @@ def login_view(request):
             
             return redirect(redirect_user(user))
     else:
-        form = LoginForm()
+        form = LoginForm(request=request)
 
     return render(request, "auth/login.html", {"form": form})
 

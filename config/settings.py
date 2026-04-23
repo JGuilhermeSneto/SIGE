@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "apps.saude",
     "apps.biblioteca",
     "apps.dashboards",
+    "apps.financeiro",
     "widget_tweaks",
     "rest_framework",
     "corsheaders",
@@ -120,10 +121,12 @@ LOGIN_REDIRECT_URL = "/"
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 10},
+    },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
-    {"NAME": "django_zxcvbn_password_validator.ZXCVBNValidator"},
 ]
 
 # ── Locale e fuso ──

@@ -30,8 +30,12 @@ from apps.academico.api import NotificacaoViewSet
 from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
 from apps.saude.api import SaudeViewSet
 
+from apps.financeiro.api import FaturaViewSet, PagamentoViewSet
+
 router = DefaultRouter()
-router.register(r'comunicados', ComunicadoViewSet, basename='api-comunicados')
+router.register(r"academico/notificacoes", NotificacaoViewSet, basename="notificacoes")
+router.register(r"financeiro/faturas", FaturaViewSet, basename="faturas")
+router.register(r"financeiro/pagamentos", PagamentoViewSet, basename="pagamentos")
 router.register(r'notificacoes', NotificacaoViewSet, basename='api-notificacoes')
 router.register(r'biblioteca/acervo', BibliotecaViewSet, basename='api-biblioteca-acervo')
 router.register(r'biblioteca/meus-livros', MeusEmprestimosViewSet, basename='api-biblioteca-meus-livros')
@@ -59,6 +63,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("saude/", include("apps.saude.urls")),
     path("biblioteca/", include("apps.biblioteca.urls")),
     path("dashboards/", include("apps.dashboards.urls")),
+    path("financeiro/", include("apps.financeiro.urls")),
 ]
 
 if settings.DEBUG:

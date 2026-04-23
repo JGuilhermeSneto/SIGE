@@ -7,6 +7,7 @@ O app `apps.biblioteca` gerencia o acervo escolar, empréstimos e devoluções d
 ## Funcionalidades principais
 
 - Cadastro de livros com autor, editora e estoque.
+- **Capas Automáticas**: Integração com APIs externas (Google Books/OpenLibrary) para download automático de capas oficiais via ISBN ou Título.
 - Empréstimos e devoluções de obras.
 - Limite de livros por aluno.
 - Painel de gerenciamento de reservas.
