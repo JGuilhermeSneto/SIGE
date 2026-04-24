@@ -1,0 +1,143 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Dossiê Financeiro #{{ fatura.id }} — SIGE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bi-container { padding: 30px; animation: fadeIn 0.5s ease-out; }
+    .bi-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+    
+    .bi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 28px; padding: 40px; box-shadow: var(--shadow-sm); }
+    
+    .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 40px; }
+    .info-item { display: flex; flex-direction: column; gap: 8px; }
+    .info-label { font-size: 0.7rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .info-value { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+
+    .status-badge-big {
+        padding: 12px 24px; border-radius: 16px; font-size: 0.85rem; font-weight: 900; text-transform: uppercase;
+        display: inline-flex; align-items: center; gap: 10px; border: 1px solid currentColor; background: rgba(255,255,255,0.03);
+    }
+    .status-badge-big.pago { color: var(--accent-emerald); }
+    .status-badge-big.pendente { color: var(--accent-amber); }
+    .status-badge-big.atrasado { color: var(--accent-ruby); }
+
+    .payment-history { margin-top: 50px; }
+    .payment-row {
+        background: var(--bg-elevated); padding: 25px; border-radius: 24px; border: 1px solid var(--border-subtle);
+        margin-bottom: 15px; display: grid; grid-template-columns: 60px 1fr 1fr 120px; align-items: center;
+    }
+
+    .btn-comprovante {
+        padding: 10px 20px; border-radius: 12px; background: var(--accent-violet); color: white;
+        text-decoration: none; font-weight: 800; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s;
+    }
+    .btn-comprovante:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(124, 111, 255, 0.3); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-container">
+    <div class="bi-header">
+        <div>
+            <a href="{% url 'financeiro:listar_faturas' %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.05em;">
+                <i class="fa-solid fa-arrow-left"></i> Voltar para a Carteira
+            </a>
+            <h1 style="color: var(--text-primary); margin: 0; font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">Dossiê <span style="color: var(--accent-violet);">Financeiro</span></h1>
+            <p style="color: var(--text-muted); margin-top: 5px; font-weight: 500;">Identificador da Fatura: #{{ fatura.id }} · Registro Auditado</p>
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            {% if not request.user.aluno and fatura.status == 'PENDENTE' %}
+            <a href="{% url 'financeiro:notificar_fatura' fatura.id %}" class="btn-comprovante" style="background: var(--bg-surface); border: 1px solid var(--accent-violet); color: var(--accent-violet); box-shadow: none;">
+                <i class="fa-solid fa-bell"></i> Notificar Aluno
+            </a>
+            {% endif %}
+            <div class="status-badge-big {% if fatura.status == 'PAGO' %}pago{% elif fatura.status == 'PENDENTE' and fatura.data_vencimento < hoje %}atrasado{% else %}pendente{% endif %}">
+                <i class="fa-solid {% if fatura.status == 'PAGO' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %}"></i>
+                {{ fatura.get_status_display }}
+            </div>
+        </div>
+    </div>
+
+    <div class="bi-card">
+        <!-- ══ SEÇÃO 1: DADOS DO ALUNO E FATURA ══ -->
+        <div style="border-bottom: 1px solid var(--border-subtle); padding-bottom: 30px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="display: flex; gap: 25px; align-items: center;">
+                <div style="width: 80px; height: 80px; border-radius: 24px; background: var(--bg-elevated); border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--accent-violet);">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <div>
+                    <h2 style="margin: 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 900;">{{ fatura.aluno.nome_completo }}</h2>
+                    <p style="margin: 5px 0 0; color: var(--text-muted); font-weight: 600;">{{ fatura.aluno.turma.nome }} · Matrícula Ativa</p>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span style="display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Valor da Fatura</span>
+                <strong style="font-size: 2.8rem; color: var(--text-primary); font-weight: 950; letter-spacing: -0.05em;">R$ {{ fatura.valor|floatformat:2 }}</strong>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <span class="info-label">Descrição</span>
+                <span class="info-value">{{ fatura.descricao }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Vencimento Original</span>
+                <span class="info-value" style="color: var(--accent-ruby);">{{ fatura.data_vencimento|date:"d/m/Y" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Emitida em</span>
+                <span class="info-value">{{ fatura.data_emissao|date:"d/m/Y" }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Responsável</span>
+                <span class="info-value">{{ fatura.aluno.responsavel_nome|default:"Próprio Aluno" }}</span>
+            </div>
+        </div>
+
+        <!-- ══ SEÇÃO 2: HISTÓRICO DE PAGAMENTOS ══ -->
+        <div class="payment-history">
+            <h3 style="margin-bottom: 25px; color: var(--text-primary); font-size: 1.2rem; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-history" style="color: var(--accent-emerald);"></i> Histórico de Transações
+            </h3>
+            
+            {% for p in pagamentos %}
+            <div class="payment-row">
+                <div style="width: 44px; height: 44px; border-radius: 14px; background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <span class="info-label">Valor Recebido</span>
+                    <strong style="display: block; color: var(--text-primary); font-size: 1.1rem; font-weight: 800;">R$ {{ p.valor_pago|floatformat:2 }}</strong>
+                </div>
+                <div>
+                    <span class="info-label">Data e Método</span>
+                    <span style="display: block; color: var(--text-primary); font-weight: 700; font-size: 0.95rem;">{{ p.data_pagamento|date:"d/m/Y H:i" }} · {{ p.metodo }}</span>
+                </div>
+                <div style="text-align: right;">
+                    {% if p.comprovante %}
+                    <a href="{{ p.comprovante.url }}" target="_blank" class="btn-comprovante">
+                        <i class="fa-solid fa-download"></i> Recibo
+                    </a>
+                    {% else %}
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; font-style: italic;">Sem anexo</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; padding: 60px; background: var(--bg-elevated); border-radius: 24px; border: 1px dashed var(--border-subtle);">
+                <i class="fa-solid fa-money-bill-transfer" style="font-size: 3rem; opacity: 0.1; margin-bottom: 15px; display: block;"></i>
+                <p style="color: var(--text-muted); font-weight: 700; margin: 0;">Nenhum pagamento registrado para esta fatura.</p>
+                {% if not request.user.aluno and fatura.status == 'PENDENTE' %}
+                <a href="{% url 'financeiro:registrar_pagamento' fatura.id %}" style="color: var(--accent-cyan); text-decoration: none; font-size: 0.85rem; font-weight: 800; margin-top: 10px; display: inline-block;">LIQUIDAR AGORA <i class="fa-solid fa-arrow-right"></i></a>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

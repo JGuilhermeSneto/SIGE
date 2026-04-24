@@ -7,6 +7,7 @@ final (média + frequência).
 
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from simple_history.models import HistoricalRecords
 
 class Frequencia(models.Model):
     """Registra presença do aluno."""
@@ -21,6 +22,8 @@ class Frequencia(models.Model):
     )
     observacao = models.CharField(max_length=255, blank=True, help_text="Observações")
     criado_em = models.DateTimeField(auto_now_add=True)
+
+    history = HistoricalRecords()
 
     class Meta:
         db_table = 'core_frequencia'
@@ -59,6 +62,8 @@ class Nota(models.Model):
     observacao = models.CharField(max_length=255, blank=True)
     data_lancamento = models.DateField(auto_now_add=True)
 
+    history = HistoricalRecords()
+
     class Meta:
         db_table = 'core_nota'
         unique_together = ("aluno", "disciplina")
@@ -90,6 +95,8 @@ class NotaAtividade(models.Model):
     )
     observacao = models.CharField(max_length=255, blank=True)
     data_lancamento = models.DateTimeField(auto_now_add=True)
+
+    history = HistoricalRecords()
 
     class Meta:
         db_table = 'core_notaatividade'

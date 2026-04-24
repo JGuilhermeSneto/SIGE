@@ -124,6 +124,36 @@ def dashboard_bi_academico(request):
     bi_evolucao_labels = [str(a) for a in todos_anos]
     bi_evolucao_data   = [Aluno.objects.filter(turma__ano=a).count() for a in todos_anos]
 
+    # 6. Taxa de Evasão Real (BI Status)
+    total_alunos_base = Aluno.objects.count()
+    total_evadidos = Aluno.objects.filter(status_matricula='EVADIDO').count()
+    taxa_evasao_real = (total_evadidos / total_alunos_base * 100) if total_alunos_base > 0 else 0
+
+    # 7. Dados de Inclusão e Saúde (Unificados)
+    total_pcd = Aluno.objects.filter(possui_necessidade_especial=True).count()
+    fichas_com_alergia = FichaMedica.objects.exclude(alergias__isnull=True).exclude(alergias="")
+    total_alergias = fichas_com_alergia.count()
+    
+    alertas_saude = []
+    for f in fichas_com_alergia.select_related('aluno')[:10]:
+        alertas_saude.append({
+            'aluno': f.aluno.nome_completo,
+            'alergia': f.alergias,
+            'medicamento': f.medicamentos_continuos or "N/A"
+        })
+
+    sanguineo_qs = FichaMedica.objects.values('tipo_sanguineo').annotate(total=Count('id'))
+    sanguineo_labels = [row['tipo_sanguineo'] or 'N/A' for row in sanguineo_qs]
+    sanguineo_data = [row['total'] for row in sanguineo_qs]
+
+    # 8. BI Professional (SIGEDUC/SUAP Style)
+    from . import selectors as bi_selectors
+    distribuicao_notas = bi_selectors.get_distribuicao_notas(ano_atual)
+    materias_criticas = bi_selectors.get_materias_criticas(ano_atual)
+    eficiencia_diarios = bi_selectors.get_status_diarios(ano_atual)
+    engajamento_atividades = bi_selectors.get_engajamento_atividades(ano_atual)
+    performance_professores = bi_selectors.get_metricas_professores()[:5]
+
     import json
     contexto = {
         'dados_turmas': json.dumps(list(dados_turmas)),
@@ -133,14 +163,32 @@ def dashboard_bi_academico(request):
             'saudavel': total_saudaveis,
             'lista_criticos': alunos_em_risco[:10]
         },
+        'taxa_evasao_real': round(taxa_evasao_real, 1),
+        'total_alunos': total_alunos_base,
         'demografia_turnos': json.dumps(demografia_turnos),
-        'extra_saude': alunos_pcd,
+        'stats_inclusao': {
+            'total_pcd': total_pcd,
+            'total_alergias': total_alergias,
+            'alertas_saude': alertas_saude,
+            'sanguineo_labels': json.dumps(sanguineo_labels),
+            'sanguineo_data': json.dumps(sanguineo_data),
+        },
+        # BI Professional Stats
+        'bi_pro': {
+            'dist_notas': json.dumps(distribuicao_notas),
+            'materias_criticas': materias_criticas,
+            'eficiencia_diarios': eficiencia_diarios,
+            'engajamento_atividades': engajamento_atividades,
+            'perf_professores': performance_professores,
+        },
+        'extra_saude': total_pcd,
         'extra_biblioteca': json.dumps({'ativo': livros_circulacao, 'atrasado': livros_atrasados}),
-        # Novos dados BI de status de matrícula
         'bi_status_labels': json.dumps(bi_status_labels),
         'bi_status_data':   json.dumps(bi_status_data),
         'bi_evolucao_labels': json.dumps(bi_evolucao_labels),
         'bi_evolucao_data':   json.dumps(bi_evolucao_data),
+        'nome_exibicao': get_nome_exibicao(request.user),
+        'foto_perfil_url': get_foto_perfil(request.user),
     }
     return render(request, 'dashboards/bi_academico.html', contexto)
 

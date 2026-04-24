@@ -729,8 +729,8 @@
 
 .date-input-wrapper i {
     position: absolute;
-    left: 14px;
-    font-size: 0.9rem;
+    left: 16px;
+    font-size: 0.95rem;
     color: var(--text-muted);
     pointer-events: none;
     transition: color var(--transition-fast);
@@ -744,7 +744,7 @@
 
 /* Specific adjustment for registration inputs to match standard padding */
 .caixa-texto .date-input-wrapper input {
-    padding-left: 40px !important;
+    padding-left: 48px !important;
 }
 
 /* Flatpickr Alternative Input Styling */

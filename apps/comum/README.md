@@ -7,9 +7,9 @@ O app `apps.comum` fornece recursos compartilhados entre os apps do SIGE, inclui
 ## Funcionalidades principais
 
 - Formulários base para validação e estilo comuns.
-- Templatetags customizados para renderização dinâmica.
-- Helpers e utilitários reutilizáveis.
-- Estrutura de assets compartilhados para CSS, JS e imagens.
+- **Validação de Documentos**: Utilitários para validação matemática de CPF e CNPJ reais via `validators.py`.
+- **Criptografia de Campos**: Implementação de `EncryptedCharField`, `EncryptedDateField` e outros campos protegidos em `utils/fields.py`.
+- **Design System & Segurança**: Tokens de design e cabeçalhos de segurança centralizados.
 
 ## Estrutura de pastas
 

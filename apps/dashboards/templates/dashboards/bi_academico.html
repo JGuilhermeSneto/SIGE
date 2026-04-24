@@ -126,36 +126,36 @@
         </div>
     </div>
 
-    <!-- KPIs Topo -->
+    <!-- ══ SEÇÃO 1: Performance & Risco Acadêmico ══ -->
+    <h2 style="color: var(--text-primary); margin: 0 0 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-graduation-cap" style="color: var(--accent-violet);"></i>
+        Performance & Risco Acadêmico
+    </h2>
+
     <div class="metrics-grid">
         <div class="metric-card" style="border-left-color: var(--accent-emerald);">
-            <p class="metric-title">Alunos Saudáveis</p>
-            <p class="metric-value">{{ risco_evasao.saudavel }}</p>
+            <p class="metric-title">Eficiência Pedagógica</p>
+            <p class="metric-value">{{ bi_pro.eficiencia_diarios }}%</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Diários de classe concluídos</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-amber);">
+            <p class="metric-title" style="color: var(--accent-amber);">Engajamento Discente</p>
+            <p class="metric-value">{{ bi_pro.engajamento_atividades }}%</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Entrega de atividades/trabalhos</p>
         </div>
         <div class="metric-card" style="border-left-color: var(--accent-ruby); background: rgba(248, 113, 113, 0.05);">
-            <p class="metric-title" style="color: var(--accent-ruby);">Risco de Evasão (Preditivo)</p>
+            <p class="metric-title" style="color: var(--accent-ruby);">Risco de Evasão</p>
             <p class="metric-value">{{ risco_evasao.critico }}</p>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Média < 5.0 ou Freq < 75%</p>
-        </div>
-        <div class="metric-card" style="border-left-color: var(--accent-violet);">
-            <p class="metric-title">Livros Emprestados</p>
-            <p class="metric-value">{{ extra_biblioteca.ativo }}</p>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">({{extra_biblioteca.atrasado}} atrasados)</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Alunos em estado crítico</p>
         </div>
         <div class="metric-card" style="border-left-color: var(--accent-cyan);">
-            <p class="metric-title">Espectro Dinâmico</p>
-            <p class="metric-value">
-                {% if demografia_turnos.0.total %}
-                    {{ demografia_turnos.0.total }}<span style="font-size: 1rem; color: var(--text-muted);"> {{demografia_turnos.0.turma__turno}}</span>
-                {% else %}
-                    ...
-                {% endif %}
-            </p>
+            <p class="metric-title">Taxa de Evasão Real</p>
+            <p class="metric-value" style="color: var(--accent-ruby);">{{ taxa_evasao_real }}%</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Alunos com status EVADIDO</p>
         </div>
     </div>
 
-    <!-- Main Charts -->
-    <div class="bi-grid">
+    <div class="bi-grid mb-4">
         <!-- Evasão Visual -->
         <div class="bi-card">
             <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-life-ring"></i> Evasão Escolar</h3>
@@ -171,7 +171,76 @@
                 <canvas id="graficoFrequencia"></canvas>
             </div>
         </div>
-        
+
+        <!-- Top 10 Críticos -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 15px;"><i class="fa-solid fa-list-ol"></i> Top Alunos em Risco</h3>
+            <div style="max-height: 250px; overflow-y: auto;">
+                {% for aluno in risco_evasao.lista_criticos %}
+                <div style="padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--accent-ruby); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: var(--text-primary); font-size: 0.8rem;">{{ aluno.nome_completo|truncatechars:20 }}</span>
+                    <span style="color: var(--text-muted); font-size: 0.75rem;">{{ aluno.turma.nome }}</span>
+                </div>
+                {% empty %}
+                <p style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 20px;">Nenhum aluno em risco.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ SEÇÃO 2: Saúde, Inclusão & Acessibilidade ══ -->
+    <h2 style="color: var(--text-primary); margin: 36px 0 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-universal-access" style="color: var(--accent-emerald);"></i>
+        Saúde & Acessibilidade Inclusiva
+        <span style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:2px 8px;border-radius:20px;background:rgba(52,211,153,.12);color:var(--accent-emerald);border:1px solid rgba(52,211,153,.2);">360º View</span>
+    </h2>
+
+    <div class="metrics-grid">
+        <div class="metric-card" style="border-left-color: var(--accent-violet);">
+            <p class="metric-title">Alunos PCD</p>
+            <p class="metric-value">{{ stats_inclusao.total_pcd }}</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-ruby);">
+            <p class="metric-title">Alertas de Alergia</p>
+            <p class="metric-value">{{ stats_inclusao.total_alergias }}</p>
+        </div>
+    </div>
+
+    <div class="bi-grid mb-4">
+        <!-- Distribuição Sanguínea -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-droplet" style="color: var(--accent-ruby)"></i> Distribuição Sanguínea</h3>
+            <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 250px;">
+                <canvas id="chartSanguineo"></canvas>
+            </div>
+        </div>
+
+        <!-- Alertas de Saúde Urgentes -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-biohazard" style="color: var(--accent-ruby)"></i> Alertas Críticos</h3>
+            <div style="max-height: 250px; overflow-y: auto; padding-right: 10px;">
+                {% for alerta in stats_inclusao.alertas_saude %}
+                <div style="padding: 12px; background: rgba(248,113,113,0.05); border-radius: 10px; border-left: 3px solid var(--accent-ruby); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="display: block; font-weight: 700; color: var(--text-primary); font-size: 0.85rem;">{{ alerta.aluno|truncatechars:20 }}</span>
+                        <span style="font-size: 0.75rem; color: var(--accent-ruby);">Alergia: {{ alerta.alergia|truncatechars:25 }}</span>
+                    </div>
+                    <span style="font-size: 0.7rem; color: var(--text-muted);">{{ alerta.medicamento|truncatechars:15 }}</span>
+                </div>
+                {% empty %}
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Nenhum alerta crítico.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Espectro de Inclusão -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-wheelchair" style="color: var(--accent-violet)"></i> Espectro de Inclusão</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="chartPCD"></canvas>
+            </div>
+        </div>
+
         <!-- Demografia -->
         <div class="bi-card">
             <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-users-rays"></i> Demografia (Turnos)</h3>
@@ -180,35 +249,82 @@
             </div>
         </div>
 
-        <!-- Saude e Biblioteca Macro -->
+        <!-- Radar de Serviços Auxiliares -->
         <div class="bi-card">
             <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-heart-pulse"></i> Radar de Serviços Auxiliares</h3>
             <div style="flex-grow: 1; min-height: 250px;">
                 <canvas id="graficoRadarServicos"></canvas>
             </div>
         </div>
+    </div>
 
-        <!-- Top 10 Críticos -->
-        <div class="bi-card" style="grid-column: span 2;">
-            <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 15px;"><i class="fa-solid fa-list-ol"></i> Top 10 Alunos em Risco Crítico</h3>
-            <ul style="list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                {% for aluno in risco_evasao.lista_criticos %}
-                <li style="padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--accent-ruby); display: flex; justify-content: space-between;">
-                    <span style="font-weight: 600; color: var(--text-primary);">{{ aluno.nome_completo|truncatechars:25 }}</span>
-                    <span style="color: var(--text-muted); font-size: 0.85rem;">{{ aluno.turma.nome }}</span>
-                </li>
+    <!-- ══ SEÇÃO 3: Análise de Desempenho & Matérias Críticas ══ -->
+    <h2 style="color: var(--text-primary); margin: 36px 0 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
+        <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i>
+        Métricas de Aproveitamento & Disciplinas
+    </h2>
+
+    <div class="bi-grid mb-4">
+        <!-- Histograma de Notas -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-signal"></i> Distribuição de Notas (Histograma)</h3>
+            <div style="flex-grow: 1; min-height: 250px;">
+                <canvas id="graficoHistograma"></canvas>
+            </div>
+        </div>
+
+        <!-- Matérias Críticas -->
+        <div class="bi-card">
+            <h3 style="color: var(--text-primary); margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-ruby)"></i> Top 5 Matérias Críticas (Menor Média)</h3>
+            <div style="max-height: 250px; overflow-y: auto;">
+                {% for materia in bi_pro.materias_criticas %}
+                <div style="padding: 12px; background: rgba(248,113,113,0.05); border-radius: 10px; border-left: 3px solid var(--accent-ruby); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span style="display: block; font-weight: 700; color: var(--text-primary); font-size: 0.85rem;">{{ materia.nome }}</span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">Prof. {{ materia.professor.nome_completo|truncatechars:20 }}</span>
+                    </div>
+                    <span style="font-weight: 800; color: var(--accent-ruby); font-size: 1.1rem;">{{ materia.media_geral|floatformat:1 }}</span>
+                </div>
                 {% empty %}
-                <p style="color: var(--text-muted); padding: 20px; text-align: center;">Não há alunos em estado crítico. Ótimo trabalho!</p>
+                <p style="text-align: center; color: var(--text-muted); padding: 40px;">Dados insuficientes.</p>
                 {% endfor %}
-            </ul>
+            </div>
+        </div>
+
+        <!-- Performance Professores -->
+        <div class="bi-card" style="grid-column: span 2;">
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-chalkboard-user"></i> Top 5 Workload Docente (Escalabilidade)</h3>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+                <thead>
+                    <tr style="text-align: left; border-bottom: 1px solid var(--border-subtle);">
+                        <th style="padding: 12px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">Professor</th>
+                        <th style="padding: 12px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">Disciplinas</th>
+                        <th style="padding: 12px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">Total Alunos</th>
+                        <th style="padding: 12px; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase;">Status Diário</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prof in bi_pro.perf_professores %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                        <td style="padding: 12px; font-weight: 700; color: var(--text-primary);">{{ prof.nome_completo }}</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">{{ prof.total_disciplinas }}</td>
+                        <td style="padding: 12px; color: var(--text-secondary);">{{ prof.total_alunos }}</td>
+                        <td style="padding: 12px;">
+                            <span style="padding: 4px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 700; background: rgba(52,211,153,0.1); color: var(--accent-emerald);">
+                                SINCRONIZADO
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- ══ NOVOS GRÁFICOS: Matrículas & Tendências ══ -->
+    <!-- ══ SEÇÃO 4: Matrículas & Tendências ══ -->
     <h2 style="color: var(--text-primary); margin: 36px 0 16px; font-size: 1.1rem; display: flex; align-items: center; gap: 10px;">
         <i class="fa-solid fa-chart-bar" style="color: var(--accent-violet);"></i>
-        Matrículas & Tendências
-        <span style="font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:2px 8px;border-radius:20px;background:rgba(124,111,255,.12);color:var(--accent-violet);border:1px solid rgba(124,111,255,.2);">novo</span>
+        Matrículas & Tendências Históricas
     </h2>
 
     <div class="bi-grid">
@@ -222,7 +338,7 @@
 
         <!-- Alunos por Turma -->
         <div class="bi-card">
-            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-users"></i> Alunos por Turma</h3>
+            <h3 style="color: var(--text-primary); margin-top: 0;"><i class="fa-solid fa-users"></i> Desempenho por Turma</h3>
             <div style="flex-grow: 1; min-height: 250px;">
                 <canvas id="graficoAlunosTurma"></canvas>
             </div>
@@ -262,6 +378,32 @@
 
     const labelsTurno = { 'manha': 'Manhã', 'tarde': 'Tarde', 'noite': 'Noite' };
     const dadosDemografiaRaw = {{ demografia_turnos|safe }};
+
+    // ── BI PRO: Histograma de Notas ──────────────────────────────────────────
+    const distNotas = JSON.parse('{{ bi_pro.dist_notas|safe }}');
+    new Chart(document.getElementById('graficoHistograma'), {
+        type: 'bar',
+        data: {
+            labels: ['Crítico (0-5)', 'Regular (5-7)', 'Excelente (7-10)'],
+            datasets: [{
+                label: 'Qtd. Alunos',
+                data: [distNotas.critico, distNotas.regular, distNotas.excelente],
+                backgroundColor: ['#f87171', '#fbbf24', '#34d399'],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { 
+                legend: { display: false },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.raw} notas nesta faixa` } }
+            },
+            scales: {
+                y: { grid: { color: gridColor }, beginAtZero: true },
+                x: { grid: { display: false } }
+            }
+        }
+    });
     const labelsDemo  = dadosDemografiaRaw.map(d => labelsTurno[d.turma__turno] || 'N/A');
     const valoresDemo = dadosDemografiaRaw.map(d => d.total);
 
@@ -274,6 +416,58 @@
     const statusData     = {{ bi_status_data|safe }};
     const evolucaoLabels = {{ bi_evolucao_labels|safe }};
     const evolucaoData   = {{ bi_evolucao_data|safe }};
+
+    // Dados de Inclusão
+    const sanguineoLabels = {{ stats_inclusao.sanguineo_labels|safe }};
+    const sanguineoData   = {{ stats_inclusao.sanguineo_data|safe }};
+
+    // ── 0. Distribuição Sanguínea (Doughnut) ────────────────────────────────
+    new Chart(document.getElementById('chartSanguineo'), {
+        type: 'doughnut',
+        data: {
+            labels: sanguineoLabels,
+            datasets: [{
+                data: sanguineoData,
+                backgroundColor: ['#f87171', '#fb923c', '#fbbf24', '#34d399', '#22d3ee', '#818cf8', '#a78bfa', '#f472b6'],
+                borderWidth: 2,
+                borderColor: '#0f1729',
+                hoverOffset: 10,
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, cutout: '70%',
+            plugins: {
+                legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12, font: { size: 10 } } }
+            }
+        }
+    });
+
+
+    
+    // ── 0.1 Espectro de Inclusão (Barra Horizontal) ─────────────────────────
+    new Chart(document.getElementById('chartPCD'), {
+        type: 'bar',
+        data: {
+            labels: ['PCD Ativos', 'Sem Necessidades'],
+            datasets: [{
+                label: 'Total de Alunos',
+                data: [{{ stats_inclusao.total_pcd }}, {{ total_alunos }} - {{ stats_inclusao.total_pcd }}],
+                backgroundColor: ['rgba(167, 139, 250, 0.8)', 'rgba(56, 189, 248, 0.2)'],
+                borderColor: ['#a78bfa', '#38bdf8'],
+                borderWidth: 1.5,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { color: gridColor }, ticks: { stepSize: 1 } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
 
     // ── 1. Evasão Preditiva (Doughnut) — Verde vs Vermelho ──────────────────
     new Chart(document.getElementById('graficoEvasao'), {

@@ -1,32 +1,30 @@
-# Módulo Acadêmico
+# 🎓 Módulo Acadêmico
 
-## Visão geral
+O coração do **SIGE**. Onde turmas, alunos e professores se interconectam e a mágica matemática decide, em tempo real, se um aluno será promovido ao próximo ano letivo.
 
-O app `apps.academico` concentra as regras de negócio acadêmicas do SIGE: turmas, disciplinas, grade horária, atividades, notas, frequência e relatórios.
+## 📐 Estrutura Central (Models)
 
-## Funcionalidades principais
+Dividido em dois sub-módulos principais:
 
-- Cadastro e gestão de turmas, séries e turnos.
-- Associação de disciplinas a turmas e professores.
-- Planejamento e registro de aulas.
-- Controle de frequência e justificativas.
-- Lançamento de notas e cálculo de situação acadêmica.
-- Relatórios por turma, aluno e disciplina.
+**1. Estrutura Acadêmica (`models/academico.py`)**
+- `Turma`: A célula de um ano letivo (Ex: 3º Ano A - 2026).
+- `Disciplina`: O vínculo entre uma Turma, uma Matéria e um `Professor`.
+- `PlanejamentoAula` & `AtividadeProfessor`: O plano de voo pedagógico do professor.
+- `GradeHorario`: Determina qual dia da semana e horário o professor entra em sala.
 
-## Estrutura de pastas
+**2. Desempenho Escolar (`models/desempenho.py`)**
+- `Frequencia`: O registro de presenças ou faltas diárias para uma `Disciplina`. 
+- `Nota` e `NotaAtividade`: Registros oficiais de notas bimestrais/semestrais.
+- `Notificacao`: Canal assíncrono interno entre professores e alunos sobre risco de reprovação ou novas avaliações.
 
-- `models/` — entidades como `Turma`, `Disciplina`, `Grade`, `Atividade` e `Nota`.
-- `views/` — views para gestão acadêmica e relatórios.
-- `forms/` — formulários de cadastro de conteúdo acadêmico.
-- `services/` — lógica de negócio e cálculos.
-- `selectors/` — consultas otimizadas ao banco.
+## ⚙️ A "Engine" de Notas
 
-## Uso principal
+Todas as avaliações chamam o motor localizado em `utils/academico.py`. 
+A função de `_calcular_situacao_nota` é executada de forma implacável:
+- O aluno precisa atingir média `>= 7,0` e ter Frequência `>= 75%`.
+- Se a frequência for de `74,9%` na contagem global de horas-aula, o sistema aplica o status de **Reprovado por Falta**, sobrepondo médias 10,0 intocáveis. (Essa barreira só é contornada mediante abono médico vindo do aplicativo `apps.saude`).
 
-Este módulo é o núcleo do processo acadêmico: dados de turma, planejamento de aulas e cálculo de situação escolar.
+## 🖼️ UX Sem Interrupções (Layout de Tela Cheia)
 
-## Observações
-
-As views do módulo validam parâmetros de grade e disciplina e esperam que o frontend envie `grade_id`, `disciplina_id`, `data_aula` e `conteudo` quando o professor salvar seu planejamento.
-
-> Atualizado em 2026-04-22.
+Para o painel do Aluno, o *sidebar* de navegação universal foi completamente erradicado pela renderização do `base.html`. 
+Foi aplicado um conceito de Single Page imersiva em tela cheia para evitar distrações de alunos (eliminando links redundantes no menu). Funções essenciais como a "Carteira de Mensalidades Financeiras" foram integradas dentro dos próprios *cards* de "Resumo Acadêmico" como botões de acesso rápido (`--accent-blue`).

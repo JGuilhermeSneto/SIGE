@@ -1,0 +1,299 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Finanças Intelligence Executivo — SIGE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bi-container { padding: 30px; animation: fadeIn 0.5s ease-out; }
+    
+    .bi-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; gap: 20px; flex-wrap: wrap; }
+    
+    .btn-gestao { 
+        background: var(--bg-surface); 
+        border: 1px solid var(--border-subtle); 
+        color: var(--text-primary); 
+        padding: 12px 24px; 
+        border-radius: var(--radius-xl); 
+        text-decoration: none; 
+        font-weight: 800; 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 10px; 
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.85rem;
+    }
+    .btn-gestao:hover { 
+        border-color: var(--accent-cyan);
+        color: var(--accent-cyan);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-primary-sige {
+        background: var(--accent-violet);
+        color: white;
+        border: none;
+        padding: 12px 28px;
+        border-radius: var(--radius-xl);
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(124, 111, 255, 0.3);
+    }
+    .btn-primary-sige:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(124, 111, 255, 0.4); }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    
+    .metric-card { 
+        background: var(--bg-surface); 
+        padding: 28px; 
+        border-radius: 24px; 
+        border: 1px solid var(--border-subtle);
+        border-left: 5px solid var(--border-subtle); 
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+    }
+    .metric-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--accent-violet); }
+    .metric-card::after {
+        content: ''; position: absolute; top: -50%; right: -50%; width: 100%; height: 100%;
+        background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+        transform: rotate(45deg); pointer-events: none;
+    }
+
+    .metric-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 12px; letter-spacing: 0.1em; }
+    .metric-value { font-size: 2.4rem; color: var(--text-primary); font-weight: 900; margin: 0; letter-spacing: -0.03em; line-height: 1; }
+    .metric-footer { font-size: 0.75rem; color: var(--text-muted); margin-top: 12px; display: flex; align-items: center; gap: 6px; }
+
+    .bi-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 40px; }
+    @media (max-width: 1100px) { .bi-grid { grid-template-columns: 1fr; } }
+
+    .bi-card { 
+        background: var(--bg-surface); 
+        border: 1px solid var(--border-subtle); 
+        border-radius: 28px; 
+        padding: 32px; 
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+    }
+
+    .ledger-row {
+        display: grid;
+        grid-template-columns: 50px 1fr 130px;
+        padding: 18px;
+        border-radius: var(--radius-lg);
+        margin-bottom: 8px;
+        align-items: center;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    .ledger-row:hover { background: var(--bg-elevated); border-color: var(--border-subtle); }
+
+    .status-badge-pill {
+        padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+        border: 1px solid currentColor; background: rgba(255,255,255,0.05);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-container">
+    <div class="bi-header">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+                <span class="status-badge-pill" style="color: var(--accent-cyan); border-color: rgba(0, 188, 212, 0.3);">Real-time Auditor</span>
+                <span class="status-badge-pill" style="color: var(--accent-violet); border-color: rgba(124, 111, 255, 0.3);">Fiscal Year {{ hoje|date:"Y" }}</span>
+            </div>
+            <h1 style="color: var(--text-primary); margin: 0; font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">
+                Finanças <span style="color: var(--accent-cyan);">Intelligence</span>
+            </h1>
+            <p style="color: var(--text-muted); margin-top: 5px; font-weight: 500;">Monitoramento de saúde contábil e auditoria de fluxo de caixa</p>
+        </div>
+        <div class="header-actions" style="display: flex; gap: 12px;">
+            <a href="{% url 'financeiro:gestao_despesas' %}" class="btn-gestao">
+                <i class="fa-solid fa-file-invoice" style="color: var(--accent-ruby);"></i> Contas a Pagar
+            </a>
+            <a href="{% url 'financeiro:listar_faturas' %}" class="btn-gestao">
+                <i class="fa-solid fa-receipt" style="color: var(--accent-emerald);"></i> Receitas
+            </a>
+            <a href="{% url 'financeiro:criar_lancamento' %}" class="btn-primary-sige">
+                <i class="fa-solid fa-plus"></i> Novo Lançamento
+            </a>
+        </div>
+    </div>
+
+    <!-- ══ MÉTRICAS PRINCIPAIS ══ -->
+    <div class="metrics-grid">
+        <div class="metric-card" style="border-left-color: var(--accent-emerald);">
+            <p class="metric-title">Receita Bruta (Mês)</p>
+            <p class="metric-value">R$ {{ kpis.receitas|floatformat:2 }}</p>
+            <div class="metric-footer">
+                <i class="fa-solid fa-circle-up" style="color: var(--accent-emerald);"></i>
+                <span>Fluxo de entrada confirmado</span>
+            </div>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-ruby); background: rgba(248, 113, 113, 0.02);">
+            <p class="metric-title">Despesas Operacionais</p>
+            <p class="metric-value">R$ {{ kpis.despesas|floatformat:2 }}</p>
+            <div class="metric-footer">
+                <i class="fa-solid fa-circle-down" style="color: var(--accent-ruby);"></i>
+                <span>Custos fixos e variáveis</span>
+            </div>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-cyan);">
+            <p class="metric-title">Margem de Lucro</p>
+            <p class="metric-value">R$ {{ kpis.saldo|floatformat:2 }}</p>
+            <div class="metric-footer">
+                <i class="fa-solid fa-chart-line" style="color: var(--accent-cyan);"></i>
+                <span>EBITDA Operacional</span>
+            </div>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-amber);">
+            <p class="metric-title">Inadimplência</p>
+            <p class="metric-value" style="color: var(--accent-ruby);">{{ kpis.inadimplencia }}%</p>
+            <div class="metric-footer">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-amber);"></i>
+                <span>R$ {{ kpis.atrasado|floatformat:2 }} em aberto</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ GRÁFICOS E ANÁLISES ══ -->
+    <div class="bi-grid">
+        <div class="bi-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <h3 style="margin: 0; font-size: 1.2rem; color: var(--text-primary); font-weight: 800;">
+                    <i class="fa-solid fa-chart-area" style="color: var(--accent-cyan); margin-right: 10px;"></i>
+                    Fluxo de Caixa Mensal
+                </h3>
+                <div style="display: flex; gap: 15px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">
+                    <span style="color: var(--accent-emerald);"><i class="fa-solid fa-circle"></i> Entradas</span>
+                    <span style="color: var(--accent-ruby);"><i class="fa-solid fa-circle"></i> Saídas</span>
+                </div>
+            </div>
+            <div style="height: 350px;">
+                <canvas id="chartFluxoCaixa"></canvas>
+            </div>
+        </div>
+
+        <div class="bi-card">
+            <h3 style="margin: 0 0 30px; font-size: 1.2rem; color: var(--text-primary); font-weight: 800;">
+                <i class="fa-solid fa-chart-pie" style="color: var(--accent-violet); margin-right: 10px;"></i>
+                Distribuição de Custos
+            </h3>
+            <div style="height: 300px; position: relative;">
+                <canvas id="chartCategorias"></canvas>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none;">
+                    <span style="display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Total</span>
+                    <span style="font-size: 1.2rem; font-weight: 900; color: var(--text-primary);">R$ {{ kpis.despesas|floatformat:0 }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TABELAS DE AUDITORIA ══ -->
+    <div class="bi-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="bi-card">
+            <h3 style="margin: 0 0 25px; font-size: 1.2rem; color: var(--text-primary); font-weight: 800;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-emerald); margin-right: 10px;"></i>
+                Últimos Lançamentos
+            </h3>
+            <div class="ledger">
+                {% for l in ultimos_lancamentos %}
+                <div class="ledger-row">
+                    <div style="width: 42px; height: 42px; border-radius: 14px; display: flex; align-items: center; justify-content: center; background: {% if l.tipo == 'ENTRADA' %}rgba(52, 211, 153, 0.1); color: var(--accent-emerald){% else %}rgba(248, 113, 113, 0.1); color: var(--accent-ruby){% endif %}; border: 1px solid rgba(255,255,255,0.05);">
+                        <i class="fa-solid {% if l.tipo == 'ENTRADA' %}fa-arrow-trend-up{% else %}fa-arrow-trend-down{% endif %}"></i>
+                    </div>
+                    <div style="padding-left: 15px;">
+                        <strong style="display: block; color: var(--text-primary); font-size: 0.95rem; font-weight: 700;">{{ l.descricao|truncatechars:35 }}</strong>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">{{ l.categoria.nome }} · {{ l.data_pagamento|date:"d/m" }}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <strong style="color: var(--text-primary); font-size: 1.1rem; font-weight: 900;">R$ {{ l.valor|floatformat:2 }}</strong>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: 60px; color: var(--text-muted);">
+                    <i class="fa-solid fa-inbox" style="font-size: 3rem; opacity: 0.1; margin-bottom: 15px; display: block;"></i>
+                    Sem registros recentes
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="bi-card">
+            <h3 style="margin: 0 0 25px; font-size: 1.2rem; color: var(--text-primary); font-weight: 800;">
+                <i class="fa-solid fa-user-shield" style="color: var(--accent-ruby); margin-right: 10px;"></i>
+                Alerta de Inadimplência
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                {% for f in faturas_criticas %}
+                <a href="{% url 'financeiro:detalhes_fatura' f.id %}" style="text-decoration: none; padding: 20px; background: rgba(244, 63, 94, 0.03); border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; border: 1px solid rgba(244, 63, 94, 0.1); border-left: 5px solid var(--accent-ruby);">
+                    <div>
+                        <strong style="display: block; color: var(--text-primary); font-size: 1rem; font-weight: 700;">{{ f.aluno.nome_completo|truncatechars:30 }}</strong>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;"><i class="fa-regular fa-calendar-xmark"></i> Vencido em {{ f.data_vencimento|date:"d/m/Y" }}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <span style="display: block; font-size: 0.7rem; color: var(--accent-ruby); font-weight: 800; text-transform: uppercase;">Débito</span>
+                        <strong style="color: var(--text-primary); font-size: 1.2rem; font-weight: 900;">R$ {{ f.valor|floatformat:2 }}</strong>
+                    </div>
+                </a>
+                {% empty %}
+                <div style="text-align: center; padding: 60px; background: rgba(52, 211, 153, 0.03); border-radius: 24px; border: 1px dashed rgba(52, 211, 153, 0.2);">
+                    <i class="fa-solid fa-shield-check" style="font-size: 3rem; color: var(--accent-emerald); opacity: 0.3; margin-bottom: 15px; display: block;"></i>
+                    <p style="color: var(--accent-emerald); font-weight: 800; margin: 0;">Inadimplência sob controle</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">Não há faturas críticas no momento.</p>
+                </div>
+                {% endfor %}
+                {% if faturas_criticas %}
+                <a href="{% url 'financeiro:listar_faturas' %}?status=atrasadas" style="text-align: center; margin-top: 15px; color: var(--accent-cyan); text-decoration: none; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Ver Relatório Completo <i class="fa-solid fa-arrow-right-long"></i></a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+    Chart.defaults.color = '#8b97bb';
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+    Chart.defaults.font.weight = '600';
+
+    const fluxoData = JSON.parse('{{ graficos.fluxo|safe }}');
+    new Chart(document.getElementById('chartFluxoCaixa'), {
+        type: 'line',
+        data: {
+            labels: fluxoData.labels,
+            datasets: [
+                { label: 'Receitas', data: fluxoData.receitas, borderColor: '#34d399', borderWidth: 4, backgroundColor: 'rgba(52, 211, 153, 0.1)', fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6 },
+                { label: 'Despesas', data: fluxoData.despesas, borderColor: '#f87171', borderWidth: 4, backgroundColor: 'rgba(248, 113, 113, 0.1)', fill: true, tension: 0.4, pointRadius: 0, pointHoverRadius: 6 }
+            ]
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            interaction: { intersect: false, mode: 'index' },
+            plugins: { legend: { display: false } }, 
+            scales: { 
+                y: { grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, ticks: { font: { size: 10 } }, beginAtZero: true }, 
+                x: { grid: { display: false }, ticks: { font: { size: 10 } } } 
+            } 
+        }
+    });
+
+    const catData = JSON.parse('{{ graficos.categorias|safe }}');
+    new Chart(document.getElementById('chartCategorias'), {
+        type: 'doughnut',
+        data: { labels: catData.labels, datasets: [{ data: catData.valores, backgroundColor: ['#7c6fff', '#00bcd4', '#34d399', '#fbbf24', '#f87171'], borderWidth: 0, cutout: '82%', borderRadius: 10 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 8, padding: 20, font: { size: 11 }, usePointStyle: true } } } }
+    });
+</script>
+{% endblock %}

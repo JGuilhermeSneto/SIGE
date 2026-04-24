@@ -1,10 +1,30 @@
 from django.contrib import admin
-from .models import Fatura, Pagamento
+from .models import Fatura, Pagamento, CategoriaFinanceira, CentroCusto, Lancamento, FolhaPagamento
 
 class PagamentoInline(admin.TabularInline):
     model = Pagamento
     extra = 0
     readonly_fields = ('data_pagamento',)
+
+@admin.register(CategoriaFinanceira)
+class CategoriaFinanceiraAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'tipo')
+    list_filter = ('tipo',)
+
+@admin.register(CentroCusto)
+class CentroCustoAdmin(admin.ModelAdmin):
+    list_display = ('nome',)
+
+@admin.register(Lancamento)
+class LancamentoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'tipo', 'categoria', 'valor', 'data_pagamento', 'descricao')
+    list_filter = ('tipo', 'categoria', 'data_pagamento')
+    search_fields = ('descricao',)
+
+@admin.register(FolhaPagamento)
+class FolhaPagamentoAdmin(admin.ModelAdmin):
+    list_display = ('funcionario', 'mes_referencia', 'ano_referencia', 'salario_base', 'pago')
+    list_filter = ('pago', 'mes_referencia', 'ano_referencia')
 
 @admin.register(Fatura)
 class FaturaAdmin(admin.ModelAdmin):

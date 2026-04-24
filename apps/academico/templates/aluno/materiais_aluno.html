@@ -212,8 +212,8 @@
 
                 <div class="materiais-grid">
                     {% for mat in disc.materiais.all %}
-                    <a href="{% if mat.tipo == 'LINK' %}{{ mat.url }}{% elif mat.tipo == 'ARQUIVO' %}{{ mat.arquivo.url }}{% elif mat.tipo == 'LIVRO' %}{% if mat.livro.arquivo_digital %}{{ mat.livro.arquivo_digital.url }}{% elif mat.livro.url_digital %}{{ mat.livro.url_digital }}{% else %}{% url 'acervo_biblioteca' %}{% endif %}{% else %}#{% endif %}" 
-                       class="material-card" {% if mat.tipo != 'LIVRO' or mat.livro.arquivo_digital or mat.livro.url_digital %}target="_blank"{% endif %}>
+                    <a href="{% if mat.tipo == 'LINK' %}{{ mat.url|default:'#' }}{% elif mat.tipo == 'ARQUIVO' %}{% if mat.arquivo %}{{ mat.arquivo.url }}{% else %}#{% endif %}{% elif mat.tipo == 'LIVRO' %}{% if mat.livro and mat.livro.arquivo_digital %}{{ mat.livro.arquivo_digital.url }}{% elif mat.livro and mat.livro.url_digital %}{{ mat.livro.url_digital }}{% else %}{% url 'acervo_biblioteca' %}{% endif %}{% else %}#{% endif %}" 
+                       class="material-card" {% if mat.tipo != 'LIVRO' or mat.livro and mat.livro.arquivo_digital or mat.livro and mat.livro.url_digital %}target="_blank"{% endif %}>
                         <div class="material-icon icon-{{ mat.tipo|lower }}">
                             {% if mat.tipo == 'LINK' %}
                                 <i class="fa-solid fa-link"></i>

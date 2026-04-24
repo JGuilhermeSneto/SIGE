@@ -182,7 +182,7 @@
             <span class="header-label"><i class="fa-solid fa-graduation-cap"></i> SIGE · Painel do Aluno</span>
             <h1>Olá, <span class="nome-destaque">{{ aluno.nome_completo|truncatewords:2 }}</span> 👋
                 {% if aluno.possui_necessidade_especial %}<i class="fa-solid fa-universal-access" style="color: var(--accent-cyan); font-size: 1.2rem; vertical-align: middle; margin-left: 10px;" title="Perfil Inclusivo Ativo"></i>{% endif %}
-                {% if aluno.ficha_medica.alergias %}<i class="fa-solid fa-hand-dots" style="color: var(--accent-amber); font-size: 1.2rem; vertical-align: middle; margin-left: 8px;" title="Restrição de Saúde: Alergias"></i>{% endif %}
+                {% if aluno.ficha_medica.alergias %}<i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-ruby); font-size: 1.2rem; vertical-align: middle; margin-left: 8px;" title="Restrição de Saúde: Alergias"></i>{% endif %}
             </h1>
             <p class="header-sub">{{ aluno.turma.nome }} · {{ aluno.turma.get_turno_display }}</p>
         </div>
@@ -200,13 +200,13 @@
             {% endif %}
 
             {% if aluno.ficha_medica.alergias %}
-            <div class="sige-glass-card" style="display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-radius: var(--radius-lg); border: 1px solid rgba(251, 191, 36, 0.2);">
-                <div style="background: rgba(251, 191, 36, 0.2); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-amber);">
-                    <i class="fa-solid fa-hand-dots"></i>
+            <div style="display: flex; align-items: center; gap: 12px; padding: 10px 18px; border-radius: var(--radius-lg); background: var(--bg-surface); border: 2px solid var(--accent-ruby); box-shadow: 0 4px 15px rgba(244, 63, 94, 0.15);">
+                <div style="background: var(--accent-ruby); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
                 <div>
-                    <p style="margin: 0; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-amber); font-weight: 800;">Alergias</p>
-                    <p style="margin: 0; font-size: 0.75rem; color: var(--text-primary); font-weight: 600;">{{ aluno.ficha_medica.alergias|truncatechars:25 }}</p>
+                    <p style="margin: 0; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--accent-ruby); font-weight: 900;">Atenção: Alergias</p>
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-primary); font-weight: 800;">{{ aluno.ficha_medica.alergias|truncatechars:35 }}</p>
                 </div>
             </div>
             {% endif %}
@@ -222,12 +222,18 @@
                 title="Minha Ficha Médica">
                 <i class="fa-solid fa-heart-pulse"></i> Minha Saúde
             </a>
+            <a href="{% url 'meu_historico' %}" class="btn-imprimir btn-declaracao" title="Ver meu Histórico Escolar Completo">
+                <i class="fa-solid fa-file-invoice"></i> Meu Histórico
+            </a>
             <a href="{% url 'gerar_declaracao_matricula' aluno.id %}" target="_blank"
                 class="btn-imprimir btn-declaracao">
                 <i class="fa-solid fa-file-contract"></i> Declaração
             </a>
             <a href="{% url 'gerar_boletim_pdf' aluno.id %}" target="_blank" class="btn-imprimir">
                 <i class="fa-solid fa-file-pdf"></i> Imprimir Boletim
+            </a>
+            <a href="{% url 'financeiro:listar_faturas' %}" class="btn-imprimir" style="background-color: var(--accent-emerald); color: white; border: none;" title="Minhas Mensalidades">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Mensalidades
             </a>
         </div>
     </div>

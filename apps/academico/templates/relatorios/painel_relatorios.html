@@ -12,13 +12,22 @@
 <section class="painel-sige">
 
   {# ════════════════ HEADER ════════════════ #}
-  <header class="header-painel">
+    <header class="header-painel">
     <div class="header-esquerda">
       <span class="header-label">Administrativo · Inteligência Acadêmica</span>
       <h1>
         Relatórios
         <span class="nome-destaque">Gerenciais</span>
       </h1>
+    </div>
+
+    <div class="header-acoes" style="display: flex; gap: 10px; margin-right: 20px;">
+        <a href="{% url 'exportar_notas_csv' %}" class="btn-sige-secundario" title="Exportar Notas">
+            <i class="fa-solid fa-file-csv"></i> CSV
+        </a>
+        <a href="{% url 'exportar_master_pdf' %}" class="btn-sige-primario" title="Gerar Dossiê PDF">
+            <i class="fa-solid fa-file-pdf"></i> Dossiê
+        </a>
     </div>
 
     <form method="get" class="filtro-ano-painel">
@@ -54,47 +63,56 @@
     <div class="coluna-esquerda">
 
       {# Cards de Totais (Grid Padrão) #}
-      <section class="cards">
-        <article class="card">
-          <div class="card-icone">
+      <section class="metrics-grid">
+        <article class="bi-card">
+          <div class="card-icone" style="font-size: 1.5rem; color: var(--accent-violet); margin-bottom: 15px;">
             <i class="fa-solid fa-user-graduate"></i>
           </div>
-          <p class="card-label">Total Alunos</p>
-          <h2 class="card-valor counter-anim" data-target="{{ metricas.total_alunos }}">0</h2>
+          <p class="card-label" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Total Alunos</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.total_alunos }}" style="font-size: 2rem; font-weight: 800;">0</h2>
         </article>
 
-        <article class="card">
-          <div class="card-icone">
+        <article class="bi-card">
+          <div class="card-icone" style="font-size: 1.5rem; color: var(--accent-emerald); margin-bottom: 15px;">
             <i class="fa-solid fa-users-rectangle"></i>
           </div>
-          <p class="card-label">Turmas Ativas</p>
-          <h2 class="card-valor counter-anim" data-target="{{ metricas.total_turmas }}">0</h2>
+          <p class="card-label" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Turmas Ativas</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.total_turmas }}" style="font-size: 2rem; font-weight: 800;">0</h2>
         </article>
 
-        <article class="card">
-          <div class="card-icone">
-            <i class="fa-solid fa-user-plus"></i>
+        <article class="bi-card">
+          <div class="card-icone" style="font-size: 1.5rem; color: #f87171; margin-bottom: 15px;">
+            <i class="fa-solid fa-user-xmark"></i>
           </div>
-          <p class="card-label">Ingressantes</p>
-          <h2 class="card-valor counter-anim" data-target="{{ metricas.ingressantes }}">0</h2>
+          <p class="card-label" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Evadidos</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.alunos_evadidos }}" style="font-size: 2rem; font-weight: 800; color: #f87171;">0</h2>
         </article>
 
-        <article class="card">
-          <div class="card-icone">
-            <i class="fa-solid fa-award"></i>
+        <article class="bi-card">
+          <div class="card-icone" style="font-size: 1.5rem; color: #fbbf24; margin-bottom: 15px;">
+            <i class="fa-solid fa-person-walking-arrow-right"></i>
           </div>
-          <p class="card-label">Concluintes</p>
-          <h2 class="card-valor counter-anim" data-target="{{ metricas.concluintes }}">0</h2>
+          <p class="card-label" style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Transferidos</p>
+          <h2 class="card-valor counter-anim" data-target="{{ metricas.alunos_transferidos }}" style="font-size: 2rem; font-weight: 800; color: #fbbf24;">0</h2>
         </article>
       </section>
 
       {# Gráfico de Desempenho Panorâmico #}
-      <section class="chart-card">
-        <h3><i class="fa-solid fa-circle-dot"></i> Distribuição de Desempenho Acadêmico</h3>
-        <div style="height: 300px; position: relative;">
-            <canvas id="chartDesempenho"></canvas>
-        </div>
-      </section>
+      <div class="grid-graficos">
+        <section class="bi-card">
+          <h3><i class="fa-solid fa-circle-dot"></i> Distribuição Acadêmica</h3>
+          <div style="height: 250px; position: relative;">
+              <canvas id="chartDesempenho"></canvas>
+          </div>
+        </section>
+
+        <section class="bi-card">
+          <h3><i class="fa-solid fa-chart-pie"></i> Status de Matrícula</h3>
+          <div style="height: 250px; position: relative;">
+              <canvas id="chartStatus"></canvas>
+          </div>
+        </section>
+      </div>
 
     </div>
 
@@ -127,7 +145,7 @@
 
       {# Gerador de Histórico Lateral #}
       <section class="busca-historico-card">
-        <h4><i class="fa-solid fa-file-pdf" style="color:var(--accent-violet);margin-right:6px;"></i>Emissão de Histórico</h4>
+        <h4><i class="fa-solid fa-file-invoice" style="color:var(--accent-violet);margin-right:6px;"></i>Emissão de Histórico</h4>
         <div class="search-mini">
             <i class="fa-solid fa-magnifying-glass"></i>
             <input type="text" id="searchAluno" placeholder="Nome ou CPF (min. 3 letras)..." class="sige-input" autocomplete="off">
@@ -144,8 +162,8 @@
             <span class="info-item-valor">{{ metricas.total_disciplinas }}</span>
           </li>
           <li class="info-item">
-            <span class="info-item-nome">Ano Referência</span>
-            <span class="info-item-valor">{{ ano_filtro }}</span>
+            <span class="info-item-nome">Taxa Evasão</span>
+            <span class="info-item-valor" style="color:#f87171;">{{ metricas.taxa_evasao|floatformat:1 }}%</span>
           </li>
         </ul>
       </section>
@@ -203,6 +221,33 @@
                 legend: { position: 'right', labels: { padding: 20, font: { size: 12 } } }
             },
             cutout: '70%'
+        }
+    });
+
+    // --- GRÁFICO DE STATUS DE MATRÍCULA (PIE) ---
+    const ctxStatus = document.getElementById('chartStatus').getContext('2d');
+    new Chart(ctxStatus, {
+        type: 'pie',
+        data: {
+            labels: ['Ativos', 'Evadidos', 'Transf.', 'Formados', 'Inativos'],
+            datasets: [{
+                data: [
+                    {{ metricas.alunos_ativos }}, 
+                    {{ metricas.alunos_evadidos }}, 
+                    {{ metricas.alunos_transferidos }}, 
+                    {{ metricas.alunos_formados }}, 
+                    {{ metricas.alunos_inativos }}
+                ],
+                backgroundColor: ['#34d399', '#f87171', '#fbbf24', '#6366f1', '#94a3b8'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'right', labels: { padding: 15, font: { size: 11 } } }
+            }
         }
     });
 
@@ -268,18 +313,32 @@
                     <p style="font-size:0.82rem;font-weight:600;color:var(--text-primary);margin:0;">${a.nome}</p>
                     <p style="font-size:0.68rem;color:var(--text-muted);margin:0;">${a.turma} · ${a.cpf}</p>
                 </div>
-                <a href="${a.url_pdf}" target="_blank" title="Emitir Histórico"
-                   style="
-                    display:flex; align-items:center; gap:5px; font-size:0.72rem;
-                    font-weight:700; color:var(--accent-violet); white-space:nowrap;
-                    padding: 5px 10px; border-radius: var(--radius-sm);
-                    border: 1px solid var(--border-mid);
-                    transition: all var(--transition-fast);
-                   "
-                   onmouseover="this.style.background='rgba(124,111,255,0.1)'"
-                   onmouseout="this.style.background=''">
-                    <i class="fa-solid fa-file-pdf"></i> PDF
-                </a>
+                <div style="display:flex; gap:8px;">
+                    <a href="${a.url_pdf}" target="_blank" title="Baixar PDF"
+                       style="
+                        display:flex; align-items:center; gap:5px; font-size:0.72rem;
+                        font-weight:700; color:var(--accent-violet); white-space:nowrap;
+                        padding: 5px 10px; border-radius: var(--radius-sm);
+                        border: 1px solid var(--border-mid);
+                        transition: all var(--transition-fast);
+                       "
+                       onmouseover="this.style.background='rgba(124,111,255,0.1)'"
+                       onmouseout="this.style.background=''">
+                        <i class="fa-solid fa-file-pdf"></i> PDF
+                    </a>
+                    <a href="/academico/relatorios/historico/${a.id}/visualizar/" target="_blank" title="Ver Histórico"
+                       style="
+                        display:flex; align-items:center; gap:5px; font-size:0.72rem;
+                        font-weight:700; color:var(--accent-violet); white-space:nowrap;
+                        padding: 5px 10px; border-radius: var(--radius-sm);
+                        border: 1px solid var(--border-mid);
+                        transition: all var(--transition-fast);
+                       "
+                       onmouseover="this.style.background='rgba(124,111,255,0.1)'"
+                       onmouseout="this.style.background=''">
+                        <i class="fa-solid fa-eye"></i> VER
+                    </a>
+                </div>
             </div>
         `).join('');
 

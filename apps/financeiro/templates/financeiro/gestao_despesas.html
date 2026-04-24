@@ -1,0 +1,144 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Contas a Pagar & Despesas — SIGE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bi-container { padding: 30px; animation: fadeIn 0.5s ease-out; }
+    .bi-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; gap: 20px; flex-wrap: wrap; }
+    
+    .btn-gestao { 
+        background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-primary); 
+        padding: 12px 24px; border-radius: var(--radius-xl); text-decoration: none; font-weight: 800; 
+        display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s; font-size: 0.85rem;
+    }
+    .btn-gestao:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+    .btn-new-expense {
+        background: var(--accent-ruby); color: white; border: none; padding: 12px 28px; border-radius: var(--radius-xl);
+        font-weight: 900; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(248, 113, 113, 0.3);
+    }
+    .btn-new-expense:hover { transform: translateY(-3px); filter: brightness(1.1); box-shadow: 0 6px 20px rgba(248, 113, 113, 0.4); }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 40px; }
+    
+    .metric-card { 
+        background: var(--bg-surface); padding: 32px; border-radius: 24px; border: 1px solid var(--border-subtle);
+        border-left: 5px solid var(--border-subtle); transition: all 0.3s; position: relative;
+    }
+    .metric-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+
+    .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 800; margin-bottom: 12px; letter-spacing: 0.1em; }
+    .metric-value { font-size: 2.5rem; color: var(--text-primary); font-weight: 900; margin: 0; letter-spacing: -0.03em; line-height: 1; }
+
+    .bi-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-bottom: 40px; }
+    @media (max-width: 1000px) { .bi-grid { grid-template-columns: 1fr; } }
+
+    .bi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 28px; padding: 32px; height: 100%; }
+
+    .ledger-row {
+        display: grid; grid-template-columns: 50px 1fr 130px; padding: 20px; border-radius: var(--radius-lg);
+        margin-bottom: 10px; align-items: center; transition: all 0.2s; border: 1px solid transparent; background: rgba(255,255,255,0.01);
+    }
+    .ledger-row:hover { background: var(--bg-elevated); border-color: var(--border-subtle); }
+
+    .icon-box {
+        width: 44px; height: 44px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+        background: rgba(248, 113, 113, 0.1); color: var(--accent-ruby); border: 1px solid rgba(248, 113, 113, 0.1);
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-container">
+    <div class="bi-header">
+        <div>
+            <h1 style="color: var(--text-primary); margin: 0; font-size: 2.5rem; font-weight: 900; letter-spacing: -0.04em;">
+                Contas a <span style="color: var(--accent-ruby);">Pagar</span>
+            </h1>
+            <p style="color: var(--text-muted); margin-top: 5px; font-weight: 500;">Monitoramento de custos operacionais e manutenção de infraestrutura</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <a href="{% url 'financeiro:painel_financeiro' %}" class="btn-gestao">
+                <i class="fa-solid fa-chart-line"></i> Dashboard BI
+            </a>
+            <a href="{% url 'financeiro:criar_lancamento' %}?tipo=SAIDA" class="btn-new-expense">
+                <i class="fa-solid fa-plus"></i> Novo Gasto
+            </a>
+        </div>
+    </div>
+
+    <!-- ══ MÉTRICAS DE CUSTO ══ -->
+    <div class="metrics-grid">
+        <div class="metric-card" style="border-left-color: var(--accent-ruby);">
+            <p class="metric-title">Total de Saídas (Ano)</p>
+            <p class="metric-value">R$ {{ total_despesas|floatformat:2 }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;"><i class="fa-solid fa-calendar-days"></i> Acumulado do exercício atual</p>
+        </div>
+        <div class="metric-card" style="border-left-color: var(--accent-amber);">
+            <p class="metric-title">Média Mensal Estimada</p>
+            <p class="metric-value">R$ {{ media_mensal|floatformat:2 }}</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;"><i class="fa-solid fa-chart-line"></i> Projeção baseada em histórico</p>
+        </div>
+    </div>
+
+    <div class="bi-grid">
+        <!-- ══ CATEGORIAS DE GASTO ══ -->
+        <div class="bi-card">
+            <h3 style="margin: 0 0 30px; font-size: 1.25rem; color: var(--text-primary); font-weight: 800;">
+                <i class="fa-solid fa-tags" style="color: var(--accent-violet); margin-right: 10px;"></i> Por Categoria
+            </h3>
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                {% for stat in stats_cat %}
+                <div style="background: var(--bg-elevated); padding: 20px; border-radius: 20px; border: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--accent-violet);"></div>
+                        <span style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">{{ stat.categoria__nome }}</span>
+                    </div>
+                    <strong style="color: var(--text-primary); font-size: 1.1rem; font-weight: 900;">R$ {{ stat.total|floatformat:2 }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- ══ LISTA DE DESPESAS ══ -->
+        <div class="bi-card">
+            <h3 style="margin: 0 0 30px; font-size: 1.25rem; color: var(--text-primary); font-weight: 800;">
+                <i class="fa-solid fa-receipt" style="color: var(--accent-ruby); margin-right: 10px;"></i> Registro de Saídas
+            </h3>
+            <div class="ledger">
+                {% for d in despesas %}
+                <div class="ledger-row">
+                    <div class="icon-box">
+                        {% if 'Agua' in d.categoria.nome or 'Água' in d.categoria.nome %}<i class="fa-solid fa-droplet"></i>
+                        {% elif 'Energia' in d.categoria.nome or 'Luz' in d.categoria.nome %}<i class="fa-solid fa-bolt"></i>
+                        {% elif 'Internet' in d.categoria.nome %}<i class="fa-solid fa-wifi"></i>
+                        {% elif 'Manutenção' in d.categoria.nome or 'Manutencao' in d.categoria.nome %}<i class="fa-solid fa-wrench"></i>
+                        {% else %}<i class="fa-solid fa-receipt"></i>{% endif %}
+                    </div>
+                    <div style="padding-left: 20px;">
+                        <strong style="display: block; color: var(--text-primary); font-size: 1rem; font-weight: 700;">{{ d.descricao }}</strong>
+                        <div style="display: flex; gap: 15px; margin-top: 5px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">{{ d.categoria.nome }}</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;"><i class="fa-regular fa-calendar"></i> {{ d.data_pagamento|date:"d/m/Y" }}</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <strong style="color: var(--text-primary); font-size: 1.25rem; font-weight: 900;">R$ {{ d.valor|floatformat:2 }}</strong>
+                    </div>
+                </div>
+                {% empty %}
+                <div style="text-align: center; padding: 100px; color: var(--text-muted);">
+                    <i class="fa-solid fa-file-invoice-dollar" style="font-size: 4rem; opacity: 0.1; margin-bottom: 20px; display: block;"></i>
+                    Nenhum gasto registrado.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

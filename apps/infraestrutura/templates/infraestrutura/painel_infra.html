@@ -5,6 +5,230 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+    /* ── Tab System ─────────────────────────────────────────────── */
+    .infra-tab-nav {
+        display: inline-flex;
+        gap: 4px;
+        background: var(--bg-elevated);
+        border: 1.5px solid var(--border-mid);
+        border-radius: var(--radius-xl, 48px);
+        padding: 5px;
+        margin-bottom: 28px;
+    }
+
+    .tab-btn {
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        padding: 10px 24px;
+        cursor: pointer;
+        border-radius: var(--radius-xl, 48px);
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+        color: var(--text-primary);
+        background: color-mix(in srgb, var(--primary) 8%, transparent);
+    }
+
+    .tab-btn.active {
+        background: var(--primary);
+        color: #fff;
+        box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 30%, transparent);
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; animation: fadeIn 0.35s ease; }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Filtros / Badges ───────────────────────────────────────── */
+    .filtro-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: var(--radius-xl, 48px);
+        font-size: 0.75rem;
+        font-weight: 700;
+        cursor: pointer;
+        border: 1.5px solid var(--border-mid);
+        background: var(--bg-surface);
+        color: var(--text-secondary);
+        transition: all 0.2s;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+    .filtro-badge:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: color-mix(in srgb, var(--primary) 8%, transparent);
+    }
+
+    /* ── Tabela padrão do Design System ────────────────────────── */
+    .tabela-sige {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--bg-surface);
+        border: 1.5px solid var(--border-mid);
+        border-radius: var(--radius-lg, 20px);
+        overflow: hidden;
+    }
+
+    .tabela-sige thead tr {
+        background: var(--bg-elevated);
+        border-bottom: 1.5px solid var(--border-mid);
+    }
+
+    .tabela-sige thead th {
+        padding: 14px 20px;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        text-align: left;
+    }
+
+    .tabela-sige tbody tr {
+        border-bottom: 1px solid var(--border-subtle);
+        transition: background 0.15s;
+    }
+
+    .tabela-sige tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .tabela-sige tbody tr:hover {
+        background: color-mix(in srgb, var(--primary) 5%, transparent);
+    }
+
+    .tabela-sige tbody td {
+        padding: 14px 20px;
+        vertical-align: middle;
+    }
+
+    /* ── Tombamento Code ────────────────────────────────────────── */
+    .tombamento-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 12px;
+        background: color-mix(in srgb, var(--primary) 10%, transparent);
+        border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+        border-radius: var(--radius-md, 8px);
+    }
+
+    .tombamento-badge code {
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+
+    /* ── Status Badges Semânticos ───────────────────────────────── */
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: var(--radius-xl, 48px);
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .badge-ok {
+        background: color-mix(in srgb, var(--accent-emerald, #2dce89) 15%, transparent);
+        color: color-mix(in srgb, var(--accent-emerald, #2dce89) 100%, #000 25%);
+        border: 1px solid color-mix(in srgb, var(--accent-emerald, #2dce89) 35%, transparent);
+    }
+
+    .badge-warn {
+        background: color-mix(in srgb, var(--accent-amber, #f59e0b) 15%, transparent);
+        color: color-mix(in srgb, var(--accent-amber, #f59e0b) 100%, #000 25%);
+        border: 1px solid color-mix(in srgb, var(--accent-amber, #f59e0b) 35%, transparent);
+    }
+
+    .badge-danger {
+        background: color-mix(in srgb, var(--accent-ruby, #e11d48) 12%, transparent);
+        color: color-mix(in srgb, var(--accent-ruby, #e11d48) 100%, #000 20%);
+        border: 1px solid color-mix(in srgb, var(--accent-ruby, #e11d48) 30%, transparent);
+        animation: blink-badge 2s infinite;
+    }
+
+    @keyframes blink-badge {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+    }
+
+    /* ── Barra de progresso de estoque ─────────────────────────── */
+    .estoque-bar-bg {
+        flex-grow: 1;
+        height: 8px;
+        background: var(--border-mid);
+        border-radius: 10px;
+        max-width: 100px;
+        overflow: hidden;
+    }
+
+    .estoque-bar-fill {
+        height: 100%;
+        border-radius: 10px;
+    }
+
+    /* ── Botões de ação na tabela ───────────────────────────────── */
+    .btn-acao-tabela {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-md, 8px);
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-acao-tabela:hover {
+        transform: scale(1.12);
+        border-color: var(--primary);
+        color: var(--primary);
+        background: color-mix(in srgb, var(--primary) 8%, transparent);
+    }
+
+    /* ── Card de alerta de manutenção ───────────────────────────── */
+    .manutencao-destaque {
+        background: color-mix(in srgb, var(--accent-ruby) 8%, var(--bg-surface));
+        border: 1.5px solid color-mix(in srgb, var(--accent-ruby) 30%, transparent);
+    }
+
+    .manutencao-num {
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: var(--accent-ruby, #e11d48);
+        line-height: 1;
+    }
+
+    .manutencao-info-box {
+        margin-top: 16px;
+        padding: 10px 14px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-mid);
+        border-radius: var(--radius-md, 8px);
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -19,111 +243,305 @@
                 <i class="fa-solid fa-plus"></i> Novo Bem
             </a>
             <a href="{% url 'registrar_movimentacao' %}" class="btn-sige-secundario">
-                <i class="fa-solid fa-truck-ramp-box"></i> Movimentar Estoque
-            </a>
-            <a href="javascript:history.back()" class="btn-sige-secundario">
-                <i class="fa-solid fa-chevron-left"></i> Voltar
+                <i class="fa-solid fa-truck-ramp-box"></i> Movimentar
             </a>
         </div>
     </header>
 
-    <div class="barra-busca-gestao">
-        <form method="get" class="busca-wrapper">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Buscar por nome, tombamento ou item..." onchange="this.form.submit()">
-        </form>
+    {# ════ KPIs ════ #}
+    <section class="metrics-grid mb-4">
+        <div class="bi-card">
+            <div class="card-icon" style="font-size:1.5rem;color:var(--accent-emerald);margin-bottom:12px;">
+                <i class="fa-solid fa-sack-dollar"></i>
+            </div>
+            <div class="card-dados">
+                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Valor Investido</p>
+                <h3 style="font-size:1.6rem;font-weight:800;">R$ {{ metricas.valor_investido|floatformat:2 }}</h3>
+                <p style="font-size:.65rem;color:var(--accent-emerald);margin-top:4px;">Auditoria Patrimonial</p>
+            </div>
+        </div>
+        <div class="bi-card">
+            <div class="card-icon" style="font-size:1.5rem;color:var(--accent-ruby);margin-bottom:12px;">
+                <i class="fa-solid fa-tools"></i>
+            </div>
+            <div class="card-dados">
+                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Manutenções em Aberto</p>
+                <h3 style="font-size:1.8rem;font-weight:800;color:var(--accent-ruby);">{{ metricas.manutencoes_pendentes }}</h3>
+                <p style="font-size:.65rem;color:var(--text-muted);margin-top:4px;">Pendências de reparo</p>
+            </div>
+        </div>
+        <div class="bi-card">
+            <div class="card-icon" style="font-size:1.5rem;color:var(--accent-violet);margin-bottom:12px;">
+                <i class="fa-solid fa-door-open"></i>
+            </div>
+            <div class="card-dados">
+                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Ambientes Mapeados</p>
+                <h3 style="font-size:1.8rem;font-weight:800;">{{ metricas.total_ambientes }}</h3>
+                <p style="font-size:.65rem;color:var(--text-muted);margin-top:4px;">Salas, Labs e Oficinas</p>
+            </div>
+        </div>
+        <div class="bi-card">
+            <div class="card-icon" style="font-size:1.5rem;color:var(--accent-amber);margin-bottom:12px;">
+                <i class="fa-solid fa-boxes-stacked"></i>
+            </div>
+            <div class="card-dados">
+                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Estoque Crítico</p>
+                <h3 style="font-size:1.8rem;font-weight:800;color:var(--accent-amber);">{{ metricas.itens_criticos }}</h3>
+                <p style="font-size:.65rem;color:var(--text-muted);margin-top:4px;">Reposição necessária</p>
+            </div>
+        </div>
+    </section>
+
+    {# ════ GRÁFICOS ════ #}
+    <div class="bi-grid mb-4" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));">
+        <div class="bi-card">
+            <h3 style="color:var(--text-primary);margin-top:0;font-size:.9rem;margin-bottom:16px;">
+                <i class="fa-solid fa-chart-pie" style="color:var(--accent-cyan);"></i> Integridade dos Ativos
+            </h3>
+            <div style="height:220px;"><canvas id="graficoEstadoPatrimonio"></canvas></div>
+        </div>
+        <div class="bi-card">
+            <h3 style="color:var(--text-primary);margin-top:0;font-size:.9rem;margin-bottom:16px;">
+                <i class="fa-solid fa-chart-bar" style="color:var(--accent-violet);"></i> Distribuição por Categoria
+            </h3>
+            <div style="height:220px;"><canvas id="graficoCategoriasPatrimonio"></canvas></div>
+        </div>
+        <div class="bi-card manutencao-destaque">
+            <h3 style="color:var(--text-primary);margin-top:0;font-size:.9rem;margin-bottom:16px;">
+                <i class="fa-solid fa-bullseye" style="color:var(--accent-ruby);"></i> Foco em Manutenção
+            </h3>
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px 0;">
+                <span class="manutencao-num">{{ metricas.manutencoes_pendentes }}</span>
+                <p style="color:var(--text-secondary);margin:8px 0 0;">Reparos Aguardando</p>
+                <div class="manutencao-info-box">
+                    <i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-amber);"></i>
+                    Itens em estado precário: <strong>{{ metricas.estado_precario }}</strong>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="tab-container">
-        <div class="tab-buttons">
-            <button class="tab-btn active" onclick="switchTab('patrimonio')">Patrimônio (Bens Duráveis)</button>
-            <button class="tab-btn" onclick="switchTab('estoque')">Estoque (Consumíveis)</button>
+    {# ════ TABS ════ #}
+    <div>
+        <div class="barra-busca-gestao" style="margin-bottom:20px;">
+            <form method="get" class="busca-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Pesquisar por tombamento, nome, marca ou ambiente..." onchange="this.form.submit()">
+            </form>
+            <div style="display:flex;gap:8px;flex-shrink:0;margin-left:12px;">
+                <span class="filtro-badge"><i class="fa-solid fa-layer-group"></i> Todos</span>
+                <span class="filtro-badge" style="border-color:color-mix(in srgb,var(--accent-emerald) 40%,transparent);color:color-mix(in srgb,var(--accent-emerald) 100%,#000 20%);">
+                    <i class="fa-solid fa-circle-check"></i> Em Operação
+                </span>
+                <span class="filtro-badge" style="border-color:color-mix(in srgb,var(--accent-ruby) 40%,transparent);color:color-mix(in srgb,var(--accent-ruby) 100%,#000 20%);">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Crítico
+                </span>
+            </div>
         </div>
 
-        <!-- ABA PATRIMÔNIO -->
+        <nav class="infra-tab-nav">
+            <button class="tab-btn active" onclick="switchTab('patrimonio', this)">
+                <i class="fa-solid fa-warehouse"></i> Patrimônio (Bens)
+            </button>
+            <button class="tab-btn" onclick="switchTab('estoque', this)">
+                <i class="fa-solid fa-boxes-stacked"></i> Almoxarifado (Estoque)
+            </button>
+        </nav>
+
+        {# ABA PATRIMÔNIO #}
         <div id="tab-patrimonio" class="tab-content active">
-            <div class="card-listagem">
-                <table class="tabela-sige">
-                    <thead>
-                        <tr>
-                            <th>Tombamento</th>
-                            <th>Nome</th>
-                            <th>Categoria</th>
-                            <th>Unidade</th>
-                            <th>Estado</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in patrimonios %}
-                        <tr>
-                            <td><code>{{ p.tombamento }}</code></td>
-                            <td><strong>{{ p.nome }}</strong></td>
-                            <td>{{ p.categoria.nome }}</td>
-                            <td>{{ p.unidade.nome }}</td>
-                            <td>
-                                <span class="status-badge 
-                                    {% if p.estado_conservacao == 'NOVO' or p.estado_conservacao == 'BOM' %}status-aprovado
-                                    {% elif p.estado_conservacao == 'REGULAR' %}status-recuperacao
-                                    {% else %}status-reprovado{% endif %}">
-                                    {{ p.get_estado_conservacao_display }}
-                                </span>
-                            </td>
-                            <td class="acoes-tabela">
-                                <a href="{% url 'editar_patrimonio' p.id %}" title="Editar"><i class="fa-solid fa-pen-to-square"></i></a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Tombamento</th>
+                        <th>Descrição do Ativo</th>
+                        <th>Localização</th>
+                        <th>Status Físico</th>
+                        <th>Responsável</th>
+                        <th style="text-align:center;">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in patrimonios %}
+                    <tr>
+                        <td>
+                            <div class="tombamento-badge">
+                                <i class="fa-solid fa-qrcode" style="font-size:.85rem;color:var(--primary);"></i>
+                                <code>{{ p.tombamento }}</code>
+                            </div>
+                        </td>
+                        <td>
+                            <span style="font-weight:800;color:var(--text-primary);display:block;">{{ p.nome }}</span>
+                            <span style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">{{ p.categoria.nome }} · {{ p.marca|default:"Genérico" }}</span>
+                        </td>
+                        <td>
+                            <span style="font-size:.85rem;color:var(--text-secondary);display:flex;align-items:center;gap:5px;">
+                                <i class="fa-solid fa-location-dot" style="font-size:.7rem;color:var(--text-muted);"></i>
+                                {{ p.ambiente.nome|default:"-" }}
+                            </span>
+                            <span style="font-size:.65rem;color:var(--text-muted);">{{ p.unidade.nome }}</span>
+                        </td>
+                        <td>
+                            <span class="badge-status {% if p.estado_conservacao == 'NOVO' or p.estado_conservacao == 'BOM' %}badge-ok{% elif p.estado_conservacao == 'REGULAR' %}badge-warn{% else %}badge-danger{% endif %}">
+                                {% if p.estado_conservacao == 'NOVO' or p.estado_conservacao == 'BOM' %}<i class="fa-solid fa-circle-check"></i>{% elif p.estado_conservacao == 'REGULAR' %}<i class="fa-solid fa-circle-half-stroke"></i>{% else %}<i class="fa-solid fa-triangle-exclamation"></i>{% endif %}
+                                {{ p.get_estado_conservacao_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <img src="https://ui-avatars.com/api/?name={{ p.responsavel.get_full_name|default:'N A' }}&background=random&color=fff&size=40"
+                                     style="width:30px;height:30px;border-radius:50%;border:2px solid var(--border-mid);" alt="">
+                                <span style="font-size:.85rem;font-weight:600;color:var(--text-primary);">{{ p.responsavel.get_full_name|default:"Pendente" }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:8px;justify-content:center;">
+                                <a href="{% url 'editar_patrimonio' p.id %}" class="btn-acao-tabela" title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                                <a href="#" class="btn-acao-tabela" title="Etiqueta">
+                                    <i class="fa-solid fa-barcode"></i>
+                                </a>
+                                <a href="#" class="btn-acao-tabela" title="Manutenção" style="color:var(--accent-ruby);border-color:color-mix(in srgb,var(--accent-ruby) 30%,transparent);">
+                                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align:center;padding:60px;color:var(--text-muted);">
+                            <i class="fa-solid fa-box-open" style="font-size:3rem;margin-bottom:12px;display:block;opacity:.25;"></i>
+                            Nenhum ativo registrado para esta busca.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
-        <!-- ABA ESTOQUE -->
+        {# ABA ESTOQUE #}
         <div id="tab-estoque" class="tab-content">
-            <div class="card-listagem">
-                <table class="tabela-sige">
-                    <thead>
-                        <tr>
-                            <th>Item</th>
-                            <th>Unidade/Campus</th>
-                            <th>Quantidade Atual</th>
-                            <th>Unidade Medida</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for s in saldos_estoque %}
-                        <tr>
-                            <td><strong>{{ s.item.nome }}</strong></td>
-                            <td>{{ s.unidade.nome }}</td>
-                            <td><span style="font-size: 1.1rem; font-weight: 800;">{{ s.quantidade }}</span></td>
-                            <td>{{ s.item.unidade_medida }}</td>
-                            <td>
-                                {% if s.quantidade <= s.item.estoque_minimo %}
-                                <span class="status-badge status-reprovado">Crítico</span>
-                                {% else %}
-                                <span class="status-badge status-aprovado">OK</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Insumo</th>
+                        <th>Alocação</th>
+                        <th>Nível de Estoque</th>
+                        <th>U.M</th>
+                        <th>Status Reposição</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for s in saldos_estoque %}
+                    <tr>
+                        <td><strong style="color:var(--text-primary);">{{ s.item.nome }}</strong></td>
+                        <td><span style="font-size:.85rem;color:var(--text-secondary);"><i class="fa-solid fa-warehouse"></i> {{ s.unidade.nome }}</span></td>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="estoque-bar-bg">
+                                    <div class="estoque-bar-fill" style="width:{% if s.quantidade > 0 %}70%{% else %}0{% endif %};background:{% if s.quantidade <= s.item.estoque_minimo %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};"></div>
+                                </div>
+                                <span style="font-weight:800;color:var(--text-primary);">{{ s.quantidade }}</span>
+                            </div>
+                        </td>
+                        <td><span style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;">{{ s.item.unidade_medida }}</span></td>
+                        <td>
+                            {% if s.quantidade <= s.item.estoque_minimo %}
+                            <span class="badge-status badge-danger"><i class="fa-solid fa-triangle-exclamation"></i> Crítico</span>
+                            {% else %}
+                            <span class="badge-status badge-ok"><i class="fa-solid fa-circle-check"></i> Abastecido</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </section>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script>
-    function switchTab(tabId) {
+    // Captura as cores do tema atual via CSS Custom Properties (funciona em qualquer tema)
+    const style = getComputedStyle(document.documentElement);
+    const primary    = style.getPropertyValue('--primary').trim()   || '#4A90E2';
+    const textMuted  = style.getPropertyValue('--text-muted').trim()|| '#8b97bb';
+    const borderMid  = style.getPropertyValue('--border-mid').trim()|| 'rgba(0,0,0,0.1)';
+    const textSecond = style.getPropertyValue('--text-secondary').trim() || '#666';
+
+    const baseConfig = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } }
+    };
+
+    // ── Gráfico Estado de Conservação (Donut) ──────────────────
+    const distEstado = JSON.parse('{{ dist_estado_json|safe }}');
+    new Chart(document.getElementById('graficoEstadoPatrimonio'), {
+        type: 'doughnut',
+        data: {
+            labels: distEstado.labels,
+            datasets: [{
+                data: distEstado.data,
+                backgroundColor: [
+                    'color-mix(in srgb, var(--accent-emerald, #34d399) 80%, transparent)',
+                    '#f59e0b',
+                    '#e11d48'
+                ],
+                backgroundColor: ['#34d399', '#f59e0b', '#e11d48'],
+                borderWidth: 3,
+                borderColor: style.getPropertyValue('--bg-surface') || '#fff',
+                cutout: '72%'
+            }]
+        },
+        options: {
+            ...baseConfig,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: { color: textMuted, boxWidth: 10, font: { size: 10 } }
+                }
+            }
+        }
+    });
+
+    // ── Gráfico Categorias (Barras) ────────────────────────────
+    const distCat = JSON.parse('{{ dist_categorias_json|safe }}');
+    new Chart(document.getElementById('graficoCategoriasPatrimonio'), {
+        type: 'bar',
+        data: {
+            labels: distCat.labels,
+            datasets: [{
+                data: distCat.data,
+                backgroundColor: primary,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            ...baseConfig,
+            scales: {
+                y: {
+                    grid: { color: borderMid },
+                    ticks: { color: textMuted, font: { size: 9 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: textMuted, font: { size: 9 } }
+                }
+            }
+        }
+    });
+
+    // ── Tab Switch ─────────────────────────────────────────────
+    function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        
         document.getElementById('tab-' + tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+        btn.classList.add('active');
     }
 </script>
 {% endblock %}

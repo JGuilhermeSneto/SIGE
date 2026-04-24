@@ -1,6 +1,6 @@
-# 🛡️ Política de Segurança — SIGE
+# 🛡️ Política de Segurança — SIGE (Auditoria Jarvis)
 
-Este documento descreve as camadas de proteção implementadas no SIGE para garantir a integridade dos dados e a segurança dos usuários.
+Este documento descreve as camadas de proteção implementadas no SIGE para garantir a integridade dos dados e a segurança dos usuários, atualizado sob a auditoria **Jarvis 2026**.
 
 ---
 
@@ -10,46 +10,44 @@ Este documento descreve as camadas de proteção implementadas no SIGE para gara
 Utilizamos o **Django Axes** para monitorar tentativas de login.
 - **Limite**: 5 tentativas falhas.
 - **Bloqueio**: O IP ou usuário é bloqueado por **1 hora** após atingir o limite.
-- **Reset**: O contador é zerado após um login bem-sucedido.
 
 ### 📜 Política de Segurança de Conteúdo (CSP)
-Implementamos cabeçalhos **CSP** para mitigar ataques de **XSS** (Cross-Site Scripting) e injeção de dados.
+Implementamos cabeçalhos **CSP** para mitigar ataques de **XSS** e injeção de dados.
 - Bloqueio de scripts de fontes desconhecidas.
-- Restrição de estilos e fontes apenas a domínios confiáveis (Google Fonts).
 - Compatibilidade total com o workflow de desenvolvimento **Vite/React**.
 
 ### 🚥 Limitação de Taxa (API Throttling)
-Para evitar abusos e ataques de negação de serviço (DoS) na API:
-- **Anônimos**: Limite de 100 requisições/dia.
-- **Usuários Autenticados**: Limite de 1000 requisições/dia.
+- **Anônimos**: 100 requisições/dia.
+- **Usuários Autenticados**: 1000 requisições/dia.
 
 ---
 
-## 2. Segurança de Dados
+## 2. Validação de Dados e Documentos
 
-### 🔑 Gestão de Senhas
-- **ZXCVBN**: Utilizamos o algoritmo de estimativa de força de senha do Dropbox. Senhas fracas ou baseadas em padrões comuns são rejeitadas.
-- **Hashing**: Senhas são armazenadas utilizando o algoritmo **PBKDF2** com SHA256 (padrão Django).
+### 🪪 Validação de CPF/CNPJ (Real)
+Diferente de versões anteriores que usavam apenas Regex, o SIGE agora implementa **validação matemática (checksum)** para documentos brasileiros via biblioteca `validate-docbr`.
+- Impede o cadastro de CPFs gerados aleatoriamente ou inválidos.
+- Aplicação automática em todos os perfis (Alunos, Professores, Gestores).
+
+### 🔑 Força de Senha (ZXCVBN)
+- **ZXCVBN**: Implementamos o algoritmo de estimativa de força de senha do Dropbox. 
+- Senhas que não atingem o score de segurança mínimo são rejeitadas durante o cadastro ou alteração.
+
+---
+
+## 3. Segurança de Dados e Comunicação
 
 ### 🔐 Comunicação (Produção)
-Em ambiente de produção (`DEBUG=False`), as seguintes proteções são obrigatórias:
-- **HSTS**: HTTP Strict Transport Security ativado por 1 ano.
-- **SSL Redirect**: Redirecionamento automático de HTTP para HTTPS.
-- **Secure Cookies**: Cookies de Sessão e CSRF marcados como `Secure` e `HttpOnly`.
+- **HSTS**: Ativado por 1 ano.
+- **SSL Redirect**: Redirecionamento automático para HTTPS.
+- **Secure Cookies**: Cookies marcados como `Secure` e `HttpOnly` (exceto CSRF para compatibilidade com o frontend).
 
 ---
 
-## 3. Auditoria e CI/CD
+## 4. Auditoria e CI/CD
+O pipeline de CI executa:
+- **Bandit**: Varredura de vulnerabilidades Python.
+- **Pip-audit**: Verificação de dependências.
+- **Check --deploy**: Verificação de segurança nativa do Django.
 
-O pipeline de Integração Contínua executa ferramentas de segurança em cada commit:
-- **Bandit**: Varredura de vulnerabilidades no código Python.
-- **Pip-audit**: Verificação de vulnerabilidades conhecidas em bibliotecas de terceiros.
-- **Check --deploy**: Verificação de flags de segurança críticas do Django.
-
----
-
-## 4. Reportando Vulnerabilidades
-
-Se você encontrar uma falha de segurança, por favor, **não abra uma Issue pública**. Envie um e-mail para a equipe de segurança (contato@sige.edu.br) para que possamos aplicar o patch de forma privada.
-
-*Última atualização: Abril de 2026*
+*Última atualização: Abril de 2026 — Auditoria Jarvis*

@@ -185,7 +185,7 @@
     Dashboard Financeiro
   </h1>
   
-  <a href="{% url 'listar_faturas' %}" class="btn-voltar">
+  <a href="{% url 'financeiro:listar_faturas' %}" class="btn-voltar">
     <i class="fa-solid fa-arrow-left"></i> Voltar para Faturas
   </a>
 </div>
@@ -257,7 +257,7 @@
     </div>
     
     <div style="display: flex; flex-direction: column; gap: 1rem;">
-      <a href="{% url 'listar_faturas' %}?status=atrasadas" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 16px; text-decoration: none; color: var(--text-primary); transition: all 0.2s;">
+      <a href="{% url 'financeiro:listar_faturas' %}?status=atrasadas" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(244, 63, 94, 0.05); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 16px; text-decoration: none; color: var(--text-primary); transition: all 0.2s;">
         <div style="display: flex; align-items: center; gap: 1rem;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--accent-ruby); color: white; display: flex; justify-content: center; align-items: center;">
             <i class="fa-solid fa-envelope"></i>
@@ -283,7 +283,7 @@
         <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
       </a>
       
-      <a href="{% url 'listar_faturas' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 16px; text-decoration: none; color: var(--text-primary); transition: all 0.2s;">
+      <a href="{% url 'financeiro:listar_faturas' %}" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 16px; text-decoration: none; color: var(--text-primary); transition: all 0.2s;">
         <div style="display: flex; align-items: center; gap: 1rem;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--text-muted); color: var(--bg-base); display: flex; justify-content: center; align-items: center;">
             <i class="fa-solid fa-list-check"></i>

@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Liquidação de Fatura #{{ fatura.id }} — SIGE{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container { max-width: 600px; margin: 40px auto; }
+    .bi-card { padding: 40px; }
+    .form-group { margin-bottom: 25px; }
+    .form-label { display: block; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; }
+    .form-control { 
+        width: 100%; padding: 12px 20px; border-radius: var(--radius-md); 
+        background: var(--bg-elevated); border: 1px solid var(--border-subtle); 
+        color: var(--text-primary); font-size: 1rem; transition: all 0.2s;
+    }
+    .btn-submit { 
+        width: 100%; padding: 14px; border-radius: var(--radius-xl); 
+        background: var(--accent-emerald); color: white; font-weight: 900; 
+        border: none; cursor: pointer; transition: all 0.3s; margin-top: 20px;
+    }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); filter: brightness(1.1); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-container">
+    <div class="form-container">
+        <div class="bi-card">
+            <h2 style="color: var(--text-primary); margin-top: 0; margin-bottom: 30px;"><i class="fa-solid fa-check-double" style="color: var(--accent-emerald);"></i> Baixar Pagamento</h2>
+            
+            <div style="background: var(--bg-elevated); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-cyan); margin-bottom: 30px;">
+                <span style="display: block; font-size: 0.7rem; color: var(--text-muted);">FATURA</span>
+                <strong style="color: var(--text-primary);">{{ fatura.descricao }}</strong>
+                <span style="display: block; font-size: 1.2rem; font-weight: 900; color: var(--accent-emerald); margin-top: 5px;">R$ {{ fatura.valor|floatformat:2 }}</span>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label">Valor Pago (R$)</label>
+                    <input type="number" step="0.01" name="valor_pago" class="form-control" value="{{ fatura.valor|stringformat:'.2f' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Método de Pagamento</label>
+                    <select name="metodo" class="form-control" required>
+                        <option value="PIX">PIX</option>
+                        <option value="BOLETO">Boleto Bancário</option>
+                        <option value="CARTAO">Cartão de Crédito/Débito</option>
+                        <option value="TRANSFERENCIA">Transferência / TED</option>
+                        <option value="DINHEIRO">Dinheiro Espécie</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Anexar Comprovante (Opcional)</label>
+                    <input type="file" name="comprovante" class="form-control" style="padding: 8px;">
+                </div>
+
+                <button type="submit" class="btn-submit">REGISTRAR LIQUIDAÇÃO</button>
+                <a href="{% url 'financeiro:detalhes_fatura' fatura.id %}" style="display: block; text-align: center; margin-top: 15px; color: var(--text-muted); text-decoration: none; font-size: 0.8rem; font-weight: 700;">CANCELAR</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

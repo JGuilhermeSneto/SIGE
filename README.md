@@ -39,35 +39,28 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 
 | Módulo | Escopo técnico | Cobertura funcional |
 | :--- | :--- | :--- |
-| **`apps.usuarios`** | Autenticação, perfis e painéis por papel. | Login, reset de senha, cadastro/edição de perfis, dashboards (superusuário, gestor, professor, aluno). |
-| **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, grade horária, notas, frequência, atividades, relatórios. |
-| **`apps.calendario`** | Calendário acadêmico e eventos. | Visualização mensal, integração com utilitários de grade em `apps.academico`. |
-| **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, **estáticos globais** em `static/core/`, Design System (tokens, components, themes). |
-| **`apps.biblioteca`** | Gestão do acervo escolar. | Cadastro de livros, empréstimos, devoluções e **integração com APIs externas** (OpenLibrary/Google Books) para download automático de capas oficiais. |
-| **`apps.comunicacao`** | Comunicados institucionais. | Mural de avisos com segmentação de público e controle de expiração por data. |
-| **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, medicamentos, atestados médicos com fluxo de aprovação e automação pedagógica. |
-| **`apps.financeiro`** | Gestão financeira e faturamento. | Controle de mensalidades, faturas (pendentes, pagas, atrasadas) e relatórios de KPIs financeiros para gestão. |
+| **`apps.usuarios`** | Autenticação, perfis e painéis por papel. | Login, reset de senha, cadastro/edição de perfis, dashboards (superusuário, gestor, professor, aluno). RBAC completo com Groups. |
+| **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, grade horária, notas, frequência, atividades com quiz/gabarito, materiais didáticos. Painel Aluno em tela cheia. |
+| **`apps.calendario`** | Calendário acadêmico e eventos. | Visualização mensal interativa, eventos letivos e de recesso por turma. |
+| **`apps.comum`** | Recursos compartilhados. | Formulários base, templatetags, estáticos globais em `static/core/`, Design System Premium (3 temas, tokens, animações). |
+| **`apps.biblioteca`** | Gestão do acervo escolar. | Empréstimos, devoluções, controle de exemplares. **OpenLibrary API**: 200+ Best-Sellers com capas HD baixadas automaticamente. |
+| **`apps.comunicacao`** | Comunicados institucionais. | Mural de avisos segmentado por público (Alunos, Professores, Todos). |
+| **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas (alergias em Rubi, PCD), vacinas, atestados com fluxo de aprovação e abono automático de faltas. |
+| **`apps.financeiro`** | BI Financeiro e Contabilidade. | Livro Diário, Faturas com status, Folha de Pagamento, Centro de Custo, DRE e KPIs gerenciais. |
+| **`apps.infraestrutura`** | Patrimônio e Almoxarifado. | Tombamento de bens, manutenções, estoque com alertas de reposição mínima. |
 
-- **Documentação de API Automática (OpenAPI 3.0)**
-  - Integração com `drf-spectacular` para geração de schema automático.
-  - Interfaces interativas disponíveis em `/api/docs/` (Swagger UI) e `/api/redoc/` (Redoc).
+- **Design System Premium — "Azul Corporativo"**
+  - Padronização em componentes super-arredondados (`border-radius: 48px`), glassmorphism e sombras dinâmicas.
+  - Paleta com tokens vibrantes (Azul Corporativo, Rubi para Alertas Médicos, Esmeralda para Faturas Pagas).
 - **Garantia de Qualidade & CI/CD Robusto**
   - Pipeline do GitHub Actions reformulado com jobs em paralelo: Lint, Security Scan e Tests.
   - **Deploy Contínuo (CD)**: Automatizado via SSH para servidores de produção após aprovação no CI.
-  - Cobertura de testes atualizada para **53%** com 39 testes unitários e de integração ativos.
-- **Correção Estrutural de Modelos**
-  - Refatoração dos arquivos `__init__.py` nos módulos de models para garantir o registro correto no AppRegistry do Django, eliminando erros de `SystemCheck`.
-- **Design System Premium — Temas & Login**
-  - Padronização em três temas: "Indigo Profundo", "Cinza Industrial" e "Azul Corporativo".
-  - Logo da splash screen agora fica **preta** automaticamente nos temas claros.
-- **Arquitetura Escalável & Distribuída**
-  - **Docker & Docker Compose**: O ambiente está totalmente conteinerizado, separando os serviços de aplicação, banco de dados (MySQL) e cache (Redis).
-  - **Processamento Assíncrono (Celery)**: Implementação de fila de tarefas para operações pesadas (notificações, PDFs) via Redis.
-  - **Camada de Cache (Redis)**: Otimização de consultas complexas e dashboards de BI.
-- **Segurança Avançada (Enterprise Grade)**
-  - **Brute Force Protection**: Integração com `django-axes` para bloqueio de IPs/usuários após múltiplas falhas de login.
-  - **Content Security Policy (CSP)**: Cabeçalhos de segurança contra XSS e injeção de código malicioso.
-  - **API Throttling**: Limitação de taxa (rate limiting) para evitar abusos na API REST.
+- **Processamento Assíncrono e Seed Massivo**
+  - **Simulador de Dados (`seed_db.py`)**: Script monumental de geração de histórico. Gera 10 anos de dados contínuos (2016-2026), processando dezenas de milhares de presenças, faturas pagas e inadimplentes, e históricos de evasão.
+- **Segurança Avançada (Fortaleza Jarvis 2026 — Enterprise Grade)**
+  - **🛡️ Criptografia de Dados (AES/Fernet)**: Dados sensíveis protegidos no banco de dados.
+  - **📜 Trilha de Auditoria (Audit Trail)**: Registro histórico com `django-simple-history` nas finanças e perfis.
+  - **✅ Validação Matemática**: Algoritmos de checksum para CPF.
 
 ---
 
@@ -153,31 +146,42 @@ O SIGE utiliza tecnologias de ponta para garantir performance, escalabilidade e 
 
 | Caminho | Função |
 | :--- | :--- |
-| `config/` | Pacote de configuração Django: `settings.py`, `urls.py` (rotas `admin/`, `academico/`, `calendario/`, raiz para `apps.usuarios`), `wsgi.py`, `asgi.py`. |
-| `manage.py` | Entrada da CLI; `DJANGO_SETTINGS_MODULE=config.settings`. |
-| `apps/usuarios/` | Models de perfil, views de auth e painéis, templates em `templates/`, URLs na raiz do site. |
-| `apps/academico/` | Models (`models/`), views (`views/`), forms, URLs sob prefixo `/academico/`, templates acadêmicos. |
-| `apps/calendario/` | Models e views do calendário; URLs sob `/calendario/`. |
-| `apps/comum/` | Formulários base, templatetags (`custom_tags`, `get_item`), estáticos em `static/core/`. |
-| `.env` / `.env.example` | Segredos e opções de banco (não versionar o `.env`). |
-| `.github/workflows/` | Pipeline CI (testes, security scan, deploy). |
-| `Dockerfile` / `docker-compose.yml` | Orquestração do ambiente distribuído (App, DB, Redis, Worker). |
-| `SECURITY.md` | Documentação detalhada das camadas de proteção. |
-| `PIPELINE.md` | Manual de operação do workflow de CI/CD. |
+| `config/` | Configuração Django: `settings.py`, `urls.py`, `wsgi.py`, `asgi.py`. |
+| `manage.py` | Entrada da CLI Django. |
+| `apps/usuarios/` | Models de perfil, views de auth, painéis e templates. |
+| `apps/academico/` | Models, views, forms, URLs e templates acadêmicos. |
+| `apps/financeiro/` | Livro Diário, Faturas, Folha de Pagamento, BI gerencial. |
+| `apps/saude/` | Fichas médicas, atestados, vacinas e alertas de inclusão. |
+| `apps/biblioteca/` | Acervo, empréstimos, integração OpenLibrary API. |
+| `apps/infraestrutura/` | Patrimônio, manutenções, almoxarifado. |
+| `apps/comum/` | Templatetags, utilitários e Design System em `static/core/`. |
+| `seed_db.py` | Simulador de 10 anos de dados escolares (2016–2026). |
+| `.env` / `.env.example` | Segredos e configurações de ambiente. |
+| `.github/workflows/` | Pipeline CI/CD (Lint, Security Scan, Tests, Deploy). |
+| `Dockerfile` / `docker-compose.yml` | Orquestração: App + MySQL + Redis + Celery. |
+| `SECURITY.md` | Camadas de proteção e auditoria. |
+| `PIPELINE.md` | Manual do workflow de CI/CD. |
+| `ROADMAP.md` | Roadmap estratégico v2.0 com fases e prioridades. |
+| `GAP_ANALYSIS.md` | Análise de gap SIGE vs. SUAP/SIGEDUC com score e esforço. |
+| `SEED_INSTRUCTIONS.md` | Guia de uso do simulador de dados. |
 
 ---
 
 ## 🎨 5. Design System & UI/UX
 
-Interface em modo escuro baseada em tokens CSS em `apps/comum/static/core/css/design_system/tokens.css`.
+Interface baseada no sistema **Premium BI**, focada em um estilo vibrante e fluido. 
+Os tokens de estilo residem em `apps/comum/static/core/css/design_system/tokens.css`.
 
-### 💠 Exemplos de tokens
-* `--accent-cyan` — identidade professor
-* `--accent-violet` — destaque superusuário
-* `--bg-base` — fundo principal
+### 💠 Princípios do Design System
+* **Bordas em 48px**: Todos os botões principais utilizam o estilo de pílula (`border-radius: 48px`), conferindo um aspecto mais amigável.
+* **Cores Semânticas**: 
+  * `--accent-ruby` (Vermelho) — Destaques médicos urgentes (ex: Alergias no prontuário).
+  * `--accent-emerald` (Verde) — Operações financeiras bem-sucedidas (Faturas Pagas).
+  * `--accent-blue` (Azul Corporativo) — Foco em ações primárias, garantindo o "Azul Corporativo" histórico da plataforma.
+* **Glassmorphism**: Painéis flutuantes (como os cards do aluno) que oferecem transparência para um look contemporâneo.
 
 ### 📽️ Animações (`animations.css`)
-* `iconFloat`, `diaAtualPulse`, `fadeUp`, entre outras usadas nos templates base.
+* Animações modernas baseadas em keyframes leves (`iconFloat`, `diaAtualPulse`, `fadeUp`) implementadas nos painéis do Gestor e Aluno.
 
 ---
 
@@ -191,14 +195,34 @@ No GitHub Actions (`.github/workflows/django.yml`), o pipeline é dividido em jo
 
 **Métricas Atuais:**
 - **Status CI:** 🟢 Passing
-- **Cobertura:** 📊 53%
-- **Python:** 3.12 (compatível com 3.11+)
+- **Cobertura:** 📊 53% → Meta: 75%
+- **Python:** 3.14 (compatível com 3.11+)
+- **Dados de demonstração:** 30.000+ registros via `seed_db.py`
 
 ---
 
-## 🛣️ 7. Futuras Melhorias e Roadmap
+## 🛣️ 7. Documentação Estratégica & Roadmap
 
-O roadmap completo está consolidado em [`ROADMAP.md`](ROADMAP.md). Consulte esse arquivo para o estado atual do projeto, prioridades em desenvolvimento e frentes futuras.
+> O SIGE mantém três documentos estratégicos na raiz do projeto:
+
+| Documento | Conteúdo |
+| :--- | :--- |
+| [`ROADMAP.md`](ROADMAP.md) | Roadmap v2.0 completo com fases, prioridades e prazo estimado por feature. Inclui bloqueadores antes do 1º cliente real. |
+| [`GAP_ANALYSIS.md`](GAP_ANALYSIS.md) | Análise de gap: SIGE vs. SUAP/SIGEDUC. Score de maturidade por módulo (52% → 90%), esforço em sprints e ordem de ataque. |
+| [`SEED_INSTRUCTIONS.md`](SEED_INSTRUCTIONS.md) | Guia completo para rodar o simulador de dados de 10 anos. |
+
+### 🏆 Score de Maturidade Atual (vs. Referências de Mercado)
+
+| Módulo | SIGE Hoje | Meta | SUAP |
+| :--- | :---: | :---: | :---: |
+| UX / Design System | **90%** 🏆 | 95% | 45% |
+| Módulo Financeiro (BI) | 60% | 90% | 75% |
+| Gestão Acadêmica | 65% | 95% | 98% |
+| Documentos & Protocolos | 30% | 85% | 92% |
+| Gestão Institucional | 20% | 80% | 95% |
+| **TOTAL** | **52%** | **90%** | **78%** |
+
+> O SIGE supera o SUAP em UX e Design System — diferencial competitivo real no segmento privado.
 
 ## 🚀 8. Instalação (Setup Rápido)
 
@@ -222,12 +246,13 @@ O roadmap completo está consolidado em [`ROADMAP.md`](ROADMAP.md). Consulte ess
     - `ALLOWED_HOSTS`
     - `DB_ENGINE`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` quando usar MySQL.
 
-3. **Banco e servidor Django**
+3. **O Super Simulador de Dados (Máquina do Tempo de 10 Anos)**
+    Para desenvolvedores testarem os limites da UI com gráficos realistas e densos:
     ```bash
     python manage.py migrate
-    python manage.py createsuperuser
-    python manage.py runserver
+    python seed_db.py
     ```
+    > **Aviso:** O `seed_db.py` é extremamente agressivo. Ele realiza um *hard reset* no banco, conecta-se com a **OpenLibrary API** para baixar centenas de capas de livros em HD e roda loops de 2016 a 2026, gerando pagamentos financeiros, folhas de pagamento, alunos evadidos e diários de notas. Espere gerar +30.000 linhas e aguarde alguns minutos para ele processar tudo.
 
 ### 🐳 8.1. Rodando com Docker (Recomendado)
 Para subir o ambiente completo (App + MySQL + Redis + Celery):

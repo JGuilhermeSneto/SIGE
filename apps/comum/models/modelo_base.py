@@ -22,25 +22,28 @@ TURNO_CHOICES = [
     ("noite", "Noite"),
 ]
 
+from apps.comum.utils.validators import validar_cpf
+from apps.comum.utils.fields import EncryptedCharField, EncryptedDateField
+
 class PessoaBase(models.Model):
     """Modelo abstrato para armazenar campos comuns de pessoas."""
     nome_completo = models.CharField(max_length=255, help_text="Nome completo da pessoa")
     cpf = models.CharField(
         max_length=14, unique=True, db_index=True,
-        validators=[RegexValidator(r"^\d{3}\.\d{3}\.\d{3}-\d{2}$")],
+        validators=[validar_cpf],
         help_text="CPF no formato XXX.XXX.XXX-XX",
     )
-    data_nascimento = models.DateField(blank=True, null=True, help_text="Data de nascimento")
-    telefone = models.CharField(max_length=20, blank=True, help_text="Número de telefone")
+    data_nascimento = EncryptedDateField(blank=True, null=True, help_text="Data de nascimento")
+    telefone = EncryptedCharField(max_length=100, blank=True, help_text="Número de telefone") # Max length increased for encryption overhead
 
     # Endereço
     cep = models.CharField(max_length=9, blank=True, help_text="CEP")
     estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True, help_text="Estado (UF)")
     cidade = models.CharField(max_length=100, blank=True, help_text="Cidade")
     bairro = models.CharField(max_length=100, blank=True, help_text="Bairro")
-    logradouro = models.CharField(max_length=255, blank=True, help_text="Logradouro")
-    numero = models.CharField(max_length=10, blank=True, help_text="Número do endereço")
-    complemento = models.CharField(max_length=255, blank=True, help_text="Complemento do endereço")
+    logradouro = EncryptedCharField(max_length=500, blank=True, help_text="Logradouro")
+    numero = EncryptedCharField(max_length=100, blank=True, help_text="Número do endereço")
+    complemento = EncryptedCharField(max_length=500, blank=True, help_text="Complemento do endereço")
 
     foto = models.ImageField(upload_to="fotos/pessoas/", blank=True, null=True, help_text="Foto da pessoa")
 

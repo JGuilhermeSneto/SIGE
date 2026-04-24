@@ -30,8 +30,21 @@ def get_metricas_gerais(ano=None, mes=None):
         "usuarios_ativos": User.objects.filter(is_active=True).count(),
         "usuarios_inativos": User.objects.filter(is_active=False).count(),
         "ingressantes": Aluno.objects.filter(filtro_data).count(),
+        
+        # Status de Matrícula (Para BI)
+        "alunos_ativos": Aluno.objects.filter(status_matricula="ATIVO").count(),
+        "alunos_evadidos": Aluno.objects.filter(status_matricula="EVADIDO").count(),
+        "alunos_transferidos": Aluno.objects.filter(status_matricula="TRANSFERIDO").count(),
+        "alunos_formados": Aluno.objects.filter(status_matricula="FORMADO").count(),
+        "alunos_inativos": Aluno.objects.filter(status_matricula="INATIVO").count(),
     }
     
+    # Taxa de Evasão (BI)
+    if metricas["total_alunos"] > 0:
+        metricas["taxa_evasao"] = (metricas["alunos_evadidos"] / metricas["total_alunos"]) * 100
+    else:
+        metricas["taxa_evasao"] = 0
+
     # Concluintes (Baseado no nome da turma seguindo o padrão informado pelo usuário)
     # Procuramos por "9" ou "3" que geralmente indicam o ano final
     metricas["concluintes"] = Aluno.objects.filter(

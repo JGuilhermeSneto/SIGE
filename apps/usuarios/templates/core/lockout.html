@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Acesso Bloqueado — SIGE{% endblock %}
+
+{% block content %}
+<div style="display: flex; align-items: center; justify-content: center; min-height: 80vh; text-align: center; padding: 20px;">
+    <div class="bi-card" style="max-width: 500px; padding: 40px; border-top: 4px solid var(--accent-ruby);">
+        <i class="fa-solid fa-user-shield" style="font-size: 4rem; color: var(--accent-ruby); margin-bottom: 25px; display: block;"></i>
+        
+        <h1 style="color: var(--text-primary); font-size: 2rem; font-weight: 900; margin-bottom: 15px;">Segurança Ativada</h1>
+        
+        <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.6; margin-bottom: 30px;">
+            Detectamos múltiplas tentativas de acesso falhas para este endereço IP. 
+            Por medida de segurança (Jarvis 2026), sua conta foi temporariamente suspensa para prevenir ataques de força bruta.
+        </p>
+
+        <div style="background: var(--bg-elevated); padding: 15px; border-radius: 12px; margin-bottom: 30px;">
+            <span style="display: block; font-size: 0.75rem; font-weight: 800; color: var(--accent-amber);">O QUE FAZER?</span>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 5px;">Aguarde alguns minutos ou entre em contato com o suporte de TI da escola.</p>
+        </div>
+
+        <a href="{% url 'login' %}" class="btn-exportar" style="width: 100%; justify-content: center; background: var(--bg-hover);">
+            <i class="fa-solid fa-rotate-left"></i> Tentar Novamente
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,11 +1,15 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from apps.comum.utils.fields import EncryptedCharField, EncryptedDecimalField
+from simple_history.models import HistoricalRecords
 
 class UnidadeEscolar(models.Model):
     """Representa uma unidade física ou campus da escola."""
     nome = models.CharField(max_length=100)
-    endereco = models.CharField(max_length=255, blank=True)
+    endereco = EncryptedCharField(max_length=1000, blank=True)
     eh_sede = models.BooleanField(default=False)
+
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Unidade Escolar"
@@ -26,8 +30,22 @@ class CategoriaBem(models.Model):
     def __str__(self):
         return self.nome
 
+class Ambiente(models.Model):
+    """Representa um local específico (Sala 101, Lab de Informática, Cozinha) dentro de uma Unidade."""
+    unidade = models.ForeignKey(UnidadeEscolar, on_delete=models.CASCADE, related_name="ambientes")
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'infra_ambiente'
+        verbose_name = "Ambiente"
+        verbose_name_plural = "Ambientes"
+
+    def __str__(self):
+        return f"{self.nome} ({self.unidade.nome})"
+
 class ItemPatrimonio(models.Model):
-    """Itens duráveis da instituição (Inventário)."""
+    """Itens duráveis da instituição (Inventário) com padrão SUAP/SIPAC."""
     ESTADO_CHOICES = [
         ('NOVO', 'Novo'),
         ('BOM', 'Bom'),
@@ -38,11 +56,23 @@ class ItemPatrimonio(models.Model):
     
     tombamento = models.CharField(max_length=50, unique=True, verbose_name="Número de Patrimônio (Tombamento)")
     nome = models.CharField(max_length=150)
+    marca = models.CharField(max_length=100, blank=True)
+    modelo = models.CharField(max_length=100, blank=True)
+    numero_serie = models.CharField(max_length=100, blank=True, verbose_name="Número de Série")
+    
     categoria = models.ForeignKey(CategoriaBem, on_delete=models.PROTECT)
     unidade = models.ForeignKey(UnidadeEscolar, on_delete=models.PROTECT)
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.SET_NULL, null=True, blank=True, related_name="itens")
+    responsavel = models.ForeignKey("auth.User", on_delete=models.PROTECT, null=True, blank=True, related_name="bens_sob_custodia")
+    
     estado_conservacao = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='BOM')
     data_aquisicao = models.DateField(null=True, blank=True)
-    valor_aquisicao = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    valor_aquisicao = EncryptedDecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    
+    # Campo para integração financeira futura
+    fatura_origem = models.CharField(max_length=100, blank=True, help_text="ID ou Nº da Fatura de Compra")
+    
+    history = HistoricalRecords()
     
     class Meta:
         db_table = 'infra_patrimonio'
@@ -51,6 +81,26 @@ class ItemPatrimonio(models.Model):
 
     def __str__(self):
         return f"[{self.tombamento}] {self.nome}"
+
+    @property
+    def valor_depreciated(self):
+        """Calcula o valor depreciado (Placeholder)."""
+        return self.valor_aquisicao
+
+class ManutencaoBem(models.Model):
+    """Histórico de manutenções e reparos de itens patrimoniais."""
+    item = models.ForeignKey(ItemPatrimonio, on_delete=models.CASCADE, related_name="manutencoes")
+    data_solicitacao = models.DateField(auto_now_add=True)
+    data_realizacao = models.DateField(null=True, blank=True)
+    descricao_problema = models.TextField()
+    servico_realizado = models.TextField(blank=True)
+    custo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    executor = models.CharField(max_length=200, help_text="Empresa ou técnico")
+
+    class Meta:
+        db_table = 'infra_manutencao'
+        verbose_name = "Manutenção de Bem"
+        verbose_name_plural = "Manutenções de Bens"
 
 class ItemEstoque(models.Model):
     """Itens de consumo (EPIs, Papelaria, Limpeza)."""

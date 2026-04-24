@@ -148,3 +148,24 @@ def buscar_alunos_ajax(request):
         })
 
     return JsonResponse({"results": results})
+
+@login_required
+def visualizar_historico(request, aluno_id=None):
+    """View para visualizar o histórico escolar em HTML (Premium)."""
+    # Se aluno_id não for passado, tenta pegar o do usuário logado (se for aluno)
+    if aluno_id is None:
+        if hasattr(request.user, 'aluno'):
+            aluno_id = request.user.aluno.id
+        else:
+            return HttpResponse("ID do aluno não fornecido.", status=400)
+    
+    # Segurança: Alunos só veem o próprio histórico
+    if hasattr(request.user, 'aluno') and request.user.aluno.id != int(aluno_id):
+        if not is_super_ou_gestor(request.user):
+            return HttpResponse("Acesso negado.", status=403)
+
+    dados = selectors_rel.get_dados_historico(aluno_id)
+    if not dados:
+        return HttpResponse("Histórico não encontrado.", status=404)
+
+    return render(request, "relatorios/historico_escolar.html", dados)

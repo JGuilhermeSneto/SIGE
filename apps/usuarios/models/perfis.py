@@ -19,12 +19,16 @@ CARGO_CHOICES = [
     ("coordenador", "Coordenador"),
 ]
 
+from simple_history.models import HistoricalRecords
+
 class Gestor(PessoaBase):
     """Representa um gestor escolar."""
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="gestor", help_text="Usuário vinculado ao gestor"
     )
     cargo = models.CharField(max_length=20, choices=CARGO_CHOICES, help_text="Cargo do gestor")
+
+    history = HistoricalRecords()
 
     class Meta:
         db_table = 'core_gestor'
@@ -44,6 +48,8 @@ class Professor(PessoaBase):
     formacao = models.CharField(max_length=255, blank=True, help_text="Formação acadêmica")
     especializacao = models.CharField(max_length=255, blank=True, help_text="Especialização")
     area_atuacao = models.CharField(max_length=255, blank=True, help_text="Área de atuação")
+
+    history = HistoricalRecords()
 
     class Meta:
         db_table = 'core_professor'
@@ -85,6 +91,7 @@ class Aluno(PessoaBase):
         on_delete=models.CASCADE, related_name="alunos", help_text="Turma do aluno"
     )
 
+    history = HistoricalRecords()
 
     class Meta:
         db_table = 'core_aluno'

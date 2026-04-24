@@ -341,9 +341,7 @@
       <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
         <i class="fa-solid fa-book-open"></i> Biblioteca
       </a>
-      <a href="{% url 'dashboard_saude_inclusao' %}" class="{% if request.resolver_match.url_name == 'dashboard_saude_inclusao' %}ativo{% endif %}">
-        <i class="fa-solid fa-chart-pie"></i> Dashboard Inclusão
-      </a>
+
       <a href="{% url 'gestao_atestados' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
         <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
         {% if global_atestados_pendentes > 0 %}
@@ -377,15 +375,18 @@
       <a href="{% url 'painel_aluno' %}" class="{% if request.resolver_match.url_name == 'painel_aluno' %}ativo{% endif %}">
         <i class="fa-solid fa-house"></i> Início
       </a>
-      <a href="{% url 'listar_faturas' %}" class="{% if request.resolver_match.url_name == 'listar_faturas' %}ativo{% endif %}">
-        <i class="fa-solid fa-file-invoice-dollar"></i> Financeiro
-      </a>
       {% endif %}
 
       <!-- Adicionar Financeiro para Gestor -->
       {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
-      <a href="{% url 'listar_faturas' %}" class="{% if 'fatura' in request.resolver_match.url_name or 'relatorio_financeiro' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
-        <i class="fa-solid fa-money-check-dollar"></i> Financeiro
+      <a href="{% url 'financeiro:painel_financeiro' %}" class="{% if request.resolver_match.url_name == 'painel_financeiro' %}ativo{% endif %}">
+        <i class="fa-solid fa-money-check-dollar"></i> Finanças (BI)
+      </a>
+      <a href="{% url 'financeiro:gestao_despesas' %}" class="{% if request.resolver_match.url_name == 'gestao_despesas' %}ativo{% endif %}">
+        <i class="fa-solid fa-file-invoice"></i> Contas a Pagar
+      </a>
+      <a href="{% url 'financeiro:listar_faturas' %}" class="{% if request.resolver_match.url_name == 'listar_faturas' %}ativo{% endif %}">
+        <i class="fa-solid fa-hand-holding-dollar"></i> Receitas
       </a>
       {% endif %}
 
@@ -394,9 +395,7 @@
   </aside>
   {% endif %}
 
-  <!-- ═════════ CONTEÚDO ═════════ -->
-  <main
-    class="area-conteudo {% if request.user.is_authenticated and request.user|has_attr:'aluno' %}sem-menu{% endif %}">
+  <main class="area-conteudo {% if request.user.is_authenticated and request.user|has_attr:'aluno' %}sem-menu{% endif %}">
     {% block content %}{% endblock %}
   </main>
 

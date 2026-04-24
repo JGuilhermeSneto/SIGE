@@ -1,28 +1,36 @@
-# Design System do SIGE
+# 🎨 Premium BI Design System
 
-## Visão geral
+O diretório responsável pela Identidade Visual Absoluta do SIGE. Este sistema centraliza a tipografia, a paleta de cores e o formato dos botões para garantir uma paridade de layout perfeita e uma UI/UX deslumbrante em todas as telas da plataforma.
 
-Este diretório contém o design system de temas do SIGE, incluindo tokens CSS, especificações de cor e guias de tema.
+## 🏗️ Filosofia "Azul Corporativo" e Glassmorphism
 
-## Funcionalidades principais
+As últimas grandes atualizações implementaram a restauração do conceito **Azul Corporativo** clássico somado a visuais modernos que incluem:
+1. **Transparência e Desfoque (Glassmorphism)**: Efeitos de fundo embaçado (`backdrop-filter`) em painéis flutuantes (como faturas e alergias do aluno).
+2. **As Pílulas Perfeitas**: Todas as interfaces utilizam botões super-arredondados (`border-radius: 48px`), rompendo a arquitetura web agressiva clássica do bootstrap e fornecendo um design tátil de ponta.
 
-- Definição de variáveis de cor, espaçamento e tipografia.
-- Temas claros e escuros configuráveis.
-- Regras de estilo para botões, cards e inputs.
-- Documentação de uso para desenvolvedores.
+## 🌈 Tokens Semânticos de Cores
 
-## Estrutura de pastas
+O coração do design está nas variáveis (tokens) em `.root`. Nenhuma cor bruta (`#FF0000`) deve ser digitada diretamente dentro do CSS ou HTML. O desenvolvedor deve sempre usar os Tokens CSS:
 
-- `tokens.css` — variáveis globais de design.
-- `themes.css` — temas prontos e presets.
-- `README.md` — guia de uso do design system.
+```css
+/* Errado */
+background-color: #d11;
 
-## Uso principal
+/* Correto */
+background-color: var(--accent-ruby);
+```
 
-Use este diretório para manter a aparência consistente do SIGE em todos os módulos.
+- `--accent-ruby`: Vermelhos para Destaques Médicos e Alertas Críticos.
+- `--accent-emerald`: Verdes para faturas Pagas e links seguros.
+- `--accent-blue`: Ações primárias de navegação.
+- `--surface-overlay`: Backgrounds de painéis Glass.
 
-## Observações
+## 🪄 Classes Utilitárias (Botões Globais)
 
-O `tokens.css` deve ser importado antes dos estilos específicos de página.
+Para evitar botões diferentes em páginas diferentes, usamos as classes declaradas globais no Design System:
 
-> Atualizado em 2026-04-22.
+- `.btn-premium-primary`: O clássico botão preenchido vibrante.
+- `.btn-premium-outline`: Botão transparente apenas com as bordas em alto contraste.
+- `.btn-premium-ruby`: Variável para exclusão ou alertas críticos.
+
+O SIGE proíbe o uso de estilos *inline* (como `style="background: blue; border-radius: 10px;"`) em novos templates. Qualquer nova classe deve ser referenciada ou criada neste diretório.

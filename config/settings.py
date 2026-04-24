@@ -44,6 +44,12 @@ INSTALLED_APPS = [
     "axes",
     "cloudinary",
     "cloudinary_storage",
+    "zxcvbn_password",
+    "simple_history",
+    "django_otp",
+    "django_otp.plugins.otp_static",
+    "django_otp.plugins.otp_totp",
+    "two_factor",
 ]
 
 # ── Pipeline de requisição (ordem importa) ──
@@ -58,6 +64,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
+    "django_session_timeout.middleware.SessionTimeoutMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -127,6 +135,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+    {"NAME": "zxcvbn_password.validators.ZXCVBNValidator"},
 ]
 
 # ── Locale e fuso ──
@@ -262,3 +271,12 @@ CSP_INCLUDE_NONCE_IN = ["script-src"]
 if DEBUG:
     CSP_SCRIPT_SRC += (VITE_DEV_SERVER_URL,)
     CSP_CONNECT_SRC = ("'self'", VITE_DEV_SERVER_URL, "ws://" + VITE_DEV_SERVER_URL.split("//")[1])
+
+# ── Configurações de Timeout e Segurança Avançada ──
+SESSION_EXPIRE_SECONDS = 86400 * 3  # 3 dias
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# ── 2FA Config ──
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = 'usuarios:dashboard' # Ajuste conforme necessário

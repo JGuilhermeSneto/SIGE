@@ -1,30 +1,20 @@
-# Módulo de Biblioteca
+# 📚 Módulo de Biblioteca
 
-## Visão geral
+O Módulo de Biblioteca do SIGE gere o acervo acadêmico e literário da escola, e conta com automação para o cadastro ágil dos livros.
 
-O app `apps.biblioteca` gerencia o acervo escolar, empréstimos e devoluções de livros.
+## 📐 Arquitetura de Dados
 
-## Funcionalidades principais
+- `Livro`: Tabela de acervo, possuindo informações de Quantidade Total, Capa em HD e URL para PDF de leitura digital.
+- `Emprestimo`: Vincula temporariamente um `Livro` a um `Aluno` ou `Professor`. Gerencia a situação do item como `ATIVO`, `RESERVA`, `ATRASADO` e o `ESTADO_CONSERVACAO` da devolução.
 
-- Cadastro de livros com autor, editora e estoque.
-- **Capas Automáticas**: Integração com APIs externas (Google Books/OpenLibrary) para download automático de capas oficiais via ISBN ou Título.
-- Empréstimos e devoluções de obras.
-- Limite de livros por aluno.
-- Painel de gerenciamento de reservas.
+## 📡 Integração com a OpenLibrary API (Scraping Autônomo)
 
-## Estrutura de pastas
+O script construtor de ambientes (`seed_db.py`) está equipado com uma integração da OpenLibrary. 
+Ele não gera livros "fakes". Ele busca listas JSON de Best-Sellers reais de ficção, clássicos e literatura acadêmica e realiza o mapeamento inteligente de propriedades:
+1. Faz parse do JSON capturando Múltiplos Autores e os converte para uma string tratada.
+2. Extrai as chaves de imagens (`cover_id`) e aciona endpoints do servidor de mídia da OpenLibrary.
+3. Faz o download físico dos arquivos de imagem `.jpg` e os insere usando a classe `ContentFile` nativa do Django.
 
-- `models/` — livros, categorias e empréstimos.
-- `views.py` — catálogo, histórico e administração.
-- `forms.py` — formulários de cadastro e empréstimos.
-- `templates/` — páginas de biblioteca e relatórios.
+## 🧑‍💻 Para Desenvolvedores
 
-## Uso principal
-
-Use este app para controlar o fluxo de empréstimo e a disponibilidade do acervo.
-
-## Observações
-
-O sistema aplica limites de reserva e bloqueia tentativas além do estoque disponível.
-
-> Atualizado em 2026-04-22.
+Ao testar a página de listagem de acervo, fique atento que a renderização do frontend lida com os URLs das imagens baixadas pelo simulador na pasta `/media/biblioteca/capas/`. Caso alguma imagem da API corrompa devido à latência, o template `card_livro.html` utilizará a imagem *placeholder* via `onError` nativo do HTML5.
