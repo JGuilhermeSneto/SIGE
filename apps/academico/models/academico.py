@@ -8,8 +8,9 @@ e com modelos de desempenho em ``desempenho.py``.
 from django.db import models
 from django.utils import timezone
 from apps.comum.models.modelo_base import TURNO_CHOICES
+from apps.comum.models.tenant import TenantModel
 
-class Turma(models.Model):
+class Turma(TenantModel):
     """Representa uma turma escolar."""
     nome = models.CharField(max_length=100, help_text="Nome da turma")
     turno = models.CharField(max_length=20, choices=TURNO_CHOICES, help_text="Turno da turma")

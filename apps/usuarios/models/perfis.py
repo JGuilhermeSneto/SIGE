@@ -105,3 +105,29 @@ class Aluno(PessoaBase):
 
     def __str__(self):
         return f"{self.nome_completo} - {self.turma}"
+
+
+class Responsavel(PessoaBase):
+    """Representa o responsável legal pelo aluno."""
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="responsavel", help_text="Usuário vinculado ao responsável"
+    )
+    parentesco = models.CharField(
+        max_length=50, blank=True, 
+        help_text="Vínculo com o aluno (Ex: Pai, Mãe, Tutor)"
+    )
+    alunos = models.ManyToManyField(
+        Aluno, related_name="responsaveis", 
+        help_text="Alunos sob responsabilidade deste perfil"
+    )
+
+    history = HistoricalRecords()
+
+    class Meta:
+        db_table = 'core_responsavel'
+        ordering = ["nome_completo"]
+        verbose_name = "Responsável"
+        verbose_name_plural = "Responsáveis"
+
+    def __str__(self):
+        return f"{self.nome_completo} (Responsável)"

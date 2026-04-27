@@ -29,7 +29,7 @@ class FinanceSecurityTest(TestCase):
     def test_fatura_encryption(self):
         """Valida criptografia do link de pagamento."""
         with connection.cursor() as cursor:
-            cursor.execute("SELECT link_pagamento FROM financeiro_fatura WHERE id = %s", [self.fatura.id])
+            cursor.execute("SELECT link_pagamento FROM fin_fatura WHERE id = %s", [self.fatura.id])
             row = cursor.fetchone()
             self.assertNotEqual(row[0], "https://pagamento.seguro.com/token123")
         

@@ -1,5 +1,5 @@
 """
-URLconf raiz do SIGE — mapa de rotas HTTP do site inteiro.
+URLconf raiz do SIGE — mapa de rotas HTTP do site inteiro. [Reloaded]
 
 O que é: lista de ``path()`` que o Django percorre na ordem até achar
 uma view que atenda à URL.
@@ -24,6 +24,7 @@ from config.jwt_views import EmailTokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from two_factor.urls import urlpatterns as tf_urls
 
 from apps.comunicacao.api import ComunicadoViewSet
 from apps.academico.api import NotificacaoViewSet
@@ -64,6 +65,9 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("biblioteca/", include("apps.biblioteca.urls")),
     path("dashboards/", include("apps.dashboards.urls")),
     path("financeiro/", include("apps.financeiro.urls")),
+    path("", include("django_prometheus.urls")),
+    # Rotas de Autenticação Multi-Fator (2FA)
+    path("", include(tf_urls)),
 ]
 
 if settings.DEBUG:

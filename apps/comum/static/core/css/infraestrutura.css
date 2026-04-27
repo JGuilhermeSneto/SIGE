@@ -1,0 +1,149 @@
+/* ============================================================
+   SIGE — Módulo de Infraestrutura & Patrimônio
+   infraestrutura.css
+============================================================ */
+
+/* ── DASHBOARD & KPIs ────────────────────────────────────── */
+.infra-dashboard-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 32px !important;
+    margin-bottom: 48px !important;
+    width: 100%;
+}
+
+.sige-glass-card {
+    padding: 28px !important;
+    height: 100%;
+}
+
+/* ── SISTEMA DE ABAS (PILL DESIGN) ────────────────────────── */
+.infra-tab-nav {
+    display: inline-flex;
+    gap: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-mid);
+    border-radius: 48px;
+    padding: 6px;
+    margin-bottom: 30px;
+}
+
+.tab-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 10px 24px;
+    cursor: pointer;
+    border-radius: 48px;
+    transition: all 0.3s var(--transition-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.08);
+}
+
+.tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+    box-shadow: var(--shadow-glow);
+}
+
+.tab-content { display: none; }
+.tab-content.active { 
+    display: block; 
+    animation: fadeIn 0.4s ease forwards; 
+}
+
+/* ── BADGES SEMÂNTICOS & CÓDIGOS ─────────────────────────── */
+.tombamento-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: hsla(var(--primary-h), var(--primary-s), var(--primary-l), 0.1);
+    border: 1px solid var(--accent-dim);
+    border-radius: 8px;
+}
+
+.tombamento-badge code {
+    color: var(--primary);
+    font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 14px;
+    border-radius: 48px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.badge-ok { 
+    background: hsla(160, 65%, 52%, 0.15); 
+    color: var(--accent-emerald); 
+    border: 1px solid hsla(160, 65%, 52%, 0.3); 
+}
+
+.badge-warn { 
+    background: hsla(43, 96%, 56%, 0.15); 
+    color: var(--accent-amber); 
+    border: 1px solid hsla(43, 96%, 56%, 0.3); 
+}
+
+.badge-danger { 
+    background: hsla(350, 85%, 60%, 0.15); 
+    color: var(--accent-ruby); 
+    border: 1px solid hsla(350, 85%, 60%, 0.3);
+    animation: pulse-danger 2s infinite;
+}
+
+@keyframes pulse-danger {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ── CUSTOMIZAÇÕES DE CARD & GRÁFICO ─────────────────────── */
+.manutencao-foco {
+    border-color: color-mix(in srgb, var(--accent-ruby) 30%, transparent);
+}
+
+.manutencao-valor {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--accent-ruby);
+    line-height: 1;
+}
+
+.manutencao-alerta-box {
+    margin-top: 16px;
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-mid);
+    border-radius: 8px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+}
+
+/* ── RESPONSIVIDADE ───────────────────────────────────────── */
+@media (max-width: 768px) {
+    .infra-tab-nav {
+        display: flex;
+        overflow-x: auto;
+        width: 100%;
+        border-radius: 12px;
+    }
+}

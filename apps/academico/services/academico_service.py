@@ -39,3 +39,23 @@ class AcademicoService:
             ))
         GradeHorario.objects.bulk_create(novas_entradas)
         return True
+
+    @staticmethod
+    def calcular_situacao_aluno(media_final, frequencia_percentual):
+        """
+        Define a situação acadêmica do aluno (Lógica de Negócio Centralizada).
+        """
+        MEDIA_APROVACAO = 7.0
+        MEDIA_RECUPERACAO = 5.0
+        FREQUENCIA_MINIMA = 75.0
+
+        if frequencia_percentual < FREQUENCIA_MINIMA:
+            return {"texto": "Reprovado por Falta", "classe": "badge bg-danger", "aprovado": False}
+        
+        if media_final >= MEDIA_APROVACAO:
+            return {"texto": "Aprovado", "classe": "badge bg-success", "aprovado": True}
+        
+        if media_final >= MEDIA_RECUPERACAO:
+            return {"texto": "Recuperação", "classe": "badge bg-warning text-dark", "aprovado": False}
+            
+        return {"texto": "Reprovado", "classe": "badge bg-danger", "aprovado": False}

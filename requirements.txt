@@ -83,3 +83,6 @@ validate-docbr>=1.10.0
 django-simple-history>=3.7.0
 django-two-factor-auth[phonenumbers]>=1.17.0
 django-session-timeout>=0.1.0
+sentry-sdk==2.22.0
+django-prometheus==2.3.1
+

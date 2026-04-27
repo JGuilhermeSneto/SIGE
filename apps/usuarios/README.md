@@ -1,17 +1,22 @@
-# 👤 Módulo de Autenticação e Perfis (Usuarios)
+# 👥 Módulo de Usuários & Identidade
 
-O componente base do sistema de controle de acesso (RBAC - Role Based Access Control) do SIGE.
+Este módulo é o pilar de segurança e gestão de acessos (RBAC) do SIGE, gerenciando a identidade de alunos, professores, gestores e responsáveis.
 
-## 📐 Perfis Polimórficos
+## 🎭 Perfis e Dashboards
+O sistema estende o `auth.User` para fornecer interfaces personalizadas:
+- **Gestor**: Dashboard executivo com foco em BI e Observabilidade.
+- **Professor**: Painel focado em produtividade pedagógica.
+- **Aluno**: Interface imersiva (Clean UI) para foco nos estudos.
+- **Responsável**: Portal de acompanhamento financeiro e acadêmico.
 
-Para garantir que o Django gerencie senhas nativamente, enquanto as informações extras sejam independentes, utilizamos o conceito de OneToOne com a base abstrata `PessoaBase`:
-- **`Gestor`**: Acesso completo e aprovações sensíveis (ex: Atestados e Faturas).
-- **`Professor`**: Gerenciamento de seu diário e turma, mas sem acesso à matriz financeira do aluno ou às abas do diretor.
-- **`Aluno`**: Entidade consumidora final. Restrita a visualização de notas e faturas.
+## 🛡️ Segurança Enterprise
+- **2FA (TOTP)**: Autenticação em duas etapas via Google Authenticator.
+- **Trilha de Auditoria**: Registro completo de acessos sensíveis em conformidade com a **LGPD**.
+- **Password Strength**: Validação agressiva via `zxcvbn`.
 
-## 🔒 Segurança
+## 🏗️ Engenharia
+- **Service Layer**: Criação de perfis e vinculação de permissões centralizada em `services/`.
+- **Context Processors**: Injeção de notificações e dados de perfil em todos os templates globais.
+- **Pytest**: Suíte de testes automatizados com 90%+ de cobertura neste módulo.
 
-Todo o acesso ao sistema trafega pelo controle de sessões e cookies seguros definidos no `settings.py` (ou em tokens JWT se utilizando a API exposta em `apps/api/`). O painel universal renderiza conteúdos baseados no grupo / propriedade da classe atual via `if has_attr`.
-
-## 🧑‍💻 Automação de Histórico
-Os `Alunos` carregam o campo de `status_matricula` (`ATIVO`, `INATIVO`, `FORMADO`, `EVADIDO`, `TRANSFERIDO`). Se você criar dados usando o script `seed_db.py`, ele irá gerar perfis com esses status que interagem diretamente com o fechamento do histórico escolar no app Acadêmico.
+> Atualizado em 27/04/2026 — Padrão Jarvis de Segurança Enterprise.

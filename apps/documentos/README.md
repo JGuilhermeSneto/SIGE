@@ -1,28 +1,22 @@
-# Módulo de Documentos
+# 📄 Módulo de Documentos e Relatórios
+> Motor de geração de documentos oficiais com autenticidade garantida.
 
-## Visão geral
+## 🚀 Novo Motor de PDF: ReportLab Premium
+Migramos o sistema do `xhtml2pdf` para o **ReportLab**, permitindo um controle pixel-perfect sobre o layout e uma performance superior.
 
-O app `apps.documentos` gera documentos oficiais em PDF, como boletins e declarações de matrícula.
+### Funcionalidades:
+- **Boletim Escolar Inteligente**: Cores dinâmicas para notas (Verde para aprovação, Vermelho para reprovação).
+- **Declaração de Matrícula**: Documento formal com cabeçalho institucional dinâmico.
+- **Autenticidade via QR Code**: Cada documento gerado possui um QR Code único para validação de veracidade.
+- **Cabeçalhos e Rodapés Dinâmicos**: Extraídos diretamente do modelo `Instituicao` (Multi-Tenancy).
 
-## Funcionalidades principais
+## 🛠️ Arquitetura dos Geradores
+Os geradores residem em `apps/documentos/utils/`:
+- `BasePDFGenerator`: Classe base com lógica de margens, logo e numeração de páginas.
+- `BoletimGenerator`: Lógica específica para tabelas acadêmicas e aproveitamento.
+- `DeclaracaoGenerator`: Template para textos declaratórios formais.
 
-- Emissão de boletim escolar em PDF.
-- Geração de declaração de matrícula.
-- Renderização de templates HTML para PDF.
-- Integração com dados de aluno, turma e histórico acadêmico.
+## 🔗 Integração Multi-Tenant
+O módulo consome dados da `Instituicao` ativa para personalizar o logotipo e o nome da escola no topo de cada documento, garantindo isolamento total entre diferentes clientes.
 
-## Estrutura de pastas
-
-- `views.py` — endpoints para geração de documentos.
-- `urls.py` — rotas de PDF.
-- `templates/` — modelos de layout de documentos.
-
-## Uso principal
-
-Use este app para exportar relatórios oficiais e documentos formais do sistema.
-
-## Observações
-
-O PDF é gerado dinamicamente e deve refletir os dados atuais do aluno e sua situação acadêmica.
-
-> Atualizado em 2026-04-22.
+> Atualizado em: 27/04/2026 — Integração ReportLab & Multi-Tenancy.

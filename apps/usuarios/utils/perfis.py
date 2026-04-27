@@ -16,7 +16,7 @@ def get_nome_exibicao(user):
 
 def get_user_profile(user):
     """Identifica e retorna o objeto de perfil vinculado ao User."""
-    for attr in ("gestor", "professor", "aluno"):
+    for attr in ("gestor", "professor", "aluno", "responsavel"):
         p = getattr(user, attr, None)
         if p:
             return p
@@ -25,7 +25,7 @@ def get_user_profile(user):
 
 def get_foto_perfil(user):
     """Retorna a URL da foto de perfil ou imagem padrão."""
-    for tipo in ("gestor", "professor", "aluno"):
+    for tipo in ("gestor", "professor", "aluno", "responsavel"):
         try:
             perfil = getattr(user, tipo, None)
             if perfil and getattr(perfil, "foto", None) and perfil.foto:
@@ -45,6 +45,8 @@ def redirect_user(user):
         return "painel_professor"
     if hasattr(user, "aluno"):
         return "painel_aluno"
+    if hasattr(user, "responsavel"):
+        return "painel_responsavel"
     return "painel_usuarios"
 
 def is_super_ou_gestor(u):

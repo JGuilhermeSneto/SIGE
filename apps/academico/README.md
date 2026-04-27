@@ -1,30 +1,33 @@
 # 🎓 Módulo Acadêmico
 
-O coração do **SIGE**. Onde turmas, alunos e professores se interconectam e a mágica matemática decide, em tempo real, se um aluno será promovido ao próximo ano letivo.
+O coração do **SIGE**. Onde turmas, alunos e professores se interconectam e a lógica de negócio decide, em tempo real, a situação acadêmica dos discentes.
 
 ## 📐 Estrutura Central (Models)
 
-Dividido em dois sub-módulos principais:
-
-**1. Estrutura Acadêmica (`models/academico.py`)**
+### 1. Estrutura Acadêmica (`models/academico.py`)
 - `Turma`: A célula de um ano letivo (Ex: 3º Ano A - 2026).
-- `Disciplina`: O vínculo entre uma Turma, uma Matéria e um `Professor`.
-- `PlanejamentoAula` & `AtividadeProfessor`: O plano de voo pedagógico do professor.
-- `GradeHorario`: Determina qual dia da semana e horário o professor entra em sala.
+- `Disciplina`: O vínculo entre Turma, Matéria e Professor.
+- `PlanejamentoAula` & `AtividadeProfessor`: O plano de voo pedagógico.
+- `GradeHorario`: Gestão de horários e conflitos.
 
-**2. Desempenho Escolar (`models/desempenho.py`)**
-- `Frequencia`: O registro de presenças ou faltas diárias para uma `Disciplina`. 
-- `Nota` e `NotaAtividade`: Registros oficiais de notas bimestrais/semestrais.
-- `Notificacao`: Canal assíncrono interno entre professores e alunos sobre risco de reprovação ou novas avaliações.
+### 2. Desempenho Escolar (`models/desempenho.py`)
+- `Frequencia`: Registro diário de presença. 
+- `Nota` e `NotaAtividade`: Registros oficiais de avaliações.
+- `Notificacao`: Canal interno de comunicação professor-aluno.
 
-## ⚙️ A "Engine" de Notas
+## 🚀 Engenharia e Performance
 
-Todas as avaliações chamam o motor localizado em `utils/academico.py`. 
-A função de `_calcular_situacao_nota` é executada de forma implacável:
-- O aluno precisa atingir média `>= 7,0` e ter Frequência `>= 75%`.
-- Se a frequência for de `74,9%` na contagem global de horas-aula, o sistema aplica o status de **Reprovado por Falta**, sobrepondo médias 10,0 intocáveis. (Essa barreira só é contornada mediante abono médico vindo do aplicativo `apps.saude`).
+- **Selectors Pattern**: Camada de consultas otimizadas em `selectors/` que reduz consultas N+1 de O(n) para O(1).
+- **Service Layer**: Lógica de negócio centralizada em `services/` (Cálculo de médias, aprovação e situações automáticas).
+- **Integração BI**: Os dados acadêmicos alimentam o **Hub de Inteligência** (`apps.dashboards`) via Seletores compartilhados.
 
-## 🖼️ UX Sem Interrupções (Layout de Tela Cheia)
+## 📄 Emissão de Documentos
+- Integração com o novo motor **ReportLab** para geração de:
+    - Boletins Escolares com QR Code.
+    - Declarações de Matrícula.
+    - Histórico Escolar Consolidado.
 
-Para o painel do Aluno, o *sidebar* de navegação universal foi completamente erradicado pela renderização do `base.html`. 
-Foi aplicado um conceito de Single Page imersiva em tela cheia para evitar distrações de alunos (eliminando links redundantes no menu). Funções essenciais como a "Carteira de Mensalidades Financeiras" foram integradas dentro dos próprios *cards* de "Resumo Acadêmico" como botões de acesso rápido (`--accent-blue`).
+## 🧠 Regras de Aprovação
+- **Aprovação**: Média `>= 7,0` E Frequência `>= 75%`.
+- **Reprovado por Falta**: Frequência `< 75%` (Sobrepõe qualquer nota).
+- **Abono**: Apenas via fluxo oficial no módulo `apps.saude`.

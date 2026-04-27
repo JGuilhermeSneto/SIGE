@@ -327,13 +327,9 @@
         class="{% if request.resolver_match.url_name == 'painel_infraestrutura' %}ativo{% endif %}">
         <i class="fa-solid fa-warehouse"></i> Infraestrutura
       </a>
-      <a href="{% url 'dashboard_bi_academico' %}"
-        class="{% if request.resolver_match.url_name == 'dashboard_bi_academico' %}ativo{% endif %}">
-        <i class="fa-solid fa-chart-pie"></i> Painel BI
-      </a>
-      <a href="{% url 'painel_relatorios' %}"
-        class="{% if request.resolver_match.url_name == 'painel_relatorios' %}ativo{% endif %}">
-        <i class="fa-solid fa-chart-line"></i> Relatórios
+      <a href="{% url 'central_inteligencia' %}"
+        class="{% if request.resolver_match.url_name == 'central_inteligencia' %}ativo{% endif %}">
+        <i class="fa-solid fa-chart-pie"></i> BI & Relatórios
       </a>
       <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
         <i class="fa-solid fa-bolt"></i> App React

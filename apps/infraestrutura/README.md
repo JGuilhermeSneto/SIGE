@@ -1,15 +1,27 @@
 # 🏢 Módulo de Infraestrutura, Estoque e Patrimônio
 
-Um braço do SIGE focado na operação material da instituição. Ele previne que a escola fique sem folhas de ofício no almoxarifado ou perca o controle do tombamento de seus laboratórios de TI.
+Este módulo gerencia o patrimônio durável e os itens consumíveis (almoxarifado) da instituição. Recentemente refatorado para o padrão **Clean Architecture**, garantindo alta performance e integridade de dados.
 
 ## 📐 Arquitetura de Dados (Models)
 
-- `UnidadeEscolar` & `Ambiente`: O campus principal e a divisão das salas e setores.
-- `ItemPatrimonio` (O Inventário Durável): Trata das cadeiras, microscópios e datashows. Eles possuem um número de tombamento protegido. A lógica de Banco de Dados criptografa via `AES` o campo de `valor_aquisicao` em banco para evitar vazamentos contábeis a quem possua acessos diretos SQL.
-- `ManutencaoBem`: Um livro de manutenções indicando as requisições de conserto e troca de itens estragados do patrimônio.
-- `ItemEstoque` & `SaldoEstoque`: Os consumíveis da escola (sabonete, café, papel) configurados com gatilhos de `estoque_minimo`.
-- `MovimentacaoEstoque`: A rastreabilidade contínua (Entradas e Saídas) consumidas pelos setores.
+- `UnidadeEscolar` & `Ambiente`: Representam a estrutura física da escola.
+- `ItemPatrimonio`: Bens duráveis com controle de tombamento e criptografia de valor.
+- `ManutencaoBem`: Registro de ordens de serviço e histórico de reparos.
+- `ItemEstoque` & `SaldoEstoque`: Controle de saldos de itens consumíveis com gatilhos de reposição mínima.
 
-## 💡 Integração 
+## 🧠 Padrões de Projeto (Refatoração 2026)
 
-- Os gastos gerados em `ManutencaoBem` e em compras de novos móveis são projetados para interagir diretamente com o **Módulo Financeiro**, registrando as quantias no `Lancamento` do Livro Diário com seus respectivos Centro de Custos.
+O módulo segue agora a separação estrita de responsabilidades:
+
+### 1. Camada de Leitura (Selectors) — `selectors.py`
+Utiliza o **Selector Pattern** para centralizar consultas complexas e cálculos de BI:
+- `InfraSelector.get_painel_metrics()`: Retorna KPIs de patrimônio e estoque.
+- `InfraSelector.get_estoque_critico()`: Filtra itens abaixo do saldo mínimo com `O(1)`.
+
+### 2. Camada de Escrita (Services) — `services/`
+Centraliza a lógica de negócio e garante transações atômicas:
+- `EstoqueService.registrar_movimentacao()`: Atualiza o saldo físico e cria o log de movimentação em uma única transação segura.
+
+## 💡 Integrações Internas
+- **Financeiro**: Gastos com manutenção geram lançamentos automáticos no Livro Diário.
+- **Dashboards**: Dados de infraestrutura são consumidos pelo Hub de Inteligência via Selectors.

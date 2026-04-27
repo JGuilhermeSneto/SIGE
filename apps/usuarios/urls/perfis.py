@@ -20,6 +20,7 @@ urlpatterns = [
     path("painel/professor/planejamentos/salvar/", professor_planejamento.salvar_planejamento, name="salvar_planejamento"),
     path("painel/aluno/", paineis.painel_aluno, name="painel_aluno"),
     path("painel/aluno/roteiros/", aluno_planejamento.meus_roteiros_aluno, name="meus_roteiros_aluno"),
+    path("painel/responsavel/", paineis.painel_responsavel, name="painel_responsavel"),
 
     # Usuários
     path("usuarios/", registros.usuarios, name="usuarios"),

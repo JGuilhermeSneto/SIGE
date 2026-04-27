@@ -606,6 +606,8 @@
             </section>
 
             {# Calendário (Padronizado via sige-widget) ── #}
+            {% load cache %}
+            {% cache 3600 aluno_calendar aluno.id agora.month agora.year %}
             <section class="sige-widget" id="widget-calendario">
                 <header class="sige-widget-header" onclick="toggleWidget('widget-calendario', 'calendario')">
                     <a href="{% url 'visualizar_calendario' %}" class="calendario-link-header"
@@ -648,6 +650,7 @@
                     </div>
                 </div>
             </section>
+            {% endcache %}
 
         </div>
 

@@ -1,23 +1,28 @@
-"""
-Módulo de configuração central do Django (SIGE).
-
-O que é: define INSTALLED_APPS, banco, templates, estáticos, e-mail, REST e CORS.
-Valores sensíveis vêm do arquivo ``.env`` via ``python-decouple`` (não versionar segredos).
-"""
-
+import os
 from datetime import timedelta
 from pathlib import Path
 from decouple import config, Csv
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
-# Diretório raiz do projeto (pasta que contém ``manage.py``).
+# Inicialização do Sentry (Opcional)
+SENTRY_DSN = config("SENTRY_DSN", default=None)
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=1.0,
+        send_default_pii=True
+    )
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# ── Segurança e modo de execução ──
+# Segurança
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-default-key-change-it")
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
 
-# ── Apps instalados (Django + SIGE + bibliotecas de terceiros) ──
+# Apps
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -50,10 +55,12 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_static",
     "django_otp.plugins.otp_totp",
     "two_factor",
+    "django_prometheus",
 ]
 
-# ── Pipeline de requisição (ordem importa) ──
+# Middleware (Ordem do Prometheus é importante)
 MIDDLEWARE = [
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -66,6 +73,9 @@ MIDDLEWARE = [
     "axes.middleware.AxesMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
+    "apps.comum.middleware.tenant_middleware.TenantMiddleware",
+    "apps.comum.middleware.audit_middleware.AuditMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -73,10 +83,8 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
 
-# Módulo que contém ``urlpatterns`` principal (rotas do site).
 ROOT_URLCONF = "config.urls"
 
-# ── Motor de templates HTML ──
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -98,10 +106,9 @@ TEMPLATES = [
     },
 ]
 
-# Entry point WSGI (servidores síncronos).
 WSGI_APPLICATION = "config.wsgi.application"
 
-# ── Banco de dados: SQLite por padrão ou MySQL via variáveis DB_* no .env ──
+# Banco de Dados
 DB_ENGINE = config("DB_ENGINE", default="django.db.backends.sqlite3")
 
 if DB_ENGINE == "django.db.backends.sqlite3":
@@ -123,28 +130,25 @@ else:
         }
     }
 
-# ── Fluxo de login do Django Auth ──
-LOGIN_URL = "/login/"
+# Auth
+LOGIN_URL = "two_factor:login"
 LOGIN_REDIRECT_URL = "/"
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {"min_length": 10},
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 10}},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
     {"NAME": "zxcvbn_password.validators.ZXCVBNValidator"},
 ]
 
-# ── Locale e fuso ──
+# Internacionalização
 LANGUAGE_CODE = "pt-br"
 TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
 USE_TZ = True
 
-# ── Arquivos estáticos (CSS/JS) e uploads (media) ──
+# Estáticos e Media
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "apps" / "comum" / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -153,18 +157,26 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# ── Cache (Redis) ──
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": config("REDIS_URL", default="redis://127.0.0.1:6379/1"),
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+# Cache (Redis vs Local)
+if config("USE_REDIS", default=False, cast=bool):
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": config("REDIS_URL", default="redis://127.0.0.1:6379/1"),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
         }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "sige-local-cache",
+        }
+    }
 
-# ── Armazenamento de Arquivos (Cloudinary em Produção) ──
+# Cloudinary
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME", default=""),
     "API_KEY": config("CLOUDINARY_API_KEY", default=""),
@@ -174,15 +186,15 @@ CLOUDINARY_STORAGE = {
 if not DEBUG:
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-# ── Tarefas Assíncronas (Celery) ──
-CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://127.0.0.1:6379/0")
-CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="redis://127.0.0.1:6379/0")
+# Tarefas Assíncronas (Celery + RabbitMQ)
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="amqp://guest:guest@localhost:5672//")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="rpc://")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 
-# ── Envio de e-mail (reset de senha, notificações) ──
+# E-mail
 EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
 EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
 EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
@@ -191,10 +203,10 @@ EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
 EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER)
 
-# ── Vite (dev): URL do ``npm run dev`` para injetar módulos em ``app_vite.html`` ──
+# Vite
 VITE_DEV_SERVER_URL = config("VITE_DEV_SERVER_URL", default="http://127.0.0.1:5173")
 
-# ── Segurança em produção e CORS ──
+# Segurança e CORS
 SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = config("SECURE_HSTS_SECONDS", default=31536000 if not DEBUG else 0, cast=int)
@@ -215,48 +227,30 @@ CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", default="http://127.0.0.1:
 CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:5173,http://localhost:5173", cast=Csv())
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticated",
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.BasicAuthentication",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.AnonRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "anon": "100/day",
-        "user": "1000/day",
-    },
 }
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "SIGE API Documentation",
-    "DESCRIPTION": "Documentação completa da API do Sistema Integrado de Gestão Escolar (SIGE).",
+    "DESCRIPTION": "Documentação da API do SIGE.",
     "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-    "ROTATE_REFRESH_TOKENS": False,
-    "BLACKLIST_AFTER_ROTATION": False,
     "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
 }
 
-# ── Configurações de Segurança Avançada (CSP & Axes) ──
-
 # Brute Force Protection (Axes)
-AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1  # Hora
-AXES_LOCKOUT_TEMPLATE = "core/lockout.html"  # Precisa ser criado
+AXES_FAILURE_LIMIT = 5 if not DEBUG else 15
+AXES_COOLOFF_TIME = 1
+AXES_LOCKOUT_TEMPLATE = "core/lockout.html"
 AXES_RESET_ON_SUCCESS = True
 
 # Content Security Policy (CSP)
@@ -267,16 +261,13 @@ CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
 CSP_IMG_SRC = ("'self'", "data:", "https:")
 CSP_INCLUDE_NONCE_IN = ["script-src"]
 
-# Ajuste CSP para o servidor de desenvolvimento do Vite (apenas em DEBUG)
 if DEBUG:
     CSP_SCRIPT_SRC += (VITE_DEV_SERVER_URL,)
     CSP_CONNECT_SRC = ("'self'", VITE_DEV_SERVER_URL, "ws://" + VITE_DEV_SERVER_URL.split("//")[1])
 
-# ── Configurações de Timeout e Segurança Avançada ──
-SESSION_EXPIRE_SECONDS = 86400 * 3  # 3 dias
+# Timeout
+SESSION_EXPIRE_SECONDS = 86400 * 3
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# ── 2FA Config ──
-LOGIN_URL = 'two_factor:login'
-LOGIN_REDIRECT_URL = 'usuarios:dashboard' # Ajuste conforme necessário
+# 2FA
+TWO_FACTOR_PATCH_ADMIN = True

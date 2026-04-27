@@ -3,8 +3,9 @@ from apps.usuarios.models.perfis import Aluno
 from django.utils import timezone
 from apps.comum.utils.fields import EncryptedURLField, EncryptedCharField
 from simple_history.models import HistoricalRecords
+from apps.comum.models.tenant import TenantModel
 
-class CategoriaFinanceira(models.Model):
+class CategoriaFinanceira(TenantModel):
     """Categorias de Receitas e Despesas (Ex: Energia, Salários, Mensalidade, Impostos)."""
     TIPO_CHOICES = [('RECEITA', 'Receita'), ('DESPESA', 'Despesa')]
     
@@ -20,7 +21,7 @@ class CategoriaFinanceira(models.Model):
     def __str__(self):
         return f"{self.nome} ({self.tipo})"
 
-class CentroCusto(models.Model):
+class CentroCusto(TenantModel):
     """Departamentos ou áreas que geram custos (Administrativo, Pedagógico, Infraestrutura)."""
     nome = models.CharField(max_length=100)
     
@@ -32,7 +33,7 @@ class CentroCusto(models.Model):
     def __str__(self):
         return self.nome
 
-class Fatura(models.Model):
+class Fatura(TenantModel):
     """Contas a Receber (Principalmente Mensalidades)."""
     STATUS_CHOICES = [
         ('PENDENTE', 'Pendente'),
@@ -62,7 +63,7 @@ class Fatura(models.Model):
     def __str__(self):
         return f"Fatura {self.id} - {self.aluno.nome_completo} - {self.status}"
 
-class Lancamento(models.Model):
+class Lancamento(TenantModel):
     """Livro Diário: Todas as entradas e saídas financeiras da escola."""
     tipo = models.CharField(max_length=10, choices=[('ENTRADA', 'Entrada'), ('SAIDA', 'Saída')])
     categoria = models.ForeignKey(CategoriaFinanceira, on_delete=models.PROTECT)
@@ -89,7 +90,7 @@ class Lancamento(models.Model):
     def __str__(self):
         return f"[{self.tipo}] {self.descricao} - R$ {self.valor}"
 
-class FolhaPagamento(models.Model):
+class FolhaPagamento(TenantModel):
     """Controle de salários e encargos de funcionários."""
     funcionario = models.ForeignKey("auth.User", on_delete=models.CASCADE, related_name="folhas_pagamento")
     mes_referencia = models.IntegerField()

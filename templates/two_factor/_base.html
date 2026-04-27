@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="default">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIGE — Login Seguro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/design_system/tokens.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/design_system/themes.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/tela_login.css' %}?v=3" />
+    <link rel="icon" type="image/x-icon" href="{% static 'core/img/favicon.ico' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('sige_theme');
+          if (t) document.documentElement.setAttribute('data-theme', t);
+        } catch (e) { /* ignore */ }
+      })();
+    </script>
+    {% block extra_media %}{% endblock %}
+</head>
+<body>
+    <div class="page" id="page">
+        <!-- Partículas de fundo -->
+        <div class="particle p1"></div>
+        <div class="particle p2"></div>
+        <div class="particle p3"></div>
+
+        <div class="login-card" style="max-width: 480px; margin: auto;">
+            <div class="logo-area">
+                <div class="logo-ring">
+                    <img src="{% static 'core/img/Logo_Branca.png' %}" alt="Logo" class="logo-img" />
+                </div>
+                <h1 class="brand-name">SIGE</h1>
+                <p class="brand-sub">Autenticação de Dois Fatores</p>
+            </div>
+
+            <div class="divider">
+                <span class="divider-label">{% block title %}{% endblock %}</span>
+            </div>
+
+            <div class="tf-content" style="padding: 1rem 0;">
+                {% block content %}{% endblock %}
+            </div>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <a href="/" class="forgot-link" style="font-size: 0.85rem; opacity: 0.7;">Voltar ao início</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

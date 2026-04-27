@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from apps.usuarios.forms.autenticacao import LoginForm, EditarPerfilForm
 
@@ -10,22 +10,24 @@ class AutenticacaoFormsTest(TestCase):
         self.user = User.objects.create_user(
             username="testuser", email="test@example.com", password="password123"
         )
+        self.factory = RequestFactory()
+        self.request = self.factory.post('/login/')
 
     def test_login_form_valido(self):
         form_data = {"email": "test@example.com", "password": "password123"}
-        form = LoginForm(data=form_data)
+        form = LoginForm(data=form_data, request=self.request)
         self.assertTrue(form.is_valid())
         self.assertEqual(form.get_user(), self.user)
 
     def test_login_form_email_invalido(self):
         form_data = {"email": "invalid@example.com", "password": "password123"}
-        form = LoginForm(data=form_data)
+        form = LoginForm(data=form_data, request=self.request)
         self.assertFalse(form.is_valid())
         self.assertIn("E-mail não encontrado.", form.errors['__all__'])
 
     def test_login_form_senha_incorreta(self):
         form_data = {"email": "test@example.com", "password": "wrongpassword"}
-        form = LoginForm(data=form_data)
+        form = LoginForm(data=form_data, request=self.request)
         self.assertFalse(form.is_valid())
         self.assertIn("Senha incorreta.", form.errors['__all__'])
 

@@ -5,230 +5,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
-<style>
-    /* ── Tab System ─────────────────────────────────────────────── */
-    .infra-tab-nav {
-        display: inline-flex;
-        gap: 4px;
-        background: var(--bg-elevated);
-        border: 1.5px solid var(--border-mid);
-        border-radius: var(--radius-xl, 48px);
-        padding: 5px;
-        margin-bottom: 28px;
-    }
-
-    .tab-btn {
-        border: none;
-        background: transparent;
-        color: var(--text-muted);
-        font-weight: 700;
-        font-size: 0.85rem;
-        padding: 10px 24px;
-        cursor: pointer;
-        border-radius: var(--radius-xl, 48px);
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        white-space: nowrap;
-    }
-
-    .tab-btn:hover {
-        color: var(--text-primary);
-        background: color-mix(in srgb, var(--primary) 8%, transparent);
-    }
-
-    .tab-btn.active {
-        background: var(--primary);
-        color: #fff;
-        box-shadow: 0 4px 12px color-mix(in srgb, var(--primary) 30%, transparent);
-    }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.35s ease; }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(8px); }
-        to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ── Filtros / Badges ───────────────────────────────────────── */
-    .filtro-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 14px;
-        border-radius: var(--radius-xl, 48px);
-        font-size: 0.75rem;
-        font-weight: 700;
-        cursor: pointer;
-        border: 1.5px solid var(--border-mid);
-        background: var(--bg-surface);
-        color: var(--text-secondary);
-        transition: all 0.2s;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-    }
-    .filtro-badge:hover {
-        border-color: var(--primary);
-        color: var(--primary);
-        background: color-mix(in srgb, var(--primary) 8%, transparent);
-    }
-
-    /* ── Tabela padrão do Design System ────────────────────────── */
-    .tabela-sige {
-        width: 100%;
-        border-collapse: collapse;
-        background: var(--bg-surface);
-        border: 1.5px solid var(--border-mid);
-        border-radius: var(--radius-lg, 20px);
-        overflow: hidden;
-    }
-
-    .tabela-sige thead tr {
-        background: var(--bg-elevated);
-        border-bottom: 1.5px solid var(--border-mid);
-    }
-
-    .tabela-sige thead th {
-        padding: 14px 20px;
-        font-size: 0.7rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-muted);
-        text-align: left;
-    }
-
-    .tabela-sige tbody tr {
-        border-bottom: 1px solid var(--border-subtle);
-        transition: background 0.15s;
-    }
-
-    .tabela-sige tbody tr:last-child {
-        border-bottom: none;
-    }
-
-    .tabela-sige tbody tr:hover {
-        background: color-mix(in srgb, var(--primary) 5%, transparent);
-    }
-
-    .tabela-sige tbody td {
-        padding: 14px 20px;
-        vertical-align: middle;
-    }
-
-    /* ── Tombamento Code ────────────────────────────────────────── */
-    .tombamento-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 12px;
-        background: color-mix(in srgb, var(--primary) 10%, transparent);
-        border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
-        border-radius: var(--radius-md, 8px);
-    }
-
-    .tombamento-badge code {
-        color: var(--primary);
-        font-weight: 700;
-        font-size: 0.8rem;
-    }
-
-    /* ── Status Badges Semânticos ───────────────────────────────── */
-    .badge-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 4px 12px;
-        border-radius: var(--radius-xl, 48px);
-        font-size: 0.65rem;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-
-    .badge-ok {
-        background: color-mix(in srgb, var(--accent-emerald, #2dce89) 15%, transparent);
-        color: color-mix(in srgb, var(--accent-emerald, #2dce89) 100%, #000 25%);
-        border: 1px solid color-mix(in srgb, var(--accent-emerald, #2dce89) 35%, transparent);
-    }
-
-    .badge-warn {
-        background: color-mix(in srgb, var(--accent-amber, #f59e0b) 15%, transparent);
-        color: color-mix(in srgb, var(--accent-amber, #f59e0b) 100%, #000 25%);
-        border: 1px solid color-mix(in srgb, var(--accent-amber, #f59e0b) 35%, transparent);
-    }
-
-    .badge-danger {
-        background: color-mix(in srgb, var(--accent-ruby, #e11d48) 12%, transparent);
-        color: color-mix(in srgb, var(--accent-ruby, #e11d48) 100%, #000 20%);
-        border: 1px solid color-mix(in srgb, var(--accent-ruby, #e11d48) 30%, transparent);
-        animation: blink-badge 2s infinite;
-    }
-
-    @keyframes blink-badge {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.6; }
-    }
-
-    /* ── Barra de progresso de estoque ─────────────────────────── */
-    .estoque-bar-bg {
-        flex-grow: 1;
-        height: 8px;
-        background: var(--border-mid);
-        border-radius: 10px;
-        max-width: 100px;
-        overflow: hidden;
-    }
-
-    .estoque-bar-fill {
-        height: 100%;
-        border-radius: 10px;
-    }
-
-    /* ── Botões de ação na tabela ───────────────────────────────── */
-    .btn-acao-tabela {
-        width: 34px;
-        height: 34px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--radius-md, 8px);
-        background: var(--bg-elevated);
-        border: 1px solid var(--border-subtle);
-        color: var(--text-secondary);
-        transition: all 0.2s;
-        text-decoration: none;
-    }
-
-    .btn-acao-tabela:hover {
-        transform: scale(1.12);
-        border-color: var(--primary);
-        color: var(--primary);
-        background: color-mix(in srgb, var(--primary) 8%, transparent);
-    }
-
-    /* ── Card de alerta de manutenção ───────────────────────────── */
-    .manutencao-destaque {
-        background: color-mix(in srgb, var(--accent-ruby) 8%, var(--bg-surface));
-        border: 1.5px solid color-mix(in srgb, var(--accent-ruby) 30%, transparent);
-    }
-
-    .manutencao-num {
-        font-size: 3.5rem;
-        font-weight: 900;
-        color: var(--accent-ruby, #e11d48);
-        line-height: 1;
-    }
-
-    .manutencao-info-box {
-        margin-top: 16px;
-        padding: 10px 14px;
-        background: var(--bg-elevated);
-        border: 1px solid var(--border-mid);
-        border-radius: var(--radius-md, 8px);
-        font-size: 0.78rem;
-        color: var(--text-secondary);
-    }
-</style>
+<link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -249,71 +26,77 @@
     </header>
 
     {# ════ KPIs ════ #}
-    <section class="metrics-grid mb-4">
-        <div class="bi-card">
+    <section class="infra-dashboard-grid">
+        <div class="sige-glass-card">
             <div class="card-icon" style="font-size:1.5rem;color:var(--accent-emerald);margin-bottom:12px;">
                 <i class="fa-solid fa-sack-dollar"></i>
             </div>
             <div class="card-dados">
-                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Valor Investido</p>
-                <h3 style="font-size:1.6rem;font-weight:800;">R$ {{ metricas.valor_investido|floatformat:2 }}</h3>
-                <p style="font-size:.65rem;color:var(--accent-emerald);margin-top:4px;">Auditoria Patrimonial</p>
+                <p class="passo-label">Valor Investido</p>
+                <h3 style="font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;margin:5px 0;">R$ {{ metricas.valor_investido|floatformat:2 }}</h3>
+                <p style="font-size:.65rem;color:var(--accent-emerald);font-weight:600;">Auditoria Patrimonial</p>
             </div>
         </div>
-        <div class="bi-card">
+        <div class="sige-glass-card">
             <div class="card-icon" style="font-size:1.5rem;color:var(--accent-ruby);margin-bottom:12px;">
-                <i class="fa-solid fa-tools"></i>
+                <i class="fa-solid fa-screwdriver-wrench"></i>
             </div>
             <div class="card-dados">
-                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Manutenções em Aberto</p>
-                <h3 style="font-size:1.8rem;font-weight:800;color:var(--accent-ruby);">{{ metricas.manutencoes_pendentes }}</h3>
-                <p style="font-size:.65rem;color:var(--text-muted);margin-top:4px;">Pendências de reparo</p>
+                <p class="passo-label">Manutenções em Aberto</p>
+                <h3 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin:5px 0;color:var(--accent-ruby);">{{ metricas.manutencoes_pendentes }}</h3>
+                <p style="font-size:.65rem;color:var(--text-muted);">Pendências de reparo</p>
             </div>
         </div>
-        <div class="bi-card">
+        <div class="sige-glass-card">
             <div class="card-icon" style="font-size:1.5rem;color:var(--accent-violet);margin-bottom:12px;">
                 <i class="fa-solid fa-door-open"></i>
             </div>
             <div class="card-dados">
-                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Ambientes Mapeados</p>
-                <h3 style="font-size:1.8rem;font-weight:800;">{{ metricas.total_ambientes }}</h3>
-                <p style="font-size:.65rem;color:var(--text-muted);margin-top:4px;">Salas, Labs e Oficinas</p>
+                <p class="passo-label">Ambientes Mapeados</p>
+                <h3 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin:5px 0;">{{ metricas.total_ambientes }}</h3>
+                <p style="font-size:.65rem;color:var(--text-muted);">Salas, Labs e Oficinas</p>
             </div>
         </div>
-        <div class="bi-card">
+        <div class="sige-glass-card">
             <div class="card-icon" style="font-size:1.5rem;color:var(--accent-amber);margin-bottom:12px;">
                 <i class="fa-solid fa-boxes-stacked"></i>
             </div>
             <div class="card-dados">
-                <p style="font-size:.72rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;">Estoque Crítico</p>
-                <h3 style="font-size:1.8rem;font-weight:800;color:var(--accent-amber);">{{ metricas.itens_criticos }}</h3>
-                <p style="font-size:.65rem;color:var(--text-muted);margin-top:4px;">Reposição necessária</p>
+                <p class="passo-label">Estoque Crítico</p>
+                <h3 style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin:5px 0;color:var(--accent-amber);">{{ metricas.itens_criticos }}</h3>
+                <p style="font-size:.65rem;color:var(--text-muted);">Reposição necessária</p>
             </div>
         </div>
     </section>
 
     {# ════ GRÁFICOS ════ #}
-    <div class="bi-grid mb-4" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));">
-        <div class="bi-card">
-            <h3 style="color:var(--text-primary);margin-top:0;font-size:.9rem;margin-bottom:16px;">
-                <i class="fa-solid fa-chart-pie" style="color:var(--accent-cyan);"></i> Integridade dos Ativos
-            </h3>
+    <div class="infra-dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;">
+        <div class="sige-glass-card">
+            <header class="sige-widget-header" style="margin-bottom: 20px;">
+                <h3 style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;">
+                    <i class="fa-solid fa-chart-pie" style="color:var(--accent-cyan);"></i> Integridade dos Ativos
+                </h3>
+            </header>
             <div style="height:220px;"><canvas id="graficoEstadoPatrimonio"></canvas></div>
         </div>
-        <div class="bi-card">
-            <h3 style="color:var(--text-primary);margin-top:0;font-size:.9rem;margin-bottom:16px;">
-                <i class="fa-solid fa-chart-bar" style="color:var(--accent-violet);"></i> Distribuição por Categoria
-            </h3>
+        <div class="sige-glass-card">
+            <header class="sige-widget-header" style="margin-bottom: 20px;">
+                <h3 style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;">
+                    <i class="fa-solid fa-chart-bar" style="color:var(--accent-violet);"></i> Distribuição por Categoria
+                </h3>
+            </header>
             <div style="height:220px;"><canvas id="graficoCategoriasPatrimonio"></canvas></div>
         </div>
-        <div class="bi-card manutencao-destaque">
-            <h3 style="color:var(--text-primary);margin-top:0;font-size:.9rem;margin-bottom:16px;">
-                <i class="fa-solid fa-bullseye" style="color:var(--accent-ruby);"></i> Foco em Manutenção
-            </h3>
+        <div class="sige-glass-card manutencao-foco">
+            <header class="sige-widget-header" style="margin-bottom: 20px;">
+                <h3 style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:800;color:var(--accent-ruby);">
+                    <i class="fa-solid fa-bullseye"></i> Foco em Manutenção
+                </h3>
+            </header>
             <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px 0;">
-                <span class="manutencao-num">{{ metricas.manutencoes_pendentes }}</span>
-                <p style="color:var(--text-secondary);margin:8px 0 0;">Reparos Aguardando</p>
-                <div class="manutencao-info-box">
+                <span class="manutencao-valor">{{ metricas.manutencoes_pendentes }}</span>
+                <p style="color:var(--text-secondary);margin:8px 0 0;font-weight:600;">Reparos Aguardando</p>
+                <div class="manutencao-alerta-box">
                     <i class="fa-solid fa-triangle-exclamation" style="color:var(--accent-amber);"></i>
                     Itens em estado precário: <strong>{{ metricas.estado_precario }}</strong>
                 </div>
@@ -322,31 +105,29 @@
     </div>
 
     {# ════ TABS ════ #}
-    <div>
-        <div class="barra-busca-gestao" style="margin-bottom:20px;">
+    <div class="card-listagem">
+        <div class="barra-busca-gestao">
             <form method="get" class="busca-wrapper">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Pesquisar por tombamento, nome, marca ou ambiente..." onchange="this.form.submit()">
             </form>
             <div style="display:flex;gap:8px;flex-shrink:0;margin-left:12px;">
-                <span class="filtro-badge"><i class="fa-solid fa-layer-group"></i> Todos</span>
-                <span class="filtro-badge" style="border-color:color-mix(in srgb,var(--accent-emerald) 40%,transparent);color:color-mix(in srgb,var(--accent-emerald) 100%,#000 20%);">
-                    <i class="fa-solid fa-circle-check"></i> Em Operação
-                </span>
-                <span class="filtro-badge" style="border-color:color-mix(in srgb,var(--accent-ruby) 40%,transparent);color:color-mix(in srgb,var(--accent-ruby) 100%,#000 20%);">
-                    <i class="fa-solid fa-triangle-exclamation"></i> Crítico
+                <span class="status-badge" style="background:var(--bg-elevated);color:var(--text-primary);border:1px solid var(--border-mid);">
+                    <i class="fa-solid fa-layer-group"></i> Todos
                 </span>
             </div>
         </div>
 
-        <nav class="infra-tab-nav">
-            <button class="tab-btn active" onclick="switchTab('patrimonio', this)">
-                <i class="fa-solid fa-warehouse"></i> Patrimônio (Bens)
-            </button>
-            <button class="tab-btn" onclick="switchTab('estoque', this)">
-                <i class="fa-solid fa-boxes-stacked"></i> Almoxarifado (Estoque)
-            </button>
-        </nav>
+        <div style="padding: 0 24px;">
+            <nav class="infra-tab-nav">
+                <button class="tab-btn active" onclick="switchTab('patrimonio', this)">
+                    <i class="fa-solid fa-warehouse"></i> Patrimônio (Bens)
+                </button>
+                <button class="tab-btn" onclick="switchTab('estoque', this)">
+                    <i class="fa-solid fa-boxes-stacked"></i> Almoxarifado (Estoque)
+                </button>
+            </nav>
+        </div>
 
         {# ABA PATRIMÔNIO #}
         <div id="tab-patrimonio" class="tab-content active">
@@ -366,7 +147,7 @@
                     <tr>
                         <td>
                             <div class="tombamento-badge">
-                                <i class="fa-solid fa-qrcode" style="font-size:.85rem;color:var(--primary);"></i>
+                                <i class="fa-solid fa-qrcode"></i>
                                 <code>{{ p.tombamento }}</code>
                             </div>
                         </td>
@@ -395,14 +176,14 @@
                             </div>
                         </td>
                         <td>
-                            <div style="display:flex;gap:8px;justify-content:center;">
-                                <a href="{% url 'editar_patrimonio' p.id %}" class="btn-acao-tabela" title="Editar">
+                            <div class="acoes-tabela" style="justify-content:center;">
+                                <a href="{% url 'editar_patrimonio' p.id %}" title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
                                 </a>
-                                <a href="#" class="btn-acao-tabela" title="Etiqueta">
+                                <a href="#" title="Etiqueta">
                                     <i class="fa-solid fa-barcode"></i>
                                 </a>
-                                <a href="#" class="btn-acao-tabela" title="Manutenção" style="color:var(--accent-ruby);border-color:color-mix(in srgb,var(--accent-ruby) 30%,transparent);">
+                                <a href="#" title="Manutenção" class="btn-icone-excluir">
                                     <i class="fa-solid fa-screwdriver-wrench"></i>
                                 </a>
                             </div>
@@ -410,9 +191,11 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6" style="text-align:center;padding:60px;color:var(--text-muted);">
-                            <i class="fa-solid fa-box-open" style="font-size:3rem;margin-bottom:12px;display:block;opacity:.25;"></i>
-                            Nenhum ativo registrado para esta busca.
+                        <td colspan="6">
+                            <div class="vazio-state">
+                                <i class="fa-solid fa-box-open"></i>
+                                <p>Nenhum ativo registrado para esta busca.</p>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
@@ -439,8 +222,8 @@
                         <td><span style="font-size:.85rem;color:var(--text-secondary);"><i class="fa-solid fa-warehouse"></i> {{ s.unidade.nome }}</span></td>
                         <td>
                             <div style="display:flex;align-items:center;gap:10px;">
-                                <div class="estoque-bar-bg">
-                                    <div class="estoque-bar-fill" style="width:{% if s.quantidade > 0 %}70%{% else %}0{% endif %};background:{% if s.quantidade <= s.item.estoque_minimo %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};"></div>
+                                <div style="flex-grow:1;height:8px;background:var(--border-mid);border-radius:10px;max-width:100px;overflow:hidden;">
+                                    <div style="height:100%;border-radius:10px;width:{% if s.quantidade > 0 %}70%{% else %}0{% endif %};background:{% if s.quantidade <= s.item.estoque_minimo %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};"></div>
                                 </div>
                                 <span style="font-weight:800;color:var(--text-primary);">{{ s.quantidade }}</span>
                             </div>
@@ -452,6 +235,15 @@
                             {% else %}
                             <span class="badge-status badge-ok"><i class="fa-solid fa-circle-check"></i> Abastecido</span>
                             {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="vazio-state">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                                <p>Nenhum item em estoque encontrado.</p>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}

@@ -22,6 +22,27 @@ Implementamos cabeçalhos **CSP** para mitigar ataques de **XSS** e injeção de
 
 ---
 
+## 2. Camadas Adicionais (Atualização de Segurança 27/04/2026)
+
+### 🔐 Autenticação em Dois Fatores (2FA)
+Implementamos o **Django Two-Factor Auth**.
+- **TOTP**: Suporte para Google Authenticator, Microsoft Authenticator e Authy.
+- **Enforcement**: Obrigatório para contas com permissões administrativas (Gestores e Staff).
+- **Códigos de Recuperação**: Geração de códigos estáticos de uso único para emergências.
+
+### 👁️ Monitoramento de Erros (Sentry)
+Integração com **Sentry SDK** para detecção em tempo real de:
+- Erros de runtime que podem indicar tentativas de exploração.
+- Falhas em transações críticas (Saúde/Financeiro).
+- Logs de segurança capturados via `sentry_sdk.init`.
+
+### 📝 Auditoria LGPD (Audit Middleware)
+Middleware customizado para logar acessos a áreas de dados sensíveis.
+- **Áreas Auditadas**: Saúde, Financeiro, Documentos Oficiais.
+- **Dados Capturados**: Username, Timestamp, Caminho da URL, IP de Origem.
+
+---
+
 ## 2. Validação de Dados e Documentos
 
 ### 🪪 Validação de CPF/CNPJ (Real)

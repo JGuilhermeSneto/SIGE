@@ -1,0 +1,206 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Painel do Responsável{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card-dependente {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 25px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-dependente:hover {
+        border-color: var(--accent-violet);
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(124, 111, 255, 0.12);
+    }
+
+    .dep-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .dep-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: var(--bg-elevated);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: var(--text-muted);
+        border: 2px solid var(--border-mid);
+    }
+
+    .dep-info h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        color: var(--text-primary);
+    }
+
+    .dep-info p {
+        margin: 4px 0 0 0;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .dep-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .stat-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px;
+        border-radius: var(--radius-md);
+        text-align: center;
+        border: 1px solid var(--border-subtle);
+    }
+
+    .stat-item span {
+        display: block;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-bottom: 5px;
+    }
+
+    .stat-item strong {
+        font-size: 1.25rem;
+        color: var(--text-primary);
+    }
+
+    .btn-detalhes {
+        background: var(--accent-violet);
+        color: white;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: var(--radius-md);
+        text-align: center;
+        font-weight: 600;
+        transition: filter 0.2s;
+        margin-top: 10px;
+    }
+
+    .btn-detalhes:hover {
+        filter: brightness(1.1);
+    }
+
+    .badge-situacao {
+        position: absolute;
+        top: 20px;
+        right: 24px;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="painel-sige">
+    <div class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label"><i class="fa-solid fa-users-viewfinder"></i> SIGE · Portal do Responsável</span>
+            <h1>Olá, <span class="nome-destaque">{{ responsavel.nome_completo|truncatewords:2 }}</span> 👋</h1>
+            <p class="header-sub">Acompanhe o desempenho acadêmico de seus dependentes</p>
+        </div>
+    </div>
+
+    <div class="conteudo-geral">
+        <div class="coluna-principal">
+            <p class="secao-titulo"><i class="fa-solid fa-children"></i> Seus Dependentes</p>
+
+            {% for item in dependentes %}
+            <div class="card-dependente">
+                <span class="badge-situacao {{ item.situacao.classe }}" style="background: var(--bg-elevated);">
+                    {{ item.situacao.texto }}
+                </span>
+
+                <div class="dep-header">
+                    <div class="dep-avatar">
+                        {% if item.aluno.user.foto %}
+                            <img src="{{ item.aluno.user.foto.url }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        {% else %}
+                            <i class="fa-solid fa-user-graduate"></i>
+                        {% endif %}
+                    </div>
+                    <div class="dep-info">
+                        <h2>{{ item.aluno.nome_completo }}</h2>
+                        <p>{{ item.aluno.turma.nome }} · {{ item.aluno.turma.get_turno_display }}</p>
+                    </div>
+                </div>
+
+                <div class="dep-stats">
+                    <div class="stat-item">
+                        <span>Média Geral</span>
+                        <strong class="{% if item.media_geral >= 7 %}aprovado{% else %}reprovado{% endif %}">
+                            {{ item.media_geral|floatformat:1 }}
+                        </strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Frequência</span>
+                        <strong class="{% if item.frequencia >= 75 %}aprovado{% else %}reprovado{% endif %}">
+                            {{ item.frequencia|floatformat:0 }}%
+                        </strong>
+                    </div>
+                    <div class="stat-item">
+                        <span>Disciplinas</span>
+                        <strong>{{ item.total_disciplinas }}</strong>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <a href="{% url 'gerar_boletim_pdf' item.aluno.id %}" target="_blank" class="btn-detalhes" style="background: var(--bg-elevated); border: 1px solid var(--border-mid); color: var(--text-primary); flex: 1;">
+                        <i class="fa-solid fa-file-pdf"></i> Baixar Boletim
+                    </a>
+                    <a href="{% url 'painel_aluno' %}?aluno_id={{ item.aluno.id }}" class="btn-detalhes" style="flex: 2;">
+                        <i class="fa-solid fa-eye"></i> Visualizar Detalhes
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="sige-glass-card" style="padding: 40px; text-align: center;">
+                <i class="fa-solid fa-user-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+                <h3>Nenhum dependente vinculado</h3>
+                <p>Entre em contato com a secretaria da escola para vincular seus filhos ao seu CPF.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="coluna-direita">
+            <section class="sige-widget">
+                <header class="sige-widget-header">
+                    <h3><i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Informações</h3>
+                </header>
+                <div class="sige-widget-body">
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Como responsável, você tem acesso em tempo real às notas e faltas. 
+                        Qualquer divergência deve ser tratada diretamente com a coordenação pedagógica.
+                    </p>
+                    <hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 15px 0;">
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="{% url 'financeiro:listar_faturas' %}" class="btn-detalhes" style="background: var(--accent-emerald); font-size: 0.85rem;">
+                            <i class="fa-solid fa-wallet"></i> Pagamentos e Faturas
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+{% endblock %}

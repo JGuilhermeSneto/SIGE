@@ -1,29 +1,21 @@
-# Módulo Comum
+# 🧱 Módulo Comum & Infraestrutura Base
 
-## Visão geral
+Este é o alicerce técnico do SIGE, fornecendo as bases para o isolamento de dados, segurança avançada e a identidade visual do sistema.
 
-O app `apps.comum` fornece recursos compartilhados entre os apps do SIGE, incluindo formulários base, templatetags, utilitários e arquivos estáticos globais.
+## 🏢 Fundação Multi-Tenancy
+O SIGE é arquitetado para suportar múltiplas instituições de forma isolada:
+- **TenantModel**: Modelo base que injeta o vínculo com a `Instituicao` em todo o ecossistema.
+- **TenantMiddleware**: Garante que o usuário veja apenas os dados da sua instituição, resolvendo o escopo via thread-local.
 
-## Funcionalidades principais
+## 🎨 Design System Premium
+Localizado em `static/core/`, este sistema define a estética "Premium Glassmorphism" do projeto:
+- **Tokens CSS**: Gerenciamento de cores, espaçamentos e arredondamentos (48px).
+- **Temas Dinâmicos**: Suporte a temas Azul Corporativo, Dark Mode e variações industriais.
+- **Micro-animações**: Feedback visual fluido para uma experiência de usuário superior.
 
-- Formulários base para validação e estilo comuns.
-- **Validação de Documentos**: Utilitários para validação matemática de CPF e CNPJ reais via `validators.py`.
-- **Criptografia de Campos**: Implementação de `EncryptedCharField`, `EncryptedDateField` e outros campos protegidos em `utils/fields.py`.
-- **Design System & Segurança**: Tokens de design e cabeçalhos de segurança centralizados.
+## 🔒 Segurança & Auditoria
+- **Campos Criptografados**: Suporte nativo a `EncryptedCharField` e `EncryptedDateField`.
+- **Middleware de Auditoria**: Registro de trilha de acesso em conformidade com a **LGPD**.
+- **Validadores**: Lógica centralizada para CPF, CNPJ e outros documentos.
 
-## Estrutura de pastas
-
-- `forms/` — formulários compartilhados.
-- `templatetags/` — tags Django customizadas.
-- `utils/` — funções auxiliares reutilizáveis.
-- `static/` — recursos estáticos globais.
-
-## Uso principal
-
-Use este app para centralizar componentes reutilizáveis e garantir consistência visual e comportamental entre os módulos.
-
-## Observações
-
-Este módulo reduz duplicação e facilita a manutenção de estilos e helpers entre apps.
-
-> Atualizado em 2026-04-22.
+> Atualizado em 27/04/2026 — Núcleo de Design System e Multi-Tenancy consolidado.

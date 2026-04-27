@@ -1,36 +1,64 @@
-# 🎨 Premium BI Design System
+# 🎨 Premium Design System — SIGE
 
-O diretório responsável pela Identidade Visual Absoluta do SIGE. Este sistema centraliza a tipografia, a paleta de cores e o formato dos botões para garantir uma paridade de layout perfeita e uma UI/UX deslumbrante em todas as telas da plataforma.
+O diretório que define a **Identidade Visual Absoluta** do SIGE. Centraliza tokens de cores, tipografia, bordas, animações e temas para garantir consistência em 100% das telas.
 
-## 🏗️ Filosofia "Azul Corporativo" e Glassmorphism
+## 🌈 Sistema de Temas
 
-As últimas grandes atualizações implementaram a restauração do conceito **Azul Corporativo** clássico somado a visuais modernos que incluem:
-1. **Transparência e Desfoque (Glassmorphism)**: Efeitos de fundo embaçado (`backdrop-filter`) em painéis flutuantes (como faturas e alergias do aluno).
-2. **As Pílulas Perfeitas**: Todas as interfaces utilizam botões super-arredondados (`border-radius: 48px`), rompendo a arquitetura web agressiva clássica do bootstrap e fornecendo um design tátil de ponta.
+O SIGE possui **9 temas completos**, aplicados via `<html data-theme="...">`:
 
-## 🌈 Tokens Semânticos de Cores
+| Tema | Slug | Característica |
+|---|---|---|
+| Índigo Profundo | `indigo-profundo` | Dark mode neon, bordas violeta |
+| Brisa Aqua | `brisa-aqua` | Aquático, glassmorphism |
+| Céu Sereno | `ceu-sereno` | Sky gradient, azul sereno |
+| Cinza Industrial | `cinza-industrial` | Brutalista, bordas demarcadas em todos os cards |
+| Azul Corporativo | `azul-corporativo` | Corporativo, bordas azuis em todos os cards |
 
-O coração do design está nas variáveis (tokens) em `.root`. Nenhuma cor bruta (`#FF0000`) deve ser digitada diretamente dentro do CSS ou HTML. O desenvolvedor deve sempre usar os Tokens CSS:
+## 🃏 Bordas de Cards (Atualização Recente)
+
+Os temas **Azul Corporativo** e **Cinza Industrial** receberam bordas de cor visíveis em **todos os tipos de card** do sistema:
 
 ```css
-/* Errado */
-background-color: #d11;
-
-/* Correto */
-background-color: var(--accent-ruby);
+/* Seletores cobertos (por tema) */
+.sige-card, .sige-glass-card, .card, .card-tabela,
+.card-listagem, .card-turma, .card-disciplina,
+.card-stats, .stat-card, .bi-card, .metric-card,
+.login-card, .perfil-card, .calendar-container,
+.form-container, .msg-list li ...
 ```
 
-- `--accent-ruby`: Vermelhos para Destaques Médicos e Alertas Críticos.
-- `--accent-emerald`: Verdes para faturas Pagas e links seguros.
-- `--accent-blue`: Ações primárias de navegação.
-- `--surface-overlay`: Backgrounds de painéis Glass.
+- **Azul Corporativo**: `2px solid rgba(21, 101, 192, 0.45)` — hover: `0.80`.
+- **Cinza Industrial**: `2px solid` cinza-ardósia + `border-top: 3px` industrial.
 
-## 🪄 Classes Utilitárias (Botões Globais)
+## 🏗️ Filosofia de Tokens
 
-Para evitar botões diferentes em páginas diferentes, usamos as classes declaradas globais no Design System:
+Nenhuma cor bruta deve ser usada diretamente. Sempre use tokens:
 
-- `.btn-premium-primary`: O clássico botão preenchido vibrante.
-- `.btn-premium-outline`: Botão transparente apenas com as bordas em alto contraste.
-- `.btn-premium-ruby`: Variável para exclusão ou alertas críticos.
+```css
+/* ❌ Errado */
+background: #d11;
 
-O SIGE proíbe o uso de estilos *inline* (como `style="background: blue; border-radius: 10px;"`) em novos templates. Qualquer nova classe deve ser referenciada ou criada neste diretório.
+/* ✅ Correto */
+background: var(--accent-ruby);
+```
+
+**Tokens principais:**
+- `--primary`: Cor de ação principal do tema ativo.
+- `--accent-ruby`: Alertas médicos e exclusões.
+- `--accent-emerald`: Confirmações e status positivo.
+- `--accent-amber`: Atenção e pendências.
+- `--bg-surface`, `--bg-elevated`: Backgrounds de cards.
+- `--border-subtle`, `--border-mid`, `--border-strong`: Bordas por intensidade.
+
+## 🪄 Classes Globais de Botões
+
+| Classe | Uso |
+|---|---|
+| `.sige-btn-primario` | Botão de ação principal (gradiente do tema) |
+| `.btn-sige-secundario` | Botão de borda/outline |
+| `.btn-sige-ruby` | Exclusão e alertas críticos |
+| `.btn-filtro` | Filtros e seleção de abas |
+
+> **Regra de ouro**: Nenhum `style=""` inline em novos templates. Novas classes devem ser criadas neste diretório.
+
+*Atualizado em 27/04/2026 — Bordas universais em cards para Azul e Cinza.*

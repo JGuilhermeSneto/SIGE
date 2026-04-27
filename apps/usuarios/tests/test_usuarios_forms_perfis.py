@@ -14,7 +14,7 @@ class PerfisFormsTest(TestCase):
     def test_professor_form_criacao_valida(self):
         form_data = {
             "nome_completo": "Professor Teste",
-            "cpf": "123.456.789-00",
+            "cpf": "730.835.289-73",
             "data_nascimento": "1980-01-01",
             "email": "prof@example.com",
             "senha": "password123",
@@ -29,7 +29,7 @@ class PerfisFormsTest(TestCase):
     def test_aluno_form_criacao_valida(self):
         form_data = {
             "nome_completo": "Aluno Teste",
-            "cpf": "987.654.321-00",
+            "cpf": "844.660.319-59",
             "data_nascimento": "2010-01-01",
             "email": "aluno@example.com",
             "senha": "password123",
@@ -45,7 +45,7 @@ class PerfisFormsTest(TestCase):
     def test_gestor_form_criacao_valida(self):
         form_data = {
             "nome_completo": "Gestor Teste",
-            "cpf": "111.222.333-44",
+            "cpf": "048.492.642-04",
             "data_nascimento": "1975-01-01",
             "cargo": "diretor",
             "email": "gestor@example.com",

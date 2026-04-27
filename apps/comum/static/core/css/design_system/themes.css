@@ -1165,33 +1165,53 @@ html[data-theme="cinza-industrial"] {
     --font-display: ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-/* CINZA INDUSTRIAL — Painéis com bordas grossas e demarcadas */
+/* CINZA INDUSTRIAL — Bordas em TODOS os cards */
 html[data-theme="cinza-industrial"] .sige-card,
+html[data-theme="cinza-industrial"] .sige-glass-card,
 html[data-theme="cinza-industrial"] .sige-widget,
+html[data-theme="cinza-industrial"] .card,
 html[data-theme="cinza-industrial"] .card-tabela,
-html[data-theme="cinza-industrial"] .calendar-container,
-html[data-theme="cinza-industrial"] .msg-list li,
-html[data-theme="cinza-industrial"] .form-container,
+html[data-theme="cinza-industrial"] .card-listagem,
+html[data-theme="cinza-industrial"] .card-turma,
+html[data-theme="cinza-industrial"] .card-disciplina,
+html[data-theme="cinza-industrial"] .card-formulario-limpo,
+html[data-theme="cinza-industrial"] .card-notificacoes,
+html[data-theme="cinza-industrial"] .card-stats,
+html[data-theme="cinza-industrial"] .card-dados,
+html[data-theme="cinza-industrial"] .card-info,
+html[data-theme="cinza-industrial"] .stat-card,
 html[data-theme="cinza-industrial"] .bi-card,
 html[data-theme="cinza-industrial"] .metric-card,
 html[data-theme="cinza-industrial"] .login-card,
 html[data-theme="cinza-industrial"] .perfil-card,
-html[data-theme="cinza-industrial"] .card {
-    border: 1.5px solid var(--border-mid) !important;
+html[data-theme="cinza-industrial"] .calendar-container,
+html[data-theme="cinza-industrial"] .form-container,
+html[data-theme="cinza-industrial"] .msg-list li {
+    border: 2px solid rgba(100, 116, 139, 0.55) !important;
+    border-top: 3px solid rgba(47, 79, 79, 0.70) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 3px 3px 0 rgba(0,0,0,0.06) !important;
     transition: all var(--transition-mid);
 }
 
 html[data-theme="cinza-industrial"] .sige-card:hover,
+html[data-theme="cinza-industrial"] .sige-glass-card:hover,
 html[data-theme="cinza-industrial"] .sige-widget:hover,
+html[data-theme="cinza-industrial"] .card:hover,
 html[data-theme="cinza-industrial"] .card-tabela:hover,
-html[data-theme="cinza-industrial"] .calendar-container:hover,
-html[data-theme="cinza-industrial"] .msg-list li:hover,
+html[data-theme="cinza-industrial"] .card-listagem:hover,
+html[data-theme="cinza-industrial"] .card-turma:hover,
+html[data-theme="cinza-industrial"] .card-disciplina:hover,
+html[data-theme="cinza-industrial"] .card-stats:hover,
+html[data-theme="cinza-industrial"] .stat-card:hover,
 html[data-theme="cinza-industrial"] .bi-card:hover,
-html[data-theme="cinza-industrial"] .metric-card:hover {
-    border-color: var(--primary) !important;
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+html[data-theme="cinza-industrial"] .metric-card:hover,
+html[data-theme="cinza-industrial"] .calendar-container:hover {
+    border-color: rgba(47, 79, 79, 0.90) !important;
+    border-top-color: var(--primary) !important;
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.22), 4px 4px 0 rgba(0,0,0,0.08) !important;
 }
+
 
 html[data-theme="cinza-industrial"] .sige-btn {
     text-transform: uppercase;
@@ -1358,11 +1378,65 @@ html[data-theme="azul-corporativo"] {
 html[data-theme="azul-corporativo"] .sige-card {
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(21, 101, 192, 0.15);
-    box-shadow: 0 12px 32px rgba(21, 101, 192, 0.12);
+    border: 2px solid rgba(21, 101, 192, 0.45);
+    box-shadow: 0 12px 32px rgba(21, 101, 192, 0.14),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9);
     position: relative;
     overflow: hidden;
     border-radius: var(--radius-lg);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+html[data-theme="azul-corporativo"] .sige-card:hover {
+    border-color: rgba(21, 101, 192, 0.80);
+    box-shadow: 0 16px 44px rgba(21, 101, 192, 0.22),
+                0 0 0 1px rgba(21, 101, 192, 0.15);
+    transform: translateY(-3px);
+}
+
+/* AZUL CORPORATIVO — Bordas em TODOS os cards */
+html[data-theme="azul-corporativo"] .sige-glass-card,
+html[data-theme="azul-corporativo"] .sige-widget,
+html[data-theme="azul-corporativo"] .card,
+html[data-theme="azul-corporativo"] .card-tabela,
+html[data-theme="azul-corporativo"] .card-listagem,
+html[data-theme="azul-corporativo"] .card-turma,
+html[data-theme="azul-corporativo"] .card-disciplina,
+html[data-theme="azul-corporativo"] .card-formulario-limpo,
+html[data-theme="azul-corporativo"] .card-notificacoes,
+html[data-theme="azul-corporativo"] .card-stats,
+html[data-theme="azul-corporativo"] .card-dados,
+html[data-theme="azul-corporativo"] .card-info,
+html[data-theme="azul-corporativo"] .stat-card,
+html[data-theme="azul-corporativo"] .bi-card,
+html[data-theme="azul-corporativo"] .metric-card,
+html[data-theme="azul-corporativo"] .login-card,
+html[data-theme="azul-corporativo"] .perfil-card,
+html[data-theme="azul-corporativo"] .calendar-container,
+html[data-theme="azul-corporativo"] .form-container,
+html[data-theme="azul-corporativo"] .msg-list li {
+    border: 2px solid rgba(21, 101, 192, 0.45) !important;
+    box-shadow: 0 8px 24px rgba(21, 101, 192, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+html[data-theme="azul-corporativo"] .sige-glass-card:hover,
+html[data-theme="azul-corporativo"] .sige-widget:hover,
+html[data-theme="azul-corporativo"] .card:hover,
+html[data-theme="azul-corporativo"] .card-tabela:hover,
+html[data-theme="azul-corporativo"] .card-listagem:hover,
+html[data-theme="azul-corporativo"] .card-turma:hover,
+html[data-theme="azul-corporativo"] .card-disciplina:hover,
+html[data-theme="azul-corporativo"] .card-stats:hover,
+html[data-theme="azul-corporativo"] .stat-card:hover,
+html[data-theme="azul-corporativo"] .bi-card:hover,
+html[data-theme="azul-corporativo"] .metric-card:hover,
+html[data-theme="azul-corporativo"] .calendar-container:hover {
+    border-color: rgba(21, 101, 192, 0.80) !important;
+    box-shadow: 0 16px 44px rgba(21, 101, 192, 0.22),
+                0 0 0 1px rgba(21, 101, 192, 0.15) !important;
+    transform: translateY(-3px);
 }
 
 html[data-theme="azul-corporativo"] .sige-card::before {

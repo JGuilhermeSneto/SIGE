@@ -1,28 +1,22 @@
-# Módulo de Dashboards
+# 🧠 Hub de Inteligência & Relatórios (Dashboards)
 
-## Visão geral
+Este aplicativo é o motor analítico central do SIGE. Ele unifica o **BI Acadêmico** e a **Central de Relatórios** em uma interface única de alto nível para gestores.
 
-O app `apps.dashboards` fornece painéis gerenciais e relatórios analíticos para a escola.
+## 🚀 Funcionalidades Chave
 
-## Funcionalidades principais
+- **Visão Analítica (BI)**: Gráficos dinâmicos de Evasão Preditiva, Status de Matrícula e Performance por Turma.
+- **Central de Relatórios**: Emissão rápida de documentos oficiais (Histórico Escolar, Boletins) e exportações massivas em CSV.
+- **Inteligência de Saúde**: Monitoramento de indicadores de inclusão (PCD) e alertas médicos em tempo real.
+- **Exportação Master**: Geração de dossiês gerenciais em PDF com QR Code de autenticidade.
 
-- Visualização de desempenho acadêmico.
-- Métricas de risco de evasão.
-- Relatórios de frequência e ocupação.
-- Exportação de dados em CSV e PDF.
+## 🏗️ Arquitetura Técnica
 
-## Estrutura de pastas
+- **Lógica de Leitura (Selectors)**: Centralizada em `selectors.py` para garantir que o dashboard carregue em milissegundos, independente do tamanho da base.
+- **Motor de PDF**: Utiliza `utils/pdf_engine.py` (ReportLab) para geração de documentos industriais.
+- **Frontend**: Dashboards baseados em **Chart.js** com suporte a temas e glassmorphism.
 
-- `views.py` — geração de dashboards e exportações.
-- `templates/` — layouts de painel e gráficos.
-- `utils/` — helpers de relatório e formatação.
+## 🔗 Integrações
+- **Monitoramento**: Exporta métricas de performance para o Prometheus.
+- **Processamento**: Utiliza RabbitMQ/Celery para exportações de longa duração.
 
-## Uso principal
-
-Use este app para reunir indicadores estratégicos em painéis de decisão para gestores.
-
-## Observações
-
-Os painéis são focados em relatórios de nível gerencial e incorporam dados de frequência, saúde e desempenho.
-
-> Atualizado em 2026-04-22.
+> Atualizado em 2026-04-27 — Unificação do Hub de Inteligência concluída.

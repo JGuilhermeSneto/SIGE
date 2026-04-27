@@ -1,0 +1,145 @@
+{% extends "two_factor/_base.html" %}
+{% load i18n %}
+{% load two_factor_tags %}
+
+{% block title %}
+    {% if wizard.steps.current == 'auth' %}
+        {% trans "Identificação" %}
+    {% elif wizard.steps.current == 'token' %}
+        {% trans "Token de Segurança" %}
+    {% elif wizard.steps.current == 'backup' %}
+        {% trans "Código de Backup" %}
+    {% else %}
+        {% trans "Login" %}
+    {% endif %}
+{% block title_desc %}{% endblock %}
+{% endblock %}
+
+{% block content %}
+  {% if wizard.steps.current == 'auth' %}
+    <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">
+        Insira suas credenciais corporativas para continuar.
+    </p>
+  {% elif wizard.steps.current == 'token' %}
+    <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">
+        {{ device|as_action }}
+    </p>
+  {% endif %}
+
+  <form action="" method="post" class="tf-form">
+    {% csrf_token %}
+    {{ wizard.management_form }}
+
+    <style>
+        .tf-form .field-wrap { margin-bottom: 1.5rem; }
+        .tf-form input[type="text"], 
+        .tf-form input[type="password"], 
+        .tf-form input[type="number"] {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .tf-form input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--accent-violet);
+            box-shadow: 0 0 20px rgba(124, 111, 255, 0.15);
+            outline: none;
+        }
+        .tf-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .tf-form .form-row { position: relative; }
+        .tf-form .form-row i {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            z-index: 2;
+        }
+        .btn-tf {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, var(--accent-violet), var(--accent-cyan));
+            border: none;
+            border-radius: 18px;
+            color: white;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-top: 1rem;
+            box-shadow: 0 10px 30px rgba(124, 111, 255, 0.3);
+        }
+        .btn-tf:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(124, 111, 255, 0.5);
+        }
+        .errorlist {
+            list-style: none;
+            padding: 1rem;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 12px;
+            color: #ef4444;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+
+    {% if form.non_field_errors %}
+      <div class="errorlist">
+        {% for error in form.non_field_errors %}
+          <p><i class="fas fa-exclamation-triangle"></i> {{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% for field in form %}
+      <div class="field-wrap">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <div class="form-row">
+            {% if field.name == 'login' or field.name == 'username' %}
+                <i class="fas fa-envelope"></i>
+            {% elif field.name == 'password' %}
+                <i class="fas fa-lock"></i>
+            {% elif field.name == 'otp_token' %}
+                <i class="fas fa-shield-halved"></i>
+            {% else %}
+                <i class="fas fa-pen-to-square"></i>
+            {% endif %}
+            {{ field }}
+        </div>
+        {% if field.errors %}
+            <span style="color: #ef4444; font-size: 0.8rem; margin-top: 0.3rem; display: block;">{{ field.errors.0 }}</span>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {% if wizard.steps.prev %}
+      <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}" class="forgot-link" style="background: none; border: none; width: 100%; margin-bottom: 1rem;">
+        {% trans "Voltar ao início" %}
+      </button>
+    {% endif %}
+
+    <button type="submit" class="btn-tf">
+        {% if wizard.steps.current == 'auth' %}
+            {% trans "PRÓXIMO" %}
+        {% else %}
+            {% trans "CONECTAR" %}
+        {% endif %}
+    </button>
+  </form>
+{% endblock %}

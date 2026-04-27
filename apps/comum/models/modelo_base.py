@@ -24,8 +24,9 @@ TURNO_CHOICES = [
 
 from apps.comum.utils.validators import validar_cpf
 from apps.comum.utils.fields import EncryptedCharField, EncryptedDateField
+from .tenant import TenantModel
 
-class PessoaBase(models.Model):
+class PessoaBase(TenantModel):
     """Modelo abstrato para armazenar campos comuns de pessoas."""
     nome_completo = models.CharField(max_length=255, help_text="Nome completo da pessoa")
     cpf = models.CharField(

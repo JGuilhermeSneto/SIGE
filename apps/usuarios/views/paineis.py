@@ -205,6 +205,13 @@ def painel_professor(request):
 def painel_aluno(request):
     """Dashboard principal para Alunos."""
     aluno = getattr(request.user, 'aluno', None)
+    
+    # Se o usuário for Responsável, ele pode ver o dashboard de um dependente
+    if not aluno and hasattr(request.user, 'responsavel'):
+        aluno_id = request.GET.get('aluno_id')
+        if aluno_id:
+            aluno = request.user.responsavel.alunos.filter(id=aluno_id).first()
+
     if not aluno:
         return render(request, "core/sem_perfil.html")
 
@@ -219,7 +226,9 @@ def painel_aluno(request):
     from apps.academico.models.desempenho import Nota, Frequencia
     from apps.academico.utils.academico import _calcular_situacao_nota
     
-    disciplinas = Disciplina.objects.filter(turma=aluno.turma).select_related('professor')
+    from apps.academico.selectors.desempenho_selectors import DesempenhoSelector
+    
+    disciplinas = DesempenhoSelector.get_resumo_academico_aluno(aluno)
     
     disciplinas_com_notas = []
     soma_medias = 0
@@ -227,8 +236,14 @@ def painel_aluno(request):
     total_notas_possiveis = disciplinas.count() * 4
     total_notas_lancadas = 0
 
+    # Otimização: Buscar todos os planejamentos e materiais de uma vez para evitar N+1
+    todos_planejamentos = PlanejamentoAula.objects.filter(turma=aluno.turma).order_by('-data_aula')
+    todos_materiais = MaterialDidatico.objects.filter(disciplina__turma=aluno.turma).select_related('livro')
+
     for disciplina in disciplinas:
-        nota = Nota.objects.filter(disciplina=disciplina, aluno=aluno).first()
+        # Pega a nota pré-carregada (to_attr do selector)
+        nota = disciplina.nota_aluno_prefetched[0] if disciplina.nota_aluno_prefetched else None
+        
         if nota:
             for n in [nota.nota1, nota.nota2, nota.nota3, nota.nota4]:
                 if n is not None:
@@ -237,18 +252,15 @@ def painel_aluno(request):
                 soma_medias += nota.media
                 total_disciplinas_com_media += 1
         
-        frequencias = Frequencia.objects.filter(disciplina=disciplina, aluno=aluno)
-        total_aulas = frequencias.count()
-        faltas = frequencias.filter(presente=False).count()
+        # Pega as frequências pré-carregadas
+        frequencias_aluno = disciplina.frequencias_aluno_prefetched
+        total_aulas = len(frequencias_aluno)
+        faltas = len([f for f in frequencias_aluno if not f.presente])
         percentual_faltas = (faltas / total_aulas * 100) if total_aulas > 0 else 0
         
-        # Buscar roteiros de aula criados pelo professor para esta turma/disciplina
-        planejamentos = PlanejamentoAula.objects.filter(
-            disciplina=disciplina, turma=aluno.turma
-        ).order_by('-data_aula', '-horario_aula')[:10]
-        
-        # Buscar materiais de aula (recentes)
-        materiais = MaterialDidatico.objects.filter(disciplina=disciplina).select_related('livro')[:3]
+        # Filtra na memória (muito mais rápido que Query no DB)
+        planejamentos = [p for p in todos_planejamentos if p.disciplina_id == disciplina.id][:10]
+        materiais = [m for m in todos_materiais if m.disciplina_id == disciplina.id][:3]
 
         disciplinas_com_notas.append({
             'disciplina': disciplina,
@@ -310,6 +322,62 @@ def painel_aluno(request):
     }
 
     return render(request, "aluno/painel_aluno.html", contexto)
+
+
+@login_required
+def painel_responsavel(request):
+    """Dashboard para pais/responsáveis acompanharem seus dependentes."""
+    responsavel = getattr(request.user, 'responsavel', None)
+    if not responsavel:
+        return render(request, "core/sem_perfil.html")
+
+    dependentes = responsavel.alunos.all().select_related('turma')
+    
+    # Se tiver apenas um dependente, já podemos facilitar a visualização
+    # Mas o layout deve suportar múltiplos (ex: dois irmãos)
+    
+    dependentes_resumo = []
+    from apps.academico.selectors.desempenho_selectors import DesempenhoSelector
+    from apps.academico.utils.academico import _calcular_situacao_nota
+
+    for aluno in dependentes:
+        disciplinas = DesempenhoSelector.get_resumo_academico_aluno(aluno)
+        
+        soma_medias = 0
+        total_disciplinas_com_media = 0
+        
+        for d in disciplinas:
+            nota = d.nota_aluno_prefetched[0] if d.nota_aluno_prefetched else None
+            if nota and nota.media:
+                soma_medias += nota.media
+                total_disciplinas_com_media += 1
+        
+        media_geral = (soma_medias / total_disciplinas_com_media) if total_disciplinas_com_media > 0 else 0
+        
+        from apps.academico.models.desempenho import Frequencia
+        freq_total = Frequencia.objects.filter(aluno=aluno)
+        total_aulas_gerais = freq_total.count()
+        faltas_gerais = freq_total.filter(presente=False).count()
+        percentual_frequencia_geral = 100 - ((faltas_gerais / total_aulas_gerais * 100) if total_aulas_gerais > 0 else 0)
+
+        sit_dict = _calcular_situacao_nota(media_geral, percentual_frequencia_geral)
+        
+        dependentes_resumo.append({
+            'aluno': aluno,
+            'media_geral': media_geral,
+            'frequencia': percentual_frequencia_geral,
+            'situacao': sit_dict,
+            'total_disciplinas': disciplinas.count()
+        })
+
+    contexto = {
+        "responsavel": responsavel,
+        "dependentes": dependentes_resumo,
+        "nome_exibicao": get_nome_exibicao(request.user),
+        "foto_perfil_url": get_foto_perfil(request.user),
+    }
+
+    return render(request, "responsavel/painel_responsavel.html", contexto)
 
 
 @login_required
