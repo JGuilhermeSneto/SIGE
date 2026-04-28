@@ -3,6 +3,7 @@ from datetime import timedelta
 from pathlib import Path
 from decouple import config, Csv
 import sentry_sdk
+import dj_database_url
 from sentry_sdk.integrations.django import DjangoIntegration
 
 # Inicialização do Sentry (Opcional)
@@ -21,6 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-default-key-change-it")
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="127.0.0.1,localhost", cast=Csv())
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 # Apps
 INSTALLED_APPS = [
@@ -62,6 +66,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -109,26 +114,21 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # Banco de Dados
-DB_ENGINE = config("DB_ENGINE", default="django.db.backends.sqlite3")
+DATABASES = {
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
 
-if DB_ENGINE == "django.db.backends.sqlite3":
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / config("DB_NAME", default="db.sqlite3"),
-        }
+# Se o banco for MySQL (via Aiven), garante que o Django use o motor correto se a URL começar com mysql
+if DATABASES["default"].get("ENGINE") == "django.db.backends.mysql":
+    DATABASES["default"]["OPTIONS"] = {
+        "charset": "utf8mb4",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": DB_ENGINE,
-            "NAME": config("DB_NAME"),
-            "USER": config("DB_USER"),
-            "PASSWORD": config("DB_PASSWORD"),
-            "HOST": config("DB_HOST", default="localhost"),
-            "PORT": config("DB_PORT", default="3306"),
-        }
-    }
+elif "mysql" in DATABASES["default"].get("ENGINE", ""):
+     DATABASES["default"]["ENGINE"] = "django.db.backends.mysql"
 
 # Auth
 LOGIN_URL = "two_factor:login"
@@ -152,6 +152,11 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "apps" / "comum" / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise para estáticos em produção
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 

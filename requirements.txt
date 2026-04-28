@@ -85,4 +85,7 @@ django-two-factor-auth[phonenumbers]>=1.17.0
 django-session-timeout>=0.1.0
 sentry-sdk==2.22.0
 django-prometheus==2.3.1
+gunicorn==23.0.0
+whitenoise==6.9.0
+dj-database-url==2.3.0
 
