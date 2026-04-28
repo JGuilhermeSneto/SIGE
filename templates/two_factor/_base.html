@@ -28,7 +28,7 @@
         <div class="particle p2"></div>
         <div class="particle p3"></div>
 
-        <div class="login-card" style="max-width: 480px; margin: auto;">
+        <div class="login-card" style="max-width: 480px; margin: 10vh auto; position: relative; z-index: 99; display: block !important; opacity: 1 !important;">
             <div class="logo-area">
                 <div class="logo-ring">
                     <img src="{% static 'core/img/Logo_Branca.png' %}" alt="Logo" class="logo-img" />
@@ -50,5 +50,10 @@
             </div>
         </div>
     </div>
+    <script>
+        window.addEventListener('load', function() {
+            document.getElementById('page').classList.add('page-in');
+        });
+    </script>
 </body>
 </html>

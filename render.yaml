@@ -4,9 +4,10 @@ services:
     env: python
     buildCommand: ./build.sh
     startCommand: gunicorn config.wsgi:application
+    plan: free
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.5
+        value: 3.12.9
       - key: DEBUG
         value: "False"
       - key: SECRET_KEY

@@ -370,8 +370,8 @@ html[data-theme="indigo-profundo"] .splash-logo {
   justify-content: center;
   padding: 24px;
   position: relative;
-  opacity: 0;
-  visibility: hidden;
+  opacity: 1;
+  visibility: visible;
   transition: opacity .6s ease;
   background: transparent;
   overflow-y: auto;

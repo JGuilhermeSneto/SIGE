@@ -24,7 +24,7 @@
 
 > **SIGE** centraliza a gestão acadêmica em uma aplicação **Django** (arquitetura **MTV**), com perfis de aluno, professor e gestor, frequência, notas, calendário e relatórios. A interface usa um **design system** próprio em CSS (tokens, componentes e animações) e JavaScript para interações (calendário, frequência, formulários).
 
-[Visão geral](#1-visão-geral-e-módulos) · [Regras de negócio](#2-lógica-de-negócio-e-algoritmos) · [Stack](#3-stack-tecnológica--dependências) · [Topografia](#4-topografia-do-projeto) · [Design system](#5-design-system--uiux) · [CI/CD](#6-garantia-de-qualidade--devops) · [Roadmap](#7-futuras-melhorias-e-roadmap) · [Instalação](#8-instalação-setup-rápido) · [Front-end Vite](#9-front-end-vite-em-paralelo)
+[Visão geral](#1-visão-geral-e-módulos) · [Regras de negócio](#2-lógica-de-negócio-e-algoritmos) · [Stack](#3-stack-tecnológica--dependências) · [Topografia](#4-topografia-do-projeto) · [Design system](#5-design-system--uiux) · [CI/CD](#6-garantia-de-qualidade--devops) · [Deploy](#-deploy-em-produção) · [Instalação](#8-instalação-setup-rápido)
 
 </div>
 
@@ -114,6 +114,7 @@ A interface é baseada no conceito **Premium Glassmorphism**, com foco em densid
 ## 🛣️ 7. Documentação Estratégica & Roadmap
 
 | [`ROADMAP.md`](docs/ROADMAP.md) | Roadmap v2.0 com foco em IA e Integrações Financeiras. |
+| [`DEPLOYMENT.md`](docs/DEPLOYMENT.md) | **Guia de Deploy (Render + Aiven)** para novos desenvolvedores. |
 | [`INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md) | Guia para subir o stack de monitoramento e mensageria. |
 | [`GAP_ANALYSIS.md`](docs/GAP_ANALYSIS.md) | Análise competitiva SIGE vs. SUAP/SIGEDUC. |
 
@@ -127,6 +128,16 @@ Para subir o ambiente completo com RabbitMQ e Grafana:
 docker-compose up --build
 ```
 Acesse o sistema em `http://localhost:8000`. Veja o [INFRASTRUCTURE.md](INFRASTRUCTURE.md) para configurar o Grafana.
+
+---
+
+## 🚀 Deploy em Produção
+
+O SIGE está configurado para deploy contínuo no **Render** com banco de dados **MySQL** hospedado no **Aiven**.
+
+*   **PaaS:** [Render](https://render.com/)
+*   **Banco de Dados:** [Aiven Console](https://console.aiven.io/)
+*   **Guia Passo a Passo:** Consulte o documento [**`docs/DEPLOYMENT.md`**](docs/DEPLOYMENT.md).
 
 ---
 
