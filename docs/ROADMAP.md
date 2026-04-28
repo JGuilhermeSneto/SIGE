@@ -1,5 +1,5 @@
 # 🚀 SIGE — Roadmap Estratégico v2.0
-> **Última atualização:** 27 de Abril de 2026 — Sprint de Qualidade & Design  
+> **Última atualização:** 28 de Abril de 2026 — Cloud Deployment & Infra de Produção  
 > **Status do produto:** Base técnica sólida → SaaS-Ready em ritmo acelerado
 
 > [!IMPORTANT]
@@ -15,6 +15,7 @@
 - **Mensageria Industrial**: Broker Celery migrado para **RabbitMQ**.
 - **Clean Architecture**: Service Layer + Selectors em todos os módulos críticos.
 - **Cache Inteligente**: Fallback automático para `LocMemCache` quando Redis não está disponível (modo local).
+- **Cloud Deployment**: Pipeline de deploy contínuo em produção via **Render + Aiven (MySQL)** com SSL automático e domínio próprio.
 - **Organização de Projeto**: Estrutura `docs/` e `scripts/` criadas para separar documentação e utilitários.
 
 ### 🧪 Qualidade de Software
@@ -80,10 +81,11 @@
 | ✅ | Hub de Inteligência | UX Gestão | 27/04/2026 |
 | ✅ | 45 Testes Verdes (100%) | Confiabilidade | 27/04/2026 |
 | ✅ | Bordas Universais de Cards | Design Premium | 27/04/2026 |
+| ✅ | Cloud Deployment (Render + Aiven) | Infra de Produção | 28/04/2026 |
 | 🟠 | Cobertura 75% | Estabilidade futura | Q2/2026 |
 | 🟠 | Gateway Pagamento (Asaas) | Receita real | Q2/2026 |
 | 🟡 | API REST + JWT | Fundação Mobile | Q3/2026 |
 
 ---
 
-*Última atualização: 27 de Abril de 2026 — Sprint de Qualidade & Design System*
+*Última atualização: 28 de Abril de 2026 — Cloud Deployment & Infra de Produção*

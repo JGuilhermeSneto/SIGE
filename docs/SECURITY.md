@@ -11,10 +11,7 @@ Utilizamos o **Django Axes** para monitorar tentativas de login.
 - **Limite**: 5 tentativas falhas.
 - **Bloqueio**: O IP ou usuário é bloqueado por **1 hora** após atingir o limite.
 
-### 📜 Política de Segurança de Conteúdo (CSP)
-Implementamos cabeçalhos **CSP** para mitigar ataques de **XSS** e injeção de dados.
-- Bloqueio de scripts de fontes desconhecidas.
-- Compatibilidade total com o workflow de desenvolvimento **Vite/React**.
+- **CSP Aprimorada**: Suporte a domínios externos confiáveis (Google Fonts, Cloudinary, FontAwesome, Sentry) e compatibilidade total com o workflow **Vite/React**.
 
 ### 🚥 Limitação de Taxa (API Throttling)
 - **Anônimos**: 100 requisições/dia.
@@ -60,7 +57,8 @@ Diferente de versões anteriores que usavam apenas Regex, o SIGE agora implement
 
 ### 🔐 Comunicação (Produção)
 - **HSTS**: Ativado por 1 ano.
-- **SSL Redirect**: Redirecionamento automático para HTTPS.
+- **SSL Redirect**: Redirecionamento automático para HTTPS (Gerenciado pelo Render).
+- **Banco de Dados Seguro**: Conexão com **MySQL (Aiven)** forçada via `ssl-mode=REQUIRED`, garantindo que nenhum dado trafegue sem criptografia entre o app e o banco.
 - **Secure Cookies**: Cookies marcados como `Secure` e `HttpOnly` (exceto CSRF para compatibilidade com o frontend).
 
 ---
@@ -71,4 +69,4 @@ O pipeline de CI executa:
 - **Pip-audit**: Verificação de dependências.
 - **Check --deploy**: Verificação de segurança nativa do Django.
 
-*Última atualização: Abril de 2026 — Auditoria Jarvis*
+*Última atualização: 28 de Abril de 2026 — Auditoria Jarvis (Cloud Production)*

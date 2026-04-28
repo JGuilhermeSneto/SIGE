@@ -32,6 +32,21 @@ Certifique-se de estar na pasta raiz do projeto (`SIGE/`) e com o ambiente virtu
 
 ---
 
+## ☁️ Executando no Banco de Produção (Aiven)
+
+Se você quiser popular o banco de dados que está no ar no Render/Aiven pelo seu terminal local:
+
+1. Defina a URL do banco (PowerShell):
+   ```powershell
+   $env:DATABASE_URL="sua_uri_do_aiven"
+   ```
+2. Execute o script:
+   ```powershell
+   python seed_db.py
+   ```
+
+---
+
 ## ⚠️ Notas
 - O script não remove superusuários já criados.
 - Se quiser limpar o banco antes de popular, descomente a linha `clear_db()` no final do arquivo `seed_db.py`.
