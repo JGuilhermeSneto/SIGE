@@ -22,7 +22,7 @@ djangorestframework_simplejwt==5.5.1
 flake8==7.3.0
 freetype-py==2.5.1
 html5lib==1.1
-idna==3.11
+idna==3.13
 isort==8.0.1
 librt==0.9.0
 lxml==6.0.4
