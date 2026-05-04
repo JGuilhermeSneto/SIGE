@@ -80,8 +80,8 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "apps.comum.middleware.tenant_middleware.TenantMiddleware",
-    "apps.seguranca.middleware.AuditMiddleware",
-    "apps.seguranca.middleware.ExceptionMiddleware",
+    # "apps.seguranca.middleware.AuditMiddleware",
+    # "apps.seguranca.middleware.ExceptionMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
@@ -164,22 +164,17 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Cache & Sessões (Redis em Produção / LocMem em Dev)
-USE_REDIS = config("USE_REDIS", default=(not DEBUG), cast=bool)
-REDIS_URL = config("REDIS_URL", default=None)
-
-if USE_REDIS and REDIS_URL:
+# Cache (Redis vs Local)
+if config("USE_REDIS", default=False, cast=bool):
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": REDIS_URL,
+            "LOCATION": config("REDIS_URL", default="redis://127.0.0.1:6379/1"),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
-                "IGNORE_EXCEPTIONS": True,
             }
         }
     }
-    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 else:
     CACHES = {
         "default": {
@@ -187,7 +182,6 @@ else:
             "LOCATION": "sige-local-cache",
         }
     }
-    SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # Cloudinary
 CLOUDINARY_STORAGE = {
