@@ -130,7 +130,7 @@ if DATABASES["default"].get("ENGINE") == "django.db.backends.mysql":
         "charset": "utf8mb4",
     }
 elif "mysql" in DATABASES["default"].get("ENGINE", ""):
-     DATABASES["default"]["ENGINE"] = "django.db.backends.mysql"
+    DATABASES["default"]["ENGINE"] = "django.db.backends.mysql"
 
 # Auth
 LOGIN_URL = "two_factor:login"

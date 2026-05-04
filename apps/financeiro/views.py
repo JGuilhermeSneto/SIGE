@@ -40,9 +40,6 @@ def listar_faturas(request):
     faturas = faturas.order_by('data_vencimento')
 
     # Status counts for dashboard tabs
-    total_faturas = faturas.count() if status_filter != 'todas' else Fatura.objects.filter(id__in=faturas).count()
-    
-    # Let's get total counts regardless of current filter to show on tabs
     base_qs = Fatura.objects.filter(aluno=usuario.aluno) if hasattr(usuario, 'aluno') else Fatura.objects.all()
     
     qtd_todas = base_qs.count()
@@ -51,7 +48,7 @@ def listar_faturas(request):
     qtd_atrasadas = base_qs.filter(status='PENDENTE', data_vencimento__lt=hoje).count()
 
     context = {
-        'faturas': faturas,
+        'faturas': faturas.select_related('aluno'), # Otimização de performance
         'status_filter': status_filter,
         'search_query': search_query,
         'qtd_todas': qtd_todas,

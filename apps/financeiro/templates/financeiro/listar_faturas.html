@@ -155,15 +155,13 @@
                 </span>
             </div>
             <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                {% if fatura.pagamentos.exists %}
                     {% with pag=fatura.pagamentos.last %}
-                        {% if pag.comprovante %}
+                        {% if pag and pag.comprovante %}
                         <a href="{{ pag.comprovante.url }}" target="_blank" class="btn-action" title="Ver Comprovante" style="color: var(--accent-violet); border-color: rgba(124, 111, 255, 0.3);">
                             <i class="fa-solid fa-file-invoice"></i>
                         </a>
                         {% endif %}
                     {% endwith %}
-                {% endif %}
                 <a href="{% url 'financeiro:detalhes_fatura' fatura.id %}" class="btn-action" title="Detalhes da Fatura">
                     <i class="fa-solid fa-magnifying-glass-chart"></i>
                 </a>
