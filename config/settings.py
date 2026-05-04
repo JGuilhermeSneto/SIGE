@@ -164,17 +164,22 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Cache (Redis vs Local)
-if config("USE_REDIS", default=False, cast=bool):
+# Cache & Sessões (Redis vs Local)
+USE_REDIS = config("USE_REDIS", default=not DEBUG, cast=bool) # Ativa por padrão em produção
+
+if USE_REDIS:
     CACHES = {
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": config("REDIS_URL", default="redis://127.0.0.1:6379/1"),
             "OPTIONS": {
                 "CLIENT_CLASS": "django_redis.client.DefaultClient",
+                "IGNORE_EXCEPTIONS": True, # Não quebra o site se o Redis cair
             }
         }
     }
+    SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+    SESSION_CACHE_ALIAS = "default"
 else:
     CACHES = {
         "default": {
@@ -182,6 +187,7 @@ else:
             "LOCATION": "sige-local-cache",
         }
     }
+    SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # Cloudinary
 CLOUDINARY_STORAGE = {
