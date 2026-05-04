@@ -44,12 +44,14 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 | **`apps.infraestrutura`** | Patrimônio e Almoxarifado. | Refatorado para **Clean Architecture**. Tombamento, manutenções e estoque atômico. |
 | **`apps.comum`** | Recursos compartilhados. | Design System Premium, Multi-Tenancy e Audit Log. |
 | **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, alertas de alergia e integração com BI de Inclusão. |
+| **`apps.seguranca`** | **Governança & Audit** 🛡️ | Central de Segurança (Shield). Auditoria LGPD, Telemetria de Erros e MFA. |
 | **`apps.financeiro`** | BI Financeiro e Contabilidade. | Livro Diário, Faturas, DRE e KPIs gerenciais. |
 
 - **Design System Premium — "Azul Corporativo"**
   - Padronização em componentes super-arredondados (`border-radius: 48px`), glassmorphism e animações fluidas.
 - **Observabilidade & Monitoramento (Stack Elite)**
   - **Grafana + Prometheus**: Monitoramento técnico de performance em tempo real.
+  - **Shield v1.0**: Dashboard de segurança com auditoria LGPD e telemetria de erros (internal).
   - **RabbitMQ + Celery**: Processamento assíncrono industrial.
 - **Design System Reforçado**
   - Bordas de cor visíveis em **todos os cards** dos temas Azul e Cinza.
@@ -131,13 +133,40 @@ Acesse o sistema em `http://localhost:8000`. Veja o [INFRASTRUCTURE.md](INFRASTR
 
 ---
 
+## 💻 8. Guia de Comandos Rápidos (CLI)
+
+Use estes comandos para gerenciar o projeto no dia a dia.
+
+### Desenvolvimento Local
+| Ação | Comando |
+| :--- | :--- |
+| **Instalar Dependências** | `pip install -r requirements.txt` |
+| **Rodar o Servidor** | `python manage.py runserver` |
+| **Criar Migrações** | `python manage.py makemigrations` |
+| **Aplicar Migrações** | `python manage.py migrate` |
+| **Criar Superusuário** | `python manage.py createsuperuser` |
+| **Rodar Testes** | `pytest` ou `python manage.py test` |
+| **Popular Banco (10 anos)** | `python seed_db.py` |
+
+### Produção & Manutenção (Aiven/Render)
+Para rodar estes comandos no banco de produção pelo seu PC, certifique-se que o `DATABASE_URL` está configurado no seu terminal.
+
+| Ação | Comando |
+| :--- | :--- |
+| **Desbloquear IP (Axes)** | `python manage.py axes_reset` |
+| **Limpar Sessões** | `python manage.py clearsessions` |
+| **Coletar Estáticos** | `python manage.py collectstatic --no-input` |
+| **Reset de Senha Manual** | `python manage.py changepassword <username>` |
+
+---
+
 ## 🚀 Deploy em Produção
 
 O SIGE está configurado para deploy contínuo no **Render** com banco de dados **MySQL** hospedado no **Aiven**.
 
 *   **PaaS:** [Render](https://render.com/)
 *   **Banco de Dados:** [Aiven Console](https://console.aiven.io/)
-*   **Guia Passo a Passo:** Consulte o documento [**`docs/DEPLOYMENT.md`**](docs/DEPLOYMENT.md).
+*   **Guia Completo:** Consulte o documento [**`docs/DEPLOYMENT.md`**](docs/DEPLOYMENT.md).
 
 ---
 

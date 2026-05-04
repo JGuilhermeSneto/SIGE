@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_static",
     "django_otp.plugins.otp_totp",
     "two_factor",
+    "apps.seguranca",
     "django_prometheus",
 ]
 
@@ -79,7 +80,8 @@ MIDDLEWARE = [
     "simple_history.middleware.HistoryRequestMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "apps.comum.middleware.tenant_middleware.TenantMiddleware",
-    "apps.comum.middleware.audit_middleware.AuditMiddleware",
+    "apps.seguranca.middleware.AuditMiddleware",
+    "apps.seguranca.middleware.ExceptionMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 

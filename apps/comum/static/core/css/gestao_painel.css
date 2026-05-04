@@ -324,11 +324,64 @@
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-    .header-painel { flex-direction: column; align-items: flex-start; gap: 1rem; }
-    .header-acoes { width: 100%; }
-    .form-grid { grid-template-columns: 1fr; }
-    .form-group.full-width { grid-column: span 1; }
-    .tabela-sige { display: block; overflow-x: auto; }
+    .painel-sige {
+        padding: 1rem;
+    }
+
+    .header-painel { 
+        flex-direction: column; 
+        align-items: flex-start; 
+        gap: 1.5rem; 
+        padding-bottom: 2rem;
+    }
+
+    .header-esquerda h1 {
+        font-size: 1.8rem;
+    }
+
+    .header-acoes { 
+        width: 100%; 
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .header-acoes .btn-sige-primario, 
+    .header-acoes .btn-sige-secundario {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-grid { 
+        grid-template-columns: 1fr; 
+    }
+
+    .form-group.full-width { 
+        grid-column: span 1; 
+    }
+
+    .card-formulario-limpo {
+        padding: 1.5rem;
+    }
+
+    .card-listagem {
+        margin: 0 -1rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+
+    .tabela-sige { 
+        display: block; 
+        width: 100%;
+        overflow-x: auto; 
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .barra-busca-gestao {
+        flex-direction: column;
+        align-items: stretch;
+    }
 }
 
 @keyframes fadeIn {

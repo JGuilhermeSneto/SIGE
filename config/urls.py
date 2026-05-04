@@ -65,6 +65,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("biblioteca/", include("apps.biblioteca.urls")),
     path("dashboards/", include("apps.dashboards.urls")),
     path("financeiro/", include("apps.financeiro.urls")),
+    path("seguranca/", include("apps.seguranca.urls")),
     path("", include("django_prometheus.urls")),
     # Rotas de Autenticação Multi-Fator (2FA)
     path("", include(tf_urls)),

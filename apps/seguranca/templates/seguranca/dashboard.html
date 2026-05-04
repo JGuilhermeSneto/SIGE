@@ -1,0 +1,297 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Monitoramento de Segurança & Auditoria — SIGE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
+<style>
+    .metric-value-security {
+        font-family: 'Syne', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin: 5px 0;
+    }
+    .ip-box-security {
+        font-family: 'JetBrains Mono', monospace;
+        background: var(--bg-elevated);
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        border: 1px solid var(--border-subtle);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="painel-sige">
+    
+    {# ════ HEADER ════ #}
+    <header class="header-painel">
+        <div class="header-esquerda">
+            <span class="header-label" style="color: var(--accent-ruby);">Shield v1.0 · Segurança & Auditoria</span>
+            <h1>Monitoramento de <span class="nome-destaque" style="color: var(--accent-ruby);">Segurança</span></h1>
+        </div>
+
+        <div class="header-acoes">
+            <div class="tombamento-badge">
+                <i class="fa-solid fa-shield-halved" style="color: var(--accent-emerald);"></i>
+                <code>SISTEMA PROTEGIDO</code>
+            </div>
+        </div>
+    </header>
+
+    {# ════ KPI GRID ════ #}
+    <section class="infra-dashboard-grid">
+        <div class="sige-glass-card" style="border-left: 4px solid var(--accent-ruby) !important;">
+            <p class="passo-label">Erros de Sistema</p>
+            <p class="metric-value-security" style="color: var(--accent-ruby);">{{ total_erros }}</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Exceções não tratadas</p>
+        </div>
+        <div class="sige-glass-card" style="border-left: 4px solid var(--accent-amber) !important;">
+            <p class="passo-label">Adoção de MFA (2FA)</p>
+            <p class="metric-value-security" style="color: var(--accent-amber);">{{ stats_2fa.porcentagem }}%</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">{{ stats_2fa.ativos }} de {{ stats_2fa.total }} usuários ativos</p>
+        </div>
+        <div class="sige-glass-card" style="border-left: 4px solid var(--accent-emerald) !important;">
+            <p class="passo-label">Sessões Ativas</p>
+            <p class="metric-value-security" style="color: var(--accent-emerald);">{{ sessoes_ativas }}</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Usuários conectados agora</p>
+        </div>
+        <div class="sige-glass-card" style="border-left: 4px solid var(--accent-violet) !important;">
+            <p class="passo-label">Audit & Tentativas</p>
+            <p class="metric-value-security" style="color: var(--accent-violet);">{{ total_auditoria }}</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">{{ bloqueios_ativos }} bloqueios ativos</p>
+        </div>
+    </section>
+
+    {# ════ TABS ════ #}
+    <nav class="infra-tab-nav">
+        <button class="tab-btn active" onclick="switchTab(event, 'tab-auditoria')">
+            <i class="fa-solid fa-fingerprint"></i> Auditoria LGPD
+        </button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-erros')">
+            <i class="fa-solid fa-bug" style="color: var(--accent-ruby);"></i> Erros do Site
+        </button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-admin')">
+            <i class="fa-solid fa-user-gear"></i> Admin Actions
+        </button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-falhas')">
+            <i class="fa-solid fa-user-shield"></i> Intrusões
+        </button>
+        <button class="tab-btn" onclick="switchTab(event, 'tab-logins')">
+            <i class="fa-solid fa-clock-rotate-left"></i> Logins
+        </button>
+    </nav>
+
+    {# ════ CONTEÚDO: AUDITORIA ════ #}
+    <div id="tab-auditoria" class="tab-content active">
+        <!-- ... (conteúdo auditoria) ... -->
+    </div>
+
+    {# ════ CONTEÚDO: ERROS ════ #}
+    <div id="tab-erros" class="tab-content">
+        <div class="card-listagem">
+            <div class="barra-busca-gestao">
+                <i class="fa-solid fa-skull-crossbones" style="color: var(--accent-ruby);"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">Relatório de Exceções e Falhas em Tempo Real</span>
+            </div>
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Erro / Tipo</th>
+                        <th>Mensagem</th>
+                        <th>Caminho</th>
+                        <th>Data/Hora</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for erro in logs_erros %}
+                    <tr style="border-left: 3px solid var(--accent-ruby);">
+                        <td>
+                            <strong style="color: var(--accent-ruby); display: block;">{{ erro.tipo_excecao }}</strong>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">{{ erro.metodo }} | IP: {{ erro.ip_endereco }}</span>
+                        </td>
+                        <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                            {{ erro.mensagem }}
+                        </td>
+                        <td><code>{{ erro.path }}</code></td>
+                        <td>{{ erro.data_ocorrencia|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <button onclick="verTraceback('{{ erro.id }}')" class="btn-icone-excluir" title="Ver Detalhes do Erro" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
+                                <i class="fa-solid fa-code"></i>
+                            </button>
+                            <div id="traceback-{{ erro.id }}" style="display: none;">{{ erro.traceback }}</div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="vazio-state">
+                            <i class="fa-solid fa-check-circle" style="color: var(--accent-emerald);"></i>
+                            <p>Nenhum erro registrado. O site está operando normalmente!</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# ════ CONTEÚDO: ADMIN ════ #}
+    <div id="tab-admin" class="tab-content">
+        <div class="card-listagem">
+            <div class="barra-busca-gestao">
+                <i class="fa-solid fa-toolbox" style="color: var(--accent-violet);"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">Ações Realizadas no Painel de Controle (Admin)</span>
+            </div>
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Administrador</th>
+                        <th>Ação</th>
+                        <th>Objeto / Modelo</th>
+                        <th>Data e Hora</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs_admin %}
+                    <tr>
+                        <td><strong>{{ log.user.username }}</strong></td>
+                        <td>
+                            <span style="font-weight: 700;">
+                                {% if log.is_addition %}Adição{% elif log.is_change %}Alteração{% elif log.is_deletion %}Exclusão{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">{{ log.content_type }}</span><br>
+                            <span style="font-weight: 600; color: var(--text-primary);">{{ log.object_repr|truncatechars:50 }}</span>
+                        </td>
+                        <td>{{ log.action_time|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span class="badge-status {% if log.is_deletion %}badge-danger{% elif log.is_addition %}badge-ok{% else %}badge-warn{% endif %}">
+                                {{ log.get_action_flag_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="vazio-state">
+                            <i class="fa-solid fa-list-check"></i>
+                            <p>Nenhuma ação administrativa recente.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# ════ CONTEÚDO: FALHAS ════ #}
+    <div id="tab-falhas" class="tab-content">
+        <div class="card-listagem">
+            <div class="barra-busca-gestao">
+                <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-ruby);"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">Tentativas de Login Bloqueadas (Brute Force)</span>
+            </div>
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>IP Origem</th>
+                        <th>Usuário Alvo</th>
+                        <th>Nº Falhas</th>
+                        <th>Última Tentativa</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for attempt in tentativas_falhas %}
+                    <tr>
+                        <td><span class="ip-box-security" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">{{ attempt.ip_address }}</span></td>
+                        <td><span style="font-weight: 700;">{{ attempt.username|default:"N/A" }}</span></td>
+                        <td><strong style="color: var(--accent-ruby);">{{ attempt.failures_count }}</strong></td>
+                        <td>{{ attempt.attempt_time|date:"d/m/Y H:i" }}</td>
+                        <td><span class="badge-status badge-danger">LOCKOUT</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="vazio-state">
+                            <i class="fa-solid fa-user-check"></i>
+                            <p>Nenhuma tentativa de intrusão detectada.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# ════ CONTEÚDO: HISTÓRICO LOGIN ════ #}
+    <div id="tab-logins" class="tab-content">
+        <div class="card-listagem">
+            <div class="barra-busca-gestao">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-emerald);"></i>
+                <span style="font-weight: 700; font-size: 0.9rem;">Histórico de Acessos Bem-Sucedidos</span>
+            </div>
+            <table class="tabela-sige">
+                <thead>
+                    <tr>
+                        <th>Usuário</th>
+                        <th>Endereço IP</th>
+                        <th>Data e Hora</th>
+                        <th>Dispositivo / User Agent</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logins_sucesso %}
+                    <tr>
+                        <td><strong>{{ log.username }}</strong></td>
+                        <td><span class="ip-box-security">{{ log.ip_address }}</span></td>
+                        <td>{{ log.attempt_time|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span style="font-size: 0.75rem; color: var(--text-muted); opacity: 0.8;">
+                                {{ log.user_agent|truncatechars:90 }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="vazio-state">
+                            <i class="fa-solid fa-history"></i>
+                            <p>Nenhum histórico de login disponível.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function switchTab(evt, tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+            tabcontent[i].classList.remove("active");
+        }
+        tablinks = document.getElementsByClassName("tab-btn");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).style.display = "block";
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function verTraceback(id) {
+        const content = document.getElementById('traceback-' + id).innerText;
+        alert("DETALHES DO ERRO (TRACEBACK):\n\n" + content);
+    }
+</script>
+{% endblock %}
+

@@ -97,16 +97,16 @@
     {% url 'login' as home_url %}
     {% endif %}
 
+    <!-- BOTÃO MOBILE (Hambúrguer) -->
+    <button class="hamburguer" id="hamburguer-btn" aria-label="Abrir menu">
+      <i class="fa-solid fa-bars-staggered"></i>
+    </button>
+
     <!-- LOGO -->
     <a href="{{ home_url }}" class="brand-link">
       <img src="{% static 'core/img/Logo-menu.png' %}" class="logo-menu" alt="SIGE">
       <span>SIGE</span>
     </a>
-
-    <!-- BOTÃO MOBILE -->
-    <button class="icone-menu" id="menu-toggle" aria-label="Abrir menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
 
     <!-- USUÁRIO -->
     <div class="menu-icones">
@@ -331,6 +331,10 @@
         class="{% if request.resolver_match.url_name == 'central_inteligencia' %}ativo{% endif %}">
         <i class="fa-solid fa-chart-pie"></i> BI & Relatórios
       </a>
+      <a href="{% url 'seguranca:dashboard' %}"
+        class="{% if request.resolver_match.url_name == 'dashboard' and request.resolver_match.app_name == 'seguranca' %}ativo{% endif %}">
+        <i class="fa-solid fa-shield-halved" style="color: var(--accent-ruby);"></i> Segurança
+      </a>
       <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
         <i class="fa-solid fa-bolt"></i> App React
       </a>
@@ -395,11 +399,39 @@
     {% block content %}{% endblock %}
   </main>
 
+  <!-- Overlay para fechar menu no mobile -->
+  <div class="menu-overlay" id="menu-overlay"></div>
+
   <!-- ═════════ JS ═════════ -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="{% static 'core/js/calendar.js' %}"></script>
   <script src="{% static 'core/js/theme_manager.js' %}"></script>
   <script src="{% static 'core/js/ui_utils.js' %}"></script>
+
+  <script>
+    // Controle Responsivo do Menu Lateral
+    const hamburguerBtn = document.getElementById('hamburguer-btn');
+    const menuLateral = document.getElementById('menu-lateral');
+    const menuOverlay = document.getElementById('menu-overlay');
+
+    if (hamburguerBtn && menuLateral && menuOverlay) {
+      hamburguerBtn.addEventListener('click', () => {
+        menuLateral.classList.toggle('ativo');
+      });
+
+      menuOverlay.addEventListener('click', () => {
+        menuLateral.classList.remove('ativo');
+      });
+
+      // Fecha ao clicar em um link (opcional, mas bom para UX mobile)
+      const linksMenu = menuLateral.querySelectorAll('a');
+      linksMenu.forEach(link => {
+        link.addEventListener('click', () => {
+          menuLateral.classList.remove('ativo');
+        });
+      });
+    }
+  </script>
 
   {% if vite_entry_name %}
   {% vite_entry vite_entry_name %}

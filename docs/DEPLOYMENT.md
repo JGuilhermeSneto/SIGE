@@ -13,7 +13,7 @@ Este documento descreve o processo de deploy do SIGE utilizando a infraestrutura
 
 ## 1. Configuração do Banco de Dados (Aiven)
 
-1.  Crie um serviço **MySQL** gratuito no Aiven.
+1.  Crie um serviço **MySQL** gratuito no Aiven. **🚨 Atenção:** Escolha uma região geograficamente próxima ao servidor do Render (ex: *US, Califórnia* ou *Ohio*) para evitar problemas de alta latência (Timeout) que causam quedas na aplicação.
 2.  Obtenha a **Service URI** (Ex: `mysql://avnadmin:senha@host:port/defaultdb?ssl-mode=REQUIRED`).
 3.  **Importante:** Na seção **IP Allowance**, adicione `0.0.0.0/0` para permitir a conexão do Render.
 
@@ -52,6 +52,14 @@ Como o plano gratuito do Render não oferece Shell interativo, os comandos de ma
     ```bash
     python seed_db.py
     ```
+4.  Para desbloquear IPs (em caso de muitos erros de login):
+    ```bash
+    python manage.py axes_reset
+    ```
+5.  Para resetar uma senha manualmente:
+    ```bash
+    python manage.py changepassword <usuario>
+    ```
 
 ---
 
@@ -62,6 +70,33 @@ Para configurar seu próprio domínio no Render:
 2.  Adicione seu domínio (ex: `sige.seudominio.com`).
 3.  Configure os registros **CNAME** e **A** no seu provedor de DNS conforme as instruções do Render.
 4.  O Render gerará o certificado SSL (HTTPS) automaticamente.
+
+---
+
+## 🛡️ 5. Monitoramento e Auditoria (Shield)
+
+Após o deploy, você pode monitorar a saúde do sistema através do dashboard interno:
+*   **URL:** `https://seu-app.onrender.com/seguranca/dashboard/`
+*   **Funcionalidades:** Auditoria LGPD, Telemetria de Erros em tempo real, monitoramento de MFA e ações administrativas.
+
+## 🗄️ 6. Conexão Externa (MySQL Workbench)
+
+Para gerenciar o banco de dados visualmente através do MySQL Workbench:
+
+1.  **Parâmetros de Conexão:**
+    *   **Connection Name:** `SIGE - Produção (ou Homologação)`
+    *   **Connection Method:** `Standard (TCP/IP)`
+    *   **Hostname:** `<SEU_HOST_AIVEN_AQUI>`
+    *   **Port:** `<SUA_PORTA_AQUI>` (Ex: 23331)
+    *   **Username:** `<SEU_USUARIO_AQUI>` (Ex: avnadmin)
+    *   **Password:** Clique em *Store in Vault* e insira sua senha.
+
+2.  **Configurações de SSL (Obrigatório):**
+    *   Vá na aba **SSL**.
+    *   Em **Use SSL**, selecione `Require`.
+
+3.  **Segurança (IP Allowance):**
+    *   Certifique-se de que o seu IP local está liberado no painel do Aiven ou que o acesso está configurado como `0.0.0.0/0`.
 
 ---
 

@@ -13,6 +13,7 @@ Certifique-se de ter o **Docker** e o **Docker Compose** instalados.
 
 2.  **Verificar se tudo está rodando:**
     *   **Django App**: [http://localhost:8000](http://localhost:8000)
+    *   **Shield (Segurança)**: [http://localhost:8000/seguranca/dashboard/](http://localhost:8000/seguranca/dashboard/) 🛡️
     *   **RabbitMQ Dashboard**: [http://localhost:15672](http://localhost:15672) (guest/guest)
     *   **Prometheus**: [http://localhost:9090](http://localhost:9090)
     *   **Grafana**: [http://localhost:3000](http://localhost:3000) (admin/admin)
@@ -48,6 +49,17 @@ Para visualizar as métricas do Django no Grafana, siga estes passos na primeira
 *   `django_http_requests_total_by_view_transport_method_total`: Total de acessos por página.
 *   `django_db_query_duration_seconds_bucket`: Tempo de resposta do banco de dados.
 *   `process_cpu_seconds_total`: Uso de CPU do servidor Django.
+
+---
+
+## 🛡️ Monitoramento de Segurança (Shield v1.0)
+
+Além do Grafana, o SIGE possui uma central interna para auditoria em tempo real:
+
+1.  **Auditoria LGPD**: Monitora acessos a dados sensíveis (Financeiro, Saúde, Perfis).
+2.  **Telemetria de Erros**: Captura exceções 500 com traceback técnico direto no dashboard.
+3.  **Segurança de Acesso**: Monitora tentativas de brute-force e sessões ativas.
+4.  **Audit Log Admin**: Rastreia alterações feitas por gestores no painel de controle.
 
 ---
 

@@ -245,19 +245,55 @@ html[data-theme="default"] {
 }
 
 /* ============================================================
-   RESPONSIVIDADE
+   RESPONSIVIDADE PREMIUM
 ============================================================ */
+
+/* Menu Hamburguer (Ativado via JS) */
 .hamburguer {
   display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1100;
+}
+
+/* Overlay para fechar menu no mobile */
+.menu-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 850;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 @media (max-width: 1024px) {
   .menu-lateral {
-    width: 210px;
+    width: 80px;
+    padding: 26px 10px;
+  }
+  
+  .nav-lateral a span {
+    display: none;
+  }
+  
+  .nav-lateral a {
+    justify-content: center;
+    padding: 14px;
   }
 
   .area-conteudo {
-    margin-left: 210px;
+    margin-left: 80px;
+  }
+  
+  .menu-principal h2 {
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
   }
 }
 
@@ -266,17 +302,50 @@ html[data-theme="default"] {
     display: block;
   }
 
+  .menu-principal {
+    justify-content: space-between;
+    padding: 0 16px;
+  }
+
+  .menu-principal h2 {
+    display: none; /* Esconde texto longo no mobile */
+  }
+
   .menu-lateral {
     left: -100%;
-    width: 220px;
+    width: 280px;
+    box-shadow: 20px 0 50px rgba(0,0,0,0.5);
   }
 
   .menu-lateral.ativo {
     left: 0;
   }
 
+  .menu-lateral.ativo + .menu-overlay {
+    display: block;
+    opacity: 1;
+  }
+
   .area-conteudo {
     margin-left: 0;
-    padding: 24px 18px 40px;
+    padding: 20px 15px 40px;
+  }
+
+  .menu-icones {
+    gap: 12px;
+  }
+
+  .icone-menu:not(.user-dropdown *) {
+    display: none; /* Esconde ícones menos importantes no topo mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .brand-link h2 {
+    display: none;
+  }
+  
+  .logo-menu {
+    height: 36px;
   }
 }

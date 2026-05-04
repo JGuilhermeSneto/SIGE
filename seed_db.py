@@ -1,12 +1,12 @@
 """
-SIGE - Super Script de População de Banco de Dados (Simulador Massivo 10 Anos)
+SIGE - Super Script de População de Banco de Dados (Simulador Otimizado 3 Anos)
 Padrão: IFRN (Instituto Federal do Rio Grande do Norte)
 
 Executar com:
   python seed_db.py
 
 AVISO: Este script recria o banco de dados do zero.
-Usa bulk_create intensivamente para gerar mais de 10 anos de histórico de alunos,
+Usa bulk_create intensivamente para gerar 3 anos de histórico de alunos,
 finanças, almoxarifado, diários de classe, empréstimos e muito mais.
 Pode demorar vários minutos para terminar.
 """
@@ -181,9 +181,9 @@ def seed_rh_e_biblioteca():
     return professores, u_gestor, livros
 
 @transaction.atomic
-def seed_academico_financeiro_10_anos(professores, u_gestor, escola, livros):
-    print("[3/8] Iniciando a Maquina do Tempo: 10 Anos de Escola Real (2016-2026)...")
-    print("      Este passo pode demorar varios minutos devido ao volume extremo de operacoes financeiras e de notas.")
+def seed_academico_financeiro_3_anos(professores, u_gestor, escola, livros):
+    print("[3/8] Iniciando a Maquina do Tempo: 3 Anos de Escola Real (2024-2026)...")
+    print("      Este passo gera um volume otimizado de operacoes financeiras e de notas.")
     
     cat_mensal = CategoriaFinanceira.objects.get(nome="Mensalidade Aluno")
     cat_salarios = CategoriaFinanceira.objects.get(nome="Folha de Pagamento")
@@ -206,7 +206,7 @@ def seed_academico_financeiro_10_anos(professores, u_gestor, escola, livros):
 
     total_alunos_idx = 0
 
-    for ano in range(2016, 2027):
+    for ano in range(2024, 2027):
         # Turmas
         turmas_ano = []
         for serie in ["1o Ano", "2o Ano", "3o Ano"]:
@@ -364,14 +364,14 @@ def seed_rotinas_2026_atuais():
 
 def seed():
     print("\n" + "=" * 70)
-    print("  SIGE - GERADOR MASSIVO DE DADOS (ESCOLA REAL - 10 ANOS)")
+    print("  SIGE - GERADOR MASSIVO DE DADOS (ESCOLA REAL - 3 ANOS)")
     print("=" * 70)
     start_time = time.time()
     
     limpar_banco()
     seed_infra_e_financas()
     professores, u_gestor, livros = seed_rh_e_biblioteca()
-    seed_academico_financeiro_10_anos(professores, u_gestor, None, livros)
+    seed_academico_financeiro_3_anos(professores, u_gestor, None, livros)
     seed_rotinas_2026_atuais()
     
     end_time = time.time()
@@ -390,7 +390,7 @@ def seed():
     print("  Usuarios de Acesso (Senha padrao: 1):")
     print("    Gestor: gestor_0")
     print("    Professor: prof_0")
-    print("    Alunos (Ex): aluno_1_2016 ... aluno_240_2026")
+    print("    Alunos (Ex): aluno_1_2024 ... aluno_100_2026")
     print("=" * 70)
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # 🚀 SIGE — Roadmap Estratégico v2.0
-> **Última atualização:** 28 de Abril de 2026 — Cloud Deployment & Infra de Produção  
-> **Status do produto:** Base técnica sólida → SaaS-Ready em ritmo acelerado
+> **Última atualização:** 04 de Maio de 2026 — Central de Segurança & Telemetria de Erros (Shield v1.0)
+> **Status do produto:** Governança de dados robusta → SaaS-Ready
 
 > [!IMPORTANT]
 > O SIGE agora possui stack de observabilidade industrial, testes corrigidos (45/45 ✅) e Design System reforçado com bordas universais nos temas Azul e Cinza.
@@ -15,7 +15,7 @@
 - **Mensageria Industrial**: Broker Celery migrado para **RabbitMQ**.
 - **Clean Architecture**: Service Layer + Selectors em todos os módulos críticos.
 - **Cache Inteligente**: Fallback automático para `LocMemCache` quando Redis não está disponível (modo local).
-- **Cloud Deployment**: Pipeline de deploy contínuo em produção via **Render + Aiven (MySQL)** com SSL automático e domínio próprio.
+- **Cloud Deployment**: Pipeline de deploy contínuo em produção via **Render + Aiven (MySQL)** com SSL automático e domínio próprio. *(Migrado para região US para mitigar timeouts).*
 - **Organização de Projeto**: Estrutura `docs/` e `scripts/` criadas para separar documentação e utilitários.
 
 ### 🧪 Qualidade de Software
@@ -31,8 +31,12 @@
 - Evasão Preditiva, Saúde & Inclusão, Performance por Turma.
 - `seed_db.py`: Simulador de 10 anos com +30.000 registros.
 
-### 🔒 Segurança
-- **2FA Obrigatório (TOTP)**, Criptografia AES, Auditoria LGPD, Proteção Brute Force (Axes).
+### 🔒 Segurança & Auditoria
+- **Central de Segurança "Shield v1.0"**: Dashboard unificado para monitoramento de conformidade.
+- **Auditoria LGPD**: Registro atômico de acessos a áreas sensíveis (Financeiro, Saúde, Admin).
+- **Telemetria de Erros**: Sistema interno de captura de exceções (500) com traceback técnico para debug rápido.
+- **Monitoramento de Governança**: Acompanhamento de adoção de MFA (2FA), sessões ativas e auditoria de ações administrativas (LogEntry).
+- **Proteção Ativa**: Brute Force protection (Axes) integrado ao painel de intrusões.
 
 ---
 
@@ -80,12 +84,12 @@
 | ✅ | RabbitMQ Integration | Escalabilidade | 27/04/2026 |
 | ✅ | Hub de Inteligência | UX Gestão | 27/04/2026 |
 | ✅ | 45 Testes Verdes (100%) | Confiabilidade | 27/04/2026 |
-| ✅ | Bordas Universais de Cards | Design Premium | 27/04/2026 |
 | ✅ | Cloud Deployment (Render + Aiven) | Infra de Produção | 28/04/2026 |
+| ✅ | Shield v1.0 (Segurança & Erros) | Governança & LGPD | 04/05/2026 |
 | 🟠 | Cobertura 75% | Estabilidade futura | Q2/2026 |
 | 🟠 | Gateway Pagamento (Asaas) | Receita real | Q2/2026 |
 | 🟡 | API REST + JWT | Fundação Mobile | Q3/2026 |
 
 ---
 
-*Última atualização: 28 de Abril de 2026 — Cloud Deployment & Infra de Produção*
+*Última atualização: 04 de Maio de 2026 — Central de Segurança & Telemetria de Erros (Shield v1.0)*
