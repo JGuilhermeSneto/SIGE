@@ -19,4 +19,5 @@ O sistema estende o `auth.User` para fornecer interfaces personalizadas:
 - **Context Processors**: Injeção de notificações e dados de perfil em todos os templates globais.
 - **Pytest**: Suíte de testes automatizados com 90%+ de cobertura neste módulo.
 
-> Atualizado em 27/04/2026 — Padrão Jarvis de Segurança Enterprise.
+> Atualizado em Maio de 2026 — Padrão Jarvis de Segurança Enterprise consolidado.
+

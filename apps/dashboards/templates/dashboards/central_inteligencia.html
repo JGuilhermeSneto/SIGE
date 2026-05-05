@@ -7,40 +7,6 @@
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
 <style>
-    .central-container { padding: 30px; }
-    
-    .central-tabs {
-        display: inline-flex;
-        gap: 10px;
-        background: var(--bg-elevated);
-        border: 1px solid var(--border-mid);
-        border-radius: 48px;
-        padding: 6px;
-        margin-bottom: 32px;
-    }
-
-    .tab-btn {
-        border: none;
-        background: transparent;
-        color: var(--text-muted);
-        font-weight: 700;
-        font-size: 0.9rem;
-        padding: 12px 28px;
-        cursor: pointer;
-        border-radius: 48px;
-        transition: all 0.3s var(--transition-mid);
-        display: flex; align-items: center; gap: 10px;
-    }
-
-    .tab-btn.active {
-        background: var(--primary);
-        color: #fff;
-        box-shadow: var(--shadow-glow);
-    }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; animation: fadeIn 0.5s ease forwards; }
-
     .metric-card-bi {
         background: var(--bg-surface);
         padding: 24px;
@@ -54,7 +20,7 @@
     
     .metric-value-bi {
         font-family: 'Syne', sans-serif;
-        font-size: 2.2rem;
+        font-size: 2rem;
         font-weight: 800;
         margin: 5px 0;
     }
@@ -68,9 +34,43 @@
         gap: 12px;
         font-family: 'Syne', sans-serif;
         font-weight: 800;
+        line-height: 1.2;
     }
 
-    .secao-titulo i { font-size: 1.2rem; }
+    .central-tabs {
+        display: inline-flex;
+        gap: 10px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-mid);
+        border-radius: 48px;
+        padding: 6px;
+        margin-bottom: 32px;
+        max-width: 100%;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .central-tabs::-webkit-scrollbar { display: none; }
+
+    @media (max-width: 768px) {
+        .infra-dashboard-grid {
+            grid-template-columns: 1fr !important;
+            gap: 15px !important;
+        }
+        .metric-value-bi { font-size: 1.8rem; }
+        .secao-titulo { font-size: 1.3rem; margin: 30px 0 15px; }
+        .central-container { padding: 15px 12px; }
+        
+        .header-painel {
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }
+        .header-painel > div:last-child {
+            flex-direction: column !important;
+            width: 100%;
+        }
+        .filtro-ano-painel { width: 100%; justify-content: center; }
+        .sige-btn-primary { width: 100%; justify-content: center; }
+    }
 </style>
 {% endblock %}
 
@@ -159,10 +159,11 @@
                 </header>
                 <div style="max-height: 250px; overflow-y: auto;">
                     {% for aluno in risco_evasao.lista_criticos %}
-                    <div style="padding: 10px; background: var(--bg-elevated); border-radius: 8px; border-left: 3px solid var(--accent-ruby); margin-bottom: 8px; display: flex; justify-content: space-between;">
-                        <span style="font-weight:700; font-size:0.8rem;">{{ aluno.nome_completo|truncatechars:20 }}</span>
-                        <span style="color:var(--accent-ruby); font-size:0.75rem; font-weight:800;">Média: {{ aluno.avg_nota|floatformat:1 }}</span>
+                    <div style="padding: 12px; background: var(--bg-elevated); border-radius: 12px; border-left: 4px solid var(--accent-ruby); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight:700; font-size:0.85rem; color:var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-right: 10px;">{{ aluno.nome_completo }}</span>
+                        <span style="color:var(--accent-ruby); font-size:0.75rem; font-weight:800; flex-shrink: 0;">Média: {{ aluno.avg_nota|floatformat:1 }}</span>
                     </div>
+
                     {% empty %}
                     <p style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding: 20px;">Nenhum aluno em risco crítico.</p>
                     {% endfor %}
@@ -172,7 +173,8 @@
 
         {# --- Seção 2: Performance por Disciplina --- #}
         <h2 class="secao-titulo"><i class="fa-solid fa-brain" style="color: var(--accent-violet);"></i> Performance Acadêmica & Disciplinas</h2>
-        <div class="infra-dashboard-grid" style="grid-template-columns: 1fr 400px !important;">
+        <div class="infra-dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;">
+
             <div class="sige-glass-card">
                 <header class="sige-widget-header" style="margin-bottom: 20px;">
                     <h3 style="font-family:'Syne',sans-serif;font-weight:800;">Médias Globais por Turma</h3>
@@ -237,7 +239,8 @@
 
     {# ════ CONTEÚDO: CENTRAL DE RELATÓRIOS ════ #}
     <div id="tab-relatorios" class="tab-content">
-        <div class="infra-dashboard-grid" style="grid-template-columns: 1fr 400px !important;">
+        <div class="infra-dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;">
+
             
             <div class="sige-glass-card">
                 <header class="secao-titulo" style="margin-top:0;">

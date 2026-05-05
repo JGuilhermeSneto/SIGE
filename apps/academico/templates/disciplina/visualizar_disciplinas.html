@@ -48,6 +48,15 @@
         border-radius: 20px;
         border: 1px solid var(--border-mid);
     }
+    @media (max-width: 1024px) {
+        .header-detalhes { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .header-detalhes .imprimir { width: 100%; justify-content: center; }
+        .prof { padding: 20px; }
+        .info-grid { grid-template-columns: 1fr; }
+        .tabela-notas th, .tabela-notas td { padding: 12px 10px; font-size: 0.85rem; }
+        .actions-disciplina { flex-direction: column; width: 100%; }
+        .actions-disciplina a { width: 100%; justify-content: center; }
+    }
 </style>
 {% endblock %}
 
@@ -115,7 +124,7 @@
     <div style="width: 100%; height: 1px; background: var(--border-subtle); margin: 20px 0;"></div>
 
     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center; flex-wrap: wrap; gap: 15px;">
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div class="actions-disciplina" style="display: flex; gap: 10px; flex-wrap: wrap;">
             <a class="nota" href="{% url 'lancar_nota' disciplina.id %}">
                 <i class="fa-solid fa-pen-to-square" style="margin-right: 8px;"></i> Gerenciar Notas
             </a>
@@ -144,6 +153,7 @@
         <i class="fa-solid fa-chart-line" style="color: var(--accent-amber);"></i>
         <h3 style="font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 700; margin: 0;">Rendimento por Bimestre</h3>
     </div>
+    <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
     <table class="tabela-notas">
       <thead>
         <tr>
@@ -219,6 +229,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
   </div>
 
 </main>

@@ -131,51 +131,54 @@
 
         {# ABA PATRIMÔNIO #}
         <div id="tab-patrimonio" class="tab-content active">
-            <table class="tabela-sige">
-                <thead>
-                    <tr>
-                        <th>Tombamento</th>
-                        <th>Descrição do Ativo</th>
-                        <th>Localização</th>
-                        <th>Status Físico</th>
-                        <th>Responsável</th>
-                        <th style="text-align:center;">Ações</th>
-                    </tr>
-                </thead>
+            <div class="sige-table-wrapper">
+                <table class="tabela-sige sige-table table-stack">
+                    <thead>
+                        <tr>
+                            <th>Tombamento</th>
+                            <th>Descrição do Ativo</th>
+                            <th>Localização</th>
+                            <th>Status Físico</th>
+                            <th>Responsável</th>
+                            <th style="text-align:right;">Ações</th>
+                        </tr>
+                    </thead>
+
+
                 <tbody>
                     {% for p in patrimonios %}
                     <tr>
-                        <td>
+                        <td data-label="Tombamento">
                             <div class="tombamento-badge">
                                 <i class="fa-solid fa-qrcode"></i>
                                 <code>{{ p.tombamento }}</code>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="Descrição">
                             <span style="font-weight:800;color:var(--text-primary);display:block;">{{ p.nome }}</span>
                             <span style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;">{{ p.categoria.nome }} · {{ p.marca|default:"Genérico" }}</span>
                         </td>
-                        <td>
+                        <td data-label="Localização">
                             <span style="font-size:.85rem;color:var(--text-secondary);display:flex;align-items:center;gap:5px;">
                                 <i class="fa-solid fa-location-dot" style="font-size:.7rem;color:var(--text-muted);"></i>
                                 {{ p.ambiente.nome|default:"-" }}
                             </span>
                             <span style="font-size:.65rem;color:var(--text-muted);">{{ p.unidade.nome }}</span>
                         </td>
-                        <td>
+                        <td data-label="Status">
                             <span class="badge-status {% if p.estado_conservacao == 'NOVO' or p.estado_conservacao == 'BOM' %}badge-ok{% elif p.estado_conservacao == 'REGULAR' %}badge-warn{% else %}badge-danger{% endif %}">
                                 {% if p.estado_conservacao == 'NOVO' or p.estado_conservacao == 'BOM' %}<i class="fa-solid fa-circle-check"></i>{% elif p.estado_conservacao == 'REGULAR' %}<i class="fa-solid fa-circle-half-stroke"></i>{% else %}<i class="fa-solid fa-triangle-exclamation"></i>{% endif %}
                                 {{ p.get_estado_conservacao_display }}
                             </span>
                         </td>
-                        <td>
+                        <td data-label="Responsável">
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <img src="https://ui-avatars.com/api/?name={{ p.responsavel.get_full_name|default:'N A' }}&background=random&color=fff&size=40"
                                      style="width:30px;height:30px;border-radius:50%;border:2px solid var(--border-mid);" alt="">
                                 <span style="font-size:.85rem;font-weight:600;color:var(--text-primary);">{{ p.responsavel.get_full_name|default:"Pendente" }}</span>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="Ações">
                             <div class="acoes-tabela" style="justify-content:center;">
                                 <a href="{% url 'editar_patrimonio' p.id %}" title="Editar">
                                     <i class="fa-solid fa-pencil"></i>
@@ -189,6 +192,7 @@
                             </div>
                         </td>
                     </tr>
+
                     {% empty %}
                     <tr>
                         <td colspan="6">
@@ -205,22 +209,25 @@
 
         {# ABA ESTOQUE #}
         <div id="tab-estoque" class="tab-content">
-            <table class="tabela-sige">
-                <thead>
-                    <tr>
-                        <th>Insumo</th>
-                        <th>Alocação</th>
-                        <th>Nível de Estoque</th>
-                        <th>U.M</th>
-                        <th>Status Reposição</th>
-                    </tr>
-                </thead>
+            <div class="sige-table-wrapper">
+                <table class="tabela-sige sige-table table-stack">
+                    <thead>
+                        <tr>
+                            <th>Insumo</th>
+                            <th>Alocação</th>
+                            <th>Nível de Estoque</th>
+                            <th>U.M</th>
+                            <th>Status Reposição</th>
+                        </tr>
+                    </thead>
+
+
                 <tbody>
                     {% for s in saldos_estoque %}
                     <tr>
-                        <td><strong style="color:var(--text-primary);">{{ s.item.nome }}</strong></td>
-                        <td><span style="font-size:.85rem;color:var(--text-secondary);"><i class="fa-solid fa-warehouse"></i> {{ s.unidade.nome }}</span></td>
-                        <td>
+                        <td data-label="Insumo"><strong style="color:var(--text-primary);">{{ s.item.nome }}</strong></td>
+                        <td data-label="Alocação"><span style="font-size:.85rem;color:var(--text-secondary);"><i class="fa-solid fa-warehouse"></i> {{ s.unidade.nome }}</span></td>
+                        <td data-label="Estoque">
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <div style="flex-grow:1;height:8px;background:var(--border-mid);border-radius:10px;max-width:100px;overflow:hidden;">
                                     <div style="height:100%;border-radius:10px;width:{% if s.quantidade > 0 %}70%{% else %}0{% endif %};background:{% if s.quantidade <= s.item.estoque_minimo %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};"></div>
@@ -228,8 +235,8 @@
                                 <span style="font-weight:800;color:var(--text-primary);">{{ s.quantidade }}</span>
                             </div>
                         </td>
-                        <td><span style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;">{{ s.item.unidade_medida }}</span></td>
-                        <td>
+                        <td data-label="U.M"><span style="font-size:.7rem;color:var(--text-muted);text-transform:uppercase;">{{ s.item.unidade_medida }}</span></td>
+                        <td data-label="Status">
                             {% if s.quantidade <= s.item.estoque_minimo %}
                             <span class="badge-status badge-danger"><i class="fa-solid fa-triangle-exclamation"></i> Crítico</span>
                             {% else %}
@@ -237,6 +244,7 @@
                             {% endif %}
                         </td>
                     </tr>
+
                     {% empty %}
                     <tr>
                         <td colspan="5">

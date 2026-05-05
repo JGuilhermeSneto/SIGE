@@ -6,7 +6,13 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
 <style>
-    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+    .review-grid { 
+        display: grid; 
+        grid-template-columns: 1.2fr 0.8fr; 
+        gap: 2rem; 
+        margin-top: 2rem; 
+    }
+    
     .doc-preview { 
         background: var(--bg-base); 
         border-radius: var(--radius-lg); 
@@ -16,18 +22,44 @@
         align-items: center;
         justify-content: center;
         overflow: hidden;
+        box-shadow: var(--shadow-md);
     }
+    
     .review-form {
         background: var(--bg-surface);
-        padding: 2rem;
+        padding: 2.5rem;
         border-radius: var(--radius-lg);
         border: 1px solid var(--border-subtle);
+        height: fit-content;
+        box-shadow: var(--shadow-sm);
     }
+    
     .info-list { margin-bottom: 2rem; }
-    .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--bg-base); }
-    .info-label { color: var(--text-muted); font-size: 0.85rem; }
-    .info-value { font-weight: 700; color: var(--text-primary); }
+    .info-row { 
+        display: flex; 
+        justify-content: space-between; 
+        padding: 12px 0; 
+        border-bottom: 1px solid var(--bg-base); 
+        gap: 15px;
+    }
+    .info-label { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+    .info-value { font-weight: 700; color: var(--text-primary); text-align: right; }
+
+    @media (max-width: 1024px) {
+        .review-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+        .doc-preview { height: 500px; }
+        .review-form { padding: 1.5rem; }
+    }
+
+    @media (max-width: 768px) {
+        .painel-sige { padding: 15px 12px !important; }
+        .header-painel h1 { font-size: 1.6rem !important; }
+        .doc-preview { height: 400px; }
+        .info-row { flex-direction: column; justify-content: flex-start; gap: 4px; }
+        .info-value { text-align: left; }
+    }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -38,10 +70,11 @@
             <h1>Revisão de <span class="nome-destaque">Atestado</span></h1>
         </div>
         <div class="header-acoes">
-            <a href="{% url 'gestao_atestados' %}" class="btn-sige-secundario">
+            <a href="{% url 'gestao_atestados' %}" class="btn-sige-secundario" style="width: 100%; justify-content: center;">
                 <i class="fa-solid fa-chevron-left"></i> Voltar à Lista
             </a>
         </div>
+
     </header>
 
     <div class="review-grid">
@@ -72,7 +105,8 @@
 
         <div class="info-side">
             <div class="review-form">
-                <h3><i class="fa-solid fa-circle-info"></i> Dados da Solicitação</h3>
+                <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-circle-info"></i> Dados da Solicitação</h3>
+
                 <div class="info-list">
                     <div class="info-row">
                         <span class="info-label">Solicitante</span>

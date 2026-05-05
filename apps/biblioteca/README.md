@@ -16,4 +16,5 @@ O SIGE conta com um motor de busca inteligente que:
 - **Sincronização de Imagens**: O processo de download de capas é otimizado para não bloquear a interface do usuário.
 - **Templates Premium**: Visualização do acervo em estilo "estante digital" com suporte a glassmorphism e busca rápida.
 
-> Atualizado em 27/04/2026 — Integração com OpenLibrary API consolidada.
+> Atualizado em Maio de 2026 — Integração com OpenLibrary API consolidada.
+

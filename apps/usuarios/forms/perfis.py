@@ -41,6 +41,15 @@ class ProfessorForm(BaseModelForm):
         if qs.exists(): raise ValidationError("E-mail em uso.")
         return email
 
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get("cpf")
+        un = cpf.replace(".", "").replace("-", "")
+        qs = User.objects.filter(username=un)
+        if self.instance.pk and getattr(self.instance, "user", None):
+            qs = qs.exclude(pk=self.instance.user.pk)
+        if qs.exists(): raise ValidationError("Este CPF já está cadastrado no sistema.")
+        return cpf
+
     def save(self, commit=True):
         prof = super().save(commit=False)
         email, senha = self.cleaned_data.get("email"), self.cleaned_data.get("senha")
@@ -75,6 +84,23 @@ class AlunoForm(BaseModelForm):
         if self.instance.pk and getattr(self.instance, "user", None):
             self.fields["email"].initial = self.instance.user.email
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        qs = User.objects.filter(email=email)
+        if self.instance.pk and getattr(self.instance, "user", None):
+            qs = qs.exclude(pk=self.instance.user.pk)
+        if qs.exists(): raise ValidationError("E-mail em uso.")
+        return email
+
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get("cpf")
+        un = cpf.replace(".", "").replace("-", "")
+        qs = User.objects.filter(username=un)
+        if self.instance.pk and getattr(self.instance, "user", None):
+            qs = qs.exclude(pk=self.instance.user.pk)
+        if qs.exists(): raise ValidationError("Este CPF já está cadastrado no sistema.")
+        return cpf
+
     def save(self, commit=True):
         aluno = super().save(commit=False)
         email, senha = self.cleaned_data.get("email"), self.cleaned_data.get("senha")
@@ -107,6 +133,23 @@ class GestorForm(BaseModelForm):
         super().__init__(*args, **kwargs)
         if self.instance.pk and getattr(self.instance, "user", None):
             self.fields["email"].initial = self.instance.user.email
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        qs = User.objects.filter(email=email)
+        if self.instance.pk and getattr(self.instance, "user", None):
+            qs = qs.exclude(pk=self.instance.user.pk)
+        if qs.exists(): raise ValidationError("E-mail em uso.")
+        return email
+
+    def clean_cpf(self):
+        cpf = self.cleaned_data.get("cpf")
+        un = cpf.replace(".", "").replace("-", "")
+        qs = User.objects.filter(username=un)
+        if self.instance.pk and getattr(self.instance, "user", None):
+            qs = qs.exclude(pk=self.instance.user.pk)
+        if qs.exists(): raise ValidationError("Este CPF já está cadastrado no sistema.")
+        return cpf
 
     def save(self, commit=True):
         gestor = super().save(commit=False)

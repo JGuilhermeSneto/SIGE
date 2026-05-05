@@ -19,4 +19,5 @@ Este aplicativo é o motor analítico central do SIGE. Ele unifica o **BI Acadê
 - **Monitoramento**: Exporta métricas de performance para o Prometheus.
 - **Processamento**: Utiliza RabbitMQ/Celery para exportações de longa duração.
 
-> Atualizado em 2026-04-27 — Unificação do Hub de Inteligência concluída.
+> Atualizado em Maio de 2026 — Unificação do Hub de Inteligência concluída.
+

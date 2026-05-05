@@ -92,6 +92,23 @@
 .header-acoes {
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .header-acoes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+  .btn-imprimir {
+    width: 100%;
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 0.72rem;
+  }
 }
 
 .btn-imprimir {
@@ -1133,7 +1150,19 @@
   }
 
   .cards-resumo {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .card-info {
+    padding: 16px 14px 14px;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    margin-bottom: 10px;
   }
 
   .header-painel h1 {
@@ -1141,6 +1170,23 @@
   }
 
   .card-dados h3 {
-    font-size: 1.65rem;
+    font-size: 1.4rem;
+  }
+
+  .disciplina-header {
+    padding: 12px;
+  }
+
+  .professor-avatar-mini {
+    width: 28px;
+    height: 28px;
+  }
+
+  .disciplina-info h3 {
+    font-size: 0.8rem;
+  }
+
+  .disciplina-media .valor-media {
+    font-size: 1rem;
   }
 }

@@ -39,6 +39,12 @@ def listar_faturas(request):
 
     faturas = faturas.order_by('data_vencimento')
 
+    # Otimização de Performance: Paginação (Evita carregar milhares de registros de uma vez)
+    from django.core.paginator import Paginator
+    paginator = Paginator(faturas.select_related('aluno').prefetch_related('pagamentos'), 20) # 20 por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     # Status counts for dashboard tabs
     base_qs = Fatura.objects.filter(aluno=usuario.aluno) if hasattr(usuario, 'aluno') else Fatura.objects.all()
     
@@ -48,7 +54,7 @@ def listar_faturas(request):
     qtd_atrasadas = base_qs.filter(status='PENDENTE', data_vencimento__lt=hoje).count()
 
     context = {
-        'faturas': faturas.select_related('aluno'), # Otimização de performance
+        'faturas': page_obj, # Agora passamos o objeto paginado
         'status_filter': status_filter,
         'search_query': search_query,
         'qtd_todas': qtd_todas,
@@ -122,7 +128,7 @@ def painel_financeiro(request):
             'fluxo': json.dumps({'labels': labels_meses, 'receitas': dados_receitas, 'despesas': dados_despesas}),
             'categorias': json.dumps({'labels': labels_cat, 'valores': valores_cat}),
         },
-        'faturas_criticas': faturas_atrasadas.order_by('data_vencimento')[:5]
+        'faturas_criticas': faturas_atrasadas.select_related('aluno').order_by('data_vencimento')[:5]
     }
     return render(request, 'financeiro/painel_financeiro.html', context)
 

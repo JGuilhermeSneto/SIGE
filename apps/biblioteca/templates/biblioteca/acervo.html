@@ -174,8 +174,8 @@
                 {% endif %}
             </a>
             <div class="info-livro">
-                <span class="badge-estoque {% if livro.exemplares_disponiveis > 0 %}status-aprovado{% else %}status-reprovado{% endif %}">
-                    {{ livro.exemplares_disponiveis }} disponíveis
+                <span class="badge-estoque {% if livro.disponiveis > 0 %}status-aprovado{% else %}status-reprovado{% endif %}">
+                    {{ livro.disponiveis }} disponíveis
                 </span>
                 <a href="{% url 'detalhe_livro' livro.id %}" style="text-decoration: none; color: inherit;">
                     <h3 style="margin-top: 10px;">{{ livro.titulo }}</h3>
@@ -185,7 +185,7 @@
                     <a href="{% url 'detalhe_livro' livro.id %}" class="sige-btn sige-btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.72rem; flex: 1;">
                         <i class="fa-solid fa-circle-info"></i> Detalhes
                     </a>
-                    {% if livro.exemplares_disponiveis > 0 %}
+                    {% if livro.disponiveis > 0 %}
                     <a href="{% url 'reservar_livro' livro.id %}" class="sige-btn sige-btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.72rem; flex: 1;">Reservar</a>
                     {% endif %}
                 </div>
@@ -198,5 +198,27 @@
         </div>
         {% endfor %}
     </div>
+
+    <!-- ══ PAGINAÇÃO ══ -->
+    {% if livros.has_other_pages %}
+    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 5rem; margin-bottom: 2rem;">
+        {% if livros.has_previous %}
+        <a href="?page={{ livros.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sige-btn sige-btn-outline">
+            <i class="fa-solid fa-chevron-left"></i> Anterior
+        </a>
+        {% endif %}
+
+        <div style="display: flex; align-items: center; padding: 0 25px; background: var(--bg-surface); border-radius: 99px; border: 1.5px solid var(--border-mid); font-weight: 800; font-size: 0.9rem; color: var(--text-muted); box-shadow: var(--shadow-sm);">
+            Página <span style="color: var(--text-primary); margin: 0 8px;">{{ livros.number }}</span> de {{ livros.paginator.num_pages }}
+        </div>
+
+        {% if livros.has_next %}
+        <a href="?page={{ livros.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" class="sige-btn sige-btn-outline">
+            Próximo <i class="fa-solid fa-chevron-right"></i>
+        </a>
+        {% endif %}
+    </div>
+    {% endif %}
 </section>
+
 {% endblock %}

@@ -10,3 +10,5 @@ Esta pasta contém ferramentas de suporte, debug e utilitários que não fazem p
 - `test_template_res.py`: Validação de responsividade e resolução em templates.
 
 > **Nota**: Sempre execute estes scripts a partir da raiz do projeto para garantir que os caminhos de importação funcionem.
+
+> Atualizado em Maio de 2026.

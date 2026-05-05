@@ -1,26 +1,17 @@
-# CI/CD do SIGE
+# 🚀 CI/CD & Automação de Engenharia
 
-## Visão geral
+O diretório `.github/` abriga os motores de automação do SIGE, garantindo que cada linha de código passe por rigorosos critérios de qualidade antes de chegar à produção.
 
-Este diretório documenta as automações de CI e as práticas de integração contínua do projeto.
+## ⚙️ Workflows de Engenharia
+- **Quality Gate (Tests & Lint)**: Execução automática da suíte Pytest e verificação de estilo com Flake8/Pylint.
+- **Security Scan**: Varredura proativa de vulnerabilidades em dependências e segredos expostos.
+- **Auto-Deploy (Render)**: Integração com o Render para deploy contínuo em ambientes de Staging e Produção.
 
-## Funcionalidades principais
+## 🛡️ Governança de Dependências
+- **Dependabot**: Monitoramento 24/7 de atualizações críticas e patches de segurança, com abertura automática de Pull Requests.
 
-- Pipelines para testes e lint.
-- Integração com Dependabot.
-- Regras de qualidade para PRs.
+## 🔗 Integração com Shields
+- Os status das pipelines são exportados como badges dinâmicos no README principal.
 
-## Estrutura de pastas
+> Atualizado em Maio de 2026 — Pipelines de Qualidade Industrial consolidadas.
 
-- `workflows/` — definições dos fluxos do GitHub Actions.
-- `dependabot.yml` — configuração de atualizações de dependências.
-
-## Uso principal
-
-Use este arquivo para entender como o projeto valida código em push e pull requests.
-
-## Observações
-
-Atualize os workflows sempre que novos testes ou ferramentas forem adicionados ao projeto.
-
-> Atualizado em 2026-04-22.

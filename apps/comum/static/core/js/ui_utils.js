@@ -65,19 +65,45 @@ function initPillsFilter(selector) {
 }
 
 /**
- * Generic Sidebar/Menu Toggle
+ * Generic Sidebar/Menu Toggle with Mobile Support
  */
-function initSidebarToggle(toggleId, menuId) {
+function initSidebarToggle(toggleId, menuId, overlayId) {
     const toggle = document.getElementById(toggleId);
     const menu = document.getElementById(menuId);
+    const overlay = document.getElementById(overlayId);
 
     if (!toggle || !menu) return;
 
+    const toggleMenu = (show) => {
+        const isOpening = show !== undefined ? show : !menu.classList.contains('ativo');
+        menu.classList.toggle('ativo', isOpening);
+        if (overlay) overlay.classList.toggle('ativo', isOpening);
+        document.body.style.overflow = isOpening ? 'hidden' : '';
+    };
+
     toggle.addEventListener('click', (e) => {
         e.stopPropagation();
-        menu.classList.toggle('ativo');
+        toggleMenu();
+    });
+
+    if (overlay) {
+        overlay.addEventListener('click', () => toggleMenu(false));
+    }
+
+    // Auto-close on menu link clicks (common for SPAs or better UX)
+    const links = menu.querySelectorAll('a');
+    links.forEach(link => {
+        link.addEventListener('click', () => toggleMenu(false));
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && menu.classList.contains('ativo')) {
+            toggleMenu(false);
+        }
     });
 }
+
 
 /**
  * Avatar Dropdown Logic
@@ -103,7 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalMasks();
     
     // Sidebar for base.html
-    initSidebarToggle('menu-toggle', 'menu-lateral');
+    initSidebarToggle('hamburguer-btn', 'menu-lateral', 'menu-overlay');
+
 
     // Avatar for base.html
     initAvatarDropdown('user-avatar', 'dropdown-menu');

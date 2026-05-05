@@ -49,20 +49,72 @@ class EncryptedTextField(EncryptedFieldMixin, models.TextField):
 class EncryptedURLField(EncryptedFieldMixin, models.URLField):
     pass
 
-class EncryptedDateField(EncryptedFieldMixin, models.DateField):
-    # Note: DateField logic might be more complex if we want to preserve date objects
-    # For now, let's store as encrypted string and convert back
+class EncryptedDateField(EncryptedFieldMixin, models.TextField):
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = kwargs.get('max_length', 255)
+        super().__init__(*args, **kwargs)
+        # Remove length validators because to_python returns a date object
+        from django.core.validators import MaxLengthValidator, MinLengthValidator
+        self.validators = [v for v in self.validators if not isinstance(v, (MaxLengthValidator, MinLengthValidator))]
+
     def from_db_value(self, value, expression, connection):
+        # Descriptografa via mixin (que retorna string)
         val = super().from_db_value(value, expression, connection)
-        if val:
+        if val and isinstance(val, str):
             from django.utils.dateparse import parse_date
             return parse_date(val)
         return val
 
-class EncryptedDecimalField(EncryptedFieldMixin, models.DecimalField):
+    def to_python(self, value):
+        if value is None:
+            return value
+        # Se for string, pode ser o valor criptografado ou o valor em texto puro (da form)
+        if isinstance(value, str):
+            try:
+                # Tenta descriptografar
+                decrypted = self.fernet.decrypt(value.encode()).decode()
+                value = decrypted
+            except Exception:
+                pass
+            from django.utils.dateparse import parse_date
+            return parse_date(value)
+        return value
+
+
+class EncryptedDecimalField(EncryptedFieldMixin, models.TextField):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('max_digits', None)
+        kwargs.pop('decimal_places', None)
+        kwargs['max_length'] = kwargs.get('max_length', 255)
+        super().__init__(*args, **kwargs)
+        # Remove length validators because to_python returns a Decimal object
+        from django.core.validators import MaxLengthValidator, MinLengthValidator
+        self.validators = [v for v in self.validators if not isinstance(v, (MaxLengthValidator, MinLengthValidator))]
+
+
     def from_db_value(self, value, expression, connection):
         val = super().from_db_value(value, expression, connection)
-        if val:
+        if val and isinstance(val, str):
             from decimal import Decimal
-            return Decimal(val)
+            try:
+                return Decimal(val)
+            except Exception:
+                return val
         return val
+
+    def to_python(self, value):
+        if value is None:
+            return value
+        if isinstance(value, str):
+            try:
+                decrypted = self.fernet.decrypt(value.encode()).decode()
+                value = decrypted
+            except Exception:
+                pass
+            from decimal import Decimal
+            try:
+                return Decimal(value)
+            except Exception:
+                return value
+        return value
+

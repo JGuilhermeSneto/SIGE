@@ -6,52 +6,33 @@
 {% block extra_css %}
 <style>
     .main-area {
-        padding: 40px 28px 60px;
-        font-family: var(--font-main, 'DM Sans', sans-serif);
+        padding: 20px 15px 40px;
+        font-family: var(--font-main, 'Plus Jakarta Sans', sans-serif);
         color: var(--text-primary);
         animation: fadeIn 0.4s ease-out;
         max-width: 1000px;
         margin: 0 auto;
     }
 
-    .btn-voltar {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        text-decoration: none;
-        color: var(--text-secondary);
-        font-weight: 700;
-        font-size: 0.9rem;
-        margin-bottom: 25px;
-        transition: all 0.2s;
-    }
-    
-    .btn-voltar:hover {
-        color: var(--primary);
-    }
-
     .detalhe-container {
         display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 40px;
-        background: var(--bg-surface);
-        padding: 40px;
-        border-radius: var(--radius-lg, 24px);
-        border: 1.5px solid var(--border-mid);
-        box-shadow: var(--shadow-md);
+        grid-template-columns: 320px 1fr;
+        gap: 30px;
+        padding: 35px;
+        border-radius: var(--radius-lg);
     }
 
     .capa-container {
         width: 100%;
-        border-radius: var(--radius-md, 16px);
+        border-radius: var(--radius-md);
         overflow: hidden;
-        border: 1.5px solid var(--border-mid);
+        border: 1px solid var(--border-mid);
         aspect-ratio: 2/3;
         background: var(--bg-elevated);
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-lg);
     }
 
     .capa-container img {
@@ -60,25 +41,22 @@
         object-fit: cover;
     }
 
-    .capa-container .fa-book {
-        font-size: 6rem;
-        color: var(--text-muted);
-        opacity: 0.3;
-    }
-
     .info-header h1 {
         font-family: 'Syne', sans-serif;
         font-size: 2.2rem;
         font-weight: 800;
         margin: 0 0 10px 0;
         color: var(--text-primary);
-        line-height: 1.2;
+        line-height: 1.1;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        letter-spacing: -0.02em;
     }
 
     .info-header h2 {
-        font-size: 1.2rem;
-        font-weight: 500;
-        color: var(--text-secondary);
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-muted);
         margin: 0 0 20px 0;
     }
 
@@ -98,13 +76,13 @@
 
     .grid-metadados {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
-        margin-bottom: 40px;
+        margin-bottom: 30px;
         padding: 24px;
-        background: var(--bg-elevated);
-        border-radius: var(--radius-md, 16px);
-        border: 1.5px solid var(--border-mid);
+        background: rgba(255,255,255,0.03);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-subtle);
     }
 
     .dado-item {
@@ -129,62 +107,37 @@
 
     .acoes-container {
         display: flex;
-        gap: 15px;
+        gap: 12px;
         margin-top: auto;
     }
 
-    .btn-acao {
-        padding: 14px 28px;
-        border-radius: var(--radius-xl, 48px);
-        font-weight: 700;
-        font-size: 1rem;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: all 0.2s;
-        border: 2px solid transparent;
-        cursor: pointer;
-    }
-
-    .btn-reservar {
-        background: var(--primary);
-        color: white;
-        flex: 1;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-    .btn-reservar:hover {
-        background: var(--primary-dark);
-        transform: translateY(-2px);
-    }
-
-    .btn-digital {
-        background: rgba(139, 92, 246, 0.1);
-        color: var(--accent-violet);
-        border: 1px solid rgba(139, 92, 246, 0.3);
-    }
-    .btn-digital:hover {
-        background: rgba(139, 92, 246, 0.2);
-    }
-
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
         .detalhe-container {
             grid-template-columns: 1fr;
-            padding: 24px;
+            padding: 25px 20px;
         }
         .capa-container {
-            max-width: 300px;
+            max-width: 240px;
             margin: 0 auto;
         }
-        .grid-metadados {
-            grid-template-columns: 1fr;
+        .info-header h1 {
+            font-size: 1.8rem;
+            text-align: center;
+        }
+        .info-header h2 {
+            text-align: center;
+        }
+        .info-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .acoes-container {
             flex-direction: column;
         }
     }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -193,7 +146,8 @@
         <i class="fa-solid fa-arrow-left"></i> Voltar para o Acervo
     </a>
 
-    <div class="detalhe-container">
+    <div class="detalhe-container sige-glass-card">
+
         <div class="col-esquerda">
             <div class="capa-container">
                 {% if livro.capa %}

@@ -36,7 +36,20 @@
 .info-banner i { color: var(--accent-violet); font-size: 1.2rem; }
 .info-text { font-size: 0.9rem; color: var(--text-secondary); }
 .info-text strong { color: var(--text-primary); }
+    @media (max-width: 1024px) {
+        .main-area { padding: 20px 15px; }
+        .table-notas th, .table-notas td { padding: 10px; font-size: 0.8rem; }
+        .input-nota { width: 60px; }
+        .btn { width: 100%; justify-content: center; }
+        .footer-acoes { flex-direction: column; padding: 20px; }
+        .aluno-nome { font-size: 0.8rem; }
+        .aluno-avatar { width: 28px; height: 28px; font-size: 0.7rem; }
+        .header-painel h1 { font-size: 1.5rem; }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
+
 {% endblock %}
 
 {% block content %}
@@ -63,6 +76,7 @@
 
     <form method="post" class="notas-container">
         {% csrf_token %}
+        <div style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
         <table class="table-notas">
             <thead>
                 <tr>
@@ -129,6 +143,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
 
         <div class="footer-acoes">
             <a href="{% url 'listar_atividades' disciplina.id %}" class="btn btn-voltar">

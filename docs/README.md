@@ -13,3 +13,5 @@ Nesta pasta, você encontrará toda a documentação estratégica, manuais de in
 - `SEED_INSTRUCTIONS.md`: Instruções para o simulador de 10 anos de dados.
 
 > **Importante**: Mantenha estes documentos atualizados conforme novas funcionalidades forem implementadas.
+
+> Atualizado em Maio de 2026 — Central de Documentação Consolidada.

@@ -25,3 +25,5 @@ Centraliza a lógica de negócio e garante transações atômicas:
 ## 💡 Integrações Internas
 - **Financeiro**: Gastos com manutenção geram lançamentos automáticos no Livro Diário.
 - **Dashboards**: Dados de infraestrutura são consumidos pelo Hub de Inteligência via Selectors.
+
+> Atualizado em Maio de 2026 — Refatoração Clean Architecture consolidada.

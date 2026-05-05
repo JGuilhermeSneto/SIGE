@@ -212,28 +212,12 @@
             {% endif %}
         </div>
         <div class="header-acoes">
-            <a href="{% url 'minhas_leituras' %}" class="btn-imprimir btn-declaracao" title="Meu Histórico de Livros">
-                <i class="fa-solid fa-book-bookmark"></i> Minhas Leituras
-            </a>
-            <a href="{% url 'acervo_biblioteca' %}" class="btn-imprimir" title="Ver Acervo Digital">
-                <i class="fa-solid fa-book-open"></i> Biblioteca
-            </a>
-            <a href="{% url 'visualizar_saude_aluno' aluno.id %}" class="btn-imprimir btn-declaracao"
-                title="Minha Ficha Médica">
-                <i class="fa-solid fa-heart-pulse"></i> Minha Saúde
-            </a>
-            <a href="{% url 'meu_historico' %}" class="btn-imprimir btn-declaracao" title="Ver meu Histórico Escolar Completo">
-                <i class="fa-solid fa-file-invoice"></i> Meu Histórico
-            </a>
             <a href="{% url 'gerar_declaracao_matricula' aluno.id %}" target="_blank"
                 class="btn-imprimir btn-declaracao">
                 <i class="fa-solid fa-file-contract"></i> Declaração
             </a>
             <a href="{% url 'gerar_boletim_pdf' aluno.id %}" target="_blank" class="btn-imprimir">
                 <i class="fa-solid fa-file-pdf"></i> Imprimir Boletim
-            </a>
-            <a href="{% url 'financeiro:listar_faturas' %}" class="btn-imprimir" style="background-color: var(--accent-emerald); color: white; border: none;" title="Minhas Mensalidades">
-                <i class="fa-solid fa-file-invoice-dollar"></i> Mensalidades
             </a>
         </div>
     </div>

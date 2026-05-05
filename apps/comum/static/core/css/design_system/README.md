@@ -61,4 +61,5 @@ background: var(--accent-ruby);
 
 > **Regra de ouro**: Nenhum `style=""` inline em novos templates. Novas classes devem ser criadas neste diretório.
 
-*Atualizado em 27/04/2026 — Bordas universais em cards para Azul e Cinza.*
+*Atualizado em Maio de 2026 — Bordas universais em cards para Azul e Cinza.*
+

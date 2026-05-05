@@ -31,3 +31,4 @@ O coração do **SIGE**. Onde turmas, alunos e professores se interconectam e a 
 - **Aprovação**: Média `>= 7,0` E Frequência `>= 75%`.
 - **Reprovado por Falta**: Frequência `< 75%` (Sobrepõe qualquer nota).
 - **Abono**: Apenas via fluxo oficial no módulo `apps.saude`.
+> Atualizado em Maio de 2026 — Lógica de Aprovação e ReportLab consolidados.

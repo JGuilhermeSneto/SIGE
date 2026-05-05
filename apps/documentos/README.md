@@ -19,4 +19,5 @@ Os geradores residem em `apps/documentos/utils/`:
 ## 🔗 Integração Multi-Tenant
 O módulo consome dados da `Instituicao` ativa para personalizar o logotipo e o nome da escola no topo de cada documento, garantindo isolamento total entre diferentes clientes.
 
-> Atualizado em: 27/04/2026 — Integração ReportLab & Multi-Tenancy.
+> Atualizado em Maio de 2026 — Integração ReportLab & Multi-Tenancy consolidada.
+

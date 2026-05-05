@@ -11,7 +11,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
-        margin: 40px 0 20px;
+        margin: 32px 0 16px;
         padding-bottom: 12px;
         border-bottom: 1px solid var(--border-subtle);
     }
@@ -34,6 +34,7 @@
         display: flex;
         align-items: center;
         gap: 12px;
+        flex-wrap: wrap;
     }
     .btn-visualizar-pcd {
         color: var(--accent-cyan);
@@ -44,7 +45,90 @@
         gap: 6px;
         text-decoration: underline !important;
     }
+
+    @media (max-width: 768px) {
+        .main-area { 
+            overflow-x: hidden; 
+            width: 100% !important; 
+            padding: 10px 6px 20px !important; 
+            margin: 0 !important;
+            box-sizing: border-box !important;
+        }
+        .secao-titulo-ficha.full {
+            grid-column: span 1 !important;
+        }
+        .etapa.ativa {
+            gap: 12px !important;
+            align-items: stretch !important;
+        }
+        .header-painel {
+            margin-bottom: 12px !important;
+            gap: 8px !important;
+        }
+        .header-painel h1 {
+            font-size: 1.15rem !important;
+            letter-spacing: -0.02em;
+        }
+        .header-label {
+            font-size: 0.65rem !important;
+        }
+        .form-card {
+            padding: 12px 10px !important;
+            border-radius: 8px !important;
+            width: 100% !important;
+            box-shadow: none !important;
+            border: 1px solid var(--border-subtle) !important;
+            box-sizing: border-box !important;
+        }
+        .form-card-icone {
+            width: 32px !important;
+            height: 32px !important;
+            font-size: 14px !important;
+        }
+        .form-card-titulo-texto h2 {
+            font-size: 0.95rem !important;
+        }
+        .form-card-titulo-texto p {
+            font-size: 0.72rem !important;
+        }
+        .header-breadcrumb {
+            display: none;
+        }
+        #pcd-details-container {
+            gap: 8px !important;
+        }
+        .caixa-texto label {
+            font-size: 0.68rem !important;
+        }
+        .caixa-texto input, .caixa-texto select, .caixa-texto textarea {
+            padding: 8px 10px !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px !important;
+        }
+        .form-card-titulo {
+            margin-bottom: 12px !important;
+            padding-bottom: 10px !important;
+            gap: 8px !important;
+        }
+        .btn {
+            padding: 10px 16px !important;
+            font-size: 0.8rem !important;
+            width: 100% !important;
+            justify-content: center !important;
+        }
+        .secao-titulo-ficha {
+            margin: 20px 0 10px !important;
+            gap: 8px !important;
+        }
+        .secao-titulo-ficha h3 {
+            font-size: 0.9rem !important;
+        }
+    }
 </style>
+
+
+
+
 {% endblock %}
 
 {% block content %}
@@ -84,10 +168,11 @@
             {% csrf_token %}
 
             <div class="etapa ativa">
-                <div class="secao-titulo-ficha full" style="grid-column: span 3; border-bottom: 0px; margin-top: 0;">
+                <div class="secao-titulo-ficha full" style="border-bottom: 0px; margin-top: 0;">
                     <i class="fa-solid fa-stethoscope"></i>
                     <h3>Dados Clínicos e PCD</h3>
                 </div>
+
 
                 <div class="caixa-texto">
                     <label>Tipo Sanguíneo</label>
@@ -121,10 +206,11 @@
                     </div>
                 </div>
 
-                <div class="secao-titulo-ficha full" style="grid-column: span 3;">
+                <div class="secao-titulo-ficha full">
                     <i class="fa-solid fa-hand-dots"></i>
                     <h3>Alergias e Medicação</h3>
                 </div>
+
 
                 <div class="caixa-texto full">
                     <label>Alergias Conhecidas</label>
@@ -135,10 +221,11 @@
                     {{ form.medicamentos_continuos }}
                 </div>
 
-                <div class="secao-titulo-ficha full" style="grid-column: span 3;">
+                <div class="secao-titulo-ficha full">
                     <i class="fa-solid fa-phone-flip"></i>
                     <h3>Contatos de Emergência</h3>
                 </div>
+
 
                 <div class="caixa-texto dois">
                     <label>Nome do Responsável</label>
@@ -156,10 +243,11 @@
 
                 <div class="botoes">
                     <span></span>
-                    <button type="submit" class="btn salvar">
-                        <i class="fa-solid fa-check"></i> Salvar Alterações
+                    <button type="submit" class="btn salvar" style="margin-left: 0;">
+                        <i class="fa-solid fa-check"></i> Salvar Ficha
                     </button>
                 </div>
+
             </div>
         </form>
     </div>

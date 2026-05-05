@@ -18,4 +18,5 @@ Localizado em `static/core/`, este sistema define a estética "Premium Glassmorp
 - **Middleware de Auditoria**: Registro de trilha de acesso em conformidade com a **LGPD**.
 - **Validadores**: Lógica centralizada para CPF, CNPJ e outros documentos.
 
-> Atualizado em 27/04/2026 — Núcleo de Design System e Multi-Tenancy consolidado.
+> Atualizado em Maio de 2026 — Núcleo de Design System e Multi-Tenancy consolidado.
+

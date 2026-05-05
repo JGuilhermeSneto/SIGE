@@ -1,28 +1,16 @@
-# Assets Estáticos do SIGE
+# 🎨 Assets Estáticos & Design System
 
-## Visão geral
+Este diretório é o repositório central de ativos visuais do SIGE, abrigando o **Premium Design System** e os scripts de interatividade que dão vida à plataforma.
 
-Este diretório contém os arquivos estáticos compartilhados do projeto, como CSS, JavaScript e imagens.
+## 🏗️ Estrutura de Ativos
+- **`core/css/design_system/`**: O coração visual do projeto. Contém os tokens de cores, tipografia e o motor de temas.
+- **`core/js/`**: Biblioteca de scripts para interações complexas (Calendários, Gráficos Chart.js, Validação de formulários).
+- **`core/img/`**: Ativos gráficos, logotipos institucionais e placeholders de alta qualidade.
 
-## Funcionalidades principais
+## 🚀 Filosofia de Desenvolvimento
+- **Atomicidade**: Estilos são construídos usando tokens globais, evitando o uso de cores fixas ou estilos inline.
+- **Performance**: Ativos são otimizados para carregamento rápido, com suporte a compressão WhiteNoise em produção.
+- **Responsividade**: Todos os componentes CSS seguem a filosofia "Mobile-First" com transições fluidas.
 
-- Estilos globais para o sistema.
-- Scripts de interface e comportamento dinâmico.
-- Recursos visuais como ícones e imagens.
-- Templates e temas compartilhados.
+> Atualizado em Maio de 2026 — Ativos de Interface Premium consolidados.
 
-## Estrutura de pastas
-
-- `core/css/` — folhas de estilo e tokens.
-- `core/js/` — scripts de UI e interações.
-- `core/img/` — ativos gráficos e logos.
-
-## Uso principal
-
-Use este diretório como fonte de estilos e scripts reutilizáveis em todo o projeto.
-
-## Observações
-
-Os arquivos aqui são carregados pelo `base.html` e por outros templates globais.
-
-> Atualizado em 2026-04-22.

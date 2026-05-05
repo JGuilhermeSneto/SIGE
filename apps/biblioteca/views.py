@@ -12,14 +12,33 @@ from apps.usuarios.models.perfis import Aluno, Professor
 @login_required
 def acervo_biblioteca(request):
     """Consulta de livros disponível para Alunos, Professores e Gestores."""
+    from django.db.models import Count, Q, F
+    
     query = request.GET.get('q', '').strip()
-    livros = Livro.objects.all().order_by('titulo')
+    
+    # Otimização Crítica: Calcula disponibilidade via banco de dados (Query única)
+    # Evita o gargalo N+1 da property exemplares_disponiveis
+    livros = Livro.objects.annotate(
+        ocupados=Count(
+            'emprestimos',
+            filter=Q(emprestimos__data_devolucao_real__isnull=True) & 
+                   (Q(emprestimos__status='ATIVO') | Q(emprestimos__status='RESERVA'))
+        )
+    ).annotate(
+        disponiveis=F('quantidade_total') - F('ocupados')
+    ).order_by('titulo')
     
     if query:
-        livros = livros.filter(titulo__icontains=query) | livros.filter(autor__icontains=query)
+        livros = livros.filter(Q(titulo__icontains=query) | Q(autor__icontains=query))
         
+    # Otimização: Paginação (Carrega apenas 12 livros por vez)
+    from django.core.paginator import Paginator
+    paginator = Paginator(livros, 12) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, 'biblioteca/acervo.html', {
-        'livros': livros,
+        'livros': page_obj,
         'nome_exibicao': get_nome_exibicao(request.user),
         'foto_perfil_url': get_foto_perfil(request.user),
         'is_gestor': is_super_ou_gestor(request.user),
@@ -41,8 +60,10 @@ def detalhe_livro(request, pk):
 @user_passes_test(is_super_ou_gestor)
 def gerenciar_emprestimos(request):
     """Painel de controle de empréstimos e reservas (Somente Gestores)."""
-    # Empréstimos que ainda não foram devolvidos
-    emprestimos = Emprestimo.objects.filter(data_devolucao_real__isnull=True).order_by('status', 'data_devolucao_prevista')
+    # Otimização: select_related para evitar queries extras ao acessar livro e usuário no template
+    emprestimos = Emprestimo.objects.select_related(
+        'livro', 'usuario_aluno', 'usuario_professor'
+    ).filter(data_devolucao_real__isnull=True).order_by('status', 'data_devolucao_prevista')
     
     return render(request, 'biblioteca/gerenciar_emprestimos.html', {
         'emprestimos': emprestimos,

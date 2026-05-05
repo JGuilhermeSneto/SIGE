@@ -2,6 +2,22 @@
    SIGE — Layout (Header, Sidebar & Grid)
 ============================================================ */
 
+html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box !important;
+}
+
+
+
 /* TOP BAR (HEADER) */
 .menu-principal {
     position: fixed;
@@ -12,14 +28,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 18px;
+    padding: 0 12px;
     background: var(--header-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--border-subtle);
     z-index: 1000;
     transition: background var(--transition-mid), box-shadow var(--transition-mid);
+    width: 100% !important;
+    max-width: 100vw !important;
 }
+
 
 .menu-principal.scrolled {
     background: var(--header-bg-scrolled);
@@ -93,19 +112,23 @@
     animation: iconPulse 2s ease-out infinite;
 }
 
-.icone-menu {
+.icone-menu, .hamburguer {
     color: var(--text-secondary);
     font-size: 1.05rem;
     padding: 6px;
     border-radius: var(--radius-sm);
     display: none;
     transition: all var(--transition-fast);
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
-.icone-menu:hover {
+.icone-menu:hover, .hamburguer:hover {
     color: var(--text-primary);
     background: var(--bg-hover);
 }
+
 
 /* SIDEBAR (NAVIGATION) */
 .menu-lateral {
@@ -210,9 +233,12 @@
     margin-top: var(--menu-height);
     min-height: calc(100vh - var(--menu-height));
     width: 100%;
+    max-width: 100vw;
     background: var(--bg-base);
     transition: padding-left var(--transition-slow);
+    overflow-x: hidden;
 }
+
 
 .area-conteudo.sem-menu {
     padding-left: 0;
@@ -231,7 +257,8 @@
 }
 
 @media (max-width: 768px) {
-    .icone-menu { display: flex; }
+    .icone-menu, .hamburguer { display: flex; }
+
     .menu-lateral {
         left: -100%;
         box-shadow: var(--shadow-lg);
@@ -247,16 +274,21 @@
     .pagina-conteudo { padding: 16px 14px 32px; }
 
     /* Overlay aprimorado para bloquear interação com o fundo */
-    .menu-lateral.ativo::after {
-        content: '';
-        position: fixed; 
+    .menu-overlay {
+        position: fixed;
         inset: 0;
-        left: 0; /* Cobre tudo para escurecer o fundo corretamente */
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.4);
         backdrop-filter: blur(4px);
         -webkit-backdrop-filter: blur(4px);
-        z-index: -1;
-        pointer-events: all;
+        z-index: 1000; /* Abaixo do menu-lateral (1001) e acima do header (1000) se necessário */
+        opacity: 0;
+        visibility: hidden;
+        transition: all var(--transition-mid);
+    }
+    
+    .menu-overlay.ativo {
+        opacity: 1;
+        visibility: visible;
     }
 }
 
@@ -266,9 +298,15 @@
     .pagina-conteudo { padding: 12px 10px 24px; }
     
     /* Garante que elementos flex não fiquem exprimidos */
-    .menu-icones { gap: 2px; }
+    .menu-icones { gap: 6px; }
+    
+    .hamburguer {
+        padding: 8px;
+        font-size: 1.1rem;
+    }
 }
 
 @media (max-width: 360px) {
     .pagina-conteudo { padding-left: 8px; padding-right: 8px; }
 }
+

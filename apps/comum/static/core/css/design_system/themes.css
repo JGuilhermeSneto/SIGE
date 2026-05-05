@@ -1187,9 +1187,8 @@ html[data-theme="cinza-industrial"] .perfil-card,
 html[data-theme="cinza-industrial"] .calendar-container,
 html[data-theme="cinza-industrial"] .form-container,
 html[data-theme="cinza-industrial"] .msg-list li {
-    border: 2px solid rgba(100, 116, 139, 0.55) !important;
-    border-top: 3px solid rgba(47, 79, 79, 0.70) !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 3px 3px 0 rgba(0,0,0,0.06) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-sm) !important;
     transition: all var(--transition-mid);
 }
 
@@ -1206,10 +1205,9 @@ html[data-theme="cinza-industrial"] .stat-card:hover,
 html[data-theme="cinza-industrial"] .bi-card:hover,
 html[data-theme="cinza-industrial"] .metric-card:hover,
 html[data-theme="cinza-industrial"] .calendar-container:hover {
-    border-color: rgba(47, 79, 79, 0.90) !important;
-    border-top-color: var(--primary) !important;
+    border-color: var(--border-mid) !important;
     transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.22), 4px 4px 0 rgba(0,0,0,0.08) !important;
+    box-shadow: var(--shadow-md) !important;
 }
 
 
@@ -1415,9 +1413,8 @@ html[data-theme="azul-corporativo"] .perfil-card,
 html[data-theme="azul-corporativo"] .calendar-container,
 html[data-theme="azul-corporativo"] .form-container,
 html[data-theme="azul-corporativo"] .msg-list li {
-    border: 2px solid rgba(21, 101, 192, 0.45) !important;
-    box-shadow: 0 8px 24px rgba(21, 101, 192, 0.12),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid var(--border-subtle) !important;
+    box-shadow: var(--shadow-sm) !important;
     transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
@@ -1433,9 +1430,8 @@ html[data-theme="azul-corporativo"] .stat-card:hover,
 html[data-theme="azul-corporativo"] .bi-card:hover,
 html[data-theme="azul-corporativo"] .metric-card:hover,
 html[data-theme="azul-corporativo"] .calendar-container:hover {
-    border-color: rgba(21, 101, 192, 0.80) !important;
-    box-shadow: 0 16px 44px rgba(21, 101, 192, 0.22),
-                0 0 0 1px rgba(21, 101, 192, 0.15) !important;
+    border-color: var(--border-mid) !important;
+    box-shadow: var(--shadow-md) !important;
     transform: translateY(-3px);
 }
 

@@ -1,29 +1,19 @@
-# Configurações do SIGE
+# ⚙️ Núcleo de Configuração & Orquestração
 
-## Visão geral
+O diretório `config/` é o sistema nervoso central do SIGE, onde a orquestração de serviços, segurança de alto nível e integração de middleware são definidas.
 
-O diretório `config/` contém as configurações centrais do Django usadas pelo projeto.
+## 🏗️ Gestão de Ambiente (Twelve-Factor App)
+- **Settings Dinâmico**: Utiliza `python-decouple` para separar código de configuração.
+- **Produção (Render + Aiven)**: Configurações otimizadas para MySQL (Aiven) e Cache Redis com WhiteNoise para estáticos.
+- **Observabilidade**: Integração nativa com **Sentry** e **Prometheus** injetada via Middleware.
 
-## Funcionalidades principais
+## 🛡️ Pilares de Segurança
+- **CORS & CSP**: Políticas restritas de segurança de conteúdo para mitigar ataques XSS.
+- **JWT & Auth**: Configuração industrial de SimpleJWT com blacklist de tokens.
+- **Axes & Locks**: Proteção contra força bruta configurada em nível de kernel Django.
 
-- Definição de `INSTALLED_APPS` e middlewares.
-- Configuração de banco de dados e variáveis de ambiente.
-- Rotas globais via `ROOT_URLCONF`.
-- Integração com `rest_framework`, `corsheaders` e JWT.
+## 🚀 Orquestração de Tarefas
+- **Celery**: Configurações de Broker (RabbitMQ) e Result Backend centralizadas para processamento assíncrono em larga escala.
 
-## Estrutura de pastas
+> Atualizado em Maio de 2026 — Orquestração de Produção (Render) consolidada.
 
-- `settings.py` — configurações de ambiente e dependências.
-- `urls.py` — roteamento principal do sistema.
-- `wsgi.py` / `asgi.py` — pontos de entrada para servidores.
-- `__init__.py` — pacote Python.
-
-## Uso principal
-
-Use este app para centralizar configurações e manter o projeto consistente entre ambientes.
-
-## Observações
-
-Mantenha segredos em `.env` e não no repositório.
-
-> Atualizado em 2026-04-22.

@@ -7,10 +7,11 @@
 .infra-dashboard-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    gap: 32px !important;
-    margin-bottom: 48px !important;
+    gap: 20px !important;
+    margin-bottom: 24px !important;
     width: 100%;
 }
+
 
 .sige-glass-card {
     padding: 28px !important;
@@ -140,10 +141,70 @@
 
 /* ── RESPONSIVIDADE ───────────────────────────────────────── */
 @media (max-width: 768px) {
+    .painel-sige { padding: 15px 12px !important; }
+    
+    .infra-dashboard-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+
+    .sige-glass-card {
+        padding: 20px 16px !important;
+    }
+
+    .manutencao-valor {
+        font-size: 2.5rem !important;
+    }
+
     .infra-tab-nav {
         display: flex;
         overflow-x: auto;
         width: 100%;
         border-radius: 12px;
+        -webkit-overflow-scrolling: touch;
+        padding: 4px;
+        scrollbar-width: none;
+    }
+    .infra-tab-nav::-webkit-scrollbar { display: none; }
+    
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: 0.72rem;
+        flex-shrink: 0;
+    }
+
+    .header-painel {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 20px !important;
+    }
+
+    .header-acoes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .btn-sige-primario, .btn-sige-secundario {
+        width: 100%;
+        justify-content: center;
+        padding: 10px;
+        font-size: 0.8rem;
+    }
+
+    .barra-busca-gestao {
+        padding: 15px 12px !important;
+        gap: 12px !important;
     }
 }
+
+@media (max-width: 480px) {
+    .header-acoes {
+        grid-template-columns: 1fr;
+    }
+    .infra-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+

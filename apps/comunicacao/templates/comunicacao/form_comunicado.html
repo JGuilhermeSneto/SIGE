@@ -4,8 +4,25 @@
 {% block title %}{% if editando %}Editar{% else %}Novo{% endif %} Comunicado — SIGE{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}?v=7">
+<style>
+    @media (max-width: 768px) {
+        .form-footer {
+            display: flex !important;
+            justify-content: center !important;
+            padding: 1.5rem 0 !important;
+            margin-top: 2rem !important;
+            width: 100% !important;
+        }
+        .form-footer .btn-sige-primario {
+            width: 100% !important;
+            margin: 0 !important;
+            justify-content: center !important;
+        }
+    }
+</style>
 {% endblock %}
+
 
 {% block content %}
 <section class="painel-sige">

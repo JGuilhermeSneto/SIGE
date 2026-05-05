@@ -20,3 +20,5 @@ Este módulo gerencia a integridade física e o bem-estar dos alunos, integrando
 
 ## 🔒 Privacidade (LGPD)
 - Dados médicos são protegidos por criptografia e acesso restrito por perfil (Gestor/Próprio Aluno), com trilha de auditoria completa de quem visualizou os laudos.
+
+> Atualizado em Maio de 2026 — Alertas de Emergência e Dashboard de Inclusão consolidados.

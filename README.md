@@ -40,25 +40,30 @@ O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo mat
 | :--- | :--- | :--- |
 | **`apps.usuarios`** | Autenticação, perfis e painéis por papel. | Login, reset de senha, cadastro/edição de perfis, dashboards. RBAC completo. |
 | **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, notas, frequência, materiais didáticos. |
+| **`apps.biblioteca`** | Gestão de acervo e materiais digitais. | Integração OpenLibrary API, busca inteligente, empréstimos e capas em HD. |
+| **`apps.calendario`** | Gestão de tempo e eventos. | Calendário letivo, provas, feriados e horários de aula integrados. |
 | **`apps.dashboards`** | **Hub de Inteligência & BI** 🧠 | Unificação de BI Acadêmico + Relatórios. Dashboards de Evasão, Saúde e Performance. |
 | **`apps.infraestrutura`** | Patrimônio e Almoxarifado. | Refatorado para **Clean Architecture**. Tombamento, manutenções e estoque atômico. |
 | **`apps.comum`** | Recursos compartilhados. | Design System Premium, Multi-Tenancy e Audit Log. |
+| **`apps.comunicacao`** | Mural e avisos institucionais. | Comunicados segmentados por público, avisos em tempo real e murais. |
+| **`apps.documentos`** | **Motor de PDF (ReportLab)** 📄 | Geração de Boletins, Declarações e Históricos com autenticidade via QR Code. |
 | **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, alertas de alergia e integração com BI de Inclusão. |
 | **`apps.seguranca`** | **Governança & Audit** 🛡️ | Central de Segurança (Shield). Auditoria LGPD, Telemetria de Erros e MFA. |
 | **`apps.financeiro`** | BI Financeiro e Contabilidade. | Livro Diário, Faturas, DRE e KPIs gerenciais. |
 
 - **Design System Premium — "Azul Corporativo"**
   - Padronização em componentes super-arredondados (`border-radius: 48px`), glassmorphism e animações fluidas.
+  - Bordas de cor visíveis em **todos os cards** dos temas Azul e Cinza (Atualização v1.2).
 - **Observabilidade & Monitoramento (Stack Elite)**
   - **Grafana + Prometheus**: Monitoramento técnico de performance em tempo real.
-  - **Shield v1.0**: Dashboard de segurança com auditoria LGPD e telemetria de erros (internal).
-  - **RabbitMQ + Celery**: Processamento assíncrono industrial.
-- **Design System Reforçado**
-  - Bordas de cor visíveis em **todos os cards** dos temas Azul e Cinza.
+  - **Shield v1.0**: Dashboard de segurança com auditoria LGPD e telemetria de erros.
+  - **RabbitMQ + Celery**: Processamento assíncrono industrial para exportações e tarefas de fundo.
+- **Cache & Performance**
+  - **Redis**: Cache primário em produção para máxima velocidade de resposta.
   - Cache com fallback automático para `LocMemCache` em ambiente local.
 - **Garantia de Qualidade**
-  - **45/45 testes passando (100% verde)** — Cobertura de 55%, meta de 75%.
-  - Pipeline CI/CD com Lint, Security Scan e Tests.
+  - **45/45 testes passando (100% verde)** — Cobertura atual de ~60%, rumo aos 75%.
+  - Pipeline CI/CD com Lint, Security Scan e Automated Tests.
 - **Simulador de Dados (`seed_db.py`)**
   - Geração de 10 anos de histórico escolar realista (2016-2026).
 

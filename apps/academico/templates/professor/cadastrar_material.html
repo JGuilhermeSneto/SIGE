@@ -106,15 +106,25 @@
         transform: none;
         box-shadow: none;
     }
+    @media (max-width: 768px) {
+        .main-area { padding: 20px 15px; }
+        .form-container { padding: 25px 20px; border-radius: 20px; }
+        .header-painel h1 { font-size: 1.5rem; }
+        .btn-magic { width: 100%; justify-content: center; }
+        .form-actions { flex-direction: column; }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 </style>
+
 {% endblock %}
 
 {% block content %}
 <div class="main-area">
-    <div class="header-painel" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1 style="margin-bottom: 0;">{% if material %}Editar <span class="destaque">Material</span>{% else %}Novo <span class="destaque">Material</span>{% endif %}</h1>
-        <a href="{% url 'listar_materiais_professor' disciplina.id %}" class="btn-cancel" style="padding: 10px 20px; border-radius: 12px; border: 1px solid var(--border-mid); color: var(--text-secondary); text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;">
-            <i class="fa-solid fa-arrow-left"></i> Voltar
+    <div class="header-painel" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 15px;">
+        <h1 style="margin-bottom: 0; line-height: 1.2;">{% if material %}Editar <span class="destaque">Material</span>{% else %}Novo <span class="destaque">Material</span>{% endif %}</h1>
+        <a href="{% url 'listar_materiais_professor' disciplina.id %}" class="btn-cancel" style="padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border-mid); color: var(--text-secondary); text-decoration: none; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; white-space: nowrap;">
+            <i class="fa-solid fa-arrow-left"></i> <span class="btn-text">Voltar</span>
         </a>
     </div>
 
@@ -152,7 +162,7 @@
                 {{ form.descricao }}
             </div>
 
-            <div style="display: flex; gap: 15px; margin-top: 40px;">
+            <div class="form-actions" style="display: flex; gap: 15px; margin-top: 40px;">
                 <button type="submit" class="btn-magic">
                     <i class="fa-solid fa-save"></i> Salvar Material
                 </button>

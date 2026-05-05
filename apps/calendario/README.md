@@ -1,28 +1,20 @@
-# Módulo de Calendário
+# 📅 Módulo de Calendário & Gestão de Tempo
 
-## Visão geral
+O app `apps.calendario` organiza o ecossistema temporal da instituição, integrando cronogramas acadêmicos, eventos institucionais e horários de aula.
 
-O app `apps.calendario` organiza o calendário escolar e eventos do ano letivo, integrando-se com o ambiente acadêmico do SIGE.
+## 📐 Estrutura de Dados (Models)
+- `Evento`: Cadastro de datas críticas (Provas, Feriados, Reuniões).
+- `HorarioAula`: Definição de grades horárias por turma e disciplina.
+- `PeriodoLetivo`: Controle de semestres e trimestres com datas de trancamento.
 
-## Funcionalidades principais
+## 🚀 Engenharia e UI
+- **Calendário Dinâmico**: Interface baseada em JavaScript para visualização mensal/semanal com suporte a drag-and-drop para gestores.
+- **Integração de Horários**: O sistema cruza os horários de aula com o planejamento dos professores (`apps.academico`) para evitar conflitos de sala.
+- **Temas**: Visualização adaptável a todos os temas do SIGE, com destaque para eventos críticos usando `--accent-amber`.
 
-- Exibição de calendário mensal e semanal.
-- Registro de eventos acadêmicos, feriados e provas.
-- Integração com planejamento de aulas e horários.
-- Filtro por período e tipo de evento.
+## 🔗 Hub de Inteligência
+- Exporta dados de ocupação de salas e densidade de eventos para o **Hub de Inteligência**.
+- Sincronização automática com o mural de comunicados (`apps.comunicacao`).
 
-## Estrutura de pastas
+> Atualizado em Maio de 2026 — Integração total com Grade Horária Acadêmica.
 
-- `views/` — views de visualização e consulta do calendário.
-- `templates/` — páginas de calendário e evento.
-- `urls/` — rotas de calendário.
-
-## Uso principal
-
-Use este app para exibir datas importantes do ano letivo e coordenar eventos com os demais módulos acadêmicos.
-
-## Observações
-
-O calendário é utilizado por professores, alunos e gestores para planejar e acompanhar o cronograma escolar.
-
-> Atualizado em 2026-04-22.

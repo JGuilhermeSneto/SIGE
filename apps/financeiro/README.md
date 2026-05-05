@@ -24,3 +24,5 @@ O Módulo Financeiro do SIGE é o motor de **Business Intelligence** que acompan
 ## 🛣️ Próximos Passos
 - **Gateway Asaas/Efí**: Integração via Webhooks para baixa automática de Pix e Boletos.
 - **Régua de Cobrança**: Notificações automáticas via Celery/RabbitMQ para faturas vencidas.
+
+> Atualizado em Maio de 2026 — BI Contábil e DRE Dinâmico consolidados.
