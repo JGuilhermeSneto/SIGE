@@ -6,40 +6,61 @@
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
 <style>
-    .titulo-historico {
-        font-family: var(--font-display);
-        font-size: 1.8rem;
-        font-weight: 800;
-        margin-bottom: 2rem;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 12px;
+    /* RESET E LAYOUT BASE */
+    .painel-sige {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
     }
 
+    .titulo-historico {
+        font-family: var(--font-display);
+        font-size: 2.25rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    /* SHELF (PRATELEIRAS) */
     .shelf-section {
         margin-bottom: 4rem;
+        animation: slideUp 0.5s ease-out both;
     }
 
     .shelf-title {
-        font-size: 0.75rem;
+        font-family: var(--font-display);
+        font-size: 0.85rem;
         text-transform: uppercase;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.15em;
         color: var(--accent-violet);
         font-weight: 800;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 15px;
+    }
+
+    .shelf-title i {
+        font-size: 1.1rem;
+        filter: drop-shadow(0 0 8px hsla(250, 100%, 72%, 0.4));
     }
 
     .shelf-title::after {
         content: '';
         flex: 1;
         height: 1px;
-        background: linear-gradient(90deg, var(--border-subtle), transparent);
+        background: linear-gradient(90deg, var(--border-mid), transparent);
     }
 
+    /* GRID DE LEITURAS */
+    .grid-leituras {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    /* CARD DE LEITURA PREMIUM */
     .leitura-card {
         background: var(--bg-surface);
         border: 1px solid var(--border-subtle);
@@ -50,32 +71,53 @@
         transition: all var(--transition-mid);
         position: relative;
         overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .leitura-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: radial-gradient(circle at top right, hsla(250, 100%, 72%, 0.03), transparent);
+        pointer-events: none;
     }
 
     .leitura-card:hover {
         border-color: var(--border-mid);
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-md);
+        transform: translateY(-6px) scale(1.02);
+        box-shadow: var(--shadow-lg), 0 0 20px rgba(124, 111, 255, 0.1);
+    }
+
+    .capa-container {
+        position: relative;
+        flex-shrink: 0;
     }
 
     .capa-mini {
-        width: 80px;
-        height: 110px;
-        border-radius: 8px;
+        width: 100px;
+        height: 145px;
+        border-radius: var(--radius-sm);
         object-fit: cover;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: transform var(--transition-mid);
+    }
+
+    .leitura-card:hover .capa-mini {
+        transform: rotate(-2deg) scale(1.05);
     }
 
     .fallback-capa {
-        width: 80px;
-        height: 110px;
+        width: 100px;
+        height: 145px;
         background: var(--bg-elevated);
-        border-radius: 8px;
+        border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
+        font-size: 2rem;
         color: var(--text-muted);
+        border: 1px dashed var(--border-subtle);
     }
 
     .leitura-info {
@@ -83,32 +125,75 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        min-width: 0; /* Permite truncar texto */
+    }
+
+    .livro-titulo {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .livro-autor {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin: 6px 0 12px 0;
+        font-weight: 500;
     }
 
     .status-row {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 10px;
+        gap: 8px;
         flex-wrap: wrap;
     }
 
-    .badge-conservacao {
+    /* BADGES CUSTOMIZADOS */
+    .badge-sige {
         font-size: 0.65rem;
         font-weight: 800;
-        padding: 2px 8px;
-        border-radius: 4px;
+        padding: 4px 10px;
+        border-radius: 6px;
         text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
     }
 
-    .cons-otimo { background: rgba(52, 211, 153, 0.1); color: var(--accent-emerald); border: 1px solid rgba(52, 211, 153, 0.3); }
-    .cons-razoavel { background: rgba(251, 191, 36, 0.1); color: var(--accent-amber); border: 1px solid rgba(251, 191, 36, 0.3); }
-    .cons-danificado { background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby); border: 1px solid rgba(244, 63, 94, 0.3); }
+    .badge-prazo { background: hsla(185, 100%, 50%, 0.1); color: var(--accent-cyan); border: 1px solid hsla(185, 100%, 50%, 0.2); }
+    .badge-atraso { background: hsla(0, 100%, 65%, 0.1); color: var(--accent-ruby); border: 1px solid hsla(0, 100%, 65%, 0.2); animation: pulse-ruby 2s infinite; }
+    
+    .badge-status { background: hsla(250, 100%, 72%, 0.1); color: var(--accent-violet); border: 1px solid hsla(250, 100%, 72%, 0.2); }
+    
+    .cons-otimo { background: hsla(150, 100%, 45%, 0.1); color: var(--accent-emerald); border: 1px solid hsla(150, 100%, 45%, 0.2); }
+    .cons-razoavel { background: hsla(45, 100%, 55%, 0.1); color: var(--accent-amber); border: 1px solid hsla(45, 100%, 55%, 0.2); }
+    .cons-danificado { background: hsla(0, 100%, 65%, 0.1); color: var(--accent-ruby); border: 1px solid hsla(0, 100%, 65%, 0.2); }
 
-    .grid-leituras {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 1.5rem;
+    @keyframes pulse-ruby {
+        0% { box-shadow: 0 0 0 0 hsla(0, 100%, 65%, 0.4); }
+        70% { box-shadow: 0 0 0 10px hsla(0, 100%, 65%, 0); }
+        100% { box-shadow: 0 0 0 0 hsla(0, 100%, 65%, 0); }
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* RESPONSIVIDADE */
+    @media (max-width: 768px) {
+        .painel-sige { padding: 1.5rem 1rem; }
+        .titulo-historico { font-size: 1.75rem; }
+        .grid-leituras { grid-template-columns: 1fr; gap: 1rem; }
+        .leitura-card { padding: 1rem; }
+        .capa-mini, .fallback-capa { width: 80px; height: 115px; }
     }
 </style>
 {% endblock %}
@@ -124,8 +209,8 @@
             <a href="{% url 'acervo_biblioteca' %}" class="btn-sige-primario">
                 <i class="fa-solid fa-magnifying-glass"></i> Explorar Acervo
             </a>
-            <a href="{% url 'dashboard' %}" class="btn-sige-secundario">
-                <i class="fa-solid fa-chevron-left"></i> Voltar ao Painel
+            <a href="{% url 'painel_aluno' %}" class="btn-sige-secundario">
+                <i class="fa-solid fa-house"></i> Início
             </a>
         </div>
     </div>
@@ -137,17 +222,19 @@
         <div class="grid-leituras">
             {% for e in ativos %}
             <div class="leitura-card">
-                {% if e.livro.capa %}
-                <img src="{{ e.livro.capa.url }}" class="capa-mini" alt="{{ e.livro.titulo }}">
-                {% else %}
-                <div class="fallback-capa"><i class="fa-solid fa-book"></i></div>
-                {% endif %}
+                <div class="capa-container">
+                    {% if e.livro.capa %}
+                    <img src="{{ e.livro.capa.url }}" class="capa-mini" alt="{{ e.livro.titulo }}">
+                    {% else %}
+                    <div class="fallback-capa"><i class="fa-solid fa-book"></i></div>
+                    {% endif %}
+                </div>
                 <div class="leitura-info">
-                    <h4 style="margin: 0; font-size: 1.1rem;">{{ e.livro.titulo }}</h4>
-                    <p style="margin: 4px 0 10px 0; font-size: 0.85rem; color: var(--text-muted);">{{ e.livro.autor }}</p>
+                    <h4 class="livro-titulo" title="{{ e.livro.titulo }}">{{ e.livro.titulo }}</h4>
+                    <p class="livro-autor">{{ e.livro.autor }}</p>
                     <div class="status-row">
-                        <span class="status-badge {% if e.status == 'ATRASADO' %}status-reprovado{% else %}status-aprovado{% endif %}">
-                            Devolver até {{ e.data_devolucao_prevista|date:"d/m" }}
+                        <span class="badge-sige {% if e.status == 'ATRASADO' %}badge-atraso{% else %}badge-prazo{% endif %}">
+                            <i class="fa-regular fa-calendar"></i> Devolver: {{ e.data_devolucao_prevista|date:"d/m" }}
                         </span>
                     </div>
                 </div>
@@ -155,7 +242,10 @@
             {% endfor %}
         </div>
         {% else %}
-        <p style="color: var(--text-muted); font-style: italic;">Nenhum livro retirado no momento.</p>
+        <div style="text-align: center; padding: 3rem; background: var(--bg-elevated); border-radius: var(--radius-lg); border: 1px dashed var(--border-subtle);">
+            <i class="fa-solid fa-book-medical" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem; opacity: 0.3;"></i>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Você não possui empréstimos ativos. Que tal escolher um novo livro?</p>
+        </div>
         {% endif %}
     </div>
 
@@ -166,21 +256,23 @@
         <div class="grid-leituras">
             {% for h in historico %}
             <div class="leitura-card">
-                {% if h.livro.capa %}
-                <img src="{{ h.livro.capa.url }}" class="capa-mini" alt="{{ h.livro.titulo }}">
-                {% else %}
-                <div class="fallback-capa"><i class="fa-solid fa-book"></i></div>
-                {% endif %}
+                <div class="capa-container">
+                    {% if h.livro.capa %}
+                    <img src="{{ h.livro.capa.url }}" class="capa-mini" alt="{{ h.livro.titulo }}">
+                    {% else %}
+                    <div class="fallback-capa"><i class="fa-solid fa-book"></i></div>
+                    {% endif %}
+                </div>
                 <div class="leitura-info">
-                    <h4 style="margin: 0; font-size: 1rem; opacity: 0.9;">{{ h.livro.titulo }}</h4>
-                    <p style="margin: 2px 0 8px 0; font-size: 0.8rem; color: var(--text-dim);">Finalizado em {{ h.data_devolucao_real|date:"d/m/Y" }}</p>
+                    <h4 class="livro-titulo" style="font-size: 1rem; opacity: 0.9;" title="{{ h.livro.titulo }}">{{ h.livro.titulo }}</h4>
+                    <p class="livro-autor" style="margin-bottom: 8px; font-size: 0.8rem;">Finalizado em {{ h.data_devolucao_real|date:"d/m/Y" }}</p>
                     <div class="status-row">
-                        <span class="badge-leitura badge-leitura-{{ h.status_leitura|lower }}" style="font-size: 0.6rem;">
-                            {{ h.get_status_leitura_display }}
+                        <span class="badge-sige badge-status">
+                            <i class="fa-solid fa-check"></i> {{ h.get_status_leitura_display }}
                         </span>
                         {% if h.estado_conservacao %}
-                        <span class="badge-conservacao cons-{{ h.estado_conservacao|lower }}">
-                            Estado: {{ h.get_estado_conservacao_display }}
+                        <span class="badge-sige cons-{{ h.estado_conservacao|lower }}">
+                            {{ h.get_estado_conservacao_display }}
                         </span>
                         {% endif %}
                     </div>
@@ -189,9 +281,8 @@
             {% endfor %}
         </div>
         {% else %}
-        <p style="color: var(--text-muted); font-style: italic;">Você ainda não completou nenhuma leitura registrada.</p>
+        <p style="color: var(--text-muted); font-style: italic; padding-left: 10px;">Você ainda não possui um histórico de leituras concluídas.</p>
         {% endif %}
     </div>
-
 </section>
 {% endblock %}
