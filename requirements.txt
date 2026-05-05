@@ -70,7 +70,7 @@ urllib3==2.6.3
 webencodings==0.5.1
 wheel==0.46.3
 xhtml2pdf==0.2.17
-drf-spectacular==0.28.0
+drf-spectacular==0.29.0
 django-csp==4.0
 django-axes==6.3.1
 celery==5.6.3
