@@ -1,9 +1,9 @@
 <div align="center">
 
-# 🏫 SIGE — Sistema Integrado de Gestão Escolar
-### A Engenharia de Software Aplicada à Educação de Alta Performance
+# 🛡️ SIGE — Back-end (Django Core Engine)
+### O Coração do Ecossistema SIGE: Alta Performance e Segurança Industrial
 
-> Este projeto faz parte de um monorepo. Para um guia de inicio rápido, consulte `../README.md`.
+> Este é o núcleo central do SIGE. Ele gerencia a API, lógica de negócio e persistência para as frentes **Web (Django/React)**, **Mobile** e **IoT**.
 
 <br/>
 
@@ -11,172 +11,91 @@
 ![Django](https://img.shields.io/badge/Django-6.0-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white)
-![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 
 <br/>
 
-![License](https://img.shields.io/badge/Licen%C3%A7a-MIT-green?style=flat-square)
-![CI](https://img.shields.io/badge/CI-GitHub_Actions-2088FF?style=flat-square)
-![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square)
-![Prometheus](https://img.shields.io/badge/Prometheus-E6522C?style=flat-square&logo=prometheus&logoColor=white)
-
-<br/>
-
-> **SIGE** centraliza a gestão acadêmica em uma aplicação **Django** (arquitetura **MTV**), com perfis de aluno, professor e gestor, frequência, notas, calendário e relatórios. A interface usa um **design system** próprio em CSS (tokens, componentes e animações) e JavaScript para interações (calendário, frequência, formulários).
-
-[Visão geral](#1-visão-geral-e-módulos) · [Regras de negócio](#2-lógica-de-negócio-e-algoritmos) · [Stack](#3-stack-tecnológica--dependências) · [Topografia](#4-topografia-do-projeto) · [Design system](#5-design-system--uiux) · [CI/CD](#6-garantia-de-qualidade--devops) · [Deploy](#-deploy-em-produção) · [Instalação](#8-instalação-setup-rápido)
+[Estrutura do Projeto](#1-estrutura-do-back-end) · [Segurança & Criptografia](#2-seguran%C3%A7a--criptografia) · [Stack Técnica](#3-stack-tecnol%C3%B3gica) · [Qualidade & Testes](#4-qualidade--testes) · [Deploy](#5-deploy-em-produ%C3%A7%C3%A3o)
 
 </div>
 
 ---
 
-## 📖 1. Visão Geral e Módulos
+## 🏛️ 1. Estrutura do Back-end
 
-O SIGE reduz a fragmentação de dados em instituições de ensino, cobrindo matrículas, turmas, disciplinas, lançamento de notas e frequência até relatórios consolidados.
+O Back-end é o pilar principal do SIGE, responsável por fornecer dados e regras para:
+1.  **Web (Django Templates + Design System)**: Interface clássica estável.
+2.  **Web (React + Vite)**: Interface de alta densidade via API.
+3.  **Mobile (Expo)**: Notificações e acesso discente via API.
+4.  **IoT (ESP32)**: Coleta de dados físicos via MQTT/API.
 
-### 🧩 Aplicativos Django (`apps/`)
+### 🧩 Módulos Core (`apps/`)
 
-| Módulo | Escopo técnico | Cobertura funcional |
+| Módulo | Escopo técnico | Papel no Ecossistema |
 | :--- | :--- | :--- |
-| **`apps.usuarios`** | Autenticação, perfis e painéis por papel. | Login, reset de senha, cadastro/edição de perfis, dashboards. RBAC completo. |
-| **`apps.academico`** | Domínio acadêmico e regras de negócio. | Turmas, disciplinas, notas, frequência, materiais didáticos. |
-| **`apps.biblioteca`** | Gestão de acervo e materiais digitais. | Integração OpenLibrary API, busca inteligente, empréstimos e capas em HD. |
-| **`apps.calendario`** | Gestão de tempo e eventos. | Calendário letivo, provas, feriados e horários de aula integrados. |
-| **`apps.dashboards`** | **Hub de Inteligência & BI** 🧠 | Unificação de BI Acadêmico + Relatórios. Dashboards de Evasão, Saúde e Performance. |
-| **`apps.infraestrutura`** | Patrimônio e Almoxarifado. | Refatorado para **Clean Architecture**. Tombamento, manutenções e estoque atômico. |
-| **`apps.comum`** | Recursos compartilhados. | Design System Premium, Multi-Tenancy e Audit Log. |
-| **`apps.comunicacao`** | Mural e avisos institucionais. | Comunicados segmentados por público, avisos em tempo real e murais. |
-| **`apps.documentos`** | **Motor de PDF (ReportLab)** 📄 | Geração de Boletins, Declarações e Históricos com autenticidade via QR Code. |
-| **`apps.saude`** | Saúde e bem-estar escolar. | Fichas médicas, alertas de alergia e integração com BI de Inclusão. |
-| **`apps.seguranca`** | **Governança & Audit** 🛡️ | Central de Segurança (Shield). Auditoria LGPD, Telemetria de Erros e MFA. |
-| **`apps.financeiro`** | BI Financeiro e Contabilidade. | Livro Diário, Faturas, DRE e KPIs gerenciais. |
-
-- **Design System Premium — "Azul Corporativo"**
-  - Padronização em componentes super-arredondados (`border-radius: 48px`), glassmorphism e animações fluidas.
-  - Bordas de cor visíveis em **todos os cards** dos temas Azul e Cinza (Atualização v1.2).
-- **Observabilidade & Monitoramento (Stack Elite)**
-  - **Grafana + Prometheus**: Monitoramento técnico de performance em tempo real.
-  - **Shield v1.0**: Dashboard de segurança com auditoria LGPD e telemetria de erros.
-  - **RabbitMQ + Celery**: Processamento assíncrono industrial para exportações e tarefas de fundo.
-- **Cache & Performance**
-  - **Redis**: Cache primário em produção para máxima velocidade de resposta.
-  - Cache com fallback automático para `LocMemCache` em ambiente local.
-- **Garantia de Qualidade**
-  - **45/45 testes passando (100% verde)** — Cobertura atual de ~60%, rumo aos 75%.
-  - Pipeline CI/CD com Lint, Security Scan e Automated Tests.
-- **Simulador de Dados (`seed_db.py`)**
-  - Geração de 10 anos de histórico escolar realista (2016-2026).
+| **`usuarios`** | Auth, RBAC e Perfil. | Gerencia identidades e permissões de todos os apps. |
+| **`academico`** | Lógica de Notas/Frequência. | Engine central de regras escolares. |
+| **`iot`** | **Automação & MQTT** 🤖 | Interface com hardware (RFID/Sensores). |
+| **`seguranca`** | **Shield v1.0** 🛡️ | Auditoria LGPD, MFA e Telemetria de Erros. |
+| **`financeiro`** | Fluxo de Caixa e BI. | Gestão de faturas e KPIs financeiros. |
+| **`documentos`** | ReportLab Engine. | Geração atômica de PDFs oficiais. |
 
 ---
 
-## 🧠 2. Lógica de Negócio e Arquitetura Clean
-A lógica de negócio do SIGE segue o padrão **Service Layer** e **Selectors**, garantindo testabilidade e separação de preocupações.
+## 🔒 2. Segurança & Criptografia
 
-- **Serviços Acadêmicos**: `apps/academico/services/`
-- **Serviços de Infraestrutura**: `apps/infraestrutura/services/` (Lógica atômica de estoque)
-- **Seletores de Inteligência**: `apps/dashboards/selectors/` (Leitura otimizada para BI)
+O SIGE implementa uma camada de segurança de nível industrial para proteção de dados sensíveis:
+
+-   **AES-256 Encryption**: Dados como CPF, Data de Nascimento, Telefone e Endereço são criptografados em repouso no banco de dados.
+-   **Audit Log**: Rastreamento completo de quem acessou ou modificou dados sensíveis, em conformidade com a LGPD.
+-   **Protection Shield**: Telemetria em tempo real de erros (500) e monitoramento de tentativas de Brute Force.
 
 ---
 
 ## 🛠️ 3. Stack Tecnológica
 
-### 💻 Linguagens & Frameworks
-| | | | |
-| :---: | :---: | :---: | :---: |
-| ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) | ![Django](https://img.shields.io/badge/django-%23092e20.svg?style=for-the-badge&logo=django&logoColor=white) | ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) | ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) |
-
-### 🗄️ Banco de Dados, Cache & Mensageria
-| | | | |
-| :---: | :---: | :---: | :---: |
-| ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white) | ![RabbitMQ](https://img.shields.io/badge/RabbitMQ-FF6600?style=for-the-badge&logo=rabbitmq&logoColor=white) | ![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white) | ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=Cloudinary&logoColor=white) |
-
-### 🚀 Infraestrutura, DevOps & Observabilidade
-| | | | |
-| :---: | :---: | :---: | :---: |
-| ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) | ![Grafana](https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white) | ![Prometheus](https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white) | ![Celery](https://img.shields.io/badge/celery-%2337814A.svg?style=for-the-badge&logo=celery&logoColor=white) |
+-   **Framework**: Django 6.0 (Architecture MTV + Service Layer).
+-   **Banco de Dados**: MySQL 8.0 (Hospedado no Aiven).
+-   **Mensageria**: RabbitMQ + Celery para tarefas assíncronas (PDFs, E-mails).
+-   **Observabilidade**: Prometheus + Grafana para métricas de performance.
+-   **Cache**: Redis para aceleração de respostas em produção.
 
 ---
 
-## 🏗️ 4. Topografia do Projeto
+## 🧪 4. Qualidade & Testes
 
-| `apps/` | Aplicativos do sistema (Django). |
-| `config/` | Configurações centrais do Django. |
-| `docs/` | **Central de Documentação** (Roadmap, Gap Analysis, Infra). |
-| `scripts/` | **Scripts Utilitários** e ferramentas de debug. |
-| `media/` | Arquivos dinâmicos, fotos e documentos de upload. |
-| `seed_db.py` | Simulador de 10 anos de dados escolares (2016–2026). |
-| `manage.py` | Entrada da CLI Django. |
-| `docker-compose.yml` | Orquestração completa: App + MySQL + RabbitMQ + Redis + Prometheus + Grafana. |
+A estabilidade do SIGE é garantida por uma rigorosa suíte de automação:
+-   **45/45 testes passando (100% verde)**.
+-   **Ferramentas**: Pytest, Flake8, Pylint, Mypy.
+-   **CI/CD**: GitHub Actions validando cada push antes do deploy.
 
 ---
 
-## 🎨 5. Design System & UI/UX
-
-A interface é baseada no conceito **Premium Glassmorphism**, com foco em densidade de informação limpa para gestores.
-* **Bordas 48px**: Botões e inputs em formato de pílula.
-* **Hub Analítico**: Alternância rápida entre BI e Relatórios via abas dinâmicas.
-
----
-
-## 🛣️ 7. Documentação Estratégica & Roadmap
-
-| [`ROADMAP.md`](docs/ROADMAP.md) | Roadmap v2.0 com foco em IA e Integrações Financeiras. |
-| [`DEPLOYMENT.md`](docs/DEPLOYMENT.md) | **Guia de Deploy (Render + Aiven)** para novos desenvolvedores. |
-| [`INFRASTRUCTURE.md`](docs/INFRASTRUCTURE.md) | Guia para subir o stack de monitoramento e mensageria. |
-| [`GAP_ANALYSIS.md`](docs/GAP_ANALYSIS.md) | Análise competitiva SIGE vs. SUAP/SIGEDUC. |
-
----
-
-## 🚀 8. Instalação (Setup Rápido)
-
-### 🐳 8.1. Rodando com Docker (Recomendado)
-Para subir o ambiente completo com RabbitMQ e Grafana:
-```bash
-docker-compose up --build
-```
-Acesse o sistema em `http://localhost:8000`. Veja o [INFRASTRUCTURE.md](INFRASTRUCTURE.md) para configurar o Grafana.
-
----
-
-## 💻 8. Guia de Comandos Rápidos (CLI)
-
-Use estes comandos para gerenciar o projeto no dia a dia.
+## 🚀 5. Instalação & Setup
 
 ### Desenvolvimento Local
+```bash
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
+
+### Comandos de Manutenção
 | Ação | Comando |
 | :--- | :--- |
-| **Instalar Dependências** | `pip install -r requirements.txt` |
-| **Rodar o Servidor** | `python manage.py runserver` |
-| **Criar Migrações** | `python manage.py makemigrations` |
-| **Aplicar Migrações** | `python manage.py migrate` |
-| **Criar Superusuário** | `python manage.py createsuperuser` |
-| **Rodar Testes** | `pytest` ou `python manage.py test` |
-| **Popular Banco (10 anos)** | `python seed_db.py` |
-
-### Produção & Manutenção (Aiven/Render)
-Para rodar estes comandos no banco de produção pelo seu PC, certifique-se que o `DATABASE_URL` está configurado no seu terminal.
-
-| Ação | Comando |
-| :--- | :--- |
-| **Desbloquear IP (Axes)** | `python manage.py axes_reset` |
-| **Limpar Sessões** | `python manage.py clearsessions` |
-| **Coletar Estáticos** | `python manage.py collectstatic --no-input` |
-| **Reset de Senha Manual** | `python manage.py changepassword <username>` |
+| **Rodar Testes** | `pytest` |
+| **Popular Banco** | `python seed_db.py` |
+| **Coletar Estáticos** | `python manage.py collectstatic` |
 
 ---
 
 ## 🚀 Deploy em Produção
 
-O SIGE está configurado para deploy contínuo no **Render** com banco de dados **MySQL** hospedado no **Aiven**.
-
-*   **PaaS:** [Render](https://render.com/)
-*   **Banco de Dados:** [Aiven Console](https://console.aiven.io/)
-*   **Guia Completo:** Consulte o documento [**`docs/DEPLOYMENT.md`**](docs/DEPLOYMENT.md).
+O SIGE está configurado para deploy contínuo no **Render** com banco **MySQL** no **Aiven**.
+*   **Guia Completo:** Consulte [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
 
 ---
-
 <div align="center">
-
-Desenvolvido com excelência técnica pela equipe SIGE.
-
+Desenvolvido com excelência técnica para o futuro da educação.
 </div>

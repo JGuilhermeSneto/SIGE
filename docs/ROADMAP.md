@@ -76,6 +76,44 @@
 
 ---
 
+## 🔵 Fase 5 — IoT & Automação Escolar (Projeto Integrador II)
+*Integração de hardware para automação de rotinas escolares e coleta de dados em tempo real.*
+
+### 💡 Propostas de Integração
+1. **Frequência Automática (RFID)** ⭐:
+   - Registro de presença via ESP32 + Leitor RC522.
+   - Sincronização automática com o módulo `apps.academico` via MQTT/API.
+2. **Painéis de Aviso Inteligentes**:
+   - Displays físicos (TFT/LED) nos corredores consumindo a API do SIGE para horários e comunicados.
+3. **Controle de Acesso por QR Code**:
+   - Integração com a carteirinha digital do aluno para controle de entrada/saída.
+4. **Monitoramento de Ocupação**:
+   - Sensores PIR em salas de aula para otimização de uso de infraestrutura.
+
+### 🧪 Diferencial Técnico
+O SIGE oferece uma base sólida para IoT devido à sua **infraestrutura de testes automatizados** (Pytest + Mocks). Isso permite:
+- Testes unitários para lógica de presença MQTT.
+- Mocks de brokers para validação de integração no CI/CD.
+- Simulação de hardware para garantir estabilidade antes do deploy físico.
+
+---
+
+---
+
+## 🎯 Próximos Passos (Foco Imediato — Amanhã)
+
+### 🔒 1. Fortalecimento da Camada de Segurança
+- **MFA (2FA) Mandatório**: Implementar obrigatoriedade de autenticação em dois fatores para perfis administrativos e financeiros.
+- **Data Masking**: Aplicar máscaras dinâmicas no frontend para dados sensíveis (CPF, Telefones) mesmo quando descriptografados, liberando a visão completa apenas sob demanda.
+- **Honeypot de API**: Criar endpoints falsos para detectar e bloquear scanners automáticos de vulnerabilidades.
+
+### 🧪 2. Expansão Massiva da Cobertura de Testes
+- **Testes de Camada de Serviço (Services)**: Alcançar 100% de cobertura nos serviços críticos do módulo `academico` e `financeiro`.
+- **E2E Mobile Simulation**: Implementar testes de integração simulando o fluxo de notificações push do backend para o dispositivo mobile.
+- **Stress Test de Criptografia**: Validar a performance do sistema sob alta carga de requisições que exijam descriptografia em tempo real.
+
+---
+
 ## 📊 Matriz de Prioridade
 
 | Status | Item | Impacto | Quando |
@@ -89,7 +127,8 @@
 | 🟠 | Cobertura 75% | Estabilidade futura | Q2/2026 |
 | 🟠 | Gateway Pagamento (Asaas) | Receita real | Q2/2026 |
 | 🟡 | API REST + JWT | Fundação Mobile | Q3/2026 |
+| 🔵 | IoT Integration (RFID/MQTT) | Automação | Q4/2026 |
 
 ---
 
-*Última atualização: 04 de Maio de 2026 — Central de Segurança & Telemetria de Erros (Shield v1.0)*
+*Última atualização: 05 de Maio de 2026 — Roadmap de Segurança & Testes Críticos*
