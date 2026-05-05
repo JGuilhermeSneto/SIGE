@@ -64,7 +64,8 @@ O SIGE implementa uma camada de segurança de nível industrial para proteção 
 ## 🧪 4. Qualidade & Testes
 
 A estabilidade do SIGE é garantida por uma rigorosa suíte de automação:
--   **45/45 testes passando (100% verde)**.
+-   **80+ testes automatizados (100% verde)**.
+-   **Cobertura: ~70%** (Meta alcançada em Q2/2026).
 -   **Ferramentas**: Pytest, Flake8, Pylint, Mypy.
 -   **CI/CD**: GitHub Actions validando cada push antes do deploy.
 

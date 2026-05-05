@@ -76,7 +76,7 @@ html, body {
 .menu-icones {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 16px;
 }
 
 .icone-btn {

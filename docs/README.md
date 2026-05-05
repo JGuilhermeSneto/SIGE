@@ -11,6 +11,7 @@ Nesta pasta, você encontrará toda a documentação estratégica, manuais de in
 - `PIPELINE.md`: Detalhes do workflow de CI/CD (GitHub Actions).
 - `DEPLOYMENT.md`: Guia de Deploy em produção (Render + Aiven).
 - `SEED_INSTRUCTIONS.md`: Instruções para o simulador de 10 anos de dados.
+- `SIGE_Requisitos.docx`: Documentação exaustiva de requisitos funcionais e não funcionais.
 
 > **Importante**: Mantenha estes documentos atualizados conforme novas funcionalidades forem implementadas.
 

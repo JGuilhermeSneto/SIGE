@@ -1,5 +1,5 @@
 from django.db import transaction
-from .models import Fatura, Pagamento
+from ..models import Fatura, Pagamento
 from django.utils import timezone
 
 class FinanceiroService:

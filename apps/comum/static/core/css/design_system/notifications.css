@@ -60,6 +60,37 @@
 }
 
 /* ── Header Notification Badges ── */
+.notifications-hub {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.notificacoes-badge-btn {
+    position: relative;
+    cursor: pointer;
+    color: var(--text-primary);
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all var(--transition-mid);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-sm);
+}
+
+.notificacoes-badge-btn:hover {
+    transform: translateY(-2px) scale(1.08);
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--bg-hover);
+    box-shadow: var(--shadow-md);
+}
+
 .header-badge-notif {
     position: absolute;
     top: -5px;
