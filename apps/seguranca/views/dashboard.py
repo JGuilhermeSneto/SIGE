@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib.auth import get_user_model
 from axes.models import AccessLog, AccessAttempt
 from django_otp.plugins.otp_totp.models import TOTPDevice
-from apps.seguranca.models import LogAuditoria, LogErro
+from apps.seguranca.models import LogAuditoria, LogErro, BlacklistIP, BugReport, ConfiguracaoSeguranca
 
 User = get_user_model()
 
@@ -20,12 +20,19 @@ class SecurityDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateVie
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context["config_seguranca"] = ConfiguracaoSeguranca.get_solo()
         
         # Logs de Auditoria (Áreas Sensíveis)
         context["logs_auditoria"] = LogAuditoria.objects.all().select_related("usuario")[:50]
         
         # Logs de Erros do Sistema (EXCEÇÕES)
         context["logs_erros"] = LogErro.objects.all().select_related("usuario")[:30]
+        
+        # Reports de Bugs dos Usuários
+        context["reports_bugs"] = BugReport.objects.all().select_related("usuario")[:20]
+        
+        # Blacklist de IPs
+        context["blacklist_ips"] = BlacklistIP.objects.all().select_related("bloqueado_por")[:30]
         
         # Logs Administrativos (Painel Admin)
         context["logs_admin"] = LogEntry.objects.all().select_related("user", "content_type")[:20]
@@ -51,6 +58,7 @@ class SecurityDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateVie
         # Resumo de bloqueios
         context["total_auditoria"] = LogAuditoria.objects.count()
         context["total_erros"] = LogErro.objects.count()
-        context["bloqueios_ativos"] = AccessAttempt.objects.count()
+        context["total_bugs"] = BugReport.objects.filter(status='NOVO').count()
+        context["bloqueios_ativos"] = BlacklistIP.objects.count()
         
         return context

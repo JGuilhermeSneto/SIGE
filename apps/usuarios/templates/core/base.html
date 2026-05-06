@@ -109,7 +109,13 @@
     </a>
 
     <!-- USUÁRIO -->
-    <div class="menu-icones">
+    <div class="menu-icones" style="display: flex; align-items: center; gap: 12px;">
+      
+      <!-- Botão Reportar Bug -->
+      <button class="theme-hub-btn" title="Reportar Bug" id="bug-report-trigger" style="color: var(--accent-ruby); margin-right: 5px;" onclick="abrirModalBug()">
+        <i class="fa-solid fa-bug"></i>
+      </button>
+
       <div class="sige-theme-hub" id="theme-hub">
         <button class="theme-hub-btn" title="Alterar Tema" id="theme-hub-trigger">
           <i class="fa-solid fa-palette"></i>
@@ -424,6 +430,66 @@
   <script src="{% static 'core/js/theme_manager.js' %}"></script>
   <script src="{% static 'core/js/ui_utils.js' %}"></script>
 
+
+  <!-- ═════════ MODAL REPORTAR BUG ═════════ -->
+  <div id="modal-bug-report" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10001; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease-out;">
+        <div style="padding: 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--accent-ruby); display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-bug-slash"></i> Reportar Bug
+            </h3>
+            <button onclick="fecharModalBug()" style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <form id="form-bug-report" method="POST" action="/seguranca/reportar-bug/" enctype="multipart/form-data" style="padding: 25px; display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            <input type="hidden" name="url_origem" value="{{ request.build_absolute_uri }}">
+            
+            <div class="campo-grupo">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Título Curto do Problema</label>
+                <input type="text" name="titulo" required placeholder="Ex: Botão de salvar não funciona na tela X" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary);">
+            </div>
+            
+            <div class="campo-grupo">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Descrição Detalhada</label>
+                <textarea name="descricao" required rows="4" placeholder="O que aconteceu? Como podemos reproduzir o erro?" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary); resize: vertical;"></textarea>
+            </div>
+
+            <div class="campo-grupo">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Anexar Print / Evidência (Opcional)</label>
+                <input type="file" name="screenshot" accept="image/*" style="width: 100%; font-size: 0.8rem; color: var(--text-muted);">
+            </div>
+            
+            <div class="campo-grupo">
+                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Prioridade</label>
+                <select name="prioridade" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary);">
+                    <option value="BAIXA">Baixa - Sugestão / Detalhe visual</option>
+                    <option value="MEDIA" selected>Média - Funcionalidade com erro</option>
+                    <option value="ALTA">Alta - Impede o uso de uma função importante</option>
+                    <option value="CRITICA">Crítica - O sistema caiu ou dados sumiram</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-sige-primario" style="background: var(--accent-ruby); margin-top: 10px;">
+                <i class="fa-solid fa-paper-plane"></i> Enviar Relatório
+            </button>
+        </form>
+    </div>
+  </div>
+
+  <script>
+    function abrirModalBug() {
+        document.getElementById('modal-bug-report').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function fecharModalBug() {
+        document.getElementById('modal-bug-report').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    // Fechar ao clicar fora
+    window.addEventListener('click', function(e) {
+        if (e.target == document.getElementById('modal-bug-report')) fecharModalBug();
+    });
+  </script>
 
   {% if vite_entry_name %}
   {% vite_entry vite_entry_name %}

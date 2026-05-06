@@ -13,12 +13,13 @@ O coração do **SIGE**. Onde turmas, alunos e professores se interconectam e a 
 ### 2. Desempenho Escolar (`models/desempenho.py`)
 - `Frequencia`: Registro diário de presença. 
 - `Nota` e `NotaAtividade`: Registros oficiais de avaliações.
-- `Notificacao`: Canal interno de comunicação professor-aluno.
+- **Notificacao (Unificada)**: Engine global de notificações que atende a todos os módulos do sistema.
 
 ## 🚀 Engenharia e Performance
 
+- **NotificacaoServico**: Camada de serviço global para envio de alertas automáticos para usuários, turmas, gestores e toda a instituição.
 - **Selectors Pattern**: Camada de consultas otimizadas em `selectors/` que reduz consultas N+1 de O(n) para O(1).
-- **Service Layer**: Lógica de negócio centralizada em `services/` (Cálculo de médias, aprovação e situações automáticas).
+- **Service Layer**: Lógica de negócio centralizada em `services/` (Cálculo de médias, situações automáticas e integração de notificações).
 - **Integração BI**: Os dados acadêmicos alimentam o **Hub de Inteligência** (`apps.dashboards`) via Seletores compartilhados.
 
 ## 📄 Emissão de Documentos
@@ -30,5 +31,6 @@ O coração do **SIGE**. Onde turmas, alunos e professores se interconectam e a 
 ## 🧠 Regras de Aprovação
 - **Aprovação**: Média `>= 7,0` E Frequência `>= 75%`.
 - **Reprovado por Falta**: Frequência `< 75%` (Sobrepõe qualquer nota).
-- **Abono**: Apenas via fluxo oficial no módulo `apps.saude`.
-> Atualizado em Maio de 2026 — Lógica de Aprovação e ReportLab consolidados.
+- **Abono**: Apenas via fluxo oficial no módulo `apps.saude` com notificação automática.
+
+> Atualizado em Maio de 2026 — Notificações Unificadas e Shield v1.2 integrados.

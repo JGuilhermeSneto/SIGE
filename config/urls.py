@@ -1,5 +1,5 @@
 """
-URLconf raiz do SIGE — mapa de rotas HTTP do site inteiro. [Reloaded]
+URLconf raiz do SIGE — mapa de rotas HTTP do site inteiro. [Reloaded v2]
 
 O que é: lista de ``path()`` que o Django percorre na ordem até achar
 uma view que atenda à URL.
@@ -67,6 +67,13 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("financeiro/", include("apps.financeiro.urls")),
     path("seguranca/", include("apps.seguranca.urls")),
     path("", include("django_prometheus.urls")),
+    
+    # Honeypots (Bloqueio automático de IPs maliciosos)
+    path("wp-admin/", include("apps.seguranca.urls.honeypot")),
+    path("phpmyadmin/", include("apps.seguranca.urls.honeypot")),
+    path(".env", include("apps.seguranca.urls.honeypot")),
+    path("xmlrpc.php", include("apps.seguranca.urls.honeypot")),
+
     # Rotas de Autenticação Multi-Fator (2FA)
     path("", include(tf_urls)),
 ]

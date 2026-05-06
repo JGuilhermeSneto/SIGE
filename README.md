@@ -33,21 +33,25 @@ O Back-end é o pilar principal do SIGE, responsável por fornecer dados e regra
 | Módulo | Escopo técnico | Papel no Ecossistema |
 | :--- | :--- | :--- |
 | **`usuarios`** | Auth, RBAC e Perfil. | Gerencia identidades e permissões de todos os apps. |
-| **`academico`** | Lógica de Notas/Frequência. | Engine central de regras escolares. |
+| **`academico`** | Lógica de Notas/Frequência. | Engine de regras e **Notificações Unificadas**. |
 | **`iot`** | **Automação & MQTT** 🤖 | Interface com hardware (RFID/Sensores). |
-| **`seguranca`** | **Shield v1.0** 🛡️ | Auditoria LGPD, MFA e Telemetria de Erros. |
+| **`seguranca`** | **Shield v1.2 (Hardening)** 🛡️ | Honeypot, Auto-Blacklist, PII Scrubbing e TI Workflow. |
 | **`financeiro`** | Fluxo de Caixa e BI. | Gestão de faturas e KPIs financeiros. |
 | **`documentos`** | ReportLab Engine. | Geração atômica de PDFs oficiais. |
 
 ---
 
-## 🔒 2. Segurança & Criptografia
+## 🔒 2. Segurança & Criptografia (Shield v1.2)
 
 O SIGE implementa uma camada de segurança de nível industrial para proteção de dados sensíveis:
 
--   **AES-256 Encryption**: Dados como CPF, Data de Nascimento, Telefone e Endereço são criptografados em repouso no banco de dados.
--   **Audit Log**: Rastreamento completo de quem acessou ou modificou dados sensíveis, em conformidade com a LGPD.
--   **Protection Shield**: Telemetria em tempo real de erros (500) e monitoramento de tentativas de Brute Force.
+-   **AES-256 Encryption**: Dados sensíveis (CPF, Endereço) criptografados em repouso.
+-   **Admin Honeypot**: Armadilha para bots que tentam acessar o admin sem autenticação (Banimento Automático).
+-   **Auto-Blacklist Proativo**: Bloqueio de IPs com comportamento anômalo ou alto volume de erros.
+-   **PII Sanitization**: Scrubbing automático de dados sensíveis em logs de erro (Conformidade LGPD).
+-   **Magic Number Validation**: Verificação binária de assinaturas de arquivos para impedir uploads maliciosos.
+-   **Audit Log**: Rastreamento completo de acesso a áreas críticas.
+-   **Maintenance Kill-Switch**: Middleware global para isolamento do sistema em manutenção.
 
 ---
 

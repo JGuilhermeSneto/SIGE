@@ -105,6 +105,16 @@
                     <small class="erro-inline"></small>
                 </div>
 
+                <div class="caixa-texto">
+                    <label>Especialização</label>
+                    {{ form.especializacao|attr:"placeholder:Ex: Gestão Escolar" }}
+                </div>
+
+                <div class="caixa-texto">
+                    <label>Área de Atuação</label>
+                    {{ form.area_atuacao|attr:"placeholder:Ex: Ensino Médio" }}
+                </div>
+
                 <div class="botoes">
                     <span></span>
                     <button type="button" class="btn btn-proximo" onclick="validarEtapa(1)">Próximo <i class="fa-solid fa-arrow-right"></i></button>
@@ -141,6 +151,17 @@
                     <label class="required">Logradouro (Rua/Avenida)</label>
                     {{ form.logradouro|attr:"placeholder:Endereço completo" }}
                     <small class="erro-inline"></small>
+                </div>
+
+                <div class="caixa-texto">
+                    <label class="required">Número</label>
+                    {{ form.numero }}
+                    <small class="erro-inline"></small>
+                </div>
+
+                <div class="caixa-texto">
+                    <label>Complemento</label>
+                    {{ form.complemento }}
                 </div>
 
                 <div class="botoes">

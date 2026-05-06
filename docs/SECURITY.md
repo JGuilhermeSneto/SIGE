@@ -4,22 +4,34 @@ Este documento descreve as camadas de proteção implementadas no SIGE para gara
 
 ---
 
-## 1. Proteções Ativas
+## 1. Proteções Ativas & Hardening (Shield v1.2)
 
 ### 🚫 Proteção contra Força Bruta (Brute Force)
-Utilizamos o **Django Axes** para monitorar tentativas de login.
+Utilizamos o **Django Axes** e **Hardening Middleware** para monitorar tentativas de login.
 - **Limite**: 5 tentativas falhas.
 - **Bloqueio**: O IP ou usuário é bloqueado por **1 hora** após atingir o limite.
 
-- **CSP Aprimorada**: Suporte a domínios externos confiáveis (Google Fonts, Cloudinary, FontAwesome, Sentry) e compatibilidade total com o workflow **Vite/React**.
+### 🍯 Admin Honeypot (Armadilha para Bots)
+O sistema monitora tentativas de acesso não autenticadas a caminhos administrativos sensíveis como `/admin/`, `wp-admin/`, `phpmyadmin/`.
+- **Ação**: Banimento automático do IP por **24 horas** após 3 tentativas de invasão detectadas.
 
-### 🚥 Limitação de Taxa (API Throttling)
-- **Anônimos**: 100 requisições/dia.
-- **Usuários Autenticados**: 1000 requisições/dia.
+### 🌑 Auto-Blacklist Inteligente
+Monitoramento em tempo real do volume de erros gerados por um único IP.
+- **Gatilho**: 10 erros críticos em 60 segundos.
+- **Ação**: Bloqueio preventivo do IP por **1 hora** para mitigar ataques de enumeração ou DoS.
+
+### 🧼 Sanitização de PII (PII Scrubbing)
+Para conformidade estrita com a **LGPD**, o sistema implementa uma camada de "limpeza" de logs.
+- **Lógica**: Antes de gravar qualquer log de erro no banco de dados (`LogErro`), CPFs e E-mails são mascarados via regex.
+- **Garantia**: Desenvolvedores e gestores técnicos não têm acesso a dados pessoais via trilhas de erro.
+
+### 🛡️ Validação de Assinatura (Magic Numbers)
+Proteção contra ataques de upload (MIME-Type sniffing).
+- **Lógica**: O sistema lê o cabeçalho binário do arquivo para validar se o conteúdo corresponde à extensão (Ex: Um script `.php` disfarçado de `.jpg` será bloqueado).
 
 ---
 
-## 2. Camadas Adicionais (Atualização de Segurança 27/04/2026)
+## 2. Camadas Adicionais (Atualização Shield 06/05/2026)
 
 ### 🔐 Autenticação em Dois Fatores (2FA)
 Implementamos o **Django Two-Factor Auth**.

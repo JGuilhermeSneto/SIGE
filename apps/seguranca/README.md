@@ -1,18 +1,24 @@
-# 🛡️ Módulo de Segurança & Governança (Shield)
+# 🛡️ Módulo de Segurança & Governança (Shield v1.2)
 
-O app `apps.seguranca` é a central de comando para a integridade do sistema, auditoria de dados e conformidade com a **LGPD**.
+O app `apps.seguranca` é a central de comando para a integridade do sistema, auditoria de dados e defesa ativa contra ameaças cibernéticas.
 
 ## 📐 Estrutura de Governança
-- **Shield Dashboard**: Interface executiva para monitoramento de segurança.
-- **Audit Log**: Registro imutável de todas as ações sensíveis (Escrita, Leitura de dados sensíveis).
-- **MFA (Multi-Factor Authentication)**: Gestão de tokens e fluxos de autenticação em duas etapas.
+- **Shield Dashboard (v1.2)**: Monitoramento avançado de segurança e gestão do Hardening.
+- **Audit Log**: Registro imutável de todas as ações em dados sensíveis (Leitura/Escrita).
+- **Hardening Middleware**:
+    - **Admin Honeypot**: Detecta e bane bots em acessos não autorizados ao `/admin/`.
+    - **Auto-Blacklist**: Inteligência para banimento dinâmico de IPs geradores de erros críticos.
+- **Sanitização de PII (Scrubbing)**: Remoção automática de CPFs e E-mails de logs técnicos (LGPD compliance).
+- **MFA (Multi-Factor Authentication)**: Autenticação em duas etapas nativa.
 
-## 🚀 Engenharia de Segurança
-- **Telemetria de Erros**: Monitoramento em tempo real de exceções e comportamentos anômalos.
-- **Proteção Brute-Force**: Integração com `django-axes` para bloqueio dinâmico de IPs suspeitos.
-- **Criptografia**: Gestão de chaves para campos sensíveis nos outros módulos.
+## 🚀 Engenharia de Segurança & TI
+- **Workflow de Bugs**: Reporte com validação de **Magic Numbers** (assinatura binária) para evitar injeção de malware via upload.
+- **Painel de Resolução**: Gestão do ciclo de vida de bugs com **notificações automáticas** para o usuário.
+- **Modo Manutenção**: "Kill-switch" administrativo para isolamento técnico do sistema.
+- **Proteção Brute-Force**: Bloqueio dinâmico via `django-axes`.
+- **Criptografia AES-256**: Proteção de dados em repouso.
 
 ## 🔗 Integração Multi-Tenant
-- Garante o isolamento estrito de logs de auditoria por instituição, impedindo vazamento de trilhas de acesso.
+- Isolamento estrito de logs e auditoria por instituição.
 
-> Atualizado em Maio de 2026 — Central de Segurança Shield v1.0 consolidada.
+> Atualizado em Maio de 2026 — Shield v1.2 (Hardening) — Defesa Ativa e Governança de Dados.

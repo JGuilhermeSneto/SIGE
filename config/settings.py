@@ -67,6 +67,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "apps.seguranca.middleware.SecurityHardeningMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -74,14 +75,16 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.seguranca.middleware.ManutencaoMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "axes.middleware.AxesMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
     "django_session_timeout.middleware.SessionTimeoutMiddleware",
     "apps.comum.middleware.tenant_middleware.TenantMiddleware",
-    # "apps.seguranca.middleware.AuditMiddleware",
-    # "apps.seguranca.middleware.ExceptionMiddleware",
+    "apps.seguranca.middleware.BlacklistMiddleware",
+    "apps.seguranca.middleware.AuditMiddleware",
+    "apps.seguranca.middleware.ExceptionMiddleware",
     "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
 
