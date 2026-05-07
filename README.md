@@ -104,3 +104,12 @@ O SIGE está configurado para deploy contínuo no **Render** com banco **MySQL**
 <div align="center">
 Desenvolvido com excelência técnica para o futuro da educação.
 </div>
+
+## 📌 Quick Wins – Ajustes a implementar hoje
+
+- **Cobertura de testes**: adicionar testes nos services críticos (`financeiro/services/financeiro_service.py`, `usuarios/services/perfil_service.py`, `dashboards/views.py`, `saude/views.py`) e garantir >75% no CI.
+- **Pre‑commit**: instalar `pre-commit` com hooks `black`, `isort`, `flake8`, `mypy`.
+- **Segredos**: mover `.env` para `.gitignore`, criar `.env.example` e atualizar README com instruções de setup.
+- **Cache de notas**: usar `cache.get_or_set` ao calcular total de notas no painel do professor.
+- **Headers de segurança**: adicionar middleware que define CSP, HSTS, X‑Content‑Type‑Options.
+- **Docker‑compose dev**: criar `docker-compose.dev.yml` com PostgreSQL, Redis, Celery e Flower.

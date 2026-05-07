@@ -22,3 +22,12 @@ O sistema estende o `auth.User` para fornecer interfaces personalizadas:
 - **Pytest**: Suíte de testes automatizados com 90%+ de cobertura neste módulo.
 
 > Atualizado em Maio de 2026 — Shield v1.2 e Notificações Administrativas integrados.
+
+## 📌 Quick Wins – Ajustes a implementar hoje (Usuários)
+
+- **Cobertura de testes**: ampliar testes em `services/perfil_service.py` e `views/*` para alcançar >75%.
+- **Pre‑commit**: garantir formatação e lint em todo o módulo.
+- **Segredos**: certificar que `.env` não seja versionado pelo módulo.
+- **Cache de perfis**: usar `cache` ao buscar foto e nome exibido em templates.
+- **Headers de segurança**: validar CSP nas páginas de login/registro.
+- **Docker‑compose dev**: incluir `postgres` e `redis` para desenvolvimento local do módulo.
