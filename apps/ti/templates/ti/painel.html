@@ -163,9 +163,14 @@
           <div class="metric-item"><span class="metric-label">CPU Load</span><span class="metric-value">{{ recursos.cpu_percent }}%</span></div>
           <div class="metric-item"><span class="metric-label">RAM Usage</span><span class="metric-value">{{ recursos.ram_percent }}%</span></div>
           <div class="metric-item"><span class="metric-label">Task Queue</span><span class="metric-value">{{ tasks.pending }} pendentes</span></div>
-          <div style="margin-top: 10px; display: flex; gap: 5px;">
-             <span class="badge status-active" style="font-size: 0.55rem;">REDIS: OK</span>
-             <span class="badge status-active" style="font-size: 0.55rem; background: var(--accent-violet);">WORKER: OK</span>
+          <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+             <div style="display: flex; gap: 5px;">
+                <span class="badge status-active" style="font-size: 0.55rem;">REDIS: OK</span>
+                <span class="badge status-active" style="font-size: 0.55rem; background: var(--accent-violet);">WORKER: OK</span>
+             </div>
+             <a href="http://localhost:5555" target="_blank" class="btn-sige-secundario" style="font-size: 0.6rem; padding: 6px; text-align: center; text-decoration: none; border-color: var(--accent-violet); color: var(--accent-violet);">
+                <i class="fa-solid fa-external-link"></i> ABRIR FLOWER DASHBOARD
+             </a>
           </div>
        </article>
 
