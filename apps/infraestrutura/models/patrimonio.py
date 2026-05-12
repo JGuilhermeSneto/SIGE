@@ -3,8 +3,10 @@ from django.core.validators import MinValueValidator
 from apps.comum.utils.fields import EncryptedCharField, EncryptedDecimalField
 from simple_history.models import HistoricalRecords
 
+
 class UnidadeEscolar(models.Model):
     """Representa uma unidade física ou campus da escola."""
+
     nome = models.CharField(max_length=100)
     endereco = EncryptedCharField(max_length=1000, blank=True)
     eh_sede = models.BooleanField(default=False)
@@ -18,8 +20,10 @@ class UnidadeEscolar(models.Model):
     def __str__(self):
         return self.nome
 
+
 class CategoriaBem(models.Model):
     """Categorias para itens de patrimônio (ex: Mobiliário, Eletrônicos)."""
+
     nome = models.CharField(max_length=50)
     descricao = models.TextField(blank=True)
 
@@ -30,52 +34,76 @@ class CategoriaBem(models.Model):
     def __str__(self):
         return self.nome
 
+
 class Ambiente(models.Model):
     """Representa um local específico (Sala 101, Lab de Informática, Cozinha) dentro de uma Unidade."""
-    unidade = models.ForeignKey(UnidadeEscolar, on_delete=models.CASCADE, related_name="ambientes")
+
+    unidade = models.ForeignKey(
+        UnidadeEscolar, on_delete=models.CASCADE, related_name="ambientes"
+    )
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)
 
     class Meta:
-        db_table = 'infra_ambiente'
+        db_table = "infra_ambiente"
         verbose_name = "Ambiente"
         verbose_name_plural = "Ambientes"
 
     def __str__(self):
         return f"{self.nome} ({self.unidade.nome})"
 
+
 class ItemPatrimonio(models.Model):
     """Itens duráveis da instituição (Inventário) com padrão SUAP/SIPAC."""
+
     ESTADO_CHOICES = [
-        ('NOVO', 'Novo'),
-        ('BOM', 'Bom'),
-        ('REGULAR', 'Regular'),
-        ('DANIFICADO', 'Danificado'),
-        ('INSERVIVEL', 'Inservível'),
+        ("NOVO", "Novo"),
+        ("BOM", "Bom"),
+        ("REGULAR", "Regular"),
+        ("DANIFICADO", "Danificado"),
+        ("INSERVIVEL", "Inservível"),
     ]
-    
-    tombamento = models.CharField(max_length=50, unique=True, verbose_name="Número de Patrimônio (Tombamento)")
+
+    tombamento = models.CharField(
+        max_length=50, unique=True, verbose_name="Número de Patrimônio (Tombamento)"
+    )
     nome = models.CharField(max_length=150)
     marca = models.CharField(max_length=100, blank=True)
     modelo = models.CharField(max_length=100, blank=True)
-    numero_serie = models.CharField(max_length=100, blank=True, verbose_name="Número de Série")
-    
+    numero_serie = models.CharField(
+        max_length=100, blank=True, verbose_name="Número de Série"
+    )
+
     categoria = models.ForeignKey(CategoriaBem, on_delete=models.PROTECT)
     unidade = models.ForeignKey(UnidadeEscolar, on_delete=models.PROTECT)
-    ambiente = models.ForeignKey(Ambiente, on_delete=models.SET_NULL, null=True, blank=True, related_name="itens")
-    responsavel = models.ForeignKey("auth.User", on_delete=models.PROTECT, null=True, blank=True, related_name="bens_sob_custodia")
-    
-    estado_conservacao = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='BOM')
+    ambiente = models.ForeignKey(
+        Ambiente, on_delete=models.SET_NULL, null=True, blank=True, related_name="itens"
+    )
+    responsavel = models.ForeignKey(
+        "auth.User",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="bens_sob_custodia",
+    )
+
+    estado_conservacao = models.CharField(
+        max_length=20, choices=ESTADO_CHOICES, default="BOM"
+    )
     data_aquisicao = models.DateField(null=True, blank=True)
-    valor_aquisicao = EncryptedDecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    
+    valor_aquisicao = EncryptedDecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True
+    )
+
     # Campo para integração financeira futura
-    fatura_origem = models.CharField(max_length=100, blank=True, help_text="ID ou Nº da Fatura de Compra")
-    
+    fatura_origem = models.CharField(
+        max_length=100, blank=True, help_text="ID ou Nº da Fatura de Compra"
+    )
+
     history = HistoricalRecords()
-    
+
     class Meta:
-        db_table = 'infra_patrimonio'
+        db_table = "infra_patrimonio"
         verbose_name = "Item de Patrimônio"
         verbose_name_plural = "Itens de Patrimônio"
 
@@ -87,9 +115,13 @@ class ItemPatrimonio(models.Model):
         """Calcula o valor depreciado (Placeholder)."""
         return self.valor_aquisicao
 
+
 class ManutencaoBem(models.Model):
     """Histórico de manutenções e reparos de itens patrimoniais."""
-    item = models.ForeignKey(ItemPatrimonio, on_delete=models.CASCADE, related_name="manutencoes")
+
+    item = models.ForeignKey(
+        ItemPatrimonio, on_delete=models.CASCADE, related_name="manutencoes"
+    )
     data_solicitacao = models.DateField(auto_now_add=True)
     data_realizacao = models.DateField(null=True, blank=True)
     descricao_problema = models.TextField()
@@ -98,43 +130,55 @@ class ManutencaoBem(models.Model):
     executor = models.CharField(max_length=200, help_text="Empresa ou técnico")
 
     class Meta:
-        db_table = 'infra_manutencao'
+        db_table = "infra_manutencao"
         verbose_name = "Manutenção de Bem"
         verbose_name_plural = "Manutenções de Bens"
 
+
 class ItemEstoque(models.Model):
     """Itens de consumo (EPIs, Papelaria, Limpeza)."""
+
     nome = models.CharField(max_length=100)
-    unidade_medida = models.CharField(max_length=20, default='unidade', help_text="Ex: Caixa, Pacote, Unidade")
+    unidade_medida = models.CharField(
+        max_length=20, default="unidade", help_text="Ex: Caixa, Pacote, Unidade"
+    )
     estoque_minimo = models.IntegerField(default=5)
 
     class Meta:
-        db_table = 'infra_item_estoque'
+        db_table = "infra_item_estoque"
         verbose_name = "Item de Estoque"
         verbose_name_plural = "Itens de Estoque"
 
     def __str__(self):
         return self.nome
 
+
 class SaldoEstoque(models.Model):
     """Armazena o saldo de um item por unidade/campus."""
-    item = models.ForeignKey(ItemEstoque, on_delete=models.CASCADE, related_name="saldos")
-    unidade = models.ForeignKey(UnidadeEscolar, on_delete=models.CASCADE, related_name="saldos")
+
+    item = models.ForeignKey(
+        ItemEstoque, on_delete=models.CASCADE, related_name="saldos"
+    )
+    unidade = models.ForeignKey(
+        UnidadeEscolar, on_delete=models.CASCADE, related_name="saldos"
+    )
     quantidade = models.IntegerField(default=0, validators=[MinValueValidator(0)])
-    
+
     class Meta:
-        db_table = 'infra_saldo_estoque'
-        unique_together = ('item', 'unidade')
+        db_table = "infra_saldo_estoque"
+        unique_together = ("item", "unidade")
         verbose_name = "Saldo em Estoque"
         verbose_name_plural = "Saldos em Estoque"
 
     def __str__(self):
         return f"{self.item.nome} em {self.unidade.nome}: {self.quantidade}"
 
+
 class MovimentacaoEstoque(models.Model):
     """Registro de entradas e saídas de materiais."""
-    TIPO_CHOICES = [('ENTRADA', 'Entrada'), ('SAIDA', 'Saída')]
-    
+
+    TIPO_CHOICES = [("ENTRADA", "Entrada"), ("SAIDA", "Saída")]
+
     item = models.ForeignKey(ItemEstoque, on_delete=models.CASCADE)
     unidade = models.ForeignKey(UnidadeEscolar, on_delete=models.CASCADE)
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
@@ -143,6 +187,6 @@ class MovimentacaoEstoque(models.Model):
     justificativa = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        db_table = 'infra_movimentacao_estoque'
+        db_table = "infra_movimentacao_estoque"
         verbose_name = "Movimentação de Estoque"
         verbose_name_plural = "Movimentações de Estoque"

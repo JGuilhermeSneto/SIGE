@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class FinanceiroConfig(AppConfig):
-    name = 'apps.financeiro'
-    verbose_name = 'Gestão Financeira'
+    name = "apps.financeiro"
+    verbose_name = "Gestão Financeira"

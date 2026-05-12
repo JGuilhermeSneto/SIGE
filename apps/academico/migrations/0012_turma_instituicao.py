@@ -7,14 +7,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academico', '0011_historicalfrequencia_historicalnota_and_more'),
-        ('comum', '0001_initial'),
+        ("academico", "0011_historicalfrequencia_historicalnota_and_more"),
+        ("comum", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='turma',
-            name='instituicao',
-            field=models.ForeignKey(blank=True, help_text='Instituição à qual este registro pertence', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_related', to='comum.instituicao'),
+            model_name="turma",
+            name="instituicao",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="Instituição à qual este registro pertence",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(class)s_related",
+                to="comum.instituicao",
+            ),
         ),
     ]

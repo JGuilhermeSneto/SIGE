@@ -7,32 +7,86 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academico', '0004_notificacaoaluno'),
-        ('usuarios', '0001_initial'),
+        ("academico", "0004_notificacaoaluno"),
+        ("usuarios", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PlanejamentoAula',
+            name="PlanejamentoAula",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data_aula', models.DateField(help_text='Data efetiva da aula')),
-                ('horario_aula', models.CharField(help_text='Horário conforme a Grade (Ex: 07:00 - 07:50)', max_length=50)),
-                ('conteudo', models.TextField(help_text='Descrição do plano de aula ou conteúdo abordado (Markdown opcional)')),
-                ('arquivos_apoio', models.FileField(blank=True, help_text='Upload de lista de exercícios ou slides da aula', null=True, upload_to='planejamentos/materiais/')),
-                ('concluido', models.BooleanField(default=False, help_text='Se verificado como True, a aula já foi dada e consumida.')),
-                ('criado_em', models.DateTimeField(auto_now_add=True)),
-                ('atualizado_em', models.DateTimeField(auto_now=True)),
-                ('disciplina', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='planejamentos_aula', to='academico.disciplina')),
-                ('professor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='planejamentos_aula', to='usuarios.professor')),
-                ('turma', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='planejamentos_aula', to='academico.turma')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data_aula", models.DateField(help_text="Data efetiva da aula")),
+                (
+                    "horario_aula",
+                    models.CharField(
+                        help_text="Horário conforme a Grade (Ex: 07:00 - 07:50)",
+                        max_length=50,
+                    ),
+                ),
+                (
+                    "conteudo",
+                    models.TextField(
+                        help_text="Descrição do plano de aula ou conteúdo abordado (Markdown opcional)"
+                    ),
+                ),
+                (
+                    "arquivos_apoio",
+                    models.FileField(
+                        blank=True,
+                        help_text="Upload de lista de exercícios ou slides da aula",
+                        null=True,
+                        upload_to="planejamentos/materiais/",
+                    ),
+                ),
+                (
+                    "concluido",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Se verificado como True, a aula já foi dada e consumida.",
+                    ),
+                ),
+                ("criado_em", models.DateTimeField(auto_now_add=True)),
+                ("atualizado_em", models.DateTimeField(auto_now=True)),
+                (
+                    "disciplina",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="planejamentos_aula",
+                        to="academico.disciplina",
+                    ),
+                ),
+                (
+                    "professor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="planejamentos_aula",
+                        to="usuarios.professor",
+                    ),
+                ),
+                (
+                    "turma",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="planejamentos_aula",
+                        to="academico.turma",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Planejamento de Aula',
-                'verbose_name_plural': 'Planejamentos de Aulas',
-                'db_table': 'core_planejamentoaula',
-                'ordering': ['-data_aula', 'horario_aula'],
-                'unique_together': {('disciplina', 'data_aula', 'horario_aula')},
+                "verbose_name": "Planejamento de Aula",
+                "verbose_name_plural": "Planejamentos de Aulas",
+                "db_table": "core_planejamentoaula",
+                "ordering": ["-data_aula", "horario_aula"],
+                "unique_together": {("disciplina", "data_aula", "horario_aula")},
             },
         ),
     ]

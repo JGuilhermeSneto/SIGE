@@ -36,5 +36,7 @@ def _get_ano_filtro_professor(request, anos_disponiveis, ano_atual):
         ano_filtro = request.session.get("ano_filtro_professor", ano_atual)
 
     if ano_filtro not in anos_disponiveis:
-        anos_disponiveis = sorted(list(set(anos_disponiveis + [ano_filtro])), reverse=True)
+        anos_disponiveis = sorted(
+            list(set(anos_disponiveis + [ano_filtro])), reverse=True
+        )
     return ano_filtro, anos_disponiveis

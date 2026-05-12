@@ -6,13 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('biblioteca', '0001_initial'),
+        ("biblioteca", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='emprestimo',
-            name='status_leitura',
-            field=models.CharField(choices=[('NAO_INFORMADO', 'Apenas Devolvido'), ('LENDO', 'Estava Lendo'), ('FINALIZADO', 'Finalizou a Leitura')], default='NAO_INFORMADO', max_length=15, verbose_name='Status de Leitura'),
+            model_name="emprestimo",
+            name="status_leitura",
+            field=models.CharField(
+                choices=[
+                    ("NAO_INFORMADO", "Apenas Devolvido"),
+                    ("LENDO", "Estava Lendo"),
+                    ("FINALIZADO", "Finalizou a Leitura"),
+                ],
+                default="NAO_INFORMADO",
+                max_length=15,
+                verbose_name="Status de Leitura",
+            ),
         ),
     ]

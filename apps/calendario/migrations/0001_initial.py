@@ -8,24 +8,58 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='EventoCalendario',
+            name="EventoCalendario",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('data', models.DateField(help_text='Data do evento', unique=True)),
-                ('tipo', models.CharField(choices=[('DI_LETIVO', 'Dia Letivo'), ('FERIADO', 'Feriado'), ('PROVA', 'Semana de Prova'), ('SABADO_LETIVO', 'Sábado Letivo'), ('RECESSO', 'Recesso / Férias'), ('FIM_SEMANA', 'Final de Semana')], default='DI_LETIVO', max_length=20)),
-                ('descricao', models.CharField(blank=True, help_text='Descrição (ex: Feriado Local, Nome da Prova)', max_length=255)),
-                ('aula_suspensa', models.BooleanField(default=False, help_text='Indica se as aulas estão suspensas neste dia')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("data", models.DateField(help_text="Data do evento", unique=True)),
+                (
+                    "tipo",
+                    models.CharField(
+                        choices=[
+                            ("DI_LETIVO", "Dia Letivo"),
+                            ("FERIADO", "Feriado"),
+                            ("PROVA", "Semana de Prova"),
+                            ("SABADO_LETIVO", "Sábado Letivo"),
+                            ("RECESSO", "Recesso / Férias"),
+                            ("FIM_SEMANA", "Final de Semana"),
+                        ],
+                        default="DI_LETIVO",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "descricao",
+                    models.CharField(
+                        blank=True,
+                        help_text="Descrição (ex: Feriado Local, Nome da Prova)",
+                        max_length=255,
+                    ),
+                ),
+                (
+                    "aula_suspensa",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Indica se as aulas estão suspensas neste dia",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Evento de Calendário',
-                'verbose_name_plural': 'Eventos de Calendário',
-                'db_table': 'core_eventocalendario',
-                'ordering': ['data'],
+                "verbose_name": "Evento de Calendário",
+                "verbose_name_plural": "Eventos de Calendário",
+                "db_table": "core_eventocalendario",
+                "ordering": ["data"],
             },
         ),
     ]

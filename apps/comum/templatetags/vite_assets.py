@@ -16,7 +16,9 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
-MANIFEST_PATH = Path(settings.BASE_DIR) / "apps" / "comum" / "static" / "vite" / "manifest.json"
+MANIFEST_PATH = (
+    Path(settings.BASE_DIR) / "apps" / "comum" / "static" / "vite" / "manifest.json"
+)
 
 
 def load_vite_manifest():
@@ -48,7 +50,10 @@ def vite_css(entry_name: str):
     if not entry or not entry.get("css"):
         return ""
 
-    tags = [f'<link rel="stylesheet" href="{static(f"vite/{css}")}">' for css in entry["css"]]
+    tags = [
+        f'<link rel="stylesheet" href="{static(f"vite/{css}")}">'
+        for css in entry["css"]
+    ]
     return mark_safe("\n".join(tags))
 
 
@@ -58,7 +63,9 @@ def vite_js(entry_name: str):
     entry = resolve_manifest_entry(entry_name)
     if not entry:
         return ""
-    return mark_safe(f'<script type="module" src="{static(f"vite/{entry["file"]}")}"></script>')
+    return mark_safe(
+        f'<script type="module" src="{static(f"vite/{entry["file"]}")}"></script>'
+    )
 
 
 @register.simple_tag(name="vite_entry")

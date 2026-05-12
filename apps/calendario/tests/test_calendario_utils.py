@@ -1,6 +1,12 @@
 from datetime import date
 from django.test import SimpleTestCase
-from apps.calendario.utils.calendario import get_pascoa, get_feriados_nacionais, is_fim_semana, gerar_base_calendario
+from apps.calendario.utils.calendario import (
+    get_pascoa,
+    get_feriados_nacionais,
+    is_fim_semana,
+    gerar_base_calendario,
+)
+
 
 class CalendarioUtilsTest(SimpleTestCase):
     def test_get_pascoa(self):
@@ -17,21 +23,21 @@ class CalendarioUtilsTest(SimpleTestCase):
         self.assertEqual(feriados[date(2023, 4, 7)], "Sexta-feira Santa")
 
     def test_is_fim_semana(self):
-        self.assertTrue(is_fim_semana(date(2023, 4, 8))) # Sábado
-        self.assertTrue(is_fim_semana(date(2023, 4, 9))) # Domingo
-        self.assertFalse(is_fim_semana(date(2023, 4, 10))) # Segunda
+        self.assertTrue(is_fim_semana(date(2023, 4, 8)))  # Sábado
+        self.assertTrue(is_fim_semana(date(2023, 4, 9)))  # Domingo
+        self.assertFalse(is_fim_semana(date(2023, 4, 10)))  # Segunda
 
     def test_gerar_base_calendario(self):
         base = gerar_base_calendario(2023)
         self.assertEqual(len(base), 365)
-        
+
         # Testar um dia letivo comum
-        self.assertEqual(base[date(2023, 4, 10)]['tipo'], 'DI_LETIVO')
-        
+        self.assertEqual(base[date(2023, 4, 10)]["tipo"], "DI_LETIVO")
+
         # Testar um feriado
-        self.assertEqual(base[date(2023, 1, 1)]['tipo'], 'FERIADO')
-        self.assertTrue(base[date(2023, 1, 1)]['aula_suspensa'])
-        
+        self.assertEqual(base[date(2023, 1, 1)]["tipo"], "FERIADO")
+        self.assertTrue(base[date(2023, 1, 1)]["aula_suspensa"])
+
         # Testar um final de semana
-        self.assertEqual(base[date(2023, 4, 9)]['tipo'], 'FIM_SEMANA')
-        self.assertTrue(base[date(2023, 4, 9)]['aula_suspensa']) # Domingo
+        self.assertEqual(base[date(2023, 4, 9)]["tipo"], "FIM_SEMANA")
+        self.assertTrue(base[date(2023, 4, 9)]["aula_suspensa"])  # Domingo

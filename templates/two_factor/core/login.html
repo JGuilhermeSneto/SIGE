@@ -109,10 +109,16 @@
 
     {% for field in form %}
       <div class="field-wrap">
-        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <label for="{{ field.id_for_label }}">
+            {% if field.name == 'login' or field.name == 'username' %}
+                {% trans "E-mail ou Matrícula" %}
+            {% else %}
+                {{ field.label }}
+            {% endif %}
+        </label>
         <div class="form-row">
             {% if field.name == 'login' or field.name == 'username' %}
-                <i class="fas fa-envelope"></i>
+                <i class="fas fa-id-card"></i>
             {% elif field.name == 'password' %}
                 <i class="fas fa-lock"></i>
             {% elif field.name == 'otp_token' %}

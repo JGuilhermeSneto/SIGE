@@ -24,14 +24,10 @@ def get_user_profile(user):
 
 
 def get_foto_perfil(user):
-    """Retorna a URL da foto de perfil ou imagem padrão."""
-    for tipo in ("gestor", "professor", "aluno", "responsavel"):
-        try:
-            perfil = getattr(user, tipo, None)
-            if perfil and getattr(perfil, "foto", None) and perfil.foto:
-                return perfil.foto.url
-        except Exception:
-            continue
+    """Retorna a URL da foto de perfil ou imagem padrão dinâmica."""
+    perfil = get_user_profile(user)
+    if perfil and hasattr(perfil, "get_foto_url"):
+        return perfil.get_foto_url
     return static("core/img/default-user.png")
 
 
@@ -48,6 +44,7 @@ def redirect_user(user):
     if hasattr(user, "responsavel"):
         return "painel_responsavel"
     return "painel_usuarios"
+
 
 def is_super_ou_gestor(u):
     """Verifica se o usuário é superusuário ou gestor."""

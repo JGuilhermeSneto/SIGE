@@ -1,51 +1,83 @@
 from django import forms
 from .models.ficha_medica import FichaMedica, RegistroVacina, AtestadoMedico
 
+
 class FichaMedicaForm(forms.ModelForm):
     class Meta:
         model = FichaMedica
         fields = [
-            'tipo_sanguineo', 'alergias', 'medicamentos_continuos', 
-            'condicoes_pcd', 'detalhes_pcd', 'comprovante_pcd',
-            'contato_emergencia_nome', 'contato_emergencia_fone', 'observacoes_medicas'
+            "tipo_sanguineo",
+            "alergias",
+            "medicamentos_continuos",
+            "condicoes_pcd",
+            "detalhes_pcd",
+            "comprovante_pcd",
+            "contato_emergencia_nome",
+            "contato_emergencia_fone",
+            "observacoes_medicas",
         ]
         widgets = {
-            'tipo_sanguineo': forms.Select(),
-            'alergias': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Ex: Amendoim, Penicilina...'}),
-            'medicamentos_continuos': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Remédios de uso diário'}),
-            'detalhes_pcd': forms.TextInput(),
-            'comprovante_pcd': forms.FileInput(),
-            'contato_emergencia_nome': forms.TextInput(),
-            'contato_emergencia_fone': forms.TextInput(),
-            'observacoes_medicas': forms.Textarea(attrs={'rows': 3}),
+            "tipo_sanguineo": forms.Select(),
+            "alergias": forms.Textarea(
+                attrs={"rows": 2, "placeholder": "Ex: Amendoim, Penicilina..."}
+            ),
+            "medicamentos_continuos": forms.Textarea(
+                attrs={"rows": 2, "placeholder": "Remédios de uso diário"}
+            ),
+            "detalhes_pcd": forms.TextInput(),
+            "comprovante_pcd": forms.FileInput(),
+            "contato_emergencia_nome": forms.TextInput(),
+            "contato_emergencia_fone": forms.TextInput(),
+            "observacoes_medicas": forms.Textarea(attrs={"rows": 3}),
         }
+
 
 class RegistroVacinaForm(forms.ModelForm):
     class Meta:
         model = RegistroVacina
-        fields = ['nome_vacina', 'data_dose', 'lote']
+        fields = ["nome_vacina", "data_dose", "lote"]
         widgets = {
-            'nome_vacina': forms.TextInput(attrs={'class': 'input-sige'}),
-            'data_dose': forms.DateInput(attrs={'class': 'input-sige flatpickr', 'type': 'text'}),
-            'lote': forms.TextInput(attrs={'class': 'input-sige'}),
+            "nome_vacina": forms.TextInput(attrs={"class": "input-sige"}),
+            "data_dose": forms.DateInput(
+                attrs={"class": "input-sige flatpickr", "type": "text"}
+            ),
+            "lote": forms.TextInput(attrs={"class": "input-sige"}),
         }
+
 
 class AtestadoForm(forms.ModelForm):
     class Meta:
         model = AtestadoMedico
-        fields = ['data_inicio', 'data_fim', 'arquivo', 'descricao']
+        fields = ["data_inicio", "data_fim", "arquivo", "descricao"]
         widgets = {
-            'data_inicio': forms.DateInput(attrs={'class': 'input-sige flatpickr', 'type': 'text'}),
-            'data_fim': forms.DateInput(attrs={'class': 'input-sige flatpickr', 'type': 'text'}),
-            'arquivo': forms.FileInput(attrs={'class': 'input-sige'}),
-            'descricao': forms.Textarea(attrs={'class': 'input-sige', 'rows': 3, 'placeholder': 'Descreva o motivo (opcional)'}),
+            "data_inicio": forms.DateInput(
+                attrs={"class": "input-sige flatpickr", "type": "text"}
+            ),
+            "data_fim": forms.DateInput(
+                attrs={"class": "input-sige flatpickr", "type": "text"}
+            ),
+            "arquivo": forms.FileInput(attrs={"class": "input-sige"}),
+            "descricao": forms.Textarea(
+                attrs={
+                    "class": "input-sige",
+                    "rows": 3,
+                    "placeholder": "Descreva o motivo (opcional)",
+                }
+            ),
         }
+
 
 class AtestadoAnaliseForm(forms.ModelForm):
     class Meta:
         model = AtestadoMedico
-        fields = ['status', 'comentario_gestor']
+        fields = ["status", "comentario_gestor"]
         widgets = {
-            'status': forms.Select(attrs={'class': 'select-sige'}),
-            'comentario_gestor': forms.Textarea(attrs={'class': 'input-sige', 'rows': 3, 'placeholder': 'Motivo da aprovação ou rejeição'}),
+            "status": forms.Select(attrs={"class": "select-sige"}),
+            "comentario_gestor": forms.Textarea(
+                attrs={
+                    "class": "input-sige",
+                    "rows": 3,
+                    "placeholder": "Motivo da aprovação ou rejeição",
+                }
+            ),
         }

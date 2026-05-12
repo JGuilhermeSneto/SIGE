@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from ..models.perfis import Aluno, Professor, Gestor
 
+
 class PerfilService:
     @staticmethod
     @transaction.atomic

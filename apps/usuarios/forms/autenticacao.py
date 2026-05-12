@@ -11,16 +11,26 @@ from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
+
 class LoginForm(forms.Form):
     """Formulário de login utilizando e-mail e senha."""
-    email = forms.EmailField(widget=forms.EmailInput(attrs={
-        "placeholder": "E-mail",
-        "style": "background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important;"
-    }))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={
-        "placeholder": "Senha",
-        "style": "background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important;"
-    }))
+
+    email = forms.EmailField(
+        widget=forms.EmailInput(
+            attrs={
+                "placeholder": "E-mail",
+                "style": "background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important;",
+            }
+        )
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                "placeholder": "Senha",
+                "style": "background: transparent !important; border: none !important; outline: none !important; box-shadow: none !important;",
+            }
+        )
+    )
     user = None
 
     def __init__(self, *args, request=None, **kwargs):
@@ -46,10 +56,18 @@ class LoginForm(forms.Form):
     def get_user(self):
         return self.user
 
+
 class EditarPerfilForm(forms.ModelForm):
     """Formulário para edição do perfil do usuário."""
-    nova_senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Nova senha")
-    confirmar_senha = forms.CharField(required=False, widget=forms.PasswordInput(), help_text="Confirmação da nova senha")
+
+    nova_senha = forms.CharField(
+        required=False, widget=forms.PasswordInput(), help_text="Nova senha"
+    )
+    confirmar_senha = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput(),
+        help_text="Confirmação da nova senha",
+    )
 
     class Meta:
         model = User
@@ -72,6 +90,8 @@ class EditarPerfilForm(forms.ModelForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         senha = self.cleaned_data.get("nova_senha")
-        if senha: user.set_password(senha)
-        if commit: user.save()
+        if senha:
+            user.set_password(senha)
+        if commit:
+            user.save()
         return user

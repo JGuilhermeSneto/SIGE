@@ -8,50 +8,150 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('comum', '0001_initial'),
-        ('seguranca', '0002_logerro'),
+        ("comum", "0001_initial"),
+        ("seguranca", "0002_logerro"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='BlacklistIP',
+            name="BlacklistIP",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ip_endereco', models.GenericIPAddressField(help_text='Endereço IP a ser bloqueado', unique=True)),
-                ('motivo', models.TextField(help_text='Motivo do bloqueio (ex: Brute Force, Scanner de Vulnerabilidades)')),
-                ('data_bloqueio', models.DateTimeField(auto_now_add=True)),
-                ('expira_em', models.DateTimeField(blank=True, help_text='Deixe vazio para bloqueio permanente', null=True)),
-                ('bloqueado_por', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='bloqueios_realizados', to=settings.AUTH_USER_MODEL)),
-                ('instituicao', models.ForeignKey(blank=True, help_text='Instituição à qual este registro pertence', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_related', to='comum.instituicao')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ip_endereco",
+                    models.GenericIPAddressField(
+                        help_text="Endereço IP a ser bloqueado", unique=True
+                    ),
+                ),
+                (
+                    "motivo",
+                    models.TextField(
+                        help_text="Motivo do bloqueio (ex: Brute Force, Scanner de Vulnerabilidades)"
+                    ),
+                ),
+                ("data_bloqueio", models.DateTimeField(auto_now_add=True)),
+                (
+                    "expira_em",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Deixe vazio para bloqueio permanente",
+                        null=True,
+                    ),
+                ),
+                (
+                    "bloqueado_por",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="bloqueios_realizados",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "instituicao",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Instituição à qual este registro pertence",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="%(class)s_related",
+                        to="comum.instituicao",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'IP Bloqueado',
-                'verbose_name_plural': 'Blacklist de IPs',
-                'ordering': ['-data_bloqueio'],
+                "verbose_name": "IP Bloqueado",
+                "verbose_name_plural": "Blacklist de IPs",
+                "ordering": ["-data_bloqueio"],
             },
         ),
         migrations.CreateModel(
-            name='BugReport',
+            name="BugReport",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titulo', models.CharField(max_length=200)),
-                ('descricao', models.TextField()),
-                ('url_origem', models.CharField(blank=True, max_length=500, null=True)),
-                ('screenshot', models.ImageField(blank=True, null=True, upload_to='bugs/screenshots/')),
-                ('status', models.CharField(choices=[('NOVO', 'Novo'), ('ANALISE', 'Em Análise'), ('CORRIGIDO', 'Corrigido'), ('REJEITADO', 'Rejeitado / Duplicado')], default='NOVO', max_length=20)),
-                ('prioridade', models.CharField(choices=[('BAIXA', 'Baixa'), ('MEDIA', 'Média'), ('ALTA', 'Alta'), ('CRITICA', 'Crítica (Showstopper)')], default='MEDIA', max_length=20)),
-                ('data_criacao', models.DateTimeField(auto_now_add=True)),
-                ('data_atualizacao', models.DateTimeField(auto_now=True)),
-                ('browser_info', models.TextField(blank=True, null=True)),
-                ('ip_endereco', models.GenericIPAddressField(blank=True, null=True)),
-                ('instituicao', models.ForeignKey(blank=True, help_text='Instituição à qual este registro pertence', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_related', to='comum.instituicao')),
-                ('usuario', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='bugs_reportados', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("titulo", models.CharField(max_length=200)),
+                ("descricao", models.TextField()),
+                ("url_origem", models.CharField(blank=True, max_length=500, null=True)),
+                (
+                    "screenshot",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="bugs/screenshots/"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("NOVO", "Novo"),
+                            ("ANALISE", "Em Análise"),
+                            ("CORRIGIDO", "Corrigido"),
+                            ("REJEITADO", "Rejeitado / Duplicado"),
+                        ],
+                        default="NOVO",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "prioridade",
+                    models.CharField(
+                        choices=[
+                            ("BAIXA", "Baixa"),
+                            ("MEDIA", "Média"),
+                            ("ALTA", "Alta"),
+                            ("CRITICA", "Crítica (Showstopper)"),
+                        ],
+                        default="MEDIA",
+                        max_length=20,
+                    ),
+                ),
+                ("data_criacao", models.DateTimeField(auto_now_add=True)),
+                ("data_atualizacao", models.DateTimeField(auto_now=True)),
+                ("browser_info", models.TextField(blank=True, null=True)),
+                ("ip_endereco", models.GenericIPAddressField(blank=True, null=True)),
+                (
+                    "instituicao",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Instituição à qual este registro pertence",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="%(class)s_related",
+                        to="comum.instituicao",
+                    ),
+                ),
+                (
+                    "usuario",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="bugs_reportados",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Report de Bug',
-                'verbose_name_plural': 'Reports de Bugs',
-                'ordering': ['-data_criacao'],
+                "verbose_name": "Report de Bug",
+                "verbose_name_plural": "Reports de Bugs",
+                "ordering": ["-data_criacao"],
             },
         ),
     ]

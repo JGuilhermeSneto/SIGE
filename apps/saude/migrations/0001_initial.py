@@ -9,38 +9,106 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('usuarios', '0001_initial'),
+        ("usuarios", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='FichaMedica',
+            name="FichaMedica",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tipo_sanguineo', models.CharField(blank=True, choices=[('A+', 'A+'), ('A-', 'A-'), ('B+', 'B+'), ('B-', 'B-'), ('AB+', 'AB+'), ('AB-', 'AB-'), ('O+', 'O+'), ('O-', 'O-')], max_length=3, null=True)),
-                ('alergias', models.TextField(blank=True, help_text='Liste as alergias separadas por vírgula.', null=True)),
-                ('medicamentos_continuos', models.TextField(blank=True, null=True)),
-                ('condicoes_pcd', models.BooleanField(default=False, verbose_name='Possui deficiência?')),
-                ('detalhes_pcd', models.CharField(blank=True, max_length=255, null=True)),
-                ('contato_emergencia_nome', models.CharField(blank=True, max_length=100, null=True)),
-                ('contato_emergencia_fone', models.CharField(blank=True, max_length=20, null=True)),
-                ('observacoes_medicas', models.TextField(blank=True, null=True)),
-                ('ultima_atualizacao', models.DateTimeField(auto_now=True)),
-                ('aluno', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='ficha_medica', to='usuarios.aluno')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "tipo_sanguineo",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("A+", "A+"),
+                            ("A-", "A-"),
+                            ("B+", "B+"),
+                            ("B-", "B-"),
+                            ("AB+", "AB+"),
+                            ("AB-", "AB-"),
+                            ("O+", "O+"),
+                            ("O-", "O-"),
+                        ],
+                        max_length=3,
+                        null=True,
+                    ),
+                ),
+                (
+                    "alergias",
+                    models.TextField(
+                        blank=True,
+                        help_text="Liste as alergias separadas por vírgula.",
+                        null=True,
+                    ),
+                ),
+                ("medicamentos_continuos", models.TextField(blank=True, null=True)),
+                (
+                    "condicoes_pcd",
+                    models.BooleanField(
+                        default=False, verbose_name="Possui deficiência?"
+                    ),
+                ),
+                (
+                    "detalhes_pcd",
+                    models.CharField(blank=True, max_length=255, null=True),
+                ),
+                (
+                    "contato_emergencia_nome",
+                    models.CharField(blank=True, max_length=100, null=True),
+                ),
+                (
+                    "contato_emergencia_fone",
+                    models.CharField(blank=True, max_length=20, null=True),
+                ),
+                ("observacoes_medicas", models.TextField(blank=True, null=True)),
+                ("ultima_atualizacao", models.DateTimeField(auto_now=True)),
+                (
+                    "aluno",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ficha_medica",
+                        to="usuarios.aluno",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Ficha Médica',
-                'verbose_name_plural': 'Fichas Médicas',
+                "verbose_name": "Ficha Médica",
+                "verbose_name_plural": "Fichas Médicas",
             },
         ),
         migrations.CreateModel(
-            name='RegistroVacina',
+            name="RegistroVacina",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('nome_vacina', models.CharField(max_length=100)),
-                ('data_dose', models.DateField()),
-                ('lote', models.CharField(blank=True, max_length=20, null=True)),
-                ('ficha', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vacinas', to='saude.fichamedica')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("nome_vacina", models.CharField(max_length=100)),
+                ("data_dose", models.DateField()),
+                ("lote", models.CharField(blank=True, max_length=20, null=True)),
+                (
+                    "ficha",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="vacinas",
+                        to="saude.fichamedica",
+                    ),
+                ),
             ],
         ),
     ]

@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academico', '0007_frequencia_atestado_frequencia_justificada'),
+        ("academico", "0007_frequencia_atestado_frequencia_justificada"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='planejamentoaula',
-            name='status',
-            field=models.CharField(choices=[('NORMAL', 'Normal'), ('SUSPENSA', 'Suspensa'), ('CANCELADA', 'Cancelada')], default='NORMAL', max_length=15),
+            model_name="planejamentoaula",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("NORMAL", "Normal"),
+                    ("SUSPENSA", "Suspensa"),
+                    ("CANCELADA", "Cancelada"),
+                ],
+                default="NORMAL",
+                max_length=15,
+            ),
         ),
     ]

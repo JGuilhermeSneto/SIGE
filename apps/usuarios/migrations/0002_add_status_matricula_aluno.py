@@ -6,13 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usuarios', '0001_initial'),
+        ("usuarios", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='aluno',
-            name='status_matricula',
-            field=models.CharField(choices=[('ATIVO', 'Ativo'), ('INATIVO', 'Inativo'), ('EVADIDO', 'Evadido'), ('TRANSFERIDO', 'Transferido'), ('FORMADO', 'Formado')], default='ATIVO', help_text='Situação atual da matrícula do aluno', max_length=15),
+            model_name="aluno",
+            name="status_matricula",
+            field=models.CharField(
+                choices=[
+                    ("ATIVO", "Ativo"),
+                    ("INATIVO", "Inativo"),
+                    ("EVADIDO", "Evadido"),
+                    ("TRANSFERIDO", "Transferido"),
+                    ("FORMADO", "Formado"),
+                ],
+                default="ATIVO",
+                help_text="Situação atual da matrícula do aluno",
+                max_length=15,
+            ),
         ),
     ]

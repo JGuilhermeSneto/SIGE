@@ -6,18 +6,25 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('biblioteca', '0002_add_status_leitura_emprestimo'),
+        ("biblioteca", "0002_add_status_leitura_emprestimo"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='livro',
-            name='arquivo_digital',
-            field=models.FileField(blank=True, null=True, upload_to='biblioteca/digitais/', verbose_name='Arquivo PDF/Digital'),
+            model_name="livro",
+            name="arquivo_digital",
+            field=models.FileField(
+                blank=True,
+                null=True,
+                upload_to="biblioteca/digitais/",
+                verbose_name="Arquivo PDF/Digital",
+            ),
         ),
         migrations.AddField(
-            model_name='livro',
-            name='url_digital',
-            field=models.URLField(blank=True, null=True, verbose_name='Link para E-book/Conteúdo Online'),
+            model_name="livro",
+            name="url_digital",
+            field=models.URLField(
+                blank=True, null=True, verbose_name="Link para E-book/Conteúdo Online"
+            ),
         ),
     ]

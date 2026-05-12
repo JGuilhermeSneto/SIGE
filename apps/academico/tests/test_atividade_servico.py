@@ -105,7 +105,9 @@ class AtividadeServicoTest(TestCase):
         self.assertEqual(entrega.status, "ENTREGUE")
         self.assertEqual(entrega.comentario_aluno, "Entrega com resposta e arquivo.")
         self.assertTrue(entrega.arquivo)
-        self.assertTrue(entrega.arquivo.name.startswith("entregas/atividades/resposta_"))
+        self.assertTrue(
+            entrega.arquivo.name.startswith("entregas/atividades/resposta_")
+        )
         self.assertTrue(entrega.arquivo.name.endswith(".txt"))
         self.assertEqual(entrega.respostas.count(), 2)
 
@@ -113,7 +115,9 @@ class AtividadeServicoTest(TestCase):
         self.assertEqual(resposta_obj.alternativa_escolhida, alternativa_correta)
 
         resposta_disc = entrega.respostas.get(questao=questao_disc)
-        self.assertEqual(resposta_disc.texto_resposta, "Porque a atmosfera dispersa a luz azul.")
+        self.assertEqual(
+            resposta_disc.texto_resposta, "Porque a atmosfera dispersa a luz azul."
+        )
 
     def test_processar_entrega_aluno_levanta_erro_quando_prazo_terminado(self):
         atividade_expirada = AtividadeProfessor.objects.create(
@@ -230,7 +234,9 @@ class AtividadeServicoTest(TestCase):
         with self.assertRaises(ValueError) as cm:
             AtividadeServico.salvar_banco_questoes(atividade_prova, data_post)
 
-        self.assertIn("Provas precisam ter ao menos uma questão de gabarito", str(cm.exception))
+        self.assertIn(
+            "Provas precisam ter ao menos uma questão de gabarito", str(cm.exception)
+        )
 
     def test_atividade_prova_exibe_gabarito_apos_data(self):
         atividade_prova = AtividadeProfessor.objects.create(

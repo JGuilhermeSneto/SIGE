@@ -222,6 +222,24 @@
         </div>
     </div>
 
+    {# Banner de Controle Parental #}
+    {% if request.controle_parental %}
+    <div class="sige-glass-card" style="margin-bottom: 25px; border-left: 4px solid var(--accent-violet); padding: 15px 25px; display: flex; align-items: center; gap: 20px; background: rgba(124, 111, 255, 0.05);">
+        <div style="background: var(--accent-violet); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; flex-shrink: 0;">
+            <i class="fa-solid fa-shield-heart"></i>
+        </div>
+        <div style="flex: 1;">
+            <h4 style="margin: 0; color: var(--text-primary); font-size: 0.95rem;">Controle Parental Ativo</h4>
+            <p style="margin: 3px 0 0 0; color: var(--text-muted); font-size: 0.85rem;">
+                Seu acesso está sendo monitorado pelo seu responsável para garantir sua segurança e foco nos estudos.
+            </p>
+        </div>
+        <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-violet); background: rgba(124, 111, 255, 0.1); padding: 5px 12px; border-radius: 20px;">
+            MONITORADO
+        </div>
+    </div>
+    {% endif %}
+
     {# ════════════════ CARDS DE RESUMO ════════════════ #}
     <section class="cards-resumo">
         <div class="card-info">
@@ -320,12 +338,9 @@
                             <div class="disciplina-info" style="display: flex; align-items: center; gap: 12px;">
                                 <div class="professor-avatar-mini"
                                     title="Prof. {{ item.disciplina.professor.nome_completo }}">
-                                    {% if item.disciplina.professor.foto %}
-                                    <img src="{{ item.disciplina.professor.foto.url }}"
-                                        alt="{{ item.disciplina.professor.nome_completo }}">
-                                    {% else %}
-                                    <div class="avatar-fallback"><i class="fa-solid fa-user"></i></div>
-                                    {% endif %}
+                                    <img src="{{ item.disciplina.professor.get_foto_url }}"
+                                         alt="{{ item.disciplina.professor.nome_completo }}"
+                                         loading="lazy">
                                 </div>
                                 <div>
                                     <h3 style="margin: 0; font-size: 1rem;">{{ item.disciplina.nome }} - {{ item.disciplina.professor.nome_completo|default:"Professor não informado" }}</h3>
@@ -429,15 +444,9 @@
                     {% for emprestado in meus_emprestimos %}
                     <div
                         style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; padding: 15px; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                        {% if emprestado.livro.capa %}
-                        <img src="{{ emprestado.livro.capa.url }}" alt="{{ emprestado.livro.titulo }}"
-                            style="width: 60px; height: 85px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        {% else %}
-                        <div
-                            style="width: 60px; height: 85px; background: var(--bg-elevated); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-                            <i class="fa-solid fa-book"></i>
-                        </div>
-                        {% endif %}
+                        <img src="{{ emprestado.livro.get_capa_url }}" alt="{{ emprestado.livro.titulo }}"
+                             loading="lazy"
+                             style="width: 60px; height: 85px; object-fit: cover; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
                         <div
                             style="display: flex; flex-direction: column; justify-content: space-between; overflow: hidden;">
                             <div>
@@ -483,15 +492,9 @@
                     <div class="card-devolvido" data-id="{{ dev.id }}"
                         style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; display: flex; align-items: center; gap: 14px; padding: 12px 16px; transition: border-color 0.2s; overflow: hidden;">
                         {# Capa mini #}
-                        {% if dev.livro.capa %}
-                        <img src="{{ dev.livro.capa.url }}" alt="{{ dev.livro.titulo }}"
-                            style="width: 42px; height: 60px; object-fit: cover; border-radius: 5px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-                        {% else %}
-                        <div
-                            style="width: 42px; height: 60px; background: var(--bg-elevated); border-radius: 5px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 1.1rem;">
-                            <i class="fa-solid fa-book"></i>
-                        </div>
-                        {% endif %}
+                        <img src="{{ dev.livro.get_capa_url }}" alt="{{ dev.livro.titulo }}"
+                             loading="lazy"
+                             style="width: 42px; height: 60px; object-fit: cover; border-radius: 5px; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
 
                         {# Conteúdo em 2 linhas: sem sobreposição #}
                         <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 7px;">

@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('saude', '0003_remove_atestadomedico_aluno_atestadomedico_usuario_and_more'),
+        ("saude", "0003_remove_atestadomedico_aluno_atestadomedico_usuario_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='fichamedica',
-            name='comprovante_pcd',
-            field=models.FileField(blank=True, null=True, upload_to='saude/pcd/', verbose_name='Comprovante PCD'),
+            model_name="fichamedica",
+            name="comprovante_pcd",
+            field=models.FileField(
+                blank=True,
+                null=True,
+                upload_to="saude/pcd/",
+                verbose_name="Comprovante PCD",
+            ),
         ),
     ]

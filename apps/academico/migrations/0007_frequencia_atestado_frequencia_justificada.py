@@ -7,19 +7,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academico', '0006_materialdidatico'),
-        ('saude', '0002_atestadomedico'),
+        ("academico", "0006_materialdidatico"),
+        ("saude", "0002_atestadomedico"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='frequencia',
-            name='atestado',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='frequencias_justificadas', to='saude.atestadomedico'),
+            model_name="frequencia",
+            name="atestado",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="frequencias_justificadas",
+                to="saude.atestadomedico",
+            ),
         ),
         migrations.AddField(
-            model_name='frequencia',
-            name='justificada',
-            field=models.BooleanField(default=False, help_text='Se a falta foi justificada por atestado'),
+            model_name="frequencia",
+            name="justificada",
+            field=models.BooleanField(
+                default=False, help_text="Se a falta foi justificada por atestado"
+            ),
         ),
     ]

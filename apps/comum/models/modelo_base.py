@@ -9,11 +9,33 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 UF_CHOICES = [
-    ("AC", "AC"), ("AL", "AL"), ("AP", "AP"), ("AM", "AM"), ("BA", "BA"), ("CE", "CE"),
-    ("DF", "DF"), ("ES", "ES"), ("GO", "GO"), ("MA", "MA"), ("MT", "MT"), ("MS", "MS"),
-    ("MG", "MG"), ("PA", "PA"), ("PB", "PB"), ("PR", "PR"), ("PE", "PE"), ("PI", "PI"),
-    ("RJ", "RJ"), ("RN", "RN"), ("RS", "RS"), ("RO", "RO"), ("RR", "RR"), ("SC", "SC"),
-    ("SP", "SP"), ("SE", "SE"), ("TO", "TO"),
+    ("AC", "AC"),
+    ("AL", "AL"),
+    ("AP", "AP"),
+    ("AM", "AM"),
+    ("BA", "BA"),
+    ("CE", "CE"),
+    ("DF", "DF"),
+    ("ES", "ES"),
+    ("GO", "GO"),
+    ("MA", "MA"),
+    ("MT", "MT"),
+    ("MS", "MS"),
+    ("MG", "MG"),
+    ("PA", "PA"),
+    ("PB", "PB"),
+    ("PR", "PR"),
+    ("PE", "PE"),
+    ("PI", "PI"),
+    ("RJ", "RJ"),
+    ("RN", "RN"),
+    ("RS", "RS"),
+    ("RO", "RO"),
+    ("RR", "RR"),
+    ("SC", "SC"),
+    ("SP", "SP"),
+    ("SE", "SE"),
+    ("TO", "TO"),
 ]
 
 TURNO_CHOICES = [
@@ -26,30 +48,59 @@ from apps.comum.utils.validators import validar_cpf
 from apps.comum.utils.fields import EncryptedCharField, EncryptedDateField
 from .tenant import TenantModel
 
+
 class PessoaBase(TenantModel):
     """Modelo abstrato para armazenar campos comuns de pessoas."""
-    nome_completo = models.CharField(max_length=255, help_text="Nome completo da pessoa")
+
+    nome_completo = models.CharField(
+        max_length=255, help_text="Nome completo da pessoa"
+    )
     cpf = models.CharField(
-        max_length=14, unique=True, db_index=True,
+        max_length=14,
+        unique=True,
+        db_index=True,
         validators=[validar_cpf],
         help_text="CPF no formato XXX.XXX.XXX-XX",
     )
-    data_nascimento = EncryptedDateField(blank=True, null=True, help_text="Data de nascimento")
-    telefone = EncryptedCharField(max_length=100, blank=True, help_text="Número de telefone") # Max length increased for encryption overhead
+    data_nascimento = EncryptedDateField(
+        blank=True, null=True, help_text="Data de nascimento"
+    )
+    telefone = EncryptedCharField(
+        max_length=255, blank=True, help_text="Número de telefone"
+    )  # Max length increased for encryption overhead
 
     # Endereço
     cep = models.CharField(max_length=9, blank=True, help_text="CEP")
-    estado = models.CharField(max_length=2, choices=UF_CHOICES, blank=True, help_text="Estado (UF)")
+    estado = models.CharField(
+        max_length=2, choices=UF_CHOICES, blank=True, help_text="Estado (UF)"
+    )
     cidade = models.CharField(max_length=100, blank=True, help_text="Cidade")
     bairro = models.CharField(max_length=100, blank=True, help_text="Bairro")
     logradouro = EncryptedCharField(max_length=500, blank=True, help_text="Logradouro")
-    numero = EncryptedCharField(max_length=100, blank=True, help_text="Número do endereço")
-    complemento = EncryptedCharField(max_length=500, blank=True, help_text="Complemento do endereço")
+    numero = EncryptedCharField(
+        max_length=255, blank=True, help_text="Número do endereço"
+    )
+    complemento = EncryptedCharField(
+        max_length=500, blank=True, help_text="Complemento do endereço"
+    )
 
-    foto = models.ImageField(upload_to="fotos/pessoas/", blank=True, null=True, help_text="Foto da pessoa")
+    foto = models.ImageField(
+        upload_to="fotos/pessoas/", blank=True, null=True, help_text="Foto da pessoa"
+    )
+
+    @property
+    def get_foto_url(self) -> str:
+        """Retorna a URL da foto ou um placeholder inteligente via CDN."""
+        if self.foto and hasattr(self.foto, "url"):
+            return self.foto.url
+        # Retorna um avatar gerado pelo nome para performance e estética
+        nome_codificado = self.nome_completo.replace(" ", "+")
+        return f"https://ui-avatars.com/api/?name={nome_codificado}&background=0D8ABC&color=fff&size=128"
 
     criado_em = models.DateTimeField(auto_now_add=True, help_text="Data de criação")
-    atualizado_em = models.DateTimeField(auto_now=True, help_text="Data da última atualização")
+    atualizado_em = models.DateTimeField(
+        auto_now=True, help_text="Data da última atualização"
+    )
 
     class Meta:
         abstract = True

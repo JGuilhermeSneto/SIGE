@@ -59,7 +59,9 @@ class PerfisFormsTest(TestCase):
         self.assertEqual(gestor.user.email, "gestor@example.com")
 
     def test_professor_form_email_duplicado(self):
-        User.objects.create_user(username="existing", email="existing@example.com", password="pass")
+        User.objects.create_user(
+            username="existing", email="existing@example.com", password="pass"
+        )
         form_data = {
             "nome_completo": "Professor Teste",
             "cpf": "123.456.789-00",
@@ -68,4 +70,4 @@ class PerfisFormsTest(TestCase):
         }
         form = ProfessorForm(data=form_data)
         self.assertFalse(form.is_valid())
-        self.assertIn("E-mail em uso.", form.errors['email'])
+        self.assertIn("E-mail em uso.", form.errors["email"])

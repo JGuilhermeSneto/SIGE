@@ -10,7 +10,8 @@ from apps.usuarios.utils.perfis import get_foto_perfil
 
 register = template.Library()
 
-@register.filter(name='get_item')
+
+@register.filter(name="get_item")
 def get_item(dictionary, key):
     """
     Retorna o valor de um dicionário para uma dada chave.
@@ -20,7 +21,8 @@ def get_item(dictionary, key):
         return None
     return dictionary.get(key)
 
-@register.filter(name='has_attr')
+
+@register.filter(name="has_attr")
 def has_attr(obj, attr_name):
     """
     Verifica se um objeto possui um determinado atributo.
@@ -28,7 +30,8 @@ def has_attr(obj, attr_name):
     """
     return hasattr(obj, attr_name)
 
-@register.filter(name='unlocalize')
+
+@register.filter(name="unlocalize")
 def unlocalize(value):
     """
     Força a exibição de um valor sem formatação de localização (ex: 7.0 em vez de 7,0).

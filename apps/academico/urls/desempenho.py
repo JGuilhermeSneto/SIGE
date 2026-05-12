@@ -10,8 +10,9 @@ from ..views import vida_escolar
 
 urlpatterns = [
     # Notas
-    path("lancar-nota/<int:disciplina_id>/", vida_escolar.lancar_nota, name="lancar_nota"),
-    
+    path(
+        "lancar-nota/<int:disciplina_id>/", vida_escolar.lancar_nota, name="lancar_nota"
+    ),
     # Frequência
     path(
         "frequencia/disciplina/<int:disciplina_id>/chamada/",

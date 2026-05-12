@@ -25,17 +25,18 @@
 O Back-end é o pilar principal do SIGE, responsável por fornecer dados e regras para:
 1.  **Web (Django Templates + Design System)**: Interface clássica estável.
 2.  **Web (React + Vite)**: Interface de alta densidade via API.
-3.  **Mobile (Expo)**: Notificações e acesso discente via API.
-4.  **IoT (ESP32)**: Coleta de dados físicos via MQTT/API.
+3.  **Portal do Responsável**: Dashboard premium com controle parental e monitoramento acadêmico.
+4.  **Mobile (Expo)**: Notificações e acesso discente via API.
+5.  **IoT (ESP32)**: Coleta de dados físicos (Matrícula) via MQTT/API.
 
 ### 🧩 Módulos Core (`apps/`)
 
 | Módulo | Escopo técnico | Papel no Ecossistema |
 | :--- | :--- | :--- |
 | **`usuarios`** | Auth, RBAC e Perfil. | Gerencia identidades e permissões de todos os apps. |
-| **`academico`** | Lógica de Notas/Frequência. | Engine de regras e **Notificações Unificadas**. |
-| **`iot`** | **Automação & MQTT** 🤖 | Interface com hardware (RFID/Sensores). |
-| **`seguranca`** | **Shield v1.2 (Hardening)** 🛡️ | Honeypot, Auto-Blacklist, PII Scrubbing e TI Workflow. |
+| **`academico`** | Lógica de Notas/Frequência. | Engine de regras e **Matrículas Automáticas**. |
+| **`iot`** | **Automação & MQTT** 🤖 | Interface com hardware (RFID/Matrícula). |
+| **`seguranca`** | **Shield v1.2 (Hardening)** 🛡️ | Honeypot, Controle Parental e TI Workflow. |
 | **`financeiro`** | Fluxo de Caixa e BI. | Gestão de faturas e KPIs financeiros. |
 | **`documentos`** | ReportLab Engine. | Geração atômica de PDFs oficiais. |
 
@@ -62,6 +63,8 @@ O SIGE implementa uma camada de segurança de nível industrial para proteção 
 -   **Mensageria**: RabbitMQ + Celery para tarefas assíncronas (PDFs, E-mails).
 -   **Observabilidade**: Prometheus + Grafana para métricas de performance.
 -   **Cache**: Redis para aceleração de respostas em produção.
+-   **Mídia & Performance**: Cloudinary + Lazy Loading + Placeholders CDN (UI Avatars).
+-   **Queries Otimizadas**: Implementação de O(1) Queries em dashboards críticos (Prefetch/Select Related).
 
 ---
 
@@ -105,11 +108,7 @@ O SIGE está configurado para deploy contínuo no **Render** com banco **MySQL**
 Desenvolvido com excelência técnica para o futuro da educação.
 </div>
 
-## 📌 Quick Wins – Ajustes a implementar hoje
-
-- **Cobertura de testes**: adicionar testes nos services críticos (`financeiro/services/financeiro_service.py`, `usuarios/services/perfil_service.py`, `dashboards/views.py`, `saude/views.py`) e garantir >75% no CI.
-- **Pre‑commit**: instalar `pre-commit` com hooks `black`, `isort`, `flake8`, `mypy`.
-- **Segredos**: mover `.env` para `.gitignore`, criar `.env.example` e atualizar README com instruções de setup.
-- **Cache de notas**: usar `cache.get_or_set` ao calcular total de notas no painel do professor.
-- **Headers de segurança**: adicionar middleware que define CSP, HSTS, X‑Content‑Type‑Options.
+- **Migração React**: Iniciar migração dos componentes de BI para React/Vite.
+- **Segredos**: Mover `.env` para `.gitignore`, criar `.env.example` e atualizar README com instruções de setup.
+- **Testes**: Subir a cobertura para >80% no CI.
 - **Docker‑compose dev**: criar `docker-compose.dev.yml` com PostgreSQL, Redis, Celery e Flower.

@@ -4,6 +4,7 @@ from apps.comum.models.tenant import Instituicao
 from apps.usuarios.models.perfis import Aluno, Responsavel
 from apps.academico.models.academico import Turma
 
+
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
@@ -12,6 +13,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = factory.Faker("email")
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
+
 
 class InstituicaoFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -22,27 +24,30 @@ class InstituicaoFactory(factory.django.DjangoModelFactory):
     slug = factory.Faker("slug")
     ativo = True
 
+
 class TurmaFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Turma
-    
+
     nome = factory.Faker("word")
     ano = 2026
     turno = "MATUTINO"
 
+
 class AlunoFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Aluno
-    
+
     user = factory.SubFactory(UserFactory)
     nome_completo = factory.Faker("name")
     cpf = factory.Sequence(lambda n: f"{n:011d}")
     turma = factory.SubFactory(TurmaFactory)
 
+
 class ResponsavelFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Responsavel
-    
+
     user = factory.SubFactory(UserFactory)
     nome_completo = factory.Faker("name")
     cpf = factory.Sequence(lambda n: f"{n:011d}")

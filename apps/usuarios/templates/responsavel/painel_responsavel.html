@@ -1,206 +1,275 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}Painel do Responsável{% endblock %}
+{% block title %}SIGE · Portal do Responsável{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_dos_alunos.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-    .card-dependente {
+    /* Estilos específicos para o card de dependente no portal do responsável */
+    .card-dependente-premium {
         background: var(--bg-surface);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-lg);
-        padding: 24px;
-        margin-bottom: 25px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
     }
-
-    .card-dependente:hover {
+    .card-dependente-premium:hover {
         border-color: var(--accent-violet);
-        transform: translateY(-4px);
-        box-shadow: 0 12px 30px rgba(124, 111, 255, 0.12);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(124, 111, 255, 0.1);
     }
-
-    .dep-header {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .dep-avatar {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-        background: var(--bg-elevated);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: var(--text-muted);
-        border: 2px solid var(--border-mid);
-    }
-
-    .dep-info h2 {
-        margin: 0;
-        font-size: 1.4rem;
-        color: var(--text-primary);
-    }
-
-    .dep-info p {
-        margin: 4px 0 0 0;
-        color: var(--text-muted);
-        font-size: 0.9rem;
-    }
-
-    .dep-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 15px;
-    }
-
-    .stat-item {
-        background: rgba(255, 255, 255, 0.03);
-        padding: 15px;
-        border-radius: var(--radius-md);
-        text-align: center;
-        border: 1px solid var(--border-subtle);
-    }
-
-    .stat-item span {
-        display: block;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: var(--text-dim);
-        margin-bottom: 5px;
-    }
-
-    .stat-item strong {
-        font-size: 1.25rem;
-        color: var(--text-primary);
-    }
-
-    .btn-detalhes {
-        background: var(--accent-violet);
-        color: white;
-        text-decoration: none;
-        padding: 12px 20px;
-        border-radius: var(--radius-md);
-        text-align: center;
-        font-weight: 600;
-        transition: filter 0.2s;
-        margin-top: 10px;
-    }
-
-    .btn-detalhes:hover {
-        filter: brightness(1.1);
-    }
-
-    .badge-situacao {
-        position: absolute;
-        top: 20px;
-        right: 24px;
-        padding: 6px 14px;
+    .status-badge-mini {
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 4px 10px;
         border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
 </style>
 {% endblock %}
 
 {% block content %}
 <section class="painel-sige">
+    {# HEADER PADRONIZADO #}
     <div class="header-painel">
         <div class="header-esquerda">
             <span class="header-label"><i class="fa-solid fa-users-viewfinder"></i> SIGE · Portal do Responsável</span>
             <h1>Olá, <span class="nome-destaque">{{ responsavel.nome_completo|truncatewords:2 }}</span> 👋</h1>
-            <p class="header-sub">Acompanhe o desempenho acadêmico de seus dependentes</p>
+            <p class="header-sub">Acompanhe o progresso acadêmico de seus dependentes em tempo real.</p>
+        </div>
+        <div class="header-acoes">
+             <a href="{% url 'financeiro:listar_faturas' %}" class="btn-imprimir">
+                <i class="fa-solid fa-wallet"></i> Financeiro
+            </a>
         </div>
     </div>
 
     <div class="conteudo-geral">
         <div class="coluna-principal">
-            <p class="secao-titulo"><i class="fa-solid fa-children"></i> Seus Dependentes</p>
+            {# WIDGET: GRÁFICO COMPARATIVO #}
+            {% if dependentes|length > 1 %}
+            <section class="sige-widget" style="margin-bottom: 30px;">
+                <header class="sige-widget-header">
+                    <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent-cyan);"></i> Comparativo de Desempenho</h3>
+                </header>
+                <div class="sige-widget-body" style="height: 300px;">
+                    <canvas id="graficoComparativo"></canvas>
+                </div>
+            </section>
+            {% endif %}
+
+            <p class="secao-titulo"><i class="fa-solid fa-children"></i> Dependentes sob sua Supervisão</p>
 
             {% for item in dependentes %}
-            <div class="card-dependente">
-                <span class="badge-situacao {{ item.situacao.classe }}" style="background: var(--bg-elevated);">
-                    {{ item.situacao.texto }}
-                </span>
-
-                <div class="dep-header">
-                    <div class="dep-avatar">
-                        {% if item.aluno.user.foto %}
-                            <img src="{{ item.aluno.user.foto.url }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                        {% else %}
-                            <i class="fa-solid fa-user-graduate"></i>
-                        {% endif %}
+            <div class="card-dependente-premium sige-glass-card">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 54px; height: 54px; border-radius: 50%; border: 2px solid var(--border-mid); overflow: hidden; background: var(--bg-elevated);">
+                            <img src="{{ item.aluno.get_foto_url }}" 
+                                 alt="{{ item.aluno.nome_completo }}"
+                                 loading="lazy"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        <div>
+                            <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-primary);">{{ item.aluno.nome_completo }}</h3>
+                            <p style="margin: 2px 0 0 0; font-size: 0.8rem; color: var(--text-muted);">{{ item.aluno.turma.nome }} · {{ item.aluno.turma.get_turno_display }}</p>
+                        </div>
                     </div>
-                    <div class="dep-info">
-                        <h2>{{ item.aluno.nome_completo }}</h2>
-                        <p>{{ item.aluno.turma.nome }} · {{ item.aluno.turma.get_turno_display }}</p>
-                    </div>
+                    <span class="status-badge-mini {{ item.situacao.classe }}" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);">
+                        {{ item.situacao.texto }}
+                    </span>
                 </div>
 
-                <div class="dep-stats">
-                    <div class="stat-item">
-                        <span>Média Geral</span>
-                        <strong class="{% if item.media_geral >= 7 %}aprovado{% else %}reprovado{% endif %}">
-                            {{ item.media_geral|floatformat:1 }}
-                        </strong>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-subtle);">
+                        <p style="margin: 0; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase;">Média Geral</p>
+                        <strong style="font-size: 1.2rem; color: {% if item.media_geral >= 7 %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %};">{{ item.media_geral|floatformat:1 }}</strong>
                     </div>
-                    <div class="stat-item">
-                        <span>Frequência</span>
-                        <strong class="{% if item.frequencia >= 75 %}aprovado{% else %}reprovado{% endif %}">
-                            {{ item.frequencia|floatformat:0 }}%
-                        </strong>
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-subtle);">
+                        <p style="margin: 0; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase;">Frequência</p>
+                        <strong style="font-size: 1.2rem; color: {% if item.frequencia >= 75 %}var(--accent-cyan){% else %}var(--accent-amber){% endif %};">{{ item.frequencia|floatformat:0 }}%</strong>
                     </div>
-                    <div class="stat-item">
-                        <span>Disciplinas</span>
-                        <strong>{{ item.total_disciplinas }}</strong>
+                    <div style="background: rgba(255,255,255,0.02); padding: 12px; border-radius: 12px; text-align: center; border: 1px solid var(--border-subtle);">
+                        <p style="margin: 0; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase;">Disciplinas</p>
+                        <strong style="font-size: 1.2rem; color: var(--text-primary);">{{ item.total_disciplinas }}</strong>
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <a href="{% url 'gerar_boletim_pdf' item.aluno.id %}" target="_blank" class="btn-detalhes" style="background: var(--bg-elevated); border: 1px solid var(--border-mid); color: var(--text-primary); flex: 1;">
-                        <i class="fa-solid fa-file-pdf"></i> Baixar Boletim
+                    <a href="{% url 'gerar_boletim_pdf' item.aluno.id %}" target="_blank" class="btn-imprimir" style="flex: 1; justify-content: center; background: var(--bg-elevated); border-color: var(--border-mid);">
+                        <i class="fa-solid fa-file-pdf"></i> Boletim
                     </a>
-                    <a href="{% url 'painel_aluno' %}?aluno_id={{ item.aluno.id }}" class="btn-detalhes" style="flex: 2;">
-                        <i class="fa-solid fa-eye"></i> Visualizar Detalhes
+                    <a href="{% url 'painel_aluno' %}?aluno_id={{ item.aluno.id }}" class="btn-entrar" style="flex: 2; margin: 0; padding: 10px; font-size: 0.85rem;">
+                        <i class="fa-solid fa-eye"></i> ACESSAR PAINEL DETALHADO
                     </a>
                 </div>
             </div>
             {% empty %}
-            <div class="sige-glass-card" style="padding: 40px; text-align: center;">
-                <i class="fa-solid fa-user-slash" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
-                <h3>Nenhum dependente vinculado</h3>
-                <p>Entre em contato com a secretaria da escola para vincular seus filhos ao seu CPF.</p>
+            <div class="sige-glass-card" style="padding: 60px 40px; text-align: center;">
+                <i class="fa-solid fa-user-slash" style="font-size: 4rem; color: var(--text-muted); opacity: 0.2; margin-bottom: 25px;"></i>
+                <h3 style="color: var(--text-primary);">Nenhum dependente encontrado</h3>
+                <p style="color: var(--text-muted);">Não existem alunos vinculados ao seu CPF no momento.</p>
             </div>
             {% endfor %}
         </div>
 
         <div class="coluna-direita">
-            <section class="sige-widget">
+            {# WIDGET CONTROLE PARENTAL #}
+            <section class="sige-widget" id="widget-parental">
                 <header class="sige-widget-header">
-                    <h3><i class="fa-solid fa-circle-info" style="color: var(--accent-cyan);"></i> Informações</h3>
+                    <h3><i class="fa-solid fa-shield-heart" style="color: var(--accent-violet);"></i> Controle Parental</h3>
                 </header>
                 <div class="sige-widget-body">
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Como responsável, você tem acesso em tempo real às notas e faltas. 
-                        Qualquer divergência deve ser tratada diretamente com a coordenação pedagógica.
+                    <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5;">
+                        Ative o monitoramento para restringir acessos e receber alertas de segurança sobre o uso do sistema por seus filhos.
                     </p>
-                    <hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 15px 0;">
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <a href="{% url 'financeiro:listar_faturas' %}" class="btn-detalhes" style="background: var(--accent-emerald); font-size: 0.85rem;">
-                            <i class="fa-solid fa-wallet"></i> Pagamentos e Faturas
-                        </a>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(124, 111, 255, 0.05); padding: 16px; border-radius: var(--radius-md); border: 1px solid rgba(124, 111, 255, 0.15);">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fa-solid fa-power-off" style="color: {% if responsavel.controle_parental_ativo %}var(--accent-emerald){% else %}var(--text-muted){% endif %};"></i>
+                            <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);">Status Global</span>
+                        </div>
+                        <label class="sige-switch">
+                            <input type="checkbox" id="toggleParental" {% if responsavel.controle_parental_ativo %}checked{% endif %} onchange="toggleControleParental()">
+                            <span class="slider round"></span>
+                        </label>
                     </div>
+
+                    <div id="parentalStatusMsg" style="font-size: 0.72rem; margin-top: 12px; text-align: center; font-weight: 600; display: none;"></div>
+                </div>
+            </section>
+
+            {# MURAL DE AVISOS (IDÊNTICO AO ALUNO) #}
+            <section class="sige-widget" id="widget-mural">
+                <header class="sige-widget-header">
+                    <h3><i class="fa-solid fa-bullhorn" style="color: var(--accent-cyan);"></i> Mural da Escola</h3>
+                </header>
+                <div class="sige-widget-body">
+                    {% if comunicados %}
+                    <div class="lista-mural-compacta">
+                        {% for c in comunicados %}
+                        <div class="item-mural-side">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 4px;">
+                                <span style="color: var(--accent-cyan); font-weight: 800;">{{ c.get_publico_alvo_display }}</span>
+                                <span style="color: var(--text-muted);">{{ c.data_publicacao|date:"d/m" }}</span>
+                            </div>
+                            <h4 style="font-size: 0.85rem; margin: 0 0 4px 0; color: var(--text-primary);">{{ c.titulo }}</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0;">{{ c.conteudo|truncatechars:50 }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p style="text-align: center; font-size: 0.8rem; color: var(--text-muted); padding: 20px;">Sem avisos recentes.</p>
+                    {% endif %}
                 </div>
             </section>
         </div>
     </div>
 </section>
+
+{# SCRIPTS PARA GRÁFICOS E INTERAÇÃO #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if dependentes|length > 1 %}
+        const ctx = document.getElementById('graficoComparativo').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ chart_labels|safe }},
+                datasets: [
+                    {
+                        label: 'Média Geral',
+                        data: {{ chart_medias|safe }},
+                        backgroundColor: 'rgba(34, 211, 238, 0.3)',
+                        borderColor: '#22d3ee',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Frequência (%)',
+                        data: {{ chart_frequencias|safe }},
+                        backgroundColor: 'rgba(124, 111, 255, 0.2)',
+                        borderColor: '#7c6fff',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#8b97bb', font: { size: 10, weight: '600' } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: '#3d4f72', font: { size: 10 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#eef2ff', font: { size: 11, weight: '600' } }
+                    }
+                }
+            }
+        });
+        {% endif %}
+    });
+
+    function toggleControleParental() {
+        const msg = document.getElementById('parentalStatusMsg');
+        msg.style.display = 'block';
+        msg.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Atualizando diretrizes...';
+        msg.style.color = 'var(--text-muted)';
+
+        fetch("{% url 'toggle_controle_parental' %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{ csrf_token }}",
+                "Content-Type": "application/json"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'sucesso') {
+                msg.innerHTML = data.ativo ? 
+                    '<i class="fa-solid fa-shield-check"></i> Monitoramento Ativado com Sucesso' : 
+                    '<i class="fa-solid fa-circle-info"></i> Monitoramento Desativado';
+                msg.style.color = data.ativo ? 'var(--accent-emerald)' : 'var(--text-muted)';
+                
+                // Feedback visual rápido no ícone
+                const icon = document.querySelector('.fa-power-off');
+                if (icon) icon.style.color = data.ativo ? 'var(--accent-emerald)' : 'var(--text-muted)';
+            }
+        });
+    }
+</script>
+
+<style>
+    /* Estilos do Switch Padronizado SIGE */
+    .sige-switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+    .sige-switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--accent-violet); box-shadow: 0 0 10px rgba(124, 111, 255, 0.4); }
+    input:checked + .slider:before { transform: translateX(22px); }
+    
+    .item-mural-side {
+        padding: 12px;
+        border-bottom: 1px solid var(--border-subtle);
+        transition: background 0.2s;
+    }
+    .item-mural-side:last-child { border: none; }
+    .item-mural-side:hover { background: rgba(255,255,255,0.02); }
+</style>
 {% endblock %}

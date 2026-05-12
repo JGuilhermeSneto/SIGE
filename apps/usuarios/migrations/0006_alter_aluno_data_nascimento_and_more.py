@@ -7,48 +7,64 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usuarios', '0005_alter_aluno_data_nascimento_and_more'),
+        ("usuarios", "0005_alter_aluno_data_nascimento_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='aluno',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="aluno",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='gestor',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="gestor",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalaluno',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="historicalaluno",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalgestor',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="historicalgestor",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalprofessor',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="historicalprofessor",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalresponsavel',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="historicalresponsavel",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='professor',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="professor",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='responsavel',
-            name='data_nascimento',
-            field=apps.comum.utils.fields.EncryptedDateField(blank=True, help_text='Data de nascimento', max_length=255, null=True),
+            model_name="responsavel",
+            name="data_nascimento",
+            field=apps.comum.utils.fields.EncryptedDateField(
+                blank=True, help_text="Data de nascimento", max_length=255, null=True
+            ),
         ),
     ]

@@ -12,12 +12,18 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from ..forms.autenticacao import EditarPerfilForm
-from ..utils.perfis import get_user_profile, get_foto_perfil, get_nome_exibicao, redirect_user
+from ..utils.perfis import (
+    get_user_profile,
+    get_foto_perfil,
+    get_nome_exibicao,
+    redirect_user,
+)
+
 
 @login_required
 def editar_perfil(request):
     """Gerencia a atualização de dados do próprio usuário."""
-    user   = request.user
+    user = request.user
     perfil = get_user_profile(user)
 
     form = EditarPerfilForm(request.POST or None, request.FILES or None, instance=user)
@@ -59,7 +65,9 @@ def editar_perfil(request):
             messages.success(request, "Perfil atualizado com sucesso!")
             return redirect(redirect_user(user))
         else:
-            messages.error(request, "Erro ao atualizar perfil. Verifique os campos abaixo.")
+            messages.error(
+                request, "Erro ao atualizar perfil. Verifique os campos abaixo."
+            )
 
     foto_atual = perfil.foto.url if perfil and getattr(perfil, "foto", None) else None
 
@@ -67,11 +75,11 @@ def editar_perfil(request):
         request,
         "core/editar_perfil.html",
         {
-            "form":            form,
-            "perfil":          perfil,
-            "foto_atual":      foto_atual,
+            "form": form,
+            "perfil": perfil,
+            "foto_atual": foto_atual,
             "foto_perfil_url": get_foto_perfil(user),
-            "nome_exibicao":   get_nome_exibicao(user),
+            "nome_exibicao": get_nome_exibicao(user),
         },
     )
 
@@ -103,14 +111,16 @@ def atualizar_foto_perfil(request):
     perfil = get_user_profile(request.user)
 
     if not perfil:
-        return JsonResponse({"error": "Nenhum perfil associado ao usuário."}, status=400)
+        return JsonResponse(
+            {"error": "Nenhum perfil associado ao usuário."}, status=400
+        )
 
-    foto = request.FILES.get('foto')
+    foto = request.FILES.get("foto")
     if not foto:
         return JsonResponse({"error": "Nenhum arquivo enviado."}, status=400)
 
     # Remove antigo e salva novo
-    if getattr(perfil, 'foto', None):
+    if getattr(perfil, "foto", None):
         try:
             perfil.foto.delete(save=False)
         except Exception:

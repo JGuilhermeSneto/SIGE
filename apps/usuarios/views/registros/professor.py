@@ -6,6 +6,7 @@ from ...forms.perfis import ProfessorForm
 from ...utils.perfis import get_nome_exibicao, get_foto_perfil, is_super_ou_gestor
 from apps.academico.services.notificacao_servico import NotificacaoServico
 
+
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def listar_professores(request):
@@ -14,12 +15,17 @@ def listar_professores(request):
     professores = Professor.objects.all().select_related("user")
     if query:
         professores = professores.filter(nome_completo__icontains=query)
-    return render(request, "professor/listar_professores.html", {
-        "professores":    professores,
-        "query":          query,
-        "nome_exibicao":  get_nome_exibicao(request.user),
-        "foto_perfil_url": get_foto_perfil(request.user),
-    })
+    return render(
+        request,
+        "professor/listar_professores.html",
+        {
+            "professores": professores,
+            "query": query,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+        },
+    )
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
@@ -33,20 +39,29 @@ def cadastrar_professor(request):
                 tipo="SISTEMA",
                 titulo="Novo Professor Cadastrado",
                 mensagem=f"O professor {professor.nome_completo} foi integrado ao sistema.",
-                url_destino="/usuarios/professores/"
+                url_destino="/usuarios/professores/",
             )
-            messages.success(request, f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!")
+            messages.success(
+                request,
+                f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!",
+            )
             return redirect("listar_professores")
         for field, erros in form.errors.items():
-            for erro in erros: messages.error(request, f"{field}: {erro}")
+            for erro in erros:
+                messages.error(request, f"{field}: {erro}")
     else:
         form = ProfessorForm(request=request)
-    return render(request, "professor/cadastrar_professor.html", {
-        "form":            form,
-        "professor":       None,
-        "nome_exibicao":   get_nome_exibicao(request.user),
-        "foto_perfil_url": get_foto_perfil(request.user),
-    })
+    return render(
+        request,
+        "professor/cadastrar_professor.html",
+        {
+            "form": form,
+            "professor": None,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+        },
+    )
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
@@ -54,21 +69,32 @@ def editar_professor(request, professor_id):
     """Edita professor."""
     professor = get_object_or_404(Professor, id=professor_id)
     if request.method == "POST":
-        form = ProfessorForm(request.POST, request.FILES, instance=professor, request=request)
+        form = ProfessorForm(
+            request.POST, request.FILES, instance=professor, request=request
+        )
         if form.is_valid():
             form.save()
-            messages.success(request, f"Professor(a) {professor.nome_completo} atualizado(a) com sucesso!")
+            messages.success(
+                request,
+                f"Professor(a) {professor.nome_completo} atualizado(a) com sucesso!",
+            )
             return redirect("listar_professores")
         for field, erros in form.errors.items():
-            for erro in erros: messages.error(request, f"{field}: {erro}")
+            for erro in erros:
+                messages.error(request, f"{field}: {erro}")
     else:
         form = ProfessorForm(instance=professor, request=request)
-    return render(request, "professor/cadastrar_professor.html", {
-        "form":            form,
-        "professor":       professor,
-        "nome_exibicao":   get_nome_exibicao(request.user),
-        "foto_perfil_url": get_foto_perfil(request.user),
-    })
+    return render(
+        request,
+        "professor/cadastrar_professor.html",
+        {
+            "form": form,
+            "professor": professor,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+        },
+    )
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)

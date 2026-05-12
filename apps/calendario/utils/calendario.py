@@ -26,10 +26,11 @@ def get_pascoa(ano):
     dia = ((h + l - 7 * m + 114) % 31) + 1
     return date(ano, mes, dia)
 
+
 def get_feriados_nacionais(ano):
     """Retorna um dicionário {data: 'nome'} com feriados nacionais brasileiros."""
     pascoa = get_pascoa(ano)
-    
+
     feriados = {
         # Fixos
         date(ano, 1, 1): "Confraternização Universal",
@@ -41,7 +42,6 @@ def get_feriados_nacionais(ano):
         date(ano, 11, 15): "Proclamação da República",
         date(ano, 11, 20): "Consciência Negra",
         date(ano, 12, 25): "Natal",
-        
         # Móveis
         pascoa - timedelta(days=48): "Segunda-feira de Carnaval",
         pascoa - timedelta(days=47): "Terça-feira de Carnaval",
@@ -50,43 +50,47 @@ def get_feriados_nacionais(ano):
     }
     return feriados
 
+
 def is_fim_semana(data):
     """Retorna True se for Sábado (5) ou Domingo (6)."""
     return data.weekday() in [5, 6]
+
 
 def gerar_base_calendario(ano):
     """Calcula a classificação base para todos os dias de um ano."""
     feriados = get_feriados_nacionais(ano)
     dias_base = {}
-    
+
     data_ini = date(ano, 1, 1)
     data_fim = date(ano, 12, 31)
-    
+
     delta = timedelta(days=1)
     atual = data_ini
-    
+
     while atual <= data_fim:
-        tipo = 'DI_LETIVO'
+        tipo = "DI_LETIVO"
         descricao = ""
         aula_suspensa = False
-        
+
         # Prioridade 1: Feriado
         if atual in feriados:
-            tipo = 'FERIADO'
+            tipo = "FERIADO"
             descricao = feriados[atual]
             aula_suspensa = True
-        
+
         # Prioridade 2: Final de Semana (se não for feriado)
         elif is_fim_semana(atual):
-            tipo = 'FIM_SEMANA'
+            tipo = "FIM_SEMANA"
             descricao = "Final de Semana"
-            aula_suspensa = True if atual.weekday() == 6 else False # Domingo sempre suspenso, sábado opcional (definimos depois)
+            aula_suspensa = (
+                True if atual.weekday() == 6 else False
+            )  # Domingo sempre suspenso, sábado opcional (definimos depois)
 
         dias_base[atual] = {
-            'tipo': tipo,
-            'descricao': descricao,
-            'aula_suspensa': aula_suspensa
+            "tipo": tipo,
+            "descricao": descricao,
+            "aula_suspensa": aula_suspensa,
         }
         atual += delta
-        
+
     return dias_base

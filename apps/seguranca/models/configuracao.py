@@ -1,21 +1,25 @@
 from django.db import models
 from apps.comum.models.tenant import TenantModel
 
+
 class ConfiguracaoSeguranca(TenantModel):
     """
     Configurações globais de segurança e estado do sistema.
     """
-    manutencao_ativa = models.BooleanField(default=False, verbose_name="Modo Manutenção Ativo")
+
+    manutencao_ativa = models.BooleanField(
+        default=False, verbose_name="Modo Manutenção Ativo"
+    )
     mensagem_manutencao = models.TextField(
         default="O sistema está passando por uma manutenção programada para melhorias. Voltaremos em breve!",
-        verbose_name="Mensagem de Manutenção"
+        verbose_name="Mensagem de Manutenção",
     )
     permite_login_gestor = models.BooleanField(
-        default=True, 
+        default=True,
         verbose_name="Permitir Login de Gestores em Manutenção",
-        help_text="Se desativado, apenas Superusuários poderão acessar."
+        help_text="Se desativado, apenas Superusuários poderão acessar.",
     )
-    
+
     data_atualizacao = models.DateTimeField(auto_now=True)
 
     class Meta:

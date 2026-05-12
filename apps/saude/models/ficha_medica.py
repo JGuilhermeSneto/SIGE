@@ -6,21 +6,33 @@ User = get_user_model()
 
 class FichaMedica(models.Model):
     TIPO_SANGUINEO_CHOICES = [
-        ('A+', 'A+'), ('A-', 'A-'),
-        ('B+', 'B+'), ('B-', 'B-'),
-        ('AB+', 'AB+'), ('AB-', 'AB-'),
-        ('O+', 'O+'), ('O-', 'O-'),
+        ("A+", "A+"),
+        ("A-", "A-"),
+        ("B+", "B+"),
+        ("B-", "B-"),
+        ("AB+", "AB+"),
+        ("AB-", "AB-"),
+        ("O+", "O+"),
+        ("O-", "O-"),
     ]
 
     aluno = models.OneToOneField(
-        "usuarios.Aluno", on_delete=models.CASCADE, related_name='ficha_medica'
+        "usuarios.Aluno", on_delete=models.CASCADE, related_name="ficha_medica"
     )
-    tipo_sanguineo = models.CharField(max_length=3, choices=TIPO_SANGUINEO_CHOICES, blank=True, null=True)
-    alergias = models.TextField(blank=True, null=True, help_text="Liste as alergias separadas por vírgula.")
+    tipo_sanguineo = models.CharField(
+        max_length=3, choices=TIPO_SANGUINEO_CHOICES, blank=True, null=True
+    )
+    alergias = models.TextField(
+        blank=True, null=True, help_text="Liste as alergias separadas por vírgula."
+    )
     medicamentos_continuos = models.TextField(blank=True, null=True)
-    condicoes_pcd = models.BooleanField(default=False, verbose_name="Possui deficiência?")
+    condicoes_pcd = models.BooleanField(
+        default=False, verbose_name="Possui deficiência?"
+    )
     detalhes_pcd = models.CharField(max_length=255, blank=True, null=True)
-    comprovante_pcd = models.FileField(upload_to='saude/pcd/', blank=True, null=True, verbose_name="Comprovante PCD")
+    comprovante_pcd = models.FileField(
+        upload_to="saude/pcd/", blank=True, null=True, verbose_name="Comprovante PCD"
+    )
     contato_emergencia_nome = models.CharField(max_length=100, blank=True, null=True)
     contato_emergencia_fone = models.CharField(max_length=20, blank=True, null=True)
     observacoes_medicas = models.TextField(blank=True, null=True)
@@ -35,7 +47,9 @@ class FichaMedica(models.Model):
 
 
 class RegistroVacina(models.Model):
-    ficha = models.ForeignKey(FichaMedica, on_delete=models.CASCADE, related_name='vacinas')
+    ficha = models.ForeignKey(
+        FichaMedica, on_delete=models.CASCADE, related_name="vacinas"
+    )
     nome_vacina = models.CharField(max_length=100)
     data_dose = models.DateField()
     lote = models.CharField(max_length=20, blank=True, null=True)
@@ -46,27 +60,36 @@ class RegistroVacina(models.Model):
 
 class AtestadoMedico(models.Model):
     STATUS_CHOICES = [
-        ('PENDENTE', 'Pendente'),
-        ('APROVADO', 'Aprovado'),
-        ('REJEITADO', 'Rejeitado'),
+        ("PENDENTE", "Pendente"),
+        ("APROVADO", "Aprovado"),
+        ("REJEITADO", "Rejeitado"),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='atestados')
-    arquivo = models.FileField(upload_to='saude/atestados/', verbose_name="Arquivo do Atestado")
+    usuario = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="atestados"
+    )
+    arquivo = models.FileField(
+        upload_to="saude/atestados/", verbose_name="Arquivo do Atestado"
+    )
     data_inicio = models.DateField(verbose_name="Data de Início")
     data_fim = models.DateField(verbose_name="Data de Fim")
     descricao = models.TextField(blank=True, verbose_name="Observações")
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='PENDENTE')
-    comentario_gestor = models.TextField(blank=True, verbose_name="Comentário do Gestor")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="PENDENTE")
+    comentario_gestor = models.TextField(
+        blank=True, verbose_name="Comentário do Gestor"
+    )
     data_submissao = models.DateTimeField(auto_now_add=True)
     data_analise = models.DateTimeField(null=True, blank=True)
     analisado_por = models.ForeignKey(
-        'usuarios.Gestor', on_delete=models.SET_NULL, null=True, blank=True,
-        related_name='atestados_analisados'
+        "usuarios.Gestor",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="atestados_analisados",
     )
 
     class Meta:
-        db_table = 'core_atestadomedico'
+        db_table = "core_atestadomedico"
         verbose_name = "Atestado Médico"
         verbose_name_plural = "Atestados Médicos"
         ordering = ["-data_submissao"]

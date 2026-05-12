@@ -13,43 +13,132 @@ urlpatterns = [
     path("turmas/", academico.listar_turmas, name="listar_turmas"),
     path("turmas/cadastrar/", academico.cadastrar_turma, name="cadastrar_turma"),
     path("turmas/editar/<int:turma_id>/", academico.editar_turma, name="editar_turma"),
-    path("turmas/excluir/<int:turma_id>/", academico.excluir_turma, name="excluir_turma"),
+    path(
+        "turmas/excluir/<int:turma_id>/", academico.excluir_turma, name="excluir_turma"
+    ),
     path("turmas/<int:turma_id>/grade/", academico.grade_horaria, name="grade_horaria"),
-    
     # Disciplinas
-    path("disciplinas/professor/", academico.disciplinas_professor, name="disciplinas_professor"),
-    path("turmas/<int:turma_id>/disciplinas/", academico.disciplinas_turma, name="disciplinas_turma"),
-    path("turmas/<int:turma_id>/disciplinas/cadastrar/", academico.cadastrar_disciplina_para_turma, name="cadastrar_disciplina_turma"),
-    path("turmas/<int:turma_id>/disciplinas/listar/", academico.listar_disciplinas_turma, name="listar_disciplinas_turma"),
-    path("disciplinas/<int:disciplina_id>/visualizar/", academico.visualizar_disciplinas, name="visualizar_disciplinas"),
-    path("disciplinas/<int:disciplina_id>/editar/", academico.editar_disciplina, name="editar_disciplina"),
-    path("disciplinas/<int:disciplina_id>/excluir/", academico.excluir_disciplina, name="excluir_disciplina"),
-    path("professor/turmas/<int:turma_id>/grade/", academico.visualizar_grade_professor, name="visualizar_grade_professor"),
-    
+    path(
+        "disciplinas/professor/",
+        academico.disciplinas_professor,
+        name="disciplinas_professor",
+    ),
+    path(
+        "turmas/<int:turma_id>/disciplinas/",
+        academico.disciplinas_turma,
+        name="disciplinas_turma",
+    ),
+    path(
+        "turmas/<int:turma_id>/disciplinas/cadastrar/",
+        academico.cadastrar_disciplina_para_turma,
+        name="cadastrar_disciplina_turma",
+    ),
+    path(
+        "turmas/<int:turma_id>/disciplinas/listar/",
+        academico.listar_disciplinas_turma,
+        name="listar_disciplinas_turma",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/visualizar/",
+        academico.visualizar_disciplinas,
+        name="visualizar_disciplinas",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/editar/",
+        academico.editar_disciplina,
+        name="editar_disciplina",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/excluir/",
+        academico.excluir_disciplina,
+        name="excluir_disciplina",
+    ),
+    path(
+        "professor/turmas/<int:turma_id>/grade/",
+        academico.visualizar_grade_professor,
+        name="visualizar_grade_professor",
+    ),
     # Atividades / Provas (Professor)
-    path("disciplinas/<int:disciplina_id>/atividades/", academico.listar_atividades, name="listar_atividades"),
-    path("disciplinas/<int:disciplina_id>/atividades/cadastrar/", academico.cadastrar_atividade, name="cadastrar_atividade"),
+    path(
+        "disciplinas/<int:disciplina_id>/atividades/",
+        academico.listar_atividades,
+        name="listar_atividades",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/atividades/cadastrar/",
+        academico.cadastrar_atividade,
+        name="cadastrar_atividade",
+    ),
     path(
         "disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/gabarito/",
         academico.controlar_liberacao_gabarito,
         name="controlar_liberacao_gabarito",
     ),
-    path("disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/notas/", academico.lancar_notas_atividade, name="lancar_notas_atividade"),
-    path("disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/questoes/", academico.gerenciar_questoes, name="gerenciar_questoes"),
-    path("disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/corrigir/<int:entrega_id>/", academico.corrigir_entrega, name="corrigir_entrega"),
-
+    path(
+        "disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/notas/",
+        academico.lancar_notas_atividade,
+        name="lancar_notas_atividade",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/questoes/",
+        academico.gerenciar_questoes,
+        name="gerenciar_questoes",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/atividades/<int:atividade_id>/corrigir/<int:entrega_id>/",
+        academico.corrigir_entrega,
+        name="corrigir_entrega",
+    ),
     # Portal do Aluno (Atividades)
-    path("meu-painel/atividades/", academico.listar_atividades_aluno, name="listar_atividades_aluno"),
-    path("meu-painel/atividades/<int:atividade_id>/entregar/", academico.entregar_atividade, name="entregar_atividade"),
-    path("meu-painel/notificacoes/<int:notificacao_id>/", academico.marcar_notificacao_lida, name="marcar_notificacao_lida"),
-    path("meu-painel/notificacoes/marcar-todas/", academico.marcar_todas_notificacoes_lidas, name="marcar_todas_notificacoes_lidas"),
-    path("meu-painel/notificacoes/<int:notificacao_id>/excluir/", academico.excluir_notificacao, name="excluir_notificacao"),
-
+    path(
+        "meu-painel/atividades/",
+        academico.listar_atividades_aluno,
+        name="listar_atividades_aluno",
+    ),
+    path(
+        "meu-painel/atividades/<int:atividade_id>/entregar/",
+        academico.entregar_atividade,
+        name="entregar_atividade",
+    ),
+    path(
+        "meu-painel/notificacoes/<int:notificacao_id>/",
+        academico.marcar_notificacao_lida,
+        name="marcar_notificacao_lida",
+    ),
+    path(
+        "meu-painel/notificacoes/marcar-todas/",
+        academico.marcar_todas_notificacoes_lidas,
+        name="marcar_todas_notificacoes_lidas",
+    ),
+    path(
+        "meu-painel/notificacoes/<int:notificacao_id>/excluir/",
+        academico.excluir_notificacao,
+        name="excluir_notificacao",
+    ),
     # Materiais de Aula
-    path("disciplinas/<int:disciplina_id>/materiais/", academico.listar_materiais_professor, name="listar_materiais_professor"),
-    path("disciplinas/<int:disciplina_id>/materiais/cadastrar/", academico.cadastrar_editar_material, name="cadastrar_material"),
-    path("disciplinas/<int:disciplina_id>/materiais/<int:material_id>/editar/", academico.cadastrar_editar_material, name="editar_material"),
-    path("materiais/excluir/<int:material_id>/", academico.excluir_material, name="excluir_material"),
-    path("meu-painel/materiais/", academico.listar_materiais_aluno, name="listar_materiais_aluno"),
+    path(
+        "disciplinas/<int:disciplina_id>/materiais/",
+        academico.listar_materiais_professor,
+        name="listar_materiais_professor",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/materiais/cadastrar/",
+        academico.cadastrar_editar_material,
+        name="cadastrar_material",
+    ),
+    path(
+        "disciplinas/<int:disciplina_id>/materiais/<int:material_id>/editar/",
+        academico.cadastrar_editar_material,
+        name="editar_material",
+    ),
+    path(
+        "materiais/excluir/<int:material_id>/",
+        academico.excluir_material,
+        name="excluir_material",
+    ),
+    path(
+        "meu-painel/materiais/",
+        academico.listar_materiais_aluno,
+        name="listar_materiais_aluno",
+    ),
 ]
-

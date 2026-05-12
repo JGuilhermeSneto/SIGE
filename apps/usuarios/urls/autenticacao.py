@@ -10,7 +10,6 @@ urlpatterns = [
     # Autenticação
     path("login/", autenticacao.login_view, name="login"),
     path("logout/", autenticacao.logout_view, name="logout"),
-
     # Reset de Senha
     path(
         "senha/resetar/",

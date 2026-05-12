@@ -11,6 +11,7 @@ from django.shortcuts import redirect, render
 from ..forms.autenticacao import LoginForm
 from ..utils.perfis import redirect_user
 
+
 def login_view(request):
     """
     Realiza a autenticação do usuário utilizando o LoginForm.
@@ -24,11 +25,11 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            
+
             # Limpa mensagens antigas da sessão para não acumular
             list(messages.get_messages(request))
             messages.success(request, "Login bem-sucedido!")
-            
+
             return redirect(redirect_user(user))
     else:
         form = LoginForm(request=request)

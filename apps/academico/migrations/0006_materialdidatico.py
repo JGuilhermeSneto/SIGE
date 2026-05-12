@@ -7,30 +7,82 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academico', '0005_planejamentoaula'),
-        ('biblioteca', '0002_add_status_leitura_emprestimo'),
+        ("academico", "0005_planejamentoaula"),
+        ("biblioteca", "0002_add_status_leitura_emprestimo"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='MaterialDidatico',
+            name="MaterialDidatico",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('titulo', models.CharField(max_length=200)),
-                ('tipo', models.CharField(choices=[('LINK', 'Link Externo'), ('ARQUIVO', 'Arquivo de Apoio'), ('LIVRO', 'Livro da Biblioteca')], default='LINK', max_length=10)),
-                ('url', models.URLField(blank=True, help_text='Link externo (YouTube, site, etc.)', null=True)),
-                ('arquivo', models.FileField(blank=True, null=True, upload_to='materiais_aula/')),
-                ('descricao', models.TextField(blank=True, help_text='Descrição ou instruções do professor')),
-                ('criado_em', models.DateTimeField(auto_now_add=True)),
-                ('atualizado_em', models.DateTimeField(auto_now=True)),
-                ('disciplina', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='materiais', to='academico.disciplina')),
-                ('livro', models.ForeignKey(blank=True, help_text='Referência a um livro do acervo', null=True, on_delete=django.db.models.deletion.SET_NULL, to='biblioteca.livro')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("titulo", models.CharField(max_length=200)),
+                (
+                    "tipo",
+                    models.CharField(
+                        choices=[
+                            ("LINK", "Link Externo"),
+                            ("ARQUIVO", "Arquivo de Apoio"),
+                            ("LIVRO", "Livro da Biblioteca"),
+                        ],
+                        default="LINK",
+                        max_length=10,
+                    ),
+                ),
+                (
+                    "url",
+                    models.URLField(
+                        blank=True,
+                        help_text="Link externo (YouTube, site, etc.)",
+                        null=True,
+                    ),
+                ),
+                (
+                    "arquivo",
+                    models.FileField(
+                        blank=True, null=True, upload_to="materiais_aula/"
+                    ),
+                ),
+                (
+                    "descricao",
+                    models.TextField(
+                        blank=True, help_text="Descrição ou instruções do professor"
+                    ),
+                ),
+                ("criado_em", models.DateTimeField(auto_now_add=True)),
+                ("atualizado_em", models.DateTimeField(auto_now=True)),
+                (
+                    "disciplina",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="materiais",
+                        to="academico.disciplina",
+                    ),
+                ),
+                (
+                    "livro",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Referência a um livro do acervo",
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="biblioteca.livro",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Material Didático',
-                'verbose_name_plural': 'Materiais Didáticos',
-                'db_table': 'core_materialdidatico',
-                'ordering': ['-criado_em'],
+                "verbose_name": "Material Didático",
+                "verbose_name_plural": "Materiais Didáticos",
+                "db_table": "core_materialdidatico",
+                "ordering": ["-criado_em"],
             },
         ),
     ]

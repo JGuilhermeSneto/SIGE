@@ -1,6 +1,7 @@
 from django.db import transaction
 from ..models.patrimonio import SaldoEstoque, MovimentacaoEstoque
 
+
 class EstoqueService:
     @staticmethod
     @transaction.atomic
@@ -12,17 +13,17 @@ class EstoqueService:
         saldo, _ = SaldoEstoque.objects.get_or_create(
             item=movimentacao.item,
             unidade=movimentacao.unidade,
-            defaults={'quantidade': 0}
+            defaults={"quantidade": 0},
         )
-        
-        if movimentacao.tipo == 'ENTRADA':
+
+        if movimentacao.tipo == "ENTRADA":
             saldo.quantidade += movimentacao.quantidade
         else:
             if saldo.quantidade < movimentacao.quantidade:
                 # Opcional: Você pode querer validar isso no Form também
                 pass
             saldo.quantidade -= movimentacao.quantidade
-            
+
         saldo.save()
         return saldo
 
@@ -38,22 +39,20 @@ class EstoqueService:
             unidade=unidade,
             tipo=tipo,
             quantidade=quantidade,
-            justificativa=justificativa
+            justificativa=justificativa,
         )
-        
+
         # Atualiza o saldo
         saldo, created = SaldoEstoque.objects.get_or_create(
-            item=item,
-            unidade=unidade,
-            defaults={'quantidade': 0}
+            item=item, unidade=unidade, defaults={"quantidade": 0}
         )
-        
-        if tipo == 'ENTRADA':
+
+        if tipo == "ENTRADA":
             saldo.quantidade += quantidade
         else:
             if saldo.quantidade < quantidade:
                 raise ValueError("Saldo insuficiente para realizar a saída.")
             saldo.quantidade -= quantidade
-            
+
         saldo.save()
         return movimentacao

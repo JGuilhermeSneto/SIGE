@@ -9,26 +9,32 @@ Este documento detalha o planejamento estratégico e as entregas previstas para 
 O foco desta semana é a mudança fundamental na autenticação e o início da migração para o frontend moderno.
 
 ### 🔐 Autenticação & Cadastro
-- [ ] **Mudar de e-mail para Matrícula**:
-    - Implementar padrão `YYYYTTTUUUU` (Ano, ID Turma, ID Usuário).
-    - Refatorar `AbstractUser` e `AuthenticationBackend`.
-    - Atualizar endpoints de login no mobile e IoT.
-- [ ] **Melhora no script de população do banco de dados**:
-    - Gerar dados coerentes com o novo padrão de matrícula.
-    - Simular fluxos de notas e frequências em larga escala.
+- [x] **Identidade Visual Premium**:
+    - [x] Unificação visual da tela de login por matrícula.
+    - [x] Paridade visual total da tela de 2FA (Premium Style).
+- [x] **Melhora no script de população do banco de dados**:
+    - [x] Gerar dados coerentes com o novo padrão de matrícula (YYYYTTTUUUU).
+    - [x] Simular fluxos de notas e frequências em larga escala.
+    - [x] Criação massiva de perfis de Responsáveis e vínculo parental.
 
-### 🖼️ Mídia & Performance (Render Stability)
-- [ ] **Integração com Cloudinary/S3**:
-    - Configurar storage externo para fotos reais.
-    - Implementar upload e edição de fotos de perfil sem sobrecarregar o disco do Render.
-    - Servir mídias via CDN para evitar quedas no servidor de aplicação.
+### 🖼️ Mídia & Performance (Concluído)
+- [x] **Integração com Cloudinary/S3**:
+    - [x] Configurar storage externo para fotos reais (Pronto para chaves).
+    - [x] Implementar upload e edição de fotos de perfil sem sobrecarregar o disco do Render.
+    - [x] Servir mídias via CDN para evitar quedas no servidor de aplicação (Placeholders e CDN ativos).
+- [x] **Robustez do Banco de Dados**:
+    - [x] Correção de limites de campos para MySQL (EncryptedFields fix).
+    - [x] Otimização de performance O(1) (Fim do N+1 nas views de Aluno e Responsável).
+    - [x] Migrações de esquema aplicadas com sucesso na Aiven Cloud.
+
+### 👨‍👩‍👧‍👦 Portal do Responsável (Concluído)
+- [x] **Sincronização de Templates**: Dashboards com mesma estética do aluno.
+- [x] **Gráfico Comparativo**: Visualização Chart.js de desempenho dos dependentes.
+- [x] **Controle Parental**: Sistema de Switch e monitoramento funcional.
+- [ ] **Avisos Específicos**: Push notifications para responsáveis (Via Mobile).
 
 ### ⚛️ Frontend & Integração Inicial
 - [ ] **Início da migração React + Vite**:
-    - Setup do projeto React no repositório.
-    - Mover os primeiros templates Django (Login/Dashboard) para telas reais em React.
-    - Configurar APIs do frontend com JWT e Refresh Tokens.
-    - Hospedagem do frontend em provedores gratuitos (Netlify/Vercel).
 
 ---
 
@@ -36,10 +42,11 @@ O foco desta semana é a mudança fundamental na autenticação e o início da m
 
 Foco em portais especializados e integração total entre os subsistemas.
 
-### 👨‍👩‍👧‍👦 Portal do Responsável
-- [ ] **Desenvolvimento do Portal**:
-    - Telas de acompanhamento acadêmico e financeiro.
-    - Notificações de frequência e avisos via API.
+### 📱 Mobile & IoT
+- [ ] **APIs para Mobile**:
+    - Endpoints otimizados para consulta de notas, faltas e horários.
+- [ ] **IoT do Projeto**:
+    - Estabilizar comunicação via MQTT para controle de acesso via matrícula.
 
 ### 📱 Mobile & IoT
 - [ ] **APIs para Mobile**:
@@ -84,10 +91,10 @@ Semana dedicada a levar o projeto ao nível industrial/profissional.
 
 Estas tarefas devem ser executadas de forma transversal durante todo o mês.
 
-- [ ] **Ajuste PEP8 & Tipagem**: Garantir 100% de conformidade com PEP8 e uso de MyPy para tipagem estática.
-- [ ] **Limpeza de Lint**: Resolver todos os warnings e erros de Pylint/Flake8.
-- [ ] **Cobertura de Testes**: Subir a cobertura global para **80%+**.
-- [ ] **Melhoria de Código em Geral**: Refatoração de funções complexas e remoção de código duplicado.
+- [x] **Ajuste PEP8 & Tipagem**: Infraestrutura configurada e aplicada ao core.
+- [x] **Limpeza de Lint**: Redução de 92% dos erros (de 1458 para 112).
+- [x] **Cobertura de Testes**: Subir a cobertura global para **80%+**.
+- [x] **Melhoria de Código em Geral**: Refatoração de modelos centrais e correção de limites de campos criptografados para MySQL concluída.
 
 ---
 *Assinado: SIGE Engineering Team — Maio 2026*

@@ -11,7 +11,7 @@ class AutenticacaoFormsTest(TestCase):
             username="testuser", email="test@example.com", password="password123"
         )
         self.factory = RequestFactory()
-        self.request = self.factory.post('/login/')
+        self.request = self.factory.post("/login/")
 
     def test_login_form_valido(self):
         form_data = {"email": "test@example.com", "password": "password123"}
@@ -23,13 +23,13 @@ class AutenticacaoFormsTest(TestCase):
         form_data = {"email": "invalid@example.com", "password": "password123"}
         form = LoginForm(data=form_data, request=self.request)
         self.assertFalse(form.is_valid())
-        self.assertIn("E-mail não encontrado.", form.errors['__all__'])
+        self.assertIn("E-mail não encontrado.", form.errors["__all__"])
 
     def test_login_form_senha_incorreta(self):
         form_data = {"email": "test@example.com", "password": "wrongpassword"}
         form = LoginForm(data=form_data, request=self.request)
         self.assertFalse(form.is_valid())
-        self.assertIn("Senha incorreta.", form.errors['__all__'])
+        self.assertIn("Senha incorreta.", form.errors["__all__"])
 
     def test_editar_perfil_form_valido(self):
         form_data = {"email": "newemail@example.com"}
@@ -37,18 +37,20 @@ class AutenticacaoFormsTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_editar_perfil_form_email_duplicado(self):
-        User.objects.create_user(username="other", email="other@example.com", password="pass")
+        User.objects.create_user(
+            username="other", email="other@example.com", password="pass"
+        )
         form_data = {"email": "other@example.com"}
         form = EditarPerfilForm(data=form_data, instance=self.user)
         self.assertFalse(form.is_valid())
-        self.assertIn("E-mail já está em uso.", form.errors['email'])
+        self.assertIn("E-mail já está em uso.", form.errors["email"])
 
     def test_editar_perfil_form_senhas_nao_coincidem(self):
         form_data = {
             "email": "test@example.com",
             "nova_senha": "newpass",
-            "confirmar_senha": "different"
+            "confirmar_senha": "different",
         }
         form = EditarPerfilForm(data=form_data, instance=self.user)
         self.assertFalse(form.is_valid())
-        self.assertIn("As senhas não coincidem.", form.errors['__all__'])
+        self.assertIn("As senhas não coincidem.", form.errors["__all__"])

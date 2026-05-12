@@ -6,48 +6,64 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usuarios', '0004_aluno_instituicao_gestor_instituicao_and_more'),
+        ("usuarios", "0004_aluno_instituicao_gestor_instituicao_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='aluno',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="aluno",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='gestor',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="gestor",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalaluno',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="historicalaluno",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalgestor',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="historicalgestor",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalprofessor',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="historicalprofessor",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalresponsavel',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="historicalresponsavel",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='professor',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="professor",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
         migrations.AlterField(
-            model_name='responsavel',
-            name='data_nascimento',
-            field=models.TextField(blank=True, help_text='Data de nascimento', null=True),
+            model_name="responsavel",
+            name="data_nascimento",
+            field=models.TextField(
+                blank=True, help_text="Data de nascimento", null=True
+            ),
         ),
     ]

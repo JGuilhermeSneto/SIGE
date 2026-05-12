@@ -7,13 +7,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('biblioteca', '0003_livro_arquivo_digital_livro_url_digital'),
+        ("biblioteca", "0003_livro_arquivo_digital_livro_url_digital"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='livro',
-            name='data_cadastro',
-            field=models.DateTimeField(default=django.utils.timezone.now, verbose_name='Data de Entrada no Acervo'),
+            model_name="livro",
+            name="data_cadastro",
+            field=models.DateTimeField(
+                default=django.utils.timezone.now,
+                verbose_name="Data de Entrada no Acervo",
+            ),
         ),
     ]

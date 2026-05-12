@@ -10,28 +10,72 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('comum', '0001_initial'),
+        ("comum", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LogAuditoria',
+            name="LogAuditoria",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('path', models.CharField(help_text='Caminho/URL acessada', max_length=500)),
-                ('metodo', models.CharField(default='GET', max_length=10)),
-                ('ip_endereco', models.GenericIPAddressField(help_text='Endereço IP do usuário')),
-                ('user_agent', models.TextField(blank=True, help_text='Informações do navegador/dispositivo', null=True)),
-                ('descricao', models.TextField(blank=True, help_text='Descrição detalhada da ação', null=True)),
-                ('data_evento', models.DateTimeField(auto_now_add=True)),
-                ('instituicao', models.ForeignKey(blank=True, help_text='Instituição à qual este registro pertence', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(class)s_related', to='comum.instituicao')),
-                ('usuario', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='logs_auditoria', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "path",
+                    models.CharField(help_text="Caminho/URL acessada", max_length=500),
+                ),
+                ("metodo", models.CharField(default="GET", max_length=10)),
+                (
+                    "ip_endereco",
+                    models.GenericIPAddressField(help_text="Endereço IP do usuário"),
+                ),
+                (
+                    "user_agent",
+                    models.TextField(
+                        blank=True,
+                        help_text="Informações do navegador/dispositivo",
+                        null=True,
+                    ),
+                ),
+                (
+                    "descricao",
+                    models.TextField(
+                        blank=True, help_text="Descrição detalhada da ação", null=True
+                    ),
+                ),
+                ("data_evento", models.DateTimeField(auto_now_add=True)),
+                (
+                    "instituicao",
+                    models.ForeignKey(
+                        blank=True,
+                        help_text="Instituição à qual este registro pertence",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="%(class)s_related",
+                        to="comum.instituicao",
+                    ),
+                ),
+                (
+                    "usuario",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="logs_auditoria",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Log de Auditoria',
-                'verbose_name_plural': 'Logs de Auditoria',
-                'ordering': ['-data_evento'],
+                "verbose_name": "Log de Auditoria",
+                "verbose_name_plural": "Logs de Auditoria",
+                "ordering": ["-data_evento"],
             },
         ),
     ]

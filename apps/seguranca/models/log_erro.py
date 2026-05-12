@@ -3,8 +3,10 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 class LogErro(models.Model):
     """Armazena exceções e erros fatais ocorridos no site."""
+
     usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     tipo_excecao = models.CharField(max_length=255)
     mensagem = models.TextField()

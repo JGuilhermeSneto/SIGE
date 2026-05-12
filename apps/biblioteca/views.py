@@ -6,71 +6,97 @@ from django.utils import timezone
 from datetime import timedelta
 from .models.biblioteca import Livro, Emprestimo
 from .forms import LivroForm, EmprestimoForm
-from apps.usuarios.utils.perfis import is_super_ou_gestor, get_nome_exibicao, get_foto_perfil, get_user_profile
+from apps.usuarios.utils.perfis import (
+    is_super_ou_gestor,
+    get_nome_exibicao,
+    get_foto_perfil,
+    get_user_profile,
+)
 from apps.usuarios.models.perfis import Aluno, Professor
+
 
 @login_required
 def acervo_biblioteca(request):
     """Consulta de livros disponível para Alunos, Professores e Gestores."""
     from django.db.models import Count, Q, F
-    
-    query = request.GET.get('q', '').strip()
-    
+
+    query = request.GET.get("q", "").strip()
+
     # Otimização Crítica: Calcula disponibilidade via banco de dados (Query única)
     # Evita o gargalo N+1 da property exemplares_disponiveis
-    livros = Livro.objects.annotate(
-        ocupados=Count(
-            'emprestimos',
-            filter=Q(emprestimos__data_devolucao_real__isnull=True) & 
-                   (Q(emprestimos__status='ATIVO') | Q(emprestimos__status='RESERVA'))
+    livros = (
+        Livro.objects.annotate(
+            ocupados=Count(
+                "emprestimos",
+                filter=Q(emprestimos__data_devolucao_real__isnull=True)
+                & (Q(emprestimos__status="ATIVO") | Q(emprestimos__status="RESERVA")),
+            )
         )
-    ).annotate(
-        disponiveis=F('quantidade_total') - F('ocupados')
-    ).order_by('titulo')
-    
+        .annotate(disponiveis=F("quantidade_total") - F("ocupados"))
+        .order_by("titulo")
+    )
+
     if query:
         livros = livros.filter(Q(titulo__icontains=query) | Q(autor__icontains=query))
-        
+
     # Otimização: Paginação (Carrega apenas 12 livros por vez)
     from django.core.paginator import Paginator
-    paginator = Paginator(livros, 12) 
-    page_number = request.GET.get('page')
+
+    paginator = Paginator(livros, 12)
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'biblioteca/acervo.html', {
-        'livros': page_obj,
-        'nome_exibicao': get_nome_exibicao(request.user),
-        'foto_perfil_url': get_foto_perfil(request.user),
-        'is_gestor': is_super_ou_gestor(request.user),
-    })
+    return render(
+        request,
+        "biblioteca/acervo.html",
+        {
+            "livros": page_obj,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+            "is_gestor": is_super_ou_gestor(request.user),
+        },
+    )
+
 
 @login_required
 def detalhe_livro(request, pk):
     """Exibe os detalhes de um livro específico do acervo."""
     livro = get_object_or_404(Livro, pk=pk)
-    
-    return render(request, 'biblioteca/detalhe_livro.html', {
-        'livro': livro,
-        'nome_exibicao': get_nome_exibicao(request.user),
-        'foto_perfil_url': get_foto_perfil(request.user),
-        'is_gestor': is_super_ou_gestor(request.user),
-    })
+
+    return render(
+        request,
+        "biblioteca/detalhe_livro.html",
+        {
+            "livro": livro,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+            "is_gestor": is_super_ou_gestor(request.user),
+        },
+    )
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def gerenciar_emprestimos(request):
     """Painel de controle de empréstimos e reservas (Somente Gestores)."""
     # Otimização: select_related para evitar queries extras ao acessar livro e usuário no template
-    emprestimos = Emprestimo.objects.select_related(
-        'livro', 'usuario_aluno', 'usuario_professor'
-    ).filter(data_devolucao_real__isnull=True).order_by('status', 'data_devolucao_prevista')
-    
-    return render(request, 'biblioteca/gerenciar_emprestimos.html', {
-        'emprestimos': emprestimos,
-        'nome_exibicao': get_nome_exibicao(request.user),
-        'foto_perfil_url': get_foto_perfil(request.user),
-        'hoje': timezone.now().date(),
-    })
+    emprestimos = (
+        Emprestimo.objects.select_related("livro", "usuario_aluno", "usuario_professor")
+        .filter(data_devolucao_real__isnull=True)
+        .order_by("status", "data_devolucao_prevista")
+    )
+
+    return render(
+        request,
+        "biblioteca/gerenciar_emprestimos.html",
+        {
+            "emprestimos": emprestimos,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+            "hoje": timezone.now().date(),
+        },
+    )
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
@@ -81,89 +107,114 @@ def novo_emprestimo(request):
             emprestimo = form.save(commit=False)
             if emprestimo.livro.exemplares_disponiveis > 0:
                 emprestimo.save()
-                messages.success(request, f"Empréstimo de '{emprestimo.livro.titulo}' registrado!")
-                return redirect('gerenciar_emprestimos')
+                messages.success(
+                    request, f"Empréstimo de '{emprestimo.livro.titulo}' registrado!"
+                )
+                return redirect("gerenciar_emprestimos")
             else:
-                messages.error(request, "Este livro não possui exemplares disponíveis no momento.")
+                messages.error(
+                    request, "Este livro não possui exemplares disponíveis no momento."
+                )
     else:
         # Pre-seleciona data de devolução para 14 dias
         data_prevista = timezone.now().date() + timedelta(days=14)
-        form = EmprestimoForm(initial={'data_devolucao_prevista': data_prevista})
-        
-    return render(request, 'biblioteca/form_emprestimo.html', {
-        'form': form,
-        'nome_exibicao': get_nome_exibicao(request.user),
-        'foto_perfil_url': get_foto_perfil(request.user),
-    })
+        form = EmprestimoForm(initial={"data_devolucao_prevista": data_prevista})
+
+    return render(
+        request,
+        "biblioteca/form_emprestimo.html",
+        {
+            "form": form,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+        },
+    )
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def registrar_devolucao(request, pk):
     emprestimo = get_object_or_404(Emprestimo, pk=pk)
-    
+
     if request.method == "POST":
-        estado = request.POST.get('estado_conservacao', 'OTIMO')
+        estado = request.POST.get("estado_conservacao", "OTIMO")
         emprestimo.data_devolucao_real = timezone.now().date()
-        emprestimo.status = 'DEVOLVIDO'
+        emprestimo.status = "DEVOLVIDO"
         emprestimo.estado_conservacao = estado
         emprestimo.save()
-        
+
         status_msg = f"Livro '{emprestimo.livro.titulo}' devolvido!"
-        if estado == 'DANIFICADO':
+        if estado == "DANIFICADO":
             status_msg += " (AVISO: Livro marcado como DANIFICADO)"
-            
+
         messages.success(request, status_msg)
-        return redirect('gerenciar_emprestimos')
-    
+        return redirect("gerenciar_emprestimos")
+
     # Se for GET, redireciona pois a devolução agora exige o form/modal no gerenciar
-    return redirect('gerenciar_emprestimos')
+    return redirect("gerenciar_emprestimos")
+
 
 @login_required
 def reservar_livro(request, pk):
     """Permite que Alunos e Professores reservem um exemplar."""
     livro = get_object_or_404(Livro, pk=pk)
     perfil = get_user_profile(request.user)
-    
+
     if not perfil or not (isinstance(perfil, Aluno) or isinstance(perfil, Professor)):
         messages.error(request, "Apenas alunos e professores podem reservar livros.")
-        return redirect('acervo_biblioteca')
+        return redirect("acervo_biblioteca")
 
     # Valida estoque
     if livro.exemplares_disponiveis <= 0:
         messages.error(request, "Não há exemplares disponíveis para reserva.")
-        return redirect('acervo_biblioteca')
+        return redirect("acervo_biblioteca")
 
     # Limite de 2 reservas/empréstimos ativos para alunos
     if isinstance(perfil, Aluno):
-        ativos = Emprestimo.objects.filter(usuario_aluno=perfil, data_devolucao_real__isnull=True).count()
+        ativos = Emprestimo.objects.filter(
+            usuario_aluno=perfil, data_devolucao_real__isnull=True
+        ).count()
         if ativos >= 2:
-            messages.warning(request, "Você já possui 2 reservas ou empréstimos ativos. Devolva um livro para liberar espaço!")
-            return redirect('acervo_biblioteca')
+            messages.warning(
+                request,
+                "Você já possui 2 reservas ou empréstimos ativos. Devolva um livro para liberar espaço!",
+            )
+            return redirect("acervo_biblioteca")
 
     # Cria a reserva
-    data_prevista = timezone.now().date() + timedelta(days=2) # 48h para retirar
+    data_prevista = timezone.now().date() + timedelta(days=2)  # 48h para retirar
     reserva = Emprestimo(
-        livro=livro,
-        status='RESERVA',
-        data_devolucao_prevista=data_prevista
+        livro=livro, status="RESERVA", data_devolucao_prevista=data_prevista
     )
-    if isinstance(perfil, Aluno): reserva.usuario_aluno = perfil
-    else: reserva.usuario_professor = perfil
-    
+    if isinstance(perfil, Aluno):
+        reserva.usuario_aluno = perfil
+    else:
+        reserva.usuario_professor = perfil
+
     reserva.save()
-    messages.success(request, f"Reserva de '{livro.titulo}' realizada! Você tem 48h para retirar na biblioteca.")
-    return redirect('acervo_biblioteca')
+    messages.success(
+        request,
+        f"Reserva de '{livro.titulo}' realizada! Você tem 48h para retirar na biblioteca.",
+    )
+    return redirect("acervo_biblioteca")
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def confirmar_retirada(request, pk):
     """Gestor confirma que o aluno retirou o livro reservado."""
-    reserva = get_object_or_404(Emprestimo, pk=pk, status='RESERVA')
-    reserva.status = 'ATIVO'
-    reserva.data_devolucao_prevista = timezone.now().date() + timedelta(days=14) # Ajusta prazo para 14 dias a partir de hoje
+    reserva = get_object_or_404(Emprestimo, pk=pk, status="RESERVA")
+    reserva.status = "ATIVO"
+    reserva.data_devolucao_prevista = timezone.now().date() + timedelta(
+        days=14
+    )  # Ajusta prazo para 14 dias a partir de hoje
     reserva.save()
-    messages.success(request, f"Retirada confirmada! Novo prazo: {reserva.data_devolucao_prevista.strftime('%d/%m/%Y')}")
-    return redirect('gerenciar_emprestimos')
+    messages.success(
+        request,
+        f"Retirada confirmada! Novo prazo: {reserva.data_devolucao_prevista.strftime('%d/%m/%Y')}",
+    )
+    return redirect("gerenciar_emprestimos")
+
 
 @login_required
 @user_passes_test(is_super_ou_gestor)
@@ -173,42 +224,53 @@ def cadastrar_livro(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Livro adicionado ao acervo!")
-            return redirect('acervo_biblioteca')
+            return redirect("acervo_biblioteca")
     else:
         form = LivroForm()
-    return render(request, 'biblioteca/form_livro.html', {'form': form})
+    return render(request, "biblioteca/form_livro.html", {"form": form})
+
 
 @login_required
 def atualizar_status_leitura(request):
     """Endpoint AJAX: atualiza o status_leitura de um Emprestimo devolvido do próprio aluno."""
-    if request.method != 'POST':
-        return JsonResponse({'ok': False, 'erro': 'Método inválido.'}, status=405)
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "erro": "Método inválido."}, status=405)
 
     import json
+
     try:
         payload = json.loads(request.body)
-        emprestimo_id  = int(payload.get('emprestimo_id', 0))
-        status_leitura = payload.get('status_leitura', '').strip()
+        emprestimo_id = int(payload.get("emprestimo_id", 0))
+        status_leitura = payload.get("status_leitura", "").strip()
     except (ValueError, KeyError):
-        return JsonResponse({'ok': False, 'erro': 'Dados inválidos.'}, status=400)
+        return JsonResponse({"ok": False, "erro": "Dados inválidos."}, status=400)
 
-    VALIDOS = {'NAO_INFORMADO', 'LENDO', 'FINALIZADO'}
+    VALIDOS = {"NAO_INFORMADO", "LENDO", "FINALIZADO"}
     if status_leitura not in VALIDOS:
-        return JsonResponse({'ok': False, 'erro': 'Status inválido.'}, status=400)
+        return JsonResponse({"ok": False, "erro": "Status inválido."}, status=400)
 
     from apps.usuarios.utils.perfis import get_user_profile
+
     perfil = get_user_profile(request.user)
-    
+
     if isinstance(perfil, Aluno):
-        emprestimo = get_object_or_404(Emprestimo, pk=emprestimo_id, usuario_aluno=perfil, status='DEVOLVIDO')
+        emprestimo = get_object_or_404(
+            Emprestimo, pk=emprestimo_id, usuario_aluno=perfil, status="DEVOLVIDO"
+        )
     elif isinstance(perfil, Professor):
-        emprestimo = get_object_or_404(Emprestimo, pk=emprestimo_id, usuario_professor=perfil, status='DEVOLVIDO')
+        emprestimo = get_object_or_404(
+            Emprestimo, pk=emprestimo_id, usuario_professor=perfil, status="DEVOLVIDO"
+        )
     else:
-        return JsonResponse({'ok': False, 'erro': 'Apenas alunos e professores podem atualizar.'}, status=403)
+        return JsonResponse(
+            {"ok": False, "erro": "Apenas alunos e professores podem atualizar."},
+            status=403,
+        )
 
     emprestimo.status_leitura = status_leitura
-    emprestimo.save(update_fields=['status_leitura'])
-    return JsonResponse({'ok': True})
+    emprestimo.save(update_fields=["status_leitura"])
+    return JsonResponse({"ok": True})
+
 
 @login_required
 def minhas_leituras(request, pk=None):
@@ -220,21 +282,43 @@ def minhas_leituras(request, pk=None):
     else:
         perfil = get_user_profile(request.user)
         context_label = "Minha Jornada Literária"
-    
+
     if isinstance(perfil, Aluno):
-        emprestimos_ativos = Emprestimo.objects.filter(usuario_aluno=perfil).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
-        historico = Emprestimo.objects.filter(usuario_aluno=perfil, status='DEVOLVIDO').select_related('livro').order_by('-data_devolucao_real')
+        emprestimos_ativos = (
+            Emprestimo.objects.filter(usuario_aluno=perfil)
+            .exclude(status="DEVOLVIDO")
+            .select_related("livro")
+            .order_by("-data_emprestimo")
+        )
+        historico = (
+            Emprestimo.objects.filter(usuario_aluno=perfil, status="DEVOLVIDO")
+            .select_related("livro")
+            .order_by("-data_devolucao_real")
+        )
     elif isinstance(perfil, Professor):
-        emprestimos_ativos = Emprestimo.objects.filter(usuario_professor=perfil).exclude(status='DEVOLVIDO').select_related('livro').order_by('-data_emprestimo')
-        historico = Emprestimo.objects.filter(usuario_professor=perfil, status='DEVOLVIDO').select_related('livro').order_by('-data_devolucao_real')
+        emprestimos_ativos = (
+            Emprestimo.objects.filter(usuario_professor=perfil)
+            .exclude(status="DEVOLVIDO")
+            .select_related("livro")
+            .order_by("-data_emprestimo")
+        )
+        historico = (
+            Emprestimo.objects.filter(usuario_professor=perfil, status="DEVOLVIDO")
+            .select_related("livro")
+            .order_by("-data_devolucao_real")
+        )
     else:
         return render(request, "core/sem_perfil.html")
 
-    return render(request, 'biblioteca/minhas_leituras.html', {
-        'ativos': emprestimos_ativos,
-        'historico': historico,
-        'nome_exibicao': get_nome_exibicao(request.user),
-        'foto_perfil_url': get_foto_perfil(request.user),
-        'titulo_personalizado': context_label,
-        'is_gestor_visualizando': pk is not None
-    })
+    return render(
+        request,
+        "biblioteca/minhas_leituras.html",
+        {
+            "ativos": emprestimos_ativos,
+            "historico": historico,
+            "nome_exibicao": get_nome_exibicao(request.user),
+            "foto_perfil_url": get_foto_perfil(request.user),
+            "titulo_personalizado": context_label,
+            "is_gestor_visualizando": pk is not None,
+        },
+    )

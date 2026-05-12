@@ -1,1 +1,1 @@
-from .perfis import Gestor, Professor, Aluno
+from .perfis import Gestor, Professor, Aluno, Responsavel

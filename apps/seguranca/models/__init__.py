@@ -4,4 +4,10 @@ from .blacklist import BlacklistIP
 from .bug_report import BugReport
 from .configuracao import ConfiguracaoSeguranca
 
-__all__ = ["LogAuditoria", "LogErro", "BlacklistIP", "BugReport", "ConfiguracaoSeguranca"]
+__all__ = [
+    "LogAuditoria",
+    "LogErro",
+    "BlacklistIP",
+    "BugReport",
+    "ConfiguracaoSeguranca",
+]

@@ -10,7 +10,7 @@ from apps.comum.utils.constantes import HORARIOS, DIAS_SEMANA
 
 def _calcular_situacao_nota(media_final, frequencia_percentual):
     """Define a situação acadêmica do aluno com base na média e na frequência."""
-    MEDIA_APROVACAO  = 7.0
+    MEDIA_APROVACAO = 7.0
     MEDIA_RECUPERACAO = 5.0
     FREQUENCIA_MINIMA = 75.0
 
@@ -65,21 +65,19 @@ def _get_grade_horario_turma(turma, data_inicio=None, data_fim=None):
         return None
 
     grade_horario = {
-        horario: {dia: None for dia in DIAS_SEMANA}
-        for horario in horarios
+        horario: {dia: None for dia in DIAS_SEMANA} for horario in horarios
     }
 
     from ..models.academico import GradeHorario, PlanejamentoAula
+
     registros = GradeHorario.objects.filter(turma=turma).select_related("disciplina")
 
     # Buscar suspensões se houver intervalo de datas
     suspensoes = {}
     if data_inicio and data_fim:
-        WEEKDAY_MAP = {0: 'segunda', 1: 'terca', 2: 'quarta', 3: 'quinta', 4: 'sexta'}
+        WEEKDAY_MAP = {0: "segunda", 1: "terca", 2: "quarta", 3: "quinta", 4: "sexta"}
         aulas_suspendas = PlanejamentoAula.objects.filter(
-            turma=turma,
-            data_aula__range=[data_inicio, data_fim],
-            status='SUSPENSA'
+            turma=turma, data_aula__range=[data_inicio, data_fim], status="SUSPENSA"
         )
         for asu in aulas_suspendas:
             dia_key = WEEKDAY_MAP.get(asu.data_aula.weekday())
@@ -89,11 +87,14 @@ def _get_grade_horario_turma(turma, data_inicio=None, data_fim=None):
 
     houve_registro = False
     for registro in registros:
-        if registro.horario in grade_horario and registro.dia in grade_horario[registro.horario]:
+        if (
+            registro.horario in grade_horario
+            and registro.dia in grade_horario[registro.horario]
+        ):
             nome_disc = registro.disciplina.nome
             if (registro.horario, registro.dia) in suspensoes:
                 nome_disc = f"{nome_disc} (SUSPENSA)"
-            
+
             grade_horario[registro.horario][registro.dia] = nome_disc
             houve_registro = True
 
@@ -104,6 +105,7 @@ def _get_ocupados_por_professor(professor_id, ano_letivo, turma_id_atual=None):
     """IDENTIFICA slots já ocupados por um professor em outras turmas."""
     ocupados = set()
     from ..models.academico import GradeHorario
+
     queryset = GradeHorario.objects.filter(turma__ano=ano_letivo).select_related(
         "disciplina__professor", "turma"
     )
@@ -131,6 +133,7 @@ def _contar_notas_lancadas(disciplina, turma):
     """Conta total de avaliações preenchidas."""
     from django.db.models import Count
     from ..models.desempenho import Nota
+
     notas_qs = Nota.objects.filter(disciplina=disciplina, aluno__turma=turma)
     contagem = notas_qs.aggregate(
         n1=Count("nota1"),
@@ -139,8 +142,10 @@ def _contar_notas_lancadas(disciplina, turma):
         n4=Count("nota4"),
     )
     return (
-        (contagem["n1"] or 0) + (contagem["n2"] or 0) +
-        (contagem["n3"] or 0) + (contagem["n4"] or 0)
+        (contagem["n1"] or 0)
+        + (contagem["n2"] or 0)
+        + (contagem["n3"] or 0)
+        + (contagem["n4"] or 0)
     )
 
 
@@ -151,6 +156,7 @@ def _calcular_detalhes_disciplina(disciplina, turma):
     from django.db.models import ExpressionWrapper, F, Avg, DecimalField
     from django.db.models.functions import Coalesce
     from decimal import Decimal
+
     total_alunos = Aluno.objects.filter(turma=turma).count()
 
     expressao_media = ExpressionWrapper(
@@ -159,7 +165,8 @@ def _calcular_detalhes_disciplina(disciplina, turma):
             + Coalesce(F("nota2"), Decimal("0.0"))
             + Coalesce(F("nota3"), Decimal("0.0"))
             + Coalesce(F("nota4"), Decimal("0.0"))
-        ) / 4,
+        )
+        / 4,
         output_field=DecimalField(),
     )
     resultado_nota = Nota.objects.filter(
@@ -171,12 +178,14 @@ def _calcular_detalhes_disciplina(disciplina, turma):
     frequencias = Frequencia.objects.filter(disciplina=disciplina, aluno__turma=turma)
     total_registros = frequencias.count()
     presencas = frequencias.filter(presente=True).count()
-    frequencia_geral = (presencas / total_registros * 100) if total_registros > 0 else 100
+    frequencia_geral = (
+        (presencas / total_registros * 100) if total_registros > 0 else 100
+    )
 
     return {
-        "disciplina":       disciplina,
-        "total_alunos":     total_alunos,
-        "media_geral":      media_geral,
+        "disciplina": disciplina,
+        "total_alunos": total_alunos,
+        "media_geral": media_geral,
         "frequencia_geral": frequencia_geral,
     }
 
@@ -184,35 +193,39 @@ def _calcular_detalhes_disciplina(disciplina, turma):
 def _acumular_notas_professor(disciplinas_filtradas):
     """Calcula métricas globais de preenchimento para o professor."""
     from apps.usuarios.models.perfis import Aluno
+
     total_notas_possiveis = 0
-    total_notas_lancadas  = 0
-    alunos_ids            = set()
+    total_notas_lancadas = 0
+    alunos_ids = set()
     disciplinas_detalhadas = []
 
     for disciplina in disciplinas_filtradas:
-        turma        = disciplina.turma
+        turma = disciplina.turma
         alunos_da_turma = Aluno.objects.filter(turma=turma).values_list("id", flat=True)
-        alunos_count    = alunos_da_turma.count()
+        alunos_count = alunos_da_turma.count()
         alunos_ids.update(alunos_da_turma)
 
         notas_possiveis_disc = alunos_count * 4
-        notas_lancadas_disc  = _contar_notas_lancadas(disciplina, turma)
+        notas_lancadas_disc = _contar_notas_lancadas(disciplina, turma)
 
         total_notas_possiveis += notas_possiveis_disc
-        total_notas_lancadas  += notas_lancadas_disc
+        total_notas_lancadas += notas_lancadas_disc
 
         percentual = (
             int((notas_lancadas_disc / notas_possiveis_disc * 100))
-            if notas_possiveis_disc > 0 else 0
+            if notas_possiveis_disc > 0
+            else 0
         )
 
-        disciplinas_detalhadas.append({
-            "disciplina":      disciplina,
-            "alunos_count":    alunos_count,
-            "notas_lancadas":  notas_lancadas_disc,
-            "notas_possiveis": notas_possiveis_disc,
-            "percentual":      percentual,
-        })
+        disciplinas_detalhadas.append(
+            {
+                "disciplina": disciplina,
+                "alunos_count": alunos_count,
+                "notas_lancadas": notas_lancadas_disc,
+                "notas_possiveis": notas_possiveis_disc,
+                "percentual": percentual,
+            }
+        )
 
     return (
         total_notas_possiveis,

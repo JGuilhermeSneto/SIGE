@@ -1,29 +1,39 @@
+
 [MASTER]
 load-plugins=pylint_django
 ignore=migrations
+ignore-paths=venv, .venv
 
 [DJANGO]
 django-settings-module=config.settings
 
+[BASIC]
+# Permite nomes curtos comuns em Django (ex: pk, id, i, j)
+good-names=id,pk,i,j,k,ex,Run,_,a,b,c,u,t,kwargs,args
+
 [DESIGN]
 max-module-lines=2000
+max-attributes=15
+max-args=10
+
 [MESSAGES CONTROL]
+# Habilitando mensagens importantes e desabilitando apenas o que é excessivamente verboso ou conflitante com Django
 disable=
-    C0301, # line-too-long
-    C0302, # too-many-lines
-    C0103, # invalid-name
-    C0325, # superfluous-parens
-    C0411, # wrong-import-order
-    C0413, # wrong-import-position
-    C0415, # import-outside-toplevel
-    C0116, # missing-function-docstring
-    E0102, # function-redefined
-    E5142, # imported-auth-user
-    R0912, # too-many-branches
-    R0914, # too-many-locals
-    R1705, # no-else-return
-    W0404, # reimported
-    W0611, # unused-import
-    W0612, # unused-variable
-    W0621, # redefined-outer-name
-    W0718, # broad-exception-caught
+    C0301, # line-too-long (Flake8 já cuida disso)
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    W0511, # fixme (TODOs são permitidos)
+    R0903, # too-few-public-methods (Comum em modelos Django)
+    imported-auth-user, # E5142: falso positivo comum com get_user_model
+    raw-checker-failed,
+    bad-inline-option,
+    locally-disabled,
+    file-ignored,
+    suppressed-message,
+    useless-suppression,
+    deprecated-pragma,
+    use-symbolic-message-instead
+
+[REPORTS]
+output-format=colorized
+score=yes

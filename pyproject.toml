@@ -15,10 +15,13 @@ venvPath = "."
 venv = "venv"
 
 # Nível de rigor da análise
-typeCheckingMode = "basic"
+typeCheckingMode = "standard"
 
-# Supressão de erros específicos do Django/Pylance
-reportAttributeAccessIssue = false
-reportArgumentType = false
-reportMissingModuleSource = false
-reportGeneralTypeIssues = false
+# Configurações de tipagem rigorosa
+reportAttributeAccessIssue = true
+reportArgumentType = true
+reportMissingModuleSource = true
+reportGeneralTypeIssues = true
+reportOptionalMemberAccess = true
+reportOptionalSubscript = true
+reportOptionalIterable = true

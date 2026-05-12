@@ -35,4 +35,4 @@ HORARIOS = {
 }
 
 DIAS_SEMANA = ["segunda", "terca", "quarta", "quinta", "sexta"]
-NOMES_DIAS  = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"]
+NOMES_DIAS = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta"]

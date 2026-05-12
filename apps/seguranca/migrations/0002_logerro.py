@@ -8,28 +8,44 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('seguranca', '0001_initial'),
+        ("seguranca", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LogErro',
+            name="LogErro",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('tipo_excecao', models.CharField(max_length=255)),
-                ('mensagem', models.TextField()),
-                ('traceback', models.TextField()),
-                ('path', models.CharField(max_length=255)),
-                ('metodo', models.CharField(max_length=10)),
-                ('data_ocorrencia', models.DateTimeField(auto_now_add=True)),
-                ('ip_endereco', models.GenericIPAddressField(blank=True, null=True)),
-                ('usuario', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("tipo_excecao", models.CharField(max_length=255)),
+                ("mensagem", models.TextField()),
+                ("traceback", models.TextField()),
+                ("path", models.CharField(max_length=255)),
+                ("metodo", models.CharField(max_length=10)),
+                ("data_ocorrencia", models.DateTimeField(auto_now_add=True)),
+                ("ip_endereco", models.GenericIPAddressField(blank=True, null=True)),
+                (
+                    "usuario",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Log de Erro',
-                'verbose_name_plural': 'Logs de Erros',
-                'ordering': ['-data_ocorrencia'],
+                "verbose_name": "Log de Erro",
+                "verbose_name_plural": "Logs de Erros",
+                "ordering": ["-data_ocorrencia"],
             },
         ),
     ]
