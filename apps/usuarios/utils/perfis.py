@@ -33,6 +33,8 @@ def get_foto_perfil(user):
 
 def redirect_user(user):
     """Determina a URL de destino após login."""
+    from apps.ti.utils.permissoes import usuario_e_apenas_ti
+
     if user.is_superuser:
         return "painel_super"
     if hasattr(user, "gestor"):
@@ -43,6 +45,8 @@ def redirect_user(user):
         return "painel_aluno"
     if hasattr(user, "responsavel"):
         return "painel_responsavel"
+    if usuario_e_apenas_ti(user):
+        return "ti:painel"
     return "painel_usuarios"
 
 

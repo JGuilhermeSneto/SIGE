@@ -1,0 +1,157 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Área de TI — SIGE{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'ti/css/ti.css' %}">
+{% endblock %}
+
+{% block ti_content %}
+<div class="sige-card ti-painel-container">
+  <header class="ti-header">
+    <div>
+      <h1>
+        <i class="fa-solid fa-screwdriver-wrench"></i>
+        Área de TI
+      </h1>
+      <p>
+        Olá, <strong>{{ nome_exibicao }}</strong>. Aqui estão os principais painéis e rotinas para a equipe de TI.
+      </p>
+    </div>
+    <div class="ti-info-grid">
+      <div class="ti-info-card">
+        <strong>Permissão</strong>
+        <p>
+          {% if pode_operacoes %}TI — Coordenação / Superusuário{% else %}TI — Operador{% endif %}
+        </p>
+      </div>
+      <div class="ti-info-card">
+        <strong>Visibilidade</strong>
+        <p>
+          Acesso a segurança, documentação e ferramentas administrativas.
+        </p>
+      </div>
+      <div class="ti-info-card">
+        <strong>Próximos passos</strong>
+        <p>
+          Abra o dashboard de segurança, revise a documentação ou execute as operações de TI.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <div class="ti-status-grid">
+    {% for card in ti_status_cards %}
+    <article class="ti-status-card">
+      <p>{{ card.titulo }}</p>
+      <p>{{ card.valor }}</p>
+      <p>{{ card.descricao }}</p>
+      <button type="button" onclick="location.reload()" class="btn btn-secondary"
+        style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-top: 0.5rem;" title="Atualizar dados">
+        <i class="fa-solid fa-refresh"></i>
+      </button>
+    </article>
+    {% endfor %}
+  </div>
+
+  <div class="ti-actions-grid">
+    <article class="ti-action-card">
+      <h3><i class="fa-solid fa-shield-halved icon-sidebar-saude"></i> Segurança</h3>
+      <p>Dashboard completo de segurança com auditoria, erros, intrusões e logs de acesso.</p>
+      <a href="{% url 'ti:seguranca' %}" class="btn btn-primary">
+        <i class="fa-solid fa-arrow-right"></i> Acessar Segurança
+      </a>
+    </article>
+
+    <article class="ti-action-card">
+      <h3><i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Documentação</h3>
+      <p>Runbook e documentação técnica para operações de TI e manutenção do sistema.</p>
+      <a href="{% url 'ti:documentacao' %}" class="btn btn-primary">
+        <i class="fa-solid fa-arrow-right"></i> Ver Documentação
+      </a>
+    </article>
+
+    {% if pode_operacoes %}
+    <article class="ti-action-card">
+      <h3><i class="fa-solid fa-gears icon-sidebar-gears"></i> Operações</h3>
+      <p>Ferramentas avançadas para manutenção, limpeza e operações administrativas.</p>
+      <a href="{% url 'ti:operacoes' %}" class="btn btn-primary">
+        <i class="fa-solid fa-arrow-right"></i> Executar Operações
+      </a>
+    </article>
+    {% endif %}
+
+    <article class="ti-action-card">
+      <h3><i class="fa-solid fa-cogs"></i> Admin Django</h3>
+      <p>Interface administrativa do Django para gerenciamento de dados e configurações.</p>
+      <a href="{% url 'admin:index' %}" class="btn btn-secondary" target="_blank">
+        <i class="fa-solid fa-external-link"></i> Abrir Admin
+      </a>
+    </article>
+  </div>
+
+  <footer style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
+    <p>Última atualização: {{ ultima_atualizacao|date:"d/m/Y H:i:s" }}</p>
+  </footer>
+  </article>
+  {% endfor %}
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+  <a href="{% url 'ti:operacoes' %}" class="sige-card"
+    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px; transition: transform 0.2s; {% if not pode_operacoes %}opacity: 0.45; pointer-events: none;{% endif %}">
+    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-gears"></i> Operações</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Integrações, checklist de manutenção e
+      procedimentos de deploy.</p>
+  </a>
+
+  <a href="{% url 'ti:seguranca' %}" class="sige-card"
+    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
+    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-shield-halved"
+        style="color: var(--accent-ruby);"></i> Segurança</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Monitoramento de causas, blacklist, erros e
+      relatórios de vulnerabilidade.</p>
+  </a>
+
+  <a href="{% url 'ti:documentacao' %}" class="sige-card"
+    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
+    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-book-open"
+        style="color: var(--accent-amber);"></i> Documentação</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Políticas, runbook e links rápidos para os
+      processos de TI.</p>
+  </a>
+
+  <a href="/admin/" class="sige-card"
+    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
+    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-user-shield"></i> Admin Django</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Gerencie usuários, grupos, permissões e dados
+      do sistema.</p>
+  </a>
+
+  <a href="{% url 'swagger-ui' %}" class="sige-card"
+    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
+    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-book"></i> API Docs</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Documentação de API e endpoints disponíveis.
+    </p>
+  </a>
+
+  <a href="{% url 'painel_infraestrutura' %}" class="sige-card"
+    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
+    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-warehouse"></i> Infraestrutura</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Visão de patrimônio, ativos e manutenção
+      física.</p>
+  </a>
+</div>
+
+<section
+  style="margin-top: 1.75rem; padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-subtle); background: var(--bg-elevated);">
+  <h2 style="margin-top: 0;">Como usar esta área</h2>
+  <ol style="margin: 0.75rem 0 0 1.2rem; color: var(--text-primary); line-height: 1.8;">
+    <li>Acesse <strong>Segurança</strong> para ver logs, bugs, blacklist e manutenção.</li>
+    <li>Use <strong>Operações</strong> para rotinas sensíveis quando tiver permissão avançada.</li>
+    <li>Consulte a <strong>Documentação</strong> para políticas, runbook e links úteis da TI.</li>
+  </ol>
+</section>
+</div>
+{% endblock ti_content %}

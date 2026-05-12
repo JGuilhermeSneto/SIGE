@@ -1,0 +1,89 @@
+{% extends "core/base.html" %}
+{% load static custom_tags ti_tags %}
+
+{# Layout da área de TI: subnavegação + conteúdo (Shield, operações, visão geral). #}
+
+{% block extra_css %}
+{% block ti_extra_css %}{% endblock %}
+<style>
+  .ti-subnav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding: 0.65rem 1rem;
+    border-radius: 14px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-elevated);
+    margin-bottom: 1.25rem;
+  }
+
+  .ti-subnav a {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 10px;
+    color: var(--text-muted);
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .ti-subnav a:hover {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+  }
+
+  .ti-subnav a.ativo {
+    color: var(--accent-cyan);
+    background: rgba(34, 211, 238, 0.12);
+    border: 1px solid rgba(34, 211, 238, 0.35);
+  }
+
+  .ti-subnav a i {
+    margin-right: 0.45rem;
+  }
+
+  .ti-subnav a .icon-ti-painel {
+    color: var(--accent-cyan) !important;
+  }
+
+  .ti-subnav a .icon-ti-seguranca {
+    color: var(--accent-ruby) !important;
+  }
+
+  .ti-subnav a .icon-ti-documentacao {
+    color: var(--accent-amber) !important;
+  }
+
+  .ti-subnav a .icon-ti-operacoes {
+    color: var(--accent-emerald) !important;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if request.user|pode_menu_ti %}
+<nav class="ti-subnav" aria-label="Área de TI">
+  <a href="{% url 'ti:painel' %}"
+    class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'painel' %}ativo{% endif %}">
+    <i class="fa-solid fa-gauge-high icon-sidebar-inicio"></i> Visão geral TI
+  </a>
+  <a href="{% url 'ti:seguranca' %}"
+    class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'seguranca' or request.resolver_match.app_name == 'seguranca' %}ativo{% endif %}">
+    <i class="fa-solid fa-shield-halved icon-sidebar-saude"></i> Segurança (Shield)
+  </a>
+  <a href="{% url 'ti:documentacao' %}"
+    class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'documentacao' %}ativo{% endif %}">
+    <i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Documentação TI
+  </a>
+  {% if request.user|pode_ti_operacoes %}
+  <a href="{% url 'ti:operacoes' %}"
+    class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'operacoes' %}ativo{% endif %}">
+    <i class="fa-solid fa-gears icon-sidebar-gears"></i> Operações TI
+  </a>
+  {% endif %}
+</nav>
+{% endif %}
+
+{% block ti_content %}{% endblock %}
+{% endblock %}

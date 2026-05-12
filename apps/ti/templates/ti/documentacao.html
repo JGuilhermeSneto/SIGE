@@ -1,0 +1,74 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Documentação TI — SIGE{% endblock %}
+
+{% block ti_content %}
+<div class="sige-card" style="max-width: 960px; margin: 0 auto;">
+    <header style="margin-bottom: 1.5rem;">
+        <h1 style="font-family: var(--font-display); font-size: 1.75rem; margin: 0 0 0.5rem 0;">
+            <i class="fa-solid fa-book-open" style="color: var(--accent-cyan);"></i>
+            Documentação TI
+        </h1>
+        <p style="color: var(--text-muted); margin: 0;">
+            Central de políticas, procedimentos e links rápidos para a equipe de TI e usuários com acesso de TI.
+        </p>
+    </header>
+
+    <div style="display: grid; gap: 1rem;">
+        <section class="sige-card" style="padding: 1.5rem; border-radius: 18px;">
+            <h2 style="margin-top: 0; font-size: 1.1rem;">Permissões e papeis</h2>
+            <p style="color: var(--text-muted);">
+                A área de TI é estruturada em dois níveis de acesso:
+            </p>
+            <ul style="margin: 0.75rem 0 0 1.2rem; color: var(--text-primary); line-height: 1.8;">
+                <li><strong>TI — Operador</strong>: acesso ao painel TI e ao dashboard de segurança.</li>
+                <li><strong>TI — Coordenação</strong>: acesso às operações avançadas e rotinas sensíveis.</li>
+                <li><strong>Superusuário</strong>: acesso total, incluindo TI e administração Django.</li>
+            </ul>
+        </section>
+
+        <section class="sige-card" style="padding: 1.5rem; border-radius: 18px;">
+            <h2 style="margin-top: 0; font-size: 1.1rem;">Links rápidos</h2>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+                <a href="{% url 'ti:painel' %}" class="sige-card"
+                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
+                    <strong>Painel TI</strong>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Visão geral e acessos mais usados.</p>
+                </a>
+                <a href="{% url 'ti:seguranca' %}" class="sige-card"
+                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
+                    <strong>Dashboard de Segurança</strong>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Monitoramento de logs, bugs e blacklist.
+                    </p>
+                </a>
+                <a href="{% url 'ti:operacoes' %}" class="sige-card"
+                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
+                    <strong>Operações TI</strong>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Rotinas avançadas e checklist de
+                        manutenção.</p>
+                </a>
+                <a href="/admin/" class="sige-card"
+                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
+                    <strong>Admin Django</strong>
+                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Gerencie usuários, grupos e permissões.
+                    </p>
+                </a>
+            </div>
+        </section>
+
+        <section class="sige-card" style="padding: 1.5rem; border-radius: 18px;">
+            <h2 style="margin-top: 0; font-size: 1.1rem;">Boas práticas</h2>
+            <ul style="margin: 0.75rem 0 0 1.2rem; color: var(--text-primary); line-height: 1.8;">
+                <li>Use o painel TI apenas para operações administrativas e segurança.</li>
+                <li>Prefira o admin Django para manutenção de usuários e permissões.</li>
+                <li>Mantenha o runbook interno atualizado com variáveis de ambiente e procedimentos de deploy.</li>
+            </ul>
+        </section>
+    </div>
+
+    <p style="margin-top: 1.5rem;"><a href="{% url 'ti:painel' %}" class="btn-sige-primario">← Voltar ao painel TI</a>
+    </p>
+</div>
+{% endblock ti_content %}

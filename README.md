@@ -14,7 +14,7 @@
 
 <br/>
 
-[Estrutura do Projeto](#1-estrutura-do-back-end) · [Segurança & Criptografia](#2-seguran%C3%A7a--criptografia) · [Stack Técnica](#3-stack-tecnol%C3%B3gica) · [Qualidade & Testes](#4-qualidade--testes) · [Deploy](#5-deploy-em-produ%C3%A7%C3%A3o)
+[Estrutura do Projeto](#1-estrutura-do-back-end) · [Segurança & Criptografia](#2-seguran%C3%A7a--criptografia) · [Área de TI Avançada](#%EF%B8%8F-%C3%A1rea-de-ti-avan%C3%A7ada-v10) · [Stack Técnica](#3-stack-tecnol%C3%B3gica) · [Qualidade & Testes](#4-qualidade--testes) · [Deploy](#6-deploy-em-produ%C3%A7%C3%A3o)
 
 </div>
 
@@ -37,6 +37,7 @@ O Back-end é o pilar principal do SIGE, responsável por fornecer dados e regra
 | **`academico`** | Lógica de Notas/Frequência. | Engine de regras e **Matrículas Automáticas**. |
 | **`iot`** | **Automação & MQTT** 🤖 | Interface com hardware (RFID/Matrícula). |
 | **`seguranca`** | **Shield v1.2 (Hardening)** 🛡️ | Honeypot, Controle Parental e TI Workflow. |
+| **`ti`** | **Área de TI Avançada** 🛠️ | **NOVO** — Painel operacional, manutenção e monitoramento administrativo. |
 | **`financeiro`** | Fluxo de Caixa e BI. | Gestão de faturas e KPIs financeiros. |
 | **`documentos`** | ReportLab Engine. | Geração atômica de PDFs oficiais. |
 
@@ -53,6 +54,20 @@ O SIGE implementa uma camada de segurança de nível industrial para proteção 
 -   **Magic Number Validation**: Verificação binária de assinaturas de arquivos para impedir uploads maliciosos.
 -   **Audit Log**: Rastreamento completo de acesso a áreas críticas.
 -   **Maintenance Kill-Switch**: Middleware global para isolamento do sistema em manutenção.
+
+---
+
+## 🛠️ Área de TI Avançada (v1.0)
+
+O SIGE inclui um painel administrativo completo para operações de TI:
+
+- **Painel de Monitoramento**: KPIs em tempo real com cache inteligente (5min)
+- **Operações Administrativas**: Limpeza de logs, health checks, gerenciamento de cache
+- **Dashboard de Segurança**: Auditoria LGPD, telemetria de erros, controle de intrusões
+- **Ferramentas de Manutenção**: Sessões expiradas, configurações do sistema, export de dados
+- **Interface Otimizada**: Design system consistente, paginação inteligente, UX profissional
+
+*Consulte [`docs/TI_OPERATIONS.md`](docs/TI_OPERATIONS.md) para guia completo.*
 
 ---
 
@@ -98,7 +113,7 @@ python manage.py runserver
 
 ---
 
-## 🚀 Deploy em Produção
+## 🚀 6. Deploy em Produção
 
 O SIGE está configurado para deploy contínuo no **Render** com banco **MySQL** no **Aiven**.
 *   **Guia Completo:** Consulte [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).

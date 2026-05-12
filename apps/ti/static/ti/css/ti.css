@@ -1,0 +1,140 @@
+/* TI App Styles */
+
+.ti-painel-container {
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.ti-header {
+    margin-bottom: 1.5rem;
+    display: grid;
+    gap: 0.75rem;
+}
+
+.ti-header h1 {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    margin: 0 0 0.5rem 0;
+}
+
+.ti-header h1 i {
+    color: var(--accent-cyan);
+}
+
+.ti-header p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.ti-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.ti-info-card {
+    padding: 1rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-elevated);
+}
+
+.ti-info-card strong {
+    display: block;
+}
+
+.ti-info-card p {
+    margin: 0.5rem 0 0 0;
+    color: var(--text-muted);
+}
+
+.ti-status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.ti-status-card {
+    padding: 1rem;
+    border-radius: 18px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-elevated);
+}
+
+.ti-status-card p:first-child {
+    font-size: 0.95rem;
+    margin: 0 0 0.5rem 0;
+    font-weight: 700;
+}
+
+.ti-status-card p:nth-child(2) {
+    font-size: 2rem;
+    margin: 0;
+    color: var(--accent-cyan);
+}
+
+.ti-status-card p:last-child {
+    margin: 0.75rem 0 0 0;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.ti-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.ti-action-card {
+    padding: 1.5rem;
+    border-radius: 18px;
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-elevated);
+    transition: all 0.2s ease;
+}
+
+.ti-action-card:hover {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ti-action-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+}
+
+.ti-action-card p {
+    margin: 0 0 1rem 0;
+    color: var(--text-muted);
+}
+
+.ti-action-card .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.ti-action-card .btn-primary {
+    background: var(--accent-cyan);
+    color: white;
+}
+
+.ti-action-card .btn-primary:hover {
+    background: var(--accent-cyan-dark);
+}
+
+.ti-action-card .btn-secondary {
+    background: var(--bg-subtle);
+    color: var(--text);
+    border: 1px solid var(--border-subtle);
+}
+
+.ti-action-card .btn-secondary:hover {
+    background: var(--bg-elevated);
+}

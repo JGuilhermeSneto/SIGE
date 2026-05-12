@@ -1,9 +1,9 @@
-{% extends "core/base.html" %}
+{% extends "ti/base_ti.html" %}
 {% load static %}
 
 {% block title %}Detalhes do Bug — SIGE Security{% endblock %}
 
-{% block extra_css %}
+{% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
 <style>
     .bug-desc-box {
@@ -45,17 +45,16 @@
 </style>
 {% endblock %}
 
-{% block content %}
+{% block ti_content %}
 <section class="painel-sige">
 
-    {# ── HEADER PADRÃO ── #}
     <header class="header-painel">
         <div class="header-esquerda">
             <span class="header-label">SIGE Shield · Central de TI</span>
             <h1>Report <span class="nome-destaque">#{{ bug.id }}</span></h1>
         </div>
         <div class="header-acoes">
-            <a href="/seguranca/dashboard/" class="btn-sige-secundario">
+            <a href="{% url 'ti:seguranca' %}" class="btn-sige-secundario">
                 <i class="fa-solid fa-arrow-left"></i> Dashboard
             </a>
         </div>
@@ -63,9 +62,8 @@
 
     <div class="conteudo-geral">
 
-        {# ── COLUNA ESQUERDA (Detalhes) ── #}
         <section class="coluna-esquerda">
-            
+
             <article class="bug-desc-box">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
                     <h2 style="margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 800;">
@@ -106,7 +104,6 @@
 
         </section>
 
-        {# ── COLUNA DIREITA (Ações e Info) ── #}
         <aside class="coluna-direita">
 
             <section class="sige-widget">
@@ -138,9 +135,15 @@
                     <h3><i class="fa-solid fa-gears" style="color: var(--accent-emerald);"></i> Intervenção TI</h3>
                 </header>
                 <div class="sige-widget-body" style="display: flex; flex-direction: column; gap: 12px;">
-                    
+
+                    {% if not pode_executar_acoes_seguranca %}
+                    <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5;">
+                        Sua permissão é somente leitura neste painel. Peça a um gestor ou à TI com
+                        <code>ti.painel_ti_operacoes</code> para alterar o chamado.
+                    </p>
+                    {% else %}
                     {% if bug.status == 'NOVO' %}
-                    <form action="/seguranca/encaminhar-ti/{{ bug.id }}/" method="POST">
+                    <form action="{% url 'seguranca:encaminhar_ti' bug.id %}" method="POST">
                         {% csrf_token %}
                         <button type="submit" class="btn-sige-primario" style="width: 100%; font-size: 0.8rem; padding: 10px;">
                             <i class="fa-solid fa-headset"></i> Chamado Recebido
@@ -149,15 +152,16 @@
                     {% endif %}
 
                     {% if bug.status != 'CORRIGIDO' %}
-                    <form action="/seguranca/resolver-bug/{{ bug.id }}/" method="POST">
+                    <form action="{% url 'seguranca:resolver_bug' bug.id %}" method="POST">
                         {% csrf_token %}
                         <button type="submit" class="btn-sige-primario" style="width: 100%; font-size: 0.8rem; padding: 10px; background: var(--accent-emerald);">
                             <i class="fa-solid fa-check-double"></i> Bug Resolvido
                         </button>
                     </form>
                     {% endif %}
+                    {% endif %}
 
-                    <button onclick="window.print()" class="btn-sige-secundario" style="width: 100%; font-size: 0.8rem; padding: 10px;">
+                    <button type="button" onclick="window.print()" class="btn-sige-secundario" style="width: 100%; font-size: 0.8rem; padding: 10px;">
                         <i class="fa-solid fa-print"></i> Relatório Técnico
                     </button>
                 </div>

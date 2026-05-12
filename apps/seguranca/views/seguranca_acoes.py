@@ -11,6 +11,10 @@ from django.urls import reverse
 from axes.models import AccessAttempt
 from ..utils.hardening import validar_assinatura_arquivo
 from apps.academico.services.notificacao_servico import NotificacaoServico
+from apps.seguranca.utils.access import (
+    pode_executar_acoes_seguranca,
+    pode_ver_dashboard_seguranca,
+)
 import logging
 
 logger = logging.getLogger("sige.audit")
@@ -19,7 +23,8 @@ User = get_user_model()
 
 
 def is_security_admin(user):
-    return user.is_superuser or (hasattr(user, "perfil") and user.perfil == "gestor")
+    """Compat: ações sensíveis do Shield (gestor, super ou TI coordenação)."""
+    return pode_executar_acoes_seguranca(user)
 
 
 @user_passes_test(is_security_admin)
@@ -33,7 +38,7 @@ def bloquear_ip(request, ip):
     AccessAttempt.objects.filter(ip_address=ip).delete()
 
     messages.success(request, f"O IP {ip} foi adicionado à Blacklist com sucesso.")
-    return redirect("seguranca:dashboard")
+    return redirect("ti:seguranca")
 
 
 @user_passes_test(is_security_admin)
@@ -41,7 +46,7 @@ def desbloquear_ip(request, ip_id):
     bloqueio = get_object_or_404(BlacklistIP, id=ip_id)
     bloqueio.delete()
     messages.success(request, f"O IP {bloqueio.ip_endereco} foi removido da Blacklist.")
-    return redirect("seguranca:dashboard")
+    return redirect("ti:seguranca")
 
 
 @user_passes_test(is_security_admin)
@@ -61,14 +66,21 @@ def bloquear_usuario(request, user_id):
         request,
         f"O usuário {user.username} foi bloqueado e todas as suas sessões foram encerradas.",
     )
-    return redirect("seguranca:dashboard")
+    return redirect("ti:seguranca")
 
 
-@user_passes_test(is_security_admin)
+@user_passes_test(pode_ver_dashboard_seguranca)
 def detalhe_bug(request, bug_id):
     """Página de detalhamento técnico para a equipe de TI."""
     bug = get_object_or_404(BugReport, id=bug_id)
-    return render(request, "seguranca/bug_detalhe.html", {"bug": bug})
+    return render(
+        request,
+        "seguranca/bug_detalhe.html",
+        {
+            "bug": bug,
+            "pode_executar_acoes_seguranca": pode_executar_acoes_seguranca(request.user),
+        },
+    )
 
 
 @user_passes_test(is_security_admin)
@@ -88,7 +100,7 @@ def encaminhar_ti(request, bug_id):
         )
 
     messages.success(request, f"Bug #{bug.id} encaminhado para a equipe de TI.")
-    return redirect("seguranca:detalhes_bug", bug_id=bug.id)
+    return redirect("seguranca:detalhe_bug", bug_id=bug.id)
 
 
 @user_passes_test(is_security_admin)
@@ -108,7 +120,7 @@ def resolver_bug(request, bug_id):
         )
 
     messages.success(request, f"Bug #{bug.id} marcado como resolvido.")
-    return redirect("seguranca:detalhes_bug", bug_id=bug.id)
+    return redirect("seguranca:detalhe_bug", bug_id=bug.id)
 
 
 @user_passes_test(is_security_admin)
@@ -131,19 +143,19 @@ def toggle_manutencao(request):
                 if config.manutencao_ativa
                 else "O sistema está operando normalmente agora."
             ),
-            url_destino=reverse("seguranca:dashboard"),
+            url_destino=reverse("ti:seguranca"),
         )
 
         messages.warning(request, f"O Modo Manutenção foi {status} com sucesso.")
 
-    return redirect("seguranca:dashboard")
+    return redirect("ti:seguranca")
 
 
 @user_passes_test(is_security_admin)
 def limpar_logs_erro(request):
     LogErro.objects.all().delete()
     messages.info(request, "Todos os logs de erro foram limpos.")
-    return redirect("seguranca:dashboard")
+    return redirect("ti:seguranca")
 
 
 def honeypot_view(request):
@@ -190,7 +202,7 @@ def reportar_bug(request):
             messages.error(
                 request, "O arquivo de evidência parece ser inválido ou malicioso."
             )
-            return redirect(url_origem or "dashboard")
+            return redirect(url_origem or reverse("ti:painel"))
 
         bug = BugReport.objects.create(
             usuario=user,
@@ -208,13 +220,13 @@ def reportar_bug(request):
             tipo="SISTEMA",
             titulo=f"Novo Bug Reportado: {titulo}",
             mensagem=f"O usuário {user.username if user else 'Anônimo'} reportou um bug com prioridade {prioridade}.",
-            url_destino=reverse("seguranca:detalhes_bug", kwargs={"bug_id": bug.id}),
+            url_destino=reverse("seguranca:detalhe_bug", kwargs={"bug_id": bug.id}),
         )
 
         messages.success(
             request,
             "Obrigado! Seu relatório de bug foi enviado para nossa equipe de segurança.",
         )
-        return redirect(url_origem or "dashboard")
+        return redirect(url_origem or reverse("ti:painel"))
 
-    return redirect("dashboard")
+    return redirect(reverse("ti:painel"))

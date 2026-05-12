@@ -66,6 +66,7 @@ class ManutencaoMiddleware(MiddlewareMixin):
                 "/media/",
                 "/admin/",
                 "/seguranca/",
+                "/ti/",
                 "/login/",
                 "/logout/",
             ]
@@ -74,6 +75,8 @@ class ManutencaoMiddleware(MiddlewareMixin):
 
         config = ConfiguracaoSeguranca.get_solo()
         if config.manutencao_ativa:
+            from apps.ti.utils.permissoes import usuario_tem_operacoes_ti
+
             pode_acessar = False
             if request.user.is_authenticated:
                 if request.user.is_superuser:
@@ -83,6 +86,8 @@ class ManutencaoMiddleware(MiddlewareMixin):
                     and hasattr(request.user, "perfil")
                     and request.user.perfil == "gestor"
                 ):
+                    pode_acessar = True
+                elif usuario_tem_operacoes_ti(request.user):
                     pode_acessar = True
 
             if not pode_acessar:
@@ -105,6 +110,7 @@ class AuditMiddleware(MiddlewareMixin):
         "/infraestrutura/",
         "/admin/",
         "/seguranca/",
+        "/ti/",
         "/usuarios/perfil/",
     ]
 

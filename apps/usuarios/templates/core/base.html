@@ -1,6 +1,7 @@
 {% load static %}
 {% load custom_tags %}
 {% load vite_assets %}
+{% load ti_tags %}
 {# base.html — template-mãe do SIGE: HTML comum, design system, navbar e blocos title/content/extra_js. #}
 <!DOCTYPE html>
 <html lang="pt-br" data-theme="cinza-industrial">
@@ -39,6 +40,89 @@
   <link rel="stylesheet" href="{% static 'core/css/calendario_do_menu.css' %}?v=SIGE-V4.5">
 
   {% block extra_css %}{% endblock %}
+
+  <style>
+    .nav-lateral a i {
+      margin-right: 0.85rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-lateral a i.icon-sidebar-inicio {
+      color: var(--accent-cyan);
+    }
+
+    .nav-lateral a i.icon-sidebar-turmas {
+      color: var(--accent-emerald);
+    }
+
+    .nav-lateral a i.icon-sidebar-usuarios {
+      color: var(--accent-violet);
+    }
+
+    .nav-lateral a i.icon-sidebar-calendario {
+      color: var(--accent-amber);
+    }
+
+    .nav-lateral a i.icon-sidebar-comunicados {
+      color: var(--accent-ruby);
+    }
+
+    .nav-lateral a i.icon-sidebar-infraestrutura {
+      color: var(--accent-cyan);
+    }
+
+    .nav-lateral a i.icon-sidebar-bi {
+      color: var(--accent-violet);
+    }
+
+    .nav-lateral a i.icon-sidebar-ti {
+      color: var(--accent-cyan);
+    }
+
+    .nav-lateral a i.icon-sidebar-app {
+      color: var(--accent-emerald);
+    }
+
+    .nav-lateral a i.icon-sidebar-biblioteca {
+      color: var(--accent-amber);
+    }
+
+    .nav-lateral a i.icon-sidebar-saude {
+      color: var(--accent-ruby);
+    }
+
+    .nav-lateral a i.icon-sidebar-historico {
+      color: var(--accent-violet);
+    }
+
+    .nav-lateral a i.icon-sidebar-mensalidades {
+      color: var(--accent-cyan);
+    }
+
+    .nav-lateral a i.icon-sidebar-gears {
+      color: var(--accent-emerald);
+    }
+
+    .nav-lateral a i.icon-sidebar-admin {
+      color: var(--accent-violet);
+    }
+
+    .nav-lateral a i.icon-sidebar-swagger {
+      color: var(--accent-amber);
+    }
+
+    .nav-lateral a i.icon-sidebar-financeiro {
+      color: var(--accent-cyan);
+    }
+
+    .nav-lateral a i.icon-sidebar-contas {
+      color: var(--accent-amber);
+    }
+
+    .nav-lateral a i.icon-sidebar-receitas {
+      color: var(--accent-emerald);
+    }
+  </style>
 
   <script>
     (function () {
@@ -90,6 +174,8 @@
     {% url 'painel_professor' as home_url %}
     {% elif request.user|has_attr:"aluno" %}
     {% url 'painel_aluno' as home_url %}
+    {% elif request.user|apenas_perfil_ti %}
+    {% url 'ti:painel' as home_url %}
     {% else %}
     {% url 'login' as home_url %}
     {% endif %}
@@ -110,9 +196,10 @@
 
     <!-- USUÁRIO -->
     <div class="menu-icones" style="display: flex; align-items: center; gap: 12px;">
-      
+
       <!-- Botão Reportar Bug -->
-      <button class="theme-hub-btn" title="Reportar Bug" id="bug-report-trigger" style="color: var(--accent-ruby); margin-right: 5px;" onclick="abrirModalBug()">
+      <button class="theme-hub-btn" title="Reportar Bug" id="bug-report-trigger"
+        style="color: var(--accent-ruby); margin-right: 5px;" onclick="abrirModalBug()">
         <i class="fa-solid fa-bug"></i>
       </button>
 
@@ -120,7 +207,7 @@
         <button class="theme-hub-btn" title="Alterar Tema" id="theme-hub-trigger">
           <i class="fa-solid fa-palette"></i>
         </button>
-        
+
         <div class="theme-hub-panel" id="theme-hub-panel">
           <div class="theme-hub-header">Personalizar Interface</div>
           <div class="theme-hub-grid">
@@ -144,55 +231,65 @@
       {% if request.user.is_authenticated %}
       <div class="notifications-hub">
 
-          <div class="notificacoes-badge-btn" onclick="abrirNotificacoesSIGE()" title="Ver notificações">
-              <i class="fa-solid fa-bell"></i>
-              {% if global_notifs_nao_lidas > 0 %}
-                <span class="header-badge-notif">{{ global_notifs_nao_lidas }}</span>
-              {% endif %}
-          </div>
-
-          <!-- Dependendo do perfil, podemos mostrar um contador adicional de "Ações Pendentes" se for pertinente -->
-          {% if global_prof_entregas_pendentes > 0 or global_atestados_pendentes > 0 %}
-             <div style="width: 8px; height: 8px; background: var(--accent-amber); border-radius: 50%; position: absolute; bottom: 0; right: -2px; border: 1px solid var(--header-bg); animation: bounce 2s infinite;" title="Há pendências que requerem sua atenção"></div>
+        <div class="notificacoes-badge-btn" onclick="abrirNotificacoesSIGE()" title="Ver notificações">
+          <i class="fa-solid fa-bell"></i>
+          {% if global_notifs_nao_lidas > 0 %}
+          <span class="header-badge-notif">{{ global_notifs_nao_lidas }}</span>
           {% endif %}
+        </div>
+
+        <!-- Dependendo do perfil, podemos mostrar um contador adicional de "Ações Pendentes" se for pertinente -->
+        {% if global_prof_entregas_pendentes > 0 or global_atestados_pendentes > 0 %}
+        <div
+          style="width: 8px; height: 8px; background: var(--accent-amber); border-radius: 50%; position: absolute; bottom: 0; right: -2px; border: 1px solid var(--header-bg); animation: bounce 2s infinite;"
+          title="Há pendências que requerem sua atenção"></div>
+        {% endif %}
       </div>
 
       <!-- MODAL UNIFICADO DE NOTIFICAÇÕES -->
-      <div id="modal-notificacoes-sige" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
-          <div class="modal-notif-container" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 95%; max-width: 450px; max-height: 80vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: slideUp 0.3s ease-out;">
-              
-              <div class="modal-notif-header" style="padding: 20px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-elevated);">
-                  <div style="display: flex; align-items: center; gap: 12px;">
-                      <div style="background: var(--accent-violet); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
-                          <i class="fa-solid fa-bell"></i>
-                      </div>
-                      <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Notificações</h3>
-                  </div>
-                  <div style="display: flex; align-items: center; gap: 10px;">
-                      {% if global_notifs_nao_lidas > 0 %}
-                      <a href="{% url 'marcar_todas_notificacoes_lidas' %}?next={{ request.path }}" title="Marcar todas como lidas" 
-                         style="background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--accent-emerald); padding: 6px 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s; font-size: 0.85rem; text-decoration: none; gap: 6px; font-weight: 600;" 
-                         onmouseover="this.style.background='var(--accent-emerald)'; this.style.color='white'">
-                          <i class="fa-solid fa-check-double"></i>
-                          <span style="font-size: 0.75rem;">Limpar</span>
-                      </a>
-                      {% endif %}
-                      <button onclick="fecharNotificacoesSIGE()" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s;" onmouseover="this.style.background='var(--accent-ruby)'; this.style.color='white'">&times;</button>
-                  </div>
+      <div id="modal-notificacoes-sige"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+        <div class="modal-notif-container"
+          style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 95%; max-width: 450px; max-height: 80vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.4); animation: slideUp 0.3s ease-out;">
+
+          <div class="modal-notif-header"
+            style="padding: 20px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-elevated);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div
+                style="background: var(--accent-violet); color: white; width: 32px; height: 32px; border-radius: 8px; display: flex; justify-content: center; align-items: center;">
+                <i class="fa-solid fa-bell"></i>
               </div>
+              <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: var(--text-primary);">Notificações</h3>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              {% if global_notifs_nao_lidas > 0 %}
+              <a href="{% url 'marcar_todas_notificacoes_lidas' %}?next={{ request.path }}"
+                title="Marcar todas como lidas"
+                style="background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--accent-emerald); padding: 6px 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s; font-size: 0.85rem; text-decoration: none; gap: 6px; font-weight: 600;"
+                onmouseover="this.style.background='var(--accent-emerald)'; this.style.color='white'">
+                <i class="fa-solid fa-check-double"></i>
+                <span style="font-size: 0.75rem;">Limpar</span>
+              </a>
+              {% endif %}
+              <button onclick="fecharNotificacoesSIGE()"
+                style="background: var(--bg-surface); border: 1px solid var(--border-subtle); color: var(--text-muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: all 0.2s;"
+                onmouseover="this.style.background='var(--accent-ruby)'; this.style.color='white'">&times;</button>
+            </div>
+          </div>
 
-              <div class="modal-notif-body" style="padding: 5px 0; overflow-y: auto; flex: 1; scrollbar-width: thin;">
-              {% if global_notifs_recentes %}
-                  {% for n in global_notifs_recentes %}
-                      <div class="notif-item" style="position: relative; display: flex; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); text-decoration: none; transition: all 0.2s; background: {% if not n.lida %}rgba(var(--accent-violet-rgb), 0.03){% else %}transparent{% endif %};" 
-                           onmouseover="this.style.background='var(--bg-elevated)'; if(this.querySelector('.notif-quick-actions')) this.querySelector('.notif-quick-actions').style.opacity='1'" 
-                           onmouseout="this.style.background='{% if not n.lida %}rgba(var(--accent-violet-rgb), 0.03){% else %}transparent{% endif %}'; if(this.querySelector('.notif-quick-actions')) this.querySelector('.notif-quick-actions').style.opacity='0'">
-                          
-                          <!-- Link principal para destino -->
-                          <a href="{% url 'marcar_notificacao_lida' n.id %}" style="position: absolute; inset: 0; z-index: 1;"></a>
+          <div class="modal-notif-body" style="padding: 5px 0; overflow-y: auto; flex: 1; scrollbar-width: thin;">
+            {% if global_notifs_recentes %}
+            {% for n in global_notifs_recentes %}
+            <div class="notif-item"
+              style="position: relative; display: flex; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); text-decoration: none; transition: all 0.2s; background: {% if not n.lida %}rgba(var(--accent-violet-rgb), 0.03){% else %}transparent{% endif %};"
+              onmouseover="this.style.background='var(--bg-elevated)'; if(this.querySelector('.notif-quick-actions')) this.querySelector('.notif-quick-actions').style.opacity='1'"
+              onmouseout="this.style.background='{% if not n.lida %}rgba(var(--accent-violet-rgb), 0.03){% else %}transparent{% endif %}'; if(this.querySelector('.notif-quick-actions')) this.querySelector('.notif-quick-actions').style.opacity='0'">
 
-                          <!-- Ícone com Identidade Visual -->
-                          <div class="notif-icon-box" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; z-index: 2; position: relative;
+              <!-- Link principal para destino -->
+              <a href="{% url 'marcar_notificacao_lida' n.id %}" style="position: absolute; inset: 0; z-index: 1;"></a>
+
+              <!-- Ícone com Identidade Visual -->
+              <div class="notif-icon-box" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; z-index: 2; position: relative;
                               {% if n.tipo == 'SISTEMA' %} background: rgba(124, 111, 255, 0.1); color: var(--accent-violet);
                               {% elif n.tipo == 'ENTREGA' %} background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);
                               {% elif n.tipo == 'ATESTADO' %} background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby);
@@ -201,71 +298,83 @@
                               {% elif n.tipo == 'CHAMADA' %} background: rgba(59, 130, 246, 0.1); color: #3b82f6;
                               {% elif n.tipo == 'GABARITO' %} background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);
                               {% else %} background: var(--bg-elevated); color: var(--text-muted); {% endif %}">
-                              
-                              {% if n.tipo == 'SISTEMA' %}<i class="fa-solid fa-circle-info"></i>
-                              {% elif n.tipo == 'ENTREGA' %}<i class="fa-solid fa-file-signature"></i>
-                              {% elif n.tipo == 'ATESTADO' %}<i class="fa-solid fa-file-medical"></i>
-                              {% elif n.tipo == 'CORRECAO' %}<i class="fa-solid fa-clipboard-check"></i>
-                              {% elif n.tipo == 'NOTA' %}<i class="fa-solid fa-star"></i>
-                              {% elif n.tipo == 'CHAMADA' %}<i class="fa-solid fa-calendar-check"></i>
-                              {% elif n.tipo == 'GABARITO' %}<i class="fa-solid fa-check-double"></i>
-                              {% else %}<i class="fa-solid fa-bell"></i>{% endif %}
-                          </div>
 
-                          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; z-index: 2; position: relative;">
-                              <div style="display: flex; justify-content: space-between; align-items: center;">
-                                  <strong style="font-size: 0.88rem; color: {% if not n.lida %}var(--text-primary){% else %}var(--text-muted){% endif %}; font-weight: {% if not n.lida %}700{% else %}500{% endif %};">{{ n.titulo }}</strong>
-                                  <div style="display: flex; align-items: center; gap: 8px;">
-                                      <span style="font-size: 0.7rem; color: var(--text-dim);">{{ n.criado_em|date:"d/m H:i" }}</span>
-                                      <!-- Ações Rápidas -->
-                                      <div class="notif-quick-actions" style="display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s;">
-                                          {% if not n.lida %}
-                                          <a href="{% url 'marcar_notificacao_lida' n.id %}?next={{ request.path }}" title="Marcar como lida" style="color: var(--accent-emerald); font-size: 0.85rem;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                                              <i class="fa-solid fa-check"></i>
-                                          </a>
-                                          {% endif %}
-                                          <a href="{% url 'excluir_notificacao' n.id %}?next={{ request.path }}" title="Excluir" style="color: var(--accent-ruby); font-size: 0.85rem;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
-                                              <i class="fa-solid fa-trash-can"></i>
-                                          </a>
-                                      </div>
-                                  </div>
-                              </div>
-                              <p style="margin: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ n.mensagem }}</p>
-                          </div>
-                      </div>
-                  {% endfor %}
-              {% else %}
-                  <div style="padding: 60px 20px; text-align: center; color: var(--text-dim);">
-                      <div style="width: 60px; height: 60px; background: var(--bg-elevated); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px;">
-                          <i class="fa-regular fa-bell-slash" style="font-size: 1.8rem; opacity: 0.3;"></i>
-                      </div>
-                      <p style="font-size: 0.9rem; font-weight: 500;">Nenhuma notificação por aqui.</p>
-                      <span style="font-size: 0.75rem; opacity: 0.6;">Tudo em dia com o sistema!</span>
+                {% if n.tipo == 'SISTEMA' %}<i class="fa-solid fa-circle-info"></i>
+                {% elif n.tipo == 'ENTREGA' %}<i class="fa-solid fa-file-signature"></i>
+                {% elif n.tipo == 'ATESTADO' %}<i class="fa-solid fa-file-medical"></i>
+                {% elif n.tipo == 'CORRECAO' %}<i class="fa-solid fa-clipboard-check"></i>
+                {% elif n.tipo == 'NOTA' %}<i class="fa-solid fa-star"></i>
+                {% elif n.tipo == 'CHAMADA' %}<i class="fa-solid fa-calendar-check"></i>
+                {% elif n.tipo == 'GABARITO' %}<i class="fa-solid fa-check-double"></i>
+                {% else %}<i class="fa-solid fa-bell"></i>{% endif %}
+              </div>
+
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; z-index: 2; position: relative;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong
+                    style="font-size: 0.88rem; color: {% if not n.lida %}var(--text-primary){% else %}var(--text-muted){% endif %}; font-weight: {% if not n.lida %}700{% else %}500{% endif %};">{{
+                    n.titulo }}</strong>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 0.7rem; color: var(--text-dim);">{{ n.criado_em|date:"d/m H:i" }}</span>
+                    <!-- Ações Rápidas -->
+                    <div class="notif-quick-actions"
+                      style="display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s;">
+                      {% if not n.lida %}
+                      <a href="{% url 'marcar_notificacao_lida' n.id %}?next={{ request.path }}"
+                        title="Marcar como lida" style="color: var(--accent-emerald); font-size: 0.85rem;"
+                        onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                        <i class="fa-solid fa-check"></i>
+                      </a>
+                      {% endif %}
+                      <a href="{% url 'excluir_notificacao' n.id %}?next={{ request.path }}" title="Excluir"
+                        style="color: var(--accent-ruby); font-size: 0.85rem;"
+                        onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </a>
+                    </div>
                   </div>
-              {% endif %}
+                </div>
+                <p
+                  style="margin: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                  {{ n.mensagem }}</p>
               </div>
-
-              {% if global_notifs_recentes %}
-              <div style="padding: 15px; background: var(--bg-elevated); text-align: center; border-top: 1px solid var(--border-subtle);">
-                  <span style="font-size: 0.72rem; color: var(--text-muted); font-style: italic;">Clique na notificação para marcar como lida</span>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div style="padding: 60px 20px; text-align: center; color: var(--text-dim);">
+              <div
+                style="width: 60px; height: 60px; background: var(--bg-elevated); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 15px;">
+                <i class="fa-regular fa-bell-slash" style="font-size: 1.8rem; opacity: 0.3;"></i>
               </div>
-              {% endif %}
+              <p style="font-size: 0.9rem; font-weight: 500;">Nenhuma notificação por aqui.</p>
+              <span style="font-size: 0.75rem; opacity: 0.6;">Tudo em dia com o sistema!</span>
+            </div>
+            {% endif %}
           </div>
+
+          {% if global_notifs_recentes %}
+          <div
+            style="padding: 15px; background: var(--bg-elevated); text-align: center; border-top: 1px solid var(--border-subtle);">
+            <span style="font-size: 0.72rem; color: var(--text-muted); font-style: italic;">Clique na notificação para
+              marcar como lida</span>
+          </div>
+          {% endif %}
+        </div>
       </div>
       <script>
-      function abrirNotificacoesSIGE() {
+        function abrirNotificacoesSIGE() {
           document.getElementById('modal-notificacoes-sige').style.display = 'flex';
           document.body.style.overflow = 'hidden';
-      }
-      function fecharNotificacoesSIGE() {
+        }
+        function fecharNotificacoesSIGE() {
           document.getElementById('modal-notificacoes-sige').style.display = 'none';
           document.body.style.overflow = 'auto';
-      }
-      // Fechar modal ao clicar fora
-      window.addEventListener('click', function(e) {
+        }
+        // Fechar modal ao clicar fora
+        window.addEventListener('click', function (e) {
           var modal = document.getElementById('modal-notificacoes-sige');
           if (e.target == modal) fecharNotificacoesSIGE();
-      });
+        });
       </script>
       {% endif %}
 
@@ -275,11 +384,8 @@
 
         <!-- AVATAR -->
         <div class="user-avatar" id="user-avatar">
-          <img id="user-avatar-img" 
-               src="{{ request.user|foto_perfil_url }}"
-               alt="Foto do usuário" 
-               loading="lazy"
-               style="width: 100%; height: 100%; object-fit: cover;">
+          <img id="user-avatar-img" src="{{ request.user|foto_perfil_url }}" alt="Foto do usuário" loading="lazy"
+            style="width: 100%; height: 100%; object-fit: cover;">
         </div>
 
         <!-- DROPDOWN -->
@@ -314,102 +420,144 @@
       {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
       <a href="{% url 'painel_super' %}"
         class="{% if request.resolver_match.url_name == 'painel_super' %}ativo{% endif %}">
-        <i class="fa-solid fa-house"></i> Início
+        <i class="fa-solid fa-house icon-sidebar-inicio"></i> Início
       </a>
       <a href="{% url 'listar_turmas' %}"
         class="{% if request.resolver_match.url_name == 'listar_turmas' %}ativo{% endif %}">
-        <i class="fa-solid fa-graduation-cap"></i> Turmas
+        <i class="fa-solid fa-graduation-cap icon-sidebar-turmas"></i> Turmas
       </a>
       <a href="{% url 'usuarios' %}" class="{% if request.resolver_match.url_name == 'usuarios' %}ativo{% endif %}">
-        <i class="fa-solid fa-users"></i> Usuários
+        <i class="fa-solid fa-users icon-sidebar-usuarios"></i> Usuários
       </a>
       <a href="{% url 'visualizar_calendario' %}"
         class="{% if request.resolver_match.url_name == 'visualizar_calendario' %}ativo{% endif %}">
-        <i class="fa-solid fa-calendar-days"></i> Calendário
+        <i class="fa-solid fa-calendar-days icon-sidebar-calendario"></i> Calendário
       </a>
       <a href="{% url 'listar_comunicados_gestao' %}"
         class="{% if request.resolver_match.url_name == 'listar_comunicados_gestao' %}ativo{% endif %}">
-        <i class="fa-solid fa-bullhorn"></i> Comunicados
+        <i class="fa-solid fa-bullhorn icon-sidebar-comunicados"></i> Comunicados
       </a>
       <a href="{% url 'painel_infraestrutura' %}"
         class="{% if request.resolver_match.url_name == 'painel_infraestrutura' %}ativo{% endif %}">
-        <i class="fa-solid fa-warehouse"></i> Infraestrutura
+        <i class="fa-solid fa-warehouse icon-sidebar-infraestrutura"></i> Infraestrutura
       </a>
       <a href="{% url 'central_inteligencia' %}"
         class="{% if request.resolver_match.url_name == 'central_inteligencia' %}ativo{% endif %}">
-        <i class="fa-solid fa-chart-pie"></i> BI & Relatórios
+        <i class="fa-solid fa-chart-pie icon-sidebar-bi"></i> BI & Relatórios
       </a>
-      <a href="{% url 'seguranca:dashboard' %}"
-        class="{% if request.resolver_match.url_name == 'dashboard' and request.resolver_match.app_name == 'seguranca' %}ativo{% endif %}">
-        <i class="fa-solid fa-shield-halved" style="color: var(--accent-ruby);"></i> Segurança
+      {% if request.user|pode_menu_ti %}
+      <a href="{% url 'ti:painel' %}" class="{% if request.resolver_match.app_name == 'ti' %}ativo{% endif %}">
+        <i class="fa-solid fa-screwdriver-wrench icon-sidebar-ti"></i> Área TI
       </a>
+      {% endif %}
       <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
-        <i class="fa-solid fa-bolt"></i> App React
+        <i class="fa-solid fa-bolt icon-sidebar-app"></i> App React
       </a>
-      <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
-        <i class="fa-solid fa-book-open"></i> Biblioteca
+      <a href="{% url 'acervo_biblioteca' %}"
+        class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
+        <i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Biblioteca
       </a>
 
-      <a href="{% url 'gestao_atestados' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
-        <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
+      <a href="{% url 'gestao_atestados' %}"
+        class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}" style="position: relative;">
+        <i class="fa-solid fa-file-medical icon-sidebar-saude"></i> Saúde / Atestados
         {% if global_atestados_pendentes > 0 %}
-          <span class="badge-notificacao" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: var(--accent-ruby); color: white; border-radius: 10px; padding: 2px 8px; font-size: 0.65rem; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">{{ global_atestados_pendentes }}</span>
+        <span class="badge-notificacao"
+          style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: var(--accent-ruby); color: white; border-radius: 10px; padding: 2px 8px; font-size: 0.65rem; font-weight: 800; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">{{
+          global_atestados_pendentes }}</span>
         {% endif %}
       </a>
 
       {% elif request.user|has_attr:"professor" %}
       <a href="{% url 'painel_professor' %}"
         class="{% if request.resolver_match.url_name == 'painel_professor' %}ativo{% endif %}">
-        <i class="fa-solid fa-house"></i> Início
+        <i class="fa-solid fa-house icon-sidebar-inicio"></i> Início
       </a>
       <a href="{% url 'disciplinas_professor' %}"
         class="{% if request.resolver_match.url_name == 'disciplinas_professor' %}ativo{% endif %}">
-        <i class="fa-solid fa-graduation-cap"></i> Minhas Turmas
+        <i class="fa-solid fa-graduation-cap icon-sidebar-turmas"></i> Minhas Turmas
       </a>
       <a href="{% url 'visualizar_calendario' %}"
         class="{% if request.resolver_match.url_name == 'visualizar_calendario' %}ativo{% endif %}">
-        <i class="fa-solid fa-calendar-days"></i> Calendário
+        <i class="fa-solid fa-calendar-days icon-sidebar-calendario"></i> Calendário
       </a>
       <a href="{% url 'app_vite' %}" class="{% if request.resolver_match.url_name == 'app_vite' %}ativo{% endif %}">
-        <i class="fa-solid fa-bolt"></i> App React
+        <i class="fa-solid fa-bolt icon-sidebar-app"></i> App React
       </a>
-      <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
-        <i class="fa-solid fa-book-open"></i> Biblioteca
+      <a href="{% url 'acervo_biblioteca' %}"
+        class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
+        <i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Biblioteca
       </a>
-      <a href="{% url 'listar_atestados_aluno' %}" class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}">
-        <i class="fa-solid fa-file-medical"></i> Saúde / Atestados
+      <a href="{% url 'listar_atestados_aluno' %}"
+        class="{% if 'atestado' in request.resolver_match.url_name %}ativo{% endif %}">
+        <i class="fa-solid fa-file-medical icon-sidebar-saude"></i> Saúde / Atestados
       </a>
+      {% if request.user|pode_menu_ti %}
+      <a href="{% url 'ti:painel' %}" class="{% if request.resolver_match.app_name == 'ti' %}ativo{% endif %}">
+        <i class="fa-solid fa-screwdriver-wrench icon-sidebar-ti"></i> Área TI
+      </a>
+      {% endif %}
       {% elif request.user|has_attr:"aluno" %}
-      <a href="{% url 'painel_aluno' %}" class="{% if request.resolver_match.url_name == 'painel_aluno' %}ativo{% endif %}">
-        <i class="fa-solid fa-house"></i> Início
+      <a href="{% url 'painel_aluno' %}"
+        class="{% if request.resolver_match.url_name == 'painel_aluno' %}ativo{% endif %}">
+        <i class="fa-solid fa-house icon-sidebar-inicio"></i> Início
       </a>
-      <a href="{% url 'minhas_leituras' %}" class="{% if request.resolver_match.url_name == 'minhas_leituras' %}ativo{% endif %}">
-        <i class="fa-solid fa-book-bookmark"></i> Minhas Leituras
+      <a href="{% url 'minhas_leituras' %}"
+        class="{% if request.resolver_match.url_name == 'minhas_leituras' %}ativo{% endif %}">
+        <i class="fa-solid fa-book-bookmark icon-sidebar-biblioteca"></i> Minhas Leituras
       </a>
-      <a href="{% url 'acervo_biblioteca' %}" class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
-        <i class="fa-solid fa-book-open"></i> Biblioteca
+      <a href="{% url 'acervo_biblioteca' %}"
+        class="{% if request.resolver_match.url_name == 'acervo_biblioteca' %}ativo{% endif %}">
+        <i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Biblioteca
       </a>
-      <a href="{% url 'visualizar_saude_aluno' request.user.aluno.id %}" class="{% if 'saude' in request.resolver_match.url_name %}ativo{% endif %}">
-        <i class="fa-solid fa-heart-pulse"></i> Minha Saúde
+      <a href="{% url 'visualizar_saude_aluno' request.user.aluno.id %}"
+        class="{% if 'saude' in request.resolver_match.url_name %}ativo{% endif %}">
+        <i class="fa-solid fa-heart-pulse icon-sidebar-saude"></i> Minha Saúde
       </a>
-      <a href="{% url 'meu_historico' %}" class="{% if request.resolver_match.url_name == 'meu_historico' %}ativo{% endif %}">
-        <i class="fa-solid fa-file-invoice"></i> Meu Histórico
+      <a href="{% url 'meu_historico' %}"
+        class="{% if request.resolver_match.url_name == 'meu_historico' %}ativo{% endif %}">
+        <i class="fa-solid fa-file-invoice icon-sidebar-historico"></i> Meu Histórico
       </a>
-      <a href="{% url 'financeiro:listar_faturas' %}" class="{% if request.resolver_match.app_name == 'financeiro' %}ativo{% endif %}">
-        <i class="fa-solid fa-file-invoice-dollar"></i> Mensalidades
+      <a href="{% url 'financeiro:listar_faturas' %}"
+        class="{% if request.resolver_match.app_name == 'financeiro' %}ativo{% endif %}">
+        <i class="fa-solid fa-file-invoice-dollar icon-sidebar-mensalidades"></i> Mensalidades
+      </a>
+      {% elif request.user|apenas_perfil_ti %}
+      <a href="{% url 'ti:painel' %}"
+        class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'painel' %}ativo{% endif %}">
+        <i class="fa-solid fa-house icon-sidebar-inicio"></i> Início TI
+      </a>
+      {% if request.user|pode_ti_operacoes %}
+      <a href="{% url 'ti:operacoes' %}"
+        class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'operacoes' %}ativo{% endif %}">
+        <i class="fa-solid fa-gears icon-sidebar-gears"></i> Operações
+      </a>
+      {% endif %}
+      <a href="/admin/" class="{% if '/admin' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-user-shield icon-sidebar-admin"></i> Admin Django
+      </a>
+      <a href="{% url 'swagger-ui' %}" class="{% if request.resolver_match.url_name == 'swagger-ui' %}ativo{% endif %}">
+        <i class="fa-solid fa-book icon-sidebar-swagger"></i> API (Swagger)
+      </a>
+      <a href="{% url 'painel_infraestrutura' %}"
+        class="{% if request.resolver_match.url_name == 'painel_infraestrutura' %}ativo{% endif %}">
+        <i class="fa-solid fa-warehouse icon-sidebar-infraestrutura"></i> Infraestrutura
       </a>
       {% endif %}
 
       <!-- Adicionar Financeiro para Gestor -->
       {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
-      <a href="{% url 'financeiro:painel_financeiro' %}" class="{% if request.resolver_match.url_name == 'painel_financeiro' %}ativo{% endif %}">
-        <i class="fa-solid fa-money-check-dollar"></i> Finanças (BI)
+      <a href="{% url 'financeiro:painel_financeiro' %}"
+        class="{% if request.resolver_match.url_name == 'painel_financeiro' %}ativo{% endif %}">
+        <i class="fa-solid fa-money-check-dollar icon-sidebar-financeiro"></i> Finanças (BI)
       </a>
-      <a href="{% url 'financeiro:gestao_despesas' %}" class="{% if request.resolver_match.url_name == 'gestao_despesas' %}ativo{% endif %}">
-        <i class="fa-solid fa-file-invoice"></i> Contas a Pagar
+      <a href="{% url 'financeiro:gestao_despesas' %}"
+        class="{% if request.resolver_match.url_name == 'gestao_despesas' %}ativo{% endif %}">
+        <i class="fa-solid fa-file-invoice icon-sidebar-contas"></i> Contas a Pagar
       </a>
-      <a href="{% url 'financeiro:listar_faturas' %}" class="{% if request.resolver_match.url_name == 'listar_faturas' %}ativo{% endif %}">
-        <i class="fa-solid fa-hand-holding-dollar"></i> Receitas
+      <a href="{% url 'financeiro:listar_faturas' %}"
+        class="{% if request.resolver_match.url_name == 'listar_faturas' %}ativo{% endif %}">
+        <i class="fa-solid fa-hand-holding-dollar icon-sidebar-receitas"></i> Receitas
       </a>
       {% endif %}
 
@@ -433,62 +581,79 @@
 
 
   <!-- ═════════ MODAL REPORTAR BUG ═════════ -->
-  <div id="modal-bug-report" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10001; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
-    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease-out;">
-        <div style="padding: 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--accent-ruby); display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-bug-slash"></i> Reportar Bug
-            </h3>
-            <button onclick="fecharModalBug()" style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+  <div id="modal-bug-report"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 10001; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
+    <div
+      style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 500px; border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease-out;">
+      <div
+        style="padding: 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+        <h3
+          style="margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--accent-ruby); display: flex; align-items: center; gap: 10px;">
+          <i class="fa-solid fa-bug-slash"></i> Reportar Bug
+        </h3>
+        <button onclick="fecharModalBug()"
+          style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+      </div>
+      <form id="form-bug-report" method="POST" action="{% url 'seguranca:reportar_bug' %}" enctype="multipart/form-data"
+        style="padding: 25px; display: flex; flex-direction: column; gap: 15px;">
+        {% csrf_token %}
+        <input type="hidden" name="url_origem" value="{{ request.build_absolute_uri }}">
+
+        <div class="campo-grupo">
+          <label
+            style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Título
+            Curto do Problema</label>
+          <input type="text" name="titulo" required placeholder="Ex: Botão de salvar não funciona na tela X"
+            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary);">
         </div>
-        <form id="form-bug-report" method="POST" action="/seguranca/reportar-bug/" enctype="multipart/form-data" style="padding: 25px; display: flex; flex-direction: column; gap: 15px;">
-            {% csrf_token %}
-            <input type="hidden" name="url_origem" value="{{ request.build_absolute_uri }}">
-            
-            <div class="campo-grupo">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Título Curto do Problema</label>
-                <input type="text" name="titulo" required placeholder="Ex: Botão de salvar não funciona na tela X" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary);">
-            </div>
-            
-            <div class="campo-grupo">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Descrição Detalhada</label>
-                <textarea name="descricao" required rows="4" placeholder="O que aconteceu? Como podemos reproduzir o erro?" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary); resize: vertical;"></textarea>
-            </div>
 
-            <div class="campo-grupo">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Anexar Print / Evidência (Opcional)</label>
-                <input type="file" name="screenshot" accept="image/*" style="width: 100%; font-size: 0.8rem; color: var(--text-muted);">
-            </div>
-            
-            <div class="campo-grupo">
-                <label style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Prioridade</label>
-                <select name="prioridade" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary);">
-                    <option value="BAIXA">Baixa - Sugestão / Detalhe visual</option>
-                    <option value="MEDIA" selected>Média - Funcionalidade com erro</option>
-                    <option value="ALTA">Alta - Impede o uso de uma função importante</option>
-                    <option value="CRITICA">Crítica - O sistema caiu ou dados sumiram</option>
-                </select>
-            </div>
+        <div class="campo-grupo">
+          <label
+            style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Descrição
+            Detalhada</label>
+          <textarea name="descricao" required rows="4" placeholder="O que aconteceu? Como podemos reproduzir o erro?"
+            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary); resize: vertical;"></textarea>
+        </div>
 
-            <button type="submit" class="btn-sige-primario" style="background: var(--accent-ruby); margin-top: 10px;">
-                <i class="fa-solid fa-paper-plane"></i> Enviar Relatório
-            </button>
-        </form>
+        <div class="campo-grupo">
+          <label
+            style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Anexar
+            Print / Evidência (Opcional)</label>
+          <input type="file" name="screenshot" accept="image/*"
+            style="width: 100%; font-size: 0.8rem; color: var(--text-muted);">
+        </div>
+
+        <div class="campo-grupo">
+          <label
+            style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">Prioridade</label>
+          <select name="prioridade"
+            style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); color: var(--text-primary);">
+            <option value="BAIXA">Baixa - Sugestão / Detalhe visual</option>
+            <option value="MEDIA" selected>Média - Funcionalidade com erro</option>
+            <option value="ALTA">Alta - Impede o uso de uma função importante</option>
+            <option value="CRITICA">Crítica - O sistema caiu ou dados sumiram</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-sige-primario" style="background: var(--accent-ruby); margin-top: 10px;">
+          <i class="fa-solid fa-paper-plane"></i> Enviar Relatório
+        </button>
+      </form>
     </div>
   </div>
 
   <script>
     function abrirModalBug() {
-        document.getElementById('modal-bug-report').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+      document.getElementById('modal-bug-report').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
     }
     function fecharModalBug() {
-        document.getElementById('modal-bug-report').style.display = 'none';
-        document.body.style.overflow = 'auto';
+      document.getElementById('modal-bug-report').style.display = 'none';
+      document.body.style.overflow = 'auto';
     }
     // Fechar ao clicar fora
-    window.addEventListener('click', function(e) {
-        if (e.target == document.getElementById('modal-bug-report')) fecharModalBug();
+    window.addEventListener('click', function (e) {
+      if (e.target == document.getElementById('modal-bug-report')) fecharModalBug();
     });
   </script>
 

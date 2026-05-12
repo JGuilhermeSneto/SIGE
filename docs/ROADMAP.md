@@ -1,5 +1,5 @@
 # 🚀 SIGE — Roadmap Estratégico v2.0
-> **Última atualização:** 04 de Maio de 2026 — Central de Segurança & Telemetria de Erros (Shield v1.0)
+> **Última atualização:** 12 de Maio de 2026 — Área de TI Avançada & Operações Administrativas
 > **Status do produto:** Governança de dados robusta → SaaS-Ready
 
 > [!IMPORTANT]
@@ -37,6 +37,14 @@
 - **Telemetria de Erros**: Sistema interno de captura de exceções (500) com traceback técnico para debug rápido.
 - **Monitoramento de Governança**: Acompanhamento de adoção de MFA (2FA), sessões ativas e auditoria de ações administrativas (LogEntry).
 - **Proteção Ativa**: Brute Force protection (Axes) integrado ao painel de intrusões.
+- **Área de TI Avançada**: Painel operacional com limpeza de logs, health checks, cache management e operações administrativas.
+
+### 🛠️ Área de TI (Melhorias Recentes)
+- **Painel TI Otimizado**: Cache de 5 minutos, queries otimizadas com select_related, botões de refresh manual.
+- **Operações Administrativas**: Ferramentas funcionais para limpeza de logs antigos, verificação de saúde do sistema, limpeza de cache e export de configurações.
+- **Paginação Inteligente**: Dashboard de segurança com paginação (25/20/15/20 itens por página) para melhor performance.
+- **Interface Padronizada**: Estilos CSS organizados, cores consistentes com menu lateral, cards interativos com hover effects.
+- **Monitoramento em Tempo Real**: Status cards dinâmicos com timestamps de atualização e indicadores visuais.
 
 ---
 

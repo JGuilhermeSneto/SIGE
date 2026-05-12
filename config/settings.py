@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "django_otp.plugins.otp_totp",
     "two_factor",
     "apps.seguranca",
+    "apps.ti",
     "django_prometheus",
 ]
 
@@ -112,6 +113,7 @@ TEMPLATES = [
                 "custom_tags": "apps.comum.templatetags.custom_tags",
                 "get_item": "apps.comum.templatetags.get_item",
                 "vite_assets": "apps.comum.templatetags.vite_assets",
+                "ti_tags": "apps.ti.templatetags.ti_tags",
             },
         },
     },

@@ -66,6 +66,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("dashboards/", include("apps.dashboards.urls")),
     path("financeiro/", include("apps.financeiro.urls")),
     path("seguranca/", include("apps.seguranca.urls")),
+    path("ti/", include("apps.ti.urls")),
     path("", include("django_prometheus.urls")),
     
     # Honeypots (Bloqueio automático de IPs maliciosos)

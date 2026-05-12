@@ -1,9 +1,9 @@
-{% extends 'core/base.html' %}
+{% extends "ti/base_ti.html" %}
 {% load static %}
 
 {% block title %}Monitoramento de Segurança & Auditoria — SIGE{% endblock %}
 
-{% block extra_css %}
+{% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
 <link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
 <style>
@@ -43,8 +43,18 @@
 
 {% endblock %}
 
-{% block content %}
+{% block ti_content %}
 <div class="painel-sige">
+
+    {% if not pode_executar_acoes_seguranca %}
+    <div class="sige-card" style="border-left: 4px solid var(--accent-amber); padding: 14px 18px; margin-bottom: 18px;">
+      <strong><i class="fa-solid fa-eye"></i> Modo leitura</strong>
+      <p style="margin: 0.35rem 0 0 0; font-size: 0.88rem; color: var(--text-muted);">
+        Métricas e listagens estão visíveis. Ações sensíveis (manutenção, bloqueios, limpeza de logs) exigem
+        <strong>coordenação de TI</strong> ou <strong>gestor/superusuário</strong>.
+      </p>
+    </div>
+    {% endif %}
     
     {# ════ HEADER ════ #}
     <header class="header-painel">
@@ -54,9 +64,11 @@
         </div>
 
         <div class="header-acoes">
+            {% if pode_executar_acoes_seguranca %}
             <a href="{% url 'seguranca:limpar_erros' %}" class="btn-sige-secundario" style="color: var(--accent-ruby); border-color: var(--accent-ruby);" onclick="return confirm('Tem certeza que deseja limpar todos os logs de erro?')">
                 <i class="fa-solid fa-trash-can"></i> Limpar Erros
             </a>
+            {% endif %}
             <div class="tombamento-badge">
                 <i class="fa-solid fa-shield-halved" style="color: var(--accent-emerald);"></i>
                 <code>SISTEMA PROTEGIDO</code>
@@ -77,7 +89,8 @@
                 </p>
                 <span style="font-size: 0.75rem; color: var(--text-muted);">Acesso restrito apenas para Administradores.</span>
             </div>
-            <form action="/seguranca/toggle-manutencao/" method="POST">
+            {% if pode_executar_acoes_seguranca %}
+            <form action="{% url 'seguranca:toggle_manutencao' %}" method="POST">
                 {% csrf_token %}
                 <button type="submit" class="btn-sige-primario" style="background: {% if config_seguranca.manutencao_ativa %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %}; padding: 10px 20px; border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer;">
                     {% if config_seguranca.manutencao_ativa %}
@@ -87,6 +100,9 @@
                     {% endif %}
                 </button>
             </form>
+            {% else %}
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Ação indisponível (somente leitura)</span>
+            {% endif %}
         </div>
 
         <div class="sige-card" style="display: flex; flex-direction: column; justify-content: center; padding: 25px;">
@@ -189,18 +205,22 @@
                         <td>{{ log.data_evento|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <form action="/seguranca/bloquear-usuario/{{ log.usuario.id }}/" method="POST" style="display: inline;" onsubmit="return confirm('Deseja realmente BLOQUEAR este usuário e encerrar todas as suas sessões?')">
+                                {% if pode_executar_acoes_seguranca %}
+                                <form action="{% url 'seguranca:bloquear_usuario' log.usuario.id %}" method="POST" style="display: inline;" onsubmit="return confirm('Deseja realmente BLOQUEAR este usuário e encerrar todas as suas sessões?')">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" title="Bloquear Usuário" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
                                         <i class="fa-solid fa-user-lock"></i>
                                     </button>
                                 </form>
-                                <form action="/seguranca/bloquear-ip/{{ log.ip_endereco }}/" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:bloquear_ip' log.ip_endereco %}" method="POST" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" title="Bloquear IP">
                                         <i class="fa-solid fa-ban"></i>
                                     </button>
                                 </form>
+                                {% else %}
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">—</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -252,14 +272,15 @@
                                     <i class="fa-solid fa-laptop-code"></i>
                                 </button>
                                 <div id="traceback-{{ erro.id }}" style="display: none;">{{ erro.traceback }}</div>
-                                
-                                <form action="/seguranca/bloquear-ip/{{ erro.ip_endereco }}/" method="POST" style="display: inline;">
+                                {% if pode_executar_acoes_seguranca %}
+                                <form action="{% url 'seguranca:bloquear_ip' erro.ip_endereco %}" method="POST" style="display: inline;">
                                     {% csrf_token %}
                                     <input type="hidden" name="motivo" value="Tentativa de acesso malicioso resultando em erro 500: {{ erro.tipo_excecao }}">
                                     <button type="submit" class="btn-icone-excluir" title="Bloquear IP" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
                                         <i class="fa-solid fa-user-slash"></i>
                                     </button>
                                 </form>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -354,13 +375,17 @@
                         <td>{{ attempt.attempt_time|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <form action="/seguranca/bloquear-ip/{{ attempt.ip_address }}/" method="POST" style="display: inline;">
+                                {% if pode_executar_acoes_seguranca %}
+                                <form action="{% url 'seguranca:bloquear_ip' attempt.ip_address %}" method="POST" style="display: inline;">
                                     {% csrf_token %}
                                     <input type="hidden" name="motivo" value="Tentativas excessivas de login detectadas pelo Axes.">
                                     <button type="submit" class="btn-icone-excluir" title="Mover para Blacklist Permanente" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
                                         <i class="fa-solid fa-ban"></i>
                                     </button>
                                 </form>
+                                {% else %}
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">—</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -403,9 +428,13 @@
                         <td>{{ item.data_bloqueio|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <a href="/seguranca/desbloquear-ip/{{ item.id }}/" class="btn-icone-primario" title="Remover Bloqueio" style="color: var(--accent-emerald); border-color: var(--accent-emerald);">
+                                {% if pode_executar_acoes_seguranca %}
+                                <a href="{% url 'seguranca:desbloquear_ip' item.id %}" class="btn-icone-primario" title="Remover Bloqueio" style="color: var(--accent-emerald); border-color: var(--accent-emerald);">
                                     <i class="fa-solid fa-unlock"></i>
                                 </a>
+                                {% else %}
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">—</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -454,27 +483,26 @@
                         <td>{{ bug.data_criacao|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <!-- Botão Ver Detalhes (Link para nova página) -->
-                                <a href="/seguranca/detalhe-bug/{{ bug.id }}/" class="btn-icone-excluir" title="Ver Detalhes Técnicos" style="color: var(--accent-violet); border-color: var(--accent-violet);">
+                                <a href="{% url 'seguranca:detalhe_bug' bug.id %}" class="btn-icone-excluir" title="Ver Detalhes Técnicos" style="color: var(--accent-violet); border-color: var(--accent-violet);">
                                     <i class="fa-solid fa-magnifying-glass-plus"></i>
                                 </a>
 
+                                {% if pode_executar_acoes_seguranca %}
                                 {% if bug.status == 'NOVO' %}
-                                <!-- Botão Encaminhar para TI (Código) -->
-                                <form action="/seguranca/encaminhar-ti/{{ bug.id }}/" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:encaminhar_ti' bug.id %}" method="POST" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" style="color: var(--accent-amber); border-color: var(--accent-amber);" title="Encaminhar para Equipe de TI">
                                         <i class="fa-solid fa-laptop-code"></i>
                                     </button>
                                 </form>
                                 {% elif bug.status == 'ANALISE' %}
-                                <!-- Botão Marcar como Resolvido (Check) -->
-                                <form action="/seguranca/resolver-bug/{{ bug.id }}/" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:resolver_bug' bug.id %}" method="POST" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" style="color: var(--accent-emerald); border-color: var(--accent-emerald);" title="Bug Resolvido">
                                         <i class="fa-solid fa-circle-check"></i>
                                     </button>
                                 </form>
+                                {% endif %}
                                 {% endif %}
                             </div>
                         </td>
@@ -521,12 +549,16 @@
                         </td>
                         <td data-label="Ações">
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <form action="/seguranca/bloquear-ip/{{ log.ip_address }}/" method="POST" style="display: inline;">
+                                {% if pode_executar_acoes_seguranca %}
+                                <form action="{% url 'seguranca:bloquear_ip' log.ip_address %}" method="POST" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" title="Bloquear IP">
                                         <i class="fa-solid fa-ban"></i>
                                     </button>
                                 </form>
+                                {% else %}
+                                <span style="font-size: 0.75rem; color: var(--text-muted);">—</span>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

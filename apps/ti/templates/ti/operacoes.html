@@ -1,0 +1,146 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}TI — Operações avançadas{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'ti/css/ti.css' %}">
+{% endblock %}
+
+{% block ti_content %}
+<div class="sige-card ti-painel-container">
+  <header class="ti-header">
+    <div>
+      <h1>
+        <i class="fa-solid fa-gears"></i> Operações de TI
+      </h1>
+      <p>
+        Esta página exige a permissão <code>ti.painel_ti_operacoes</code> (grupo <strong>TI — Coordenação</strong> ou
+        superusuário).
+      </p>
+    </div>
+  </header>
+
+  <div style="display: grid; gap: 1.5rem;">
+    <!-- Operações de Manutenção -->
+    <section class="ti-action-card">
+      <h2 style="font-size: 1.25rem; margin: 0 0 1rem 0;">
+        <i class="fa-solid fa-broom"></i> Manutenção de Dados
+      </h2>
+      <p style="margin: 0 0 1rem 0; color: var(--text-muted);">
+        Limpe logs antigos e dados temporários para manter o sistema otimizado.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem;">
+        <form method="post" style="display: contents;">
+          {% csrf_token %}
+          <button type="submit" name="action" value="cleanup_logs_30" class="btn btn-secondary"
+            onclick="return confirm('Limpar logs com mais de 30 dias? Esta ação não pode ser desfeita.')">
+            <i class="fa-solid fa-trash"></i> Limpar logs > 30 dias
+          </button>
+          <button type="submit" name="action" value="cleanup_logs_90" class="btn btn-secondary"
+            onclick="return confirm('Limpar logs com mais de 90 dias? Esta ação não pode ser desfeita.')">
+            <i class="fa-solid fa-trash"></i> Limpar logs > 90 dias
+          </button>
+          <button type="submit" name="action" value="cleanup_sessions" class="btn btn-secondary"
+            onclick="return confirm('Limpar sessões expiradas?')">
+            <i class="fa-solid fa-clock"></i> Limpar sessões expiradas
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Verificação de Saúde -->
+    <section class="ti-action-card">
+      <h2 style="font-size: 1.25rem; margin: 0 0 1rem 0;">
+        <i class="fa-solid fa-heartbeat"></i> Verificação de Saúde
+      </h2>
+      <p style="margin: 0 0 1rem 0; color: var(--text-muted);">
+        Execute diagnósticos para verificar o estado do sistema.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem;">
+        <form method="post" style="display: contents;">
+          {% csrf_token %}
+          <button type="submit" name="action" value="health_check" class="btn btn-primary">
+            <i class="fa-solid fa-stethoscope"></i> Executar Health Check
+          </button>
+          <button type="submit" name="action" value="db_check" class="btn btn-primary">
+            <i class="fa-solid fa-database"></i> Verificar Banco de Dados
+          </button>
+          <button type="submit" name="action" value="cache_clear" class="btn btn-secondary">
+            <i class="fa-solid fa-broom"></i> Limpar Cache
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Configurações do Sistema -->
+    <section class="ti-action-card">
+      <h2 style="font-size: 1.25rem; margin: 0 0 1rem 0;">
+        <i class="fa-solid fa-cogs"></i> Configurações do Sistema
+      </h2>
+      <p style="margin: 0 0 1rem 0; color: var(--text-muted);">
+        Gerencie modos de operação e configurações críticas.
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem;">
+        <form method="post" style="display: contents;">
+          {% csrf_token %}
+          <button type="submit" name="action" value="toggle_maintenance" class="btn btn-secondary"
+            onclick="return confirm('Alternar modo de manutenção?')">
+            <i class="fa-solid fa-tools"></i> Toggle Manutenção
+          </button>
+          <button type="submit" name="action" value="export_config" class="btn btn-secondary">
+            <i class="fa-solid fa-download"></i> Exportar Configurações
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Resultado das Operações -->
+    {% if operation_result %}
+    <section class="ti-action-card" style="border-color: var(--accent-emerald);">
+      <h3 style="margin: 0 0 0.5rem 0; color: var(--accent-emerald);">
+        <i class="fa-solid fa-check-circle"></i> Resultado da Operação
+      </h3>
+      <pre
+        style="background: var(--bg-subtle); padding: 1rem; border-radius: 8px; margin: 0; white-space: pre-wrap;">{{ operation_result }}</pre>
+    </section>
+    {% endif %}
+
+    <!-- Links Úteis -->
+    <section class="ti-action-card">
+      <h2 style="font-size: 1.25rem; margin: 0 0 1rem 0;">
+        <i class="fa-solid fa-link"></i> Links Úteis
+      </h2>
+      <div class="ti-actions-grid">
+        <article class="ti-action-card">
+          <h3><i class="fa-solid fa-shield-halved icon-sidebar-saude"></i> Shield</h3>
+          <p>Dashboard completo de segurança.</p>
+          <a href="{% url 'ti:seguranca' %}" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-right"></i> Acessar
+          </a>
+        </article>
+        <article class="ti-action-card">
+          <h3><i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Documentação</h3>
+          <p>Procedimentos e runbook.</p>
+          <a href="{% url 'ti:documentacao' %}" class="btn btn-primary">
+            <i class="fa-solid fa-arrow-right"></i> Ver
+          </a>
+        </article>
+        <article class="ti-action-card">
+          <h3><i class="fa-solid fa-cogs"></i> Admin Django</h3>
+          <p>Administração avançada.</p>
+          <a href="{% url 'admin:index' %}" class="btn btn-secondary" target="_blank">
+            <i class="fa-solid fa-external-link"></i> Abrir
+          </a>
+        </article>
+      </div>
+    </section>
+
+    <div style="text-align: center; margin-top: 1rem;">
+      <a href="{% url 'ti:painel' %}" class="btn btn-secondary">
+        <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel TI
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
