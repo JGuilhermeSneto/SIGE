@@ -1,22 +1,21 @@
-# 🧱 Módulo Comum & Infraestrutura Base
+# 🔧 App: Comum
 
-Este é o alicerce técnico do SIGE, fornecendo as bases para o isolamento de dados, segurança avançada e a identidade visual do sistema.
+App utilitária compartilhada por todos os módulos do SIGE. Não possui views próprias.
 
-## 🏢 Fundação Multi-Tenancy
-O SIGE é arquitetado para suportar múltiplas instituições de forma isolada:
-- **TenantModel**: Modelo base que injeta o vínculo com a `Instituicao` em todo o ecossistema.
-- **TenantMiddleware**: Garante que o usuário veja apenas os dados da sua instituição, resolvendo o escopo via thread-local.
+## Responsabilidades
+- **Design System**: CSS global (`gestao_painel.css`, `infraestrutura.css`, variáveis de tema)
+- **Template Tags**: `custom_tags`, `get_item`, `vite_assets`
+- **Utilitários**: helpers de rede (`get_client_ip`), formatação de dados
+- **Middlewares**: `TenantMiddleware` para suporte a multi-tenancy
+- **Static Files**: centralização de todos os assets CSS/JS/Fonts
 
-## 🎨 Design System Premium
-Localizado em `static/core/`, este sistema define a estética "Premium Glassmorphism" do projeto:
-- **Tokens CSS**: Gerenciamento de cores, espaçamentos e arredondamentos (48px).
-- **Temas Dinâmicos**: Suporte a temas Azul Corporativo, Dark Mode e variações industriais.
-- **Micro-animações**: Feedback visual fluido para uma experiência de usuário superior.
+## Estrutura Importante
+```
+comum/
+├── static/core/css/    # Design System tokens e componentes
+├── templatetags/       # Tags e filtros personalizados do Django
+├── middleware/         # Middlewares compartilhados
+└── utils/              # Funções auxiliares reutilizáveis
+```
 
-## 🔒 Segurança & Auditoria
-- **Campos Criptografados**: Suporte nativo a `EncryptedCharField` e `EncryptedDateField`.
-- **Middleware de Auditoria**: Registro de trilha de acesso em conformidade com a **LGPD**.
-- **Validadores**: Lógica centralizada para CPF, CNPJ e outros documentos.
-
-> Atualizado em Maio de 2026 — Núcleo de Design System e Multi-Tenancy consolidado.
-
+> Este app é o coração do Design System. Qualquer novo componente visual deve ser adicionado aqui.

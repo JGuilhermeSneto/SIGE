@@ -1,0 +1,215 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Gestão de Chamados e Bugs — SIGE{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
+<style>
+  .ip-box-security {
+    font-family: 'JetBrains Mono', monospace;
+    background: var(--bg-elevated);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-subtle);
+  }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<div class="painel-sige">
+
+  {# ════ HEADER ════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label" style="color: var(--accent-amber);">Suporte Técnico · Feedback de Usuários</span>
+      <h1>Gestão de <span class="nome-destaque" style="color: var(--accent-amber);">Chamados</span></h1>
+      <p style="margin-top: 5px; color: var(--text-muted);">Acompanhe e resolva os problemas relatados pelos usuários da plataforma.</p>
+    </div>
+
+    <div class="header-acoes">
+      <div style="display: flex; gap: 8px;">
+        <a href="?status=" class="btn-sige-secundario {% if not status_atual %}active{% endif %}" style="{% if not status_atual %}background: var(--bg-hover);{% endif %}">Todos</a>
+        <a href="?status=NOVO" class="btn-sige-secundario {% if status_atual == 'NOVO' %}active{% endif %}" style="{% if status_atual == 'NOVO' %}background: var(--bg-hover);{% endif %}">Novos</a>
+        <a href="?status=ANALISE" class="btn-sige-secundario {% if status_atual == 'ANALISE' %}active{% endif %}" style="{% if status_atual == 'ANALISE' %}background: var(--bg-hover);{% endif %}">Análise</a>
+        <a href="?status=CORRIGIDO" class="btn-sige-secundario {% if status_atual == 'CORRIGIDO' %}active{% endif %}" style="{% if status_atual == 'CORRIGIDO' %}background: var(--bg-hover);{% endif %}">Resolvidos</a>
+      </div>
+    </div>
+  </header>
+
+  {# ════ KPI GRID ════ #}
+  <section class="infra-dashboard-grid" style="margin-bottom: 30px;">
+    <div class="sige-glass-card" style="border-left: 4px solid var(--text-muted) !important;">
+      <p class="passo-label">Total Geral</p>
+      <p class="metric-value-security" style="color: var(--text-primary); font-size: 2rem;">{{ stats.total }}</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">Chamados registrados</p>
+    </div>
+    <div class="sige-glass-card" style="border-left: 4px solid var(--accent-amber) !important;">
+      <p class="passo-label">Novos</p>
+      <p class="metric-value-security" style="color: var(--accent-amber); font-size: 2rem;">{{ stats.novos }}</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">Aguardando triagem</p>
+    </div>
+    <div class="sige-glass-card" style="border-left: 4px solid var(--accent-cyan) !important;">
+      <p class="passo-label">Em Análise</p>
+      <p class="metric-value-security" style="color: var(--accent-cyan); font-size: 2rem;">{{ stats.analise }}</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">Sendo investigados</p>
+    </div>
+    <div class="sige-glass-card" style="border-left: 4px solid var(--accent-emerald) !important;">
+      <p class="passo-label">Resolvidos</p>
+      <p class="metric-value-security" style="color: var(--accent-emerald); font-size: 2rem;">{{ stats.corrigidos }}</p>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">Problemas finalizados</p>
+    </div>
+  </section>
+
+  {# ════ LISTAGEM ════ #}
+  <div class="card-listagem">
+    <div class="barra-busca-gestao">
+      <i class="fa-solid fa-bug" style="color: var(--accent-amber);"></i>
+      <span style="font-weight: 700; font-size: 0.9rem;">Relatórios de Falhas Enviados voluntariamente</span>
+    </div>
+
+    <table class="tabela-sige sige-table table-stack">
+      <thead>
+        <tr>
+          <th>Bug / Título</th>
+          <th>Usuário / Data</th>
+          <th>Status</th>
+          <th>Prioridade</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for bug in bugs %}
+        <tr style="border-left: 3px solid {% if bug.prioridade == 'CRITICA' %}var(--accent-ruby){% elif bug.prioridade == 'ALTA' %}var(--accent-amber){% else %}var(--border-subtle){% endif %};">
+          <td>
+            <strong style="display: block; color: var(--text-primary);">{{ bug.titulo }}</strong>
+            <span style="font-size: 0.75rem; color: var(--text-muted); max-width: 300px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ bug.descricao }}</span>
+          </td>
+          <td>
+            <div style="font-weight: 600; font-size: 0.85rem;">{{ bug.usuario.get_full_name|default:bug.usuario.username }}</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ bug.data_criacao|date:"d/m/Y H:i" }}</div>
+          </td>
+          <td>
+            <span class="badge-status {% if bug.status == 'NOVO' %}badge-warn{% elif bug.status == 'ANALISE' %}badge-info{% elif bug.status == 'CORRIGIDO' %}badge-ok{% else %}badge-secondary{% endif %}">
+              {{ bug.get_status_display }}
+            </span>
+          </td>
+          <td>
+            <span style="font-size: 0.8rem;">
+              {% if bug.prioridade == 'CRITICA' %}<i class="fa-solid fa-circle" style="color: var(--accent-ruby); font-size: 0.6rem;"></i> Crítica
+              {% elif bug.prioridade == 'ALTA' %}<i class="fa-solid fa-circle" style="color: var(--accent-amber); font-size: 0.6rem;"></i> Alta
+              {% elif bug.prioridade == 'MEDIA' %}<i class="fa-solid fa-circle" style="color: var(--accent-cyan); font-size: 0.6rem;"></i> Média
+              {% else %}<i class="fa-solid fa-circle" style="color: var(--text-muted); font-size: 0.6rem;"></i> Baixa{% endif %}
+            </span>
+          </td>
+          <td>
+            <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
+              
+              <button type="button" class="btn-icone-excluir" style="color: var(--accent-violet); border-color: var(--accent-violet);" title="Ver Detalhes" 
+                      onclick="abrirDetalhesBug('{{ bug.titulo|escapejs }}', '{{ bug.descricao|escapejs }}', '{{ bug.url_origem|default:''|escapejs }}', '{{ bug.ip_endereco|default:''|escapejs }}', '{{ bug.browser_info|default:''|escapejs }}', '{{ bug.data_criacao|date:'d/m/Y H:i' }}', '{{ bug.get_prioridade_display }}')">
+                <i class="fa-solid fa-magnifying-glass-plus"></i>
+              </button>
+
+              {% if bug.status == 'NOVO' %}
+              <form action="{% url 'ti:atualizar_status_bug' bug.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="ANALISE">
+                <button type="submit" class="btn-icone-excluir" style="color: var(--accent-cyan); border-color: var(--accent-cyan);" title="Marcar como recebido">
+                  <i class="fa-solid fa-check-double"></i>
+                </button>
+              </form>
+              {% endif %}
+
+              {% if bug.status != 'CORRIGIDO' %}
+              <form action="{% url 'ti:atualizar_status_bug' bug.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="status" value="CORRIGIDO">
+                <button type="submit" class="btn-icone-excluir" style="color: var(--accent-emerald); border-color: var(--accent-emerald);" title="Resolver Bug">
+                  <i class="fa-solid fa-circle-check"></i>
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="vazio-state">
+            <i class="fa-solid fa-mug-hot" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.2;"></i>
+            <p>Nenhum chamado encontrado. A TI pode relaxar (ou não)!</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- ═════════ MODAL DETALHES DO BUG ═════════ -->
+<div id="modal-detalhes-bug" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 600px; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-lg);">
+        <div style="padding: 20px 25px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="detalhe-bug-titulo" style="margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--accent-amber);">Detalhes do Report</h3>
+            <button onclick="fecharDetalhesBug()" style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; max-height: 70vh; overflow-y: auto;">
+            <div>
+                <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Descrição do Problema</label>
+                <p id="detalhe-bug-descricao" style="margin-top: 5px; line-height: 1.6; color: var(--text-primary); background: var(--bg-hover); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-amber);"></p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Data do Report</label>
+                    <p id="detalhe-bug-data" style="margin-top: 3px; font-weight: 600;"></p>
+                </div>
+                <div>
+                    <label style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Prioridade</label>
+                    <p id="detalhe-bug-prioridade" style="margin-top: 3px; font-weight: 600;"></p>
+                </div>
+            </div>
+
+            <div>
+                <label style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">URL de Origem</label>
+                <p id="detalhe-bug-url" style="margin-top: 3px; font-family: monospace; font-size: 0.8rem; color: var(--accent-cyan); word-break: break-all;"></p>
+            </div>
+
+            <div style="padding-top: 15px; border-top: 1px dashed var(--border-subtle); display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-size: 0.65rem; color: var(--text-muted);"><strong>IP:</strong> <span id="detalhe-bug-ip"></span></span>
+                <span style="font-size: 0.65rem; color: var(--text-muted);"><strong>Browser:</strong> <span id="detalhe-bug-browser"></span></span>
+            </div>
+        </div>
+        <div style="padding: 15px 25px; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); text-align: right;">
+            <button onclick="fecharDetalhesBug()" class="btn-sige-secundario" style="padding: 8px 20px;">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function abrirDetalhesBug(titulo, desc, url, ip, browser, data, prioridade) {
+        document.getElementById('detalhe-bug-titulo').innerText = titulo;
+        document.getElementById('detalhe-bug-descricao').innerText = desc;
+        document.getElementById('detalhe-bug-url').innerText = url;
+        document.getElementById('detalhe-bug-ip').innerText = ip;
+        document.getElementById('detalhe-bug-browser').innerText = browser;
+        document.getElementById('detalhe-bug-data').innerText = data;
+        document.getElementById('detalhe-bug-prioridade').innerText = prioridade;
+        
+        document.getElementById('modal-detalhes-bug').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharDetalhesBug() {
+        document.getElementById('modal-detalhes-bug').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Fechar ao clicar fora
+    window.addEventListener('click', function(e) {
+        if (e.target == document.getElementById('modal-detalhes-bug')) fecharDetalhesBug();
+    });
+</script>
+{% endblock %}

@@ -3,152 +3,261 @@
 
 {% block title %}Área de TI — SIGE{% endblock %}
 
-{% block extra_head %}
-<link rel="stylesheet" href="{% static 'ti/css/ti.css' %}">
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
+<style>
+  .ti-status-card-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+  .info-tag {
+    background: var(--bg-elevated);
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .info-tag strong {
+    color: var(--text-primary);
+  }
+</style>
 {% endblock %}
 
 {% block ti_content %}
-<div class="sige-card ti-painel-container">
-  <header class="ti-header">
-    <div>
-      <h1>
-        <i class="fa-solid fa-screwdriver-wrench"></i>
-        Área de TI
-      </h1>
-      <p>
-        Olá, <strong>{{ nome_exibicao }}</strong>. Aqui estão os principais painéis e rotinas para a equipe de TI.
-      </p>
+<div class="painel-sige">
+  
+  {# ════ HEADER ════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label" style="color: var(--accent-cyan);">TI Central · Operações & Infraestrutura</span>
+      <h1>Dashboard de <span class="nome-destaque" style="color: var(--accent-cyan);">TI</span></h1>
+      <p style="margin-top: 5px; color: var(--text-muted);">Bem-vindo, <strong>{{ nome_exibicao }}</strong>. Gerencie a saúde do ecossistema SIGE.</p>
     </div>
-    <div class="ti-info-grid">
-      <div class="ti-info-card">
-        <strong>Permissão</strong>
-        <p>
-          {% if pode_operacoes %}TI — Coordenação / Superusuário{% else %}TI — Operador{% endif %}
-        </p>
+
+    <div class="header-acoes">
+      <div class="tombamento-badge">
+        <i class="fa-solid fa-microchip" style="color: var(--accent-cyan);"></i>
+        <code>PRODUÇÃO ONLINE</code>
       </div>
-      <div class="ti-info-card">
-        <strong>Visibilidade</strong>
-        <p>
-          Acesso a segurança, documentação e ferramentas administrativas.
-        </p>
-      </div>
-      <div class="ti-info-card">
-        <strong>Próximos passos</strong>
-        <p>
-          Abra o dashboard de segurança, revise a documentação ou execute as operações de TI.
-        </p>
-      </div>
+      <button type="button" onclick="location.reload()" class="btn-sige-secundario" title="Sincronizar métricas">
+        <i class="fa-solid fa-rotate"></i>
+      </button>
     </div>
   </header>
 
-  <div class="ti-status-grid">
-    {% for card in ti_status_cards %}
-    <article class="ti-status-card">
-      <p>{{ card.titulo }}</p>
-      <p>{{ card.valor }}</p>
-      <p>{{ card.descricao }}</p>
-      <button type="button" onclick="location.reload()" class="btn btn-secondary"
-        style="font-size: 0.75rem; padding: 0.25rem 0.5rem; margin-top: 0.5rem;" title="Atualizar dados">
-        <i class="fa-solid fa-refresh"></i>
-      </button>
-    </article>
-    {% endfor %}
+  {# ════ SYSTEM INFO BAR ════ #}
+  <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 30px;">
+    <div class="info-tag">
+      <i class="fa-brands fa-python" style="color: #3776ab;"></i>
+      <span>Python <strong>{{ sistema_info.python }}</strong></span>
+    </div>
+    <div class="info-tag">
+      <i class="fa-solid fa-rocket" style="color: #092e20;"></i>
+      <span>Django <strong>{{ sistema_info.django }}</strong></span>
+    </div>
+    <div class="info-tag">
+      <i class="fa-solid fa-server"></i>
+      <span>Ambiente <strong>{{ sistema_info.env }}</strong></span>
+    </div>
+    <div class="info-tag">
+      <i class="fa-solid fa-database"></i>
+      <span>DB <strong>{{ sistema_info.db_vendor|upper }}</strong></span>
+    </div>
+    <div class="info-tag">
+      <i class="fa-solid fa-window-maximize"></i>
+      <span>OS <strong>{{ sistema_info.os }}</strong></span>
+    </div>
   </div>
 
-  <div class="ti-actions-grid">
-    <article class="ti-action-card">
-      <h3><i class="fa-solid fa-shield-halved icon-sidebar-saude"></i> Segurança</h3>
-      <p>Dashboard completo de segurança com auditoria, erros, intrusões e logs de acesso.</p>
-      <a href="{% url 'ti:seguranca' %}" class="btn btn-primary">
+  {# ════ KPI GRID ════ #}
+  <section class="infra-dashboard-grid">
+    {% for card in ti_status_cards %}
+    <div class="sige-glass-card" style="border-left: 4px solid {{ card.cor }} !important;">
+      <p class="passo-label">{{ card.titulo }}</p>
+      <p class="metric-value-security" style="color: {{ card.cor }}; font-size: 2rem; font-weight: 800;">
+        {{ card.valor }}
+      </p>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">{{ card.descricao }}</p>
+    </div>
+    {% endfor %}
+  </section>
+
+  {# ════ ACTIONS GRID ════ #}
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 30px;">
+    
+    <article class="sige-card" style="padding: 25px; display: flex; flex-direction: column; gap: 15px; border-top: 4px solid var(--accent-ruby);">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(244, 63, 94, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-ruby); font-size: 1.5rem;">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.1rem;">Segurança Shield</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Monitoramento & Auditoria</span>
+        </div>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Dashboard completo de segurança com auditoria LGPD, monitoramento de erros, blacklist e logs de intrusão.</p>
+      <a href="{% url 'ti:seguranca' %}" class="btn-sige-primario" style="margin-top: auto; text-align: center; text-decoration: none;">
         <i class="fa-solid fa-arrow-right"></i> Acessar Segurança
       </a>
     </article>
 
-    <article class="ti-action-card">
-      <h3><i class="fa-solid fa-book-open icon-sidebar-biblioteca"></i> Documentação</h3>
-      <p>Runbook e documentação técnica para operações de TI e manutenção do sistema.</p>
-      <a href="{% url 'ti:documentacao' %}" class="btn btn-primary">
-        <i class="fa-solid fa-arrow-right"></i> Ver Documentação
+    <article class="sige-card" style="padding: 25px; display: flex; flex-direction: column; gap: 15px; border-top: 4px solid var(--accent-amber);">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(245, 158, 11, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-amber); font-size: 1.5rem;">
+          <i class="fa-solid fa-bug"></i>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.1rem;">Chamados & Bugs</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Relatos de Usuários</span>
+        </div>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Gerencie os relatos de problemas enviados pelos usuários, triagem de prioridades e acompanhamento de correções.</p>
+      <a href="{% url 'ti:gestao_bugs' %}" class="btn-sige-primario" style="background: var(--accent-amber); margin-top: auto; text-align: center; text-decoration: none;">
+        <i class="fa-solid fa-arrow-right"></i> Ver Chamados
+      </a>
+    </article>
+
+    <article class="sige-card" style="padding: 25px; display: flex; flex-direction: column; gap: 15px; border-top: 4px solid var(--accent-emerald);">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(16, 185, 129, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-emerald); font-size: 1.5rem;">
+          <i class="fa-solid fa-code"></i>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.1rem;">API & Swagger</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Integração & Docs</span>
+        </div>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Documentação técnica da API RESTful do SIGE. Teste endpoints e consulte schemas via Swagger UI.</p>
+      <a href="{% url 'ti:api_docs' %}" class="btn-sige-primario" style="background: var(--accent-emerald); margin-top: auto; text-align: center; text-decoration: none;">
+        <i class="fa-solid fa-arrow-right"></i> Ver API Docs
       </a>
     </article>
 
     {% if pode_operacoes %}
-    <article class="ti-action-card">
-      <h3><i class="fa-solid fa-gears icon-sidebar-gears"></i> Operações</h3>
-      <p>Ferramentas avançadas para manutenção, limpeza e operações administrativas.</p>
-      <a href="{% url 'ti:operacoes' %}" class="btn btn-primary">
+    <article class="sige-card" style="padding: 25px; display: flex; flex-direction: column; gap: 15px; border-top: 4px solid var(--accent-violet);">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(139, 92, 246, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-violet); font-size: 1.5rem;">
+          <i class="fa-solid fa-gears"></i>
+        </div>
+        <div>
+          <h3 style="margin: 0; font-size: 1.1rem;">Operações Avançadas</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Manutenção de Sistema</span>
+        </div>
+      </div>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6;">Ferramentas sensíveis: limpeza de logs, verificação de integridade de banco de dados e gestão de cache.</p>
+      <a href="{% url 'ti:operacoes' %}" class="btn-sige-primario" style="background: var(--accent-violet); margin-top: auto; text-align: center; text-decoration: none;">
         <i class="fa-solid fa-arrow-right"></i> Executar Operações
       </a>
     </article>
     {% endif %}
 
-    <article class="ti-action-card">
-      <h3><i class="fa-solid fa-cogs"></i> Admin Django</h3>
-      <p>Interface administrativa do Django para gerenciamento de dados e configurações.</p>
-      <a href="{% url 'admin:index' %}" class="btn btn-secondary" target="_blank">
-        <i class="fa-solid fa-external-link"></i> Abrir Admin
-      </a>
-    </article>
   </div>
 
-  <footer style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.875rem;">
-    <p>Última atualização: {{ ultima_atualizacao|date:"d/m/Y H:i:s" }}</p>
+
+  {# ════ HEALTH CHECK CARD ════ #}
+  <div style="margin-top: 30px; padding: 20px; background: var(--bg-elevated); border-radius: 16px; border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <span id="health-indicator" style="display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); animation: pulse 2s infinite;"></span>
+      <span style="font-weight: 600; font-size: 0.9rem;">Sistema</span>
+      <span id="health-status-text" style="font-size: 0.85rem; color: var(--text-muted);">Verificando...</span>
+    </div>
+    <a href="/health/" target="_blank" class="btn-sige-secundario" style="font-size: 0.8rem; padding: 6px 14px;">
+      <i class="fa-solid fa-stethoscope"></i> Ver Health Check completo
+    </a>
+  </div>
+
+  {# ════ FOOTER INFO ════ #}
+  <footer style="margin-top: 40px; padding: 20px; border-top: 1px dashed var(--border-subtle); display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.8rem;">
+    <span>SIGE Enterprise Management System &copy; 2026</span>
+    <span>Sincronizado em: {{ ultima_atualizacao|date:"d/m/Y H:i:s" }}</span>
   </footer>
+
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-  <a href="{% url 'ti:operacoes' %}" class="sige-card"
-    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px; transition: transform 0.2s; {% if not pode_operacoes %}opacity: 0.45; pointer-events: none;{% endif %}">
-    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-gears"></i> Operações</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Integrações, checklist de manutenção e
-      procedimentos de deploy.</p>
-  </a>
+{# ════ NOTIFICAÇÕES WEBSOCKET ════ #}
+<div id="ti-toast" style="position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;"></div>
 
-  <a href="{% url 'ti:seguranca' %}" class="sige-card"
-    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
-    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-shield-halved"
-        style="color: var(--accent-ruby);"></i> Segurança</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Monitoramento de causas, blacklist, erros e
-      relatórios de vulnerabilidade.</p>
-  </a>
+{% block extra_js %}
+<script>
+(function () {
+  // ── Health Check ─────────────────────────────────────────────────────
+  fetch("/health/", { headers: { "Accept": "application/json" } })
+    .then(r => r.json())
+    .catch(() => null)
+    .then(data => {
+      const el = document.getElementById("health-indicator");
+      const txt = document.getElementById("health-status-text");
+      if (!data) {
+        el.style.background = "var(--accent-amber)";
+        txt.textContent = "Health Check indisponível";
+        return;
+      }
+      const allOk = Object.values(data).every(v => v === "working");
+      el.style.background = allOk ? "var(--accent-emerald)" : "var(--accent-ruby)";
+      el.style.boxShadow = allOk ? "0 0 8px var(--accent-emerald)" : "0 0 8px var(--accent-ruby)";
+      txt.textContent = allOk ? "Todos os serviços operacionais" : "Atenção: serviço degradado";
+    });
 
-  <a href="{% url 'ti:documentacao' %}" class="sige-card"
-    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
-    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-book-open"
-        style="color: var(--accent-amber);"></i> Documentação</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Políticas, runbook e links rápidos para os
-      processos de TI.</p>
-  </a>
+  // ── WebSocket TI ──────────────────────────────────────────────────────
+  const proto = window.location.protocol === "https:" ? "wss" : "ws";
+  const wsUrl = `${proto}://${window.location.host}/ws/ti/`;
+  let ws;
 
-  <a href="/admin/" class="sige-card"
-    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
-    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-user-shield"></i> Admin Django</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Gerencie usuários, grupos, permissões e dados
-      do sistema.</p>
-  </a>
+  function connectWS() {
+    try {
+      ws = new WebSocket(wsUrl);
+    } catch (e) { return; }
 
-  <a href="{% url 'swagger-ui' %}" class="sige-card"
-    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
-    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-book"></i> API Docs</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Documentação de API e endpoints disponíveis.
-    </p>
-  </a>
+    ws.onmessage = function (event) {
+      try {
+        const msg = JSON.parse(event.data);
+        showToast(msg);
+      } catch (e) {}
+    };
 
-  <a href="{% url 'painel_infraestrutura' %}" class="sige-card"
-    style="text-decoration: none; padding: 1.25rem; border: 1px solid var(--border-subtle); border-radius: 16px;">
-    <h2 style="font-size: 1rem; margin: 0 0 0.5rem 0;"><i class="fa-solid fa-warehouse"></i> Infraestrutura</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Visão de patrimônio, ativos e manutenção
-      física.</p>
-  </a>
-</div>
+    ws.onclose = function () {
+      // Reconecta após 5 segundos se fechar inesperadamente
+      setTimeout(connectWS, 5000);
+    };
+  }
 
-<section
-  style="margin-top: 1.75rem; padding: 1.25rem; border-radius: 16px; border: 1px solid var(--border-subtle); background: var(--bg-elevated);">
-  <h2 style="margin-top: 0;">Como usar esta área</h2>
-  <ol style="margin: 0.75rem 0 0 1.2rem; color: var(--text-primary); line-height: 1.8;">
-    <li>Acesse <strong>Segurança</strong> para ver logs, bugs, blacklist e manutenção.</li>
-    <li>Use <strong>Operações</strong> para rotinas sensíveis quando tiver permissão avançada.</li>
-    <li>Consulte a <strong>Documentação</strong> para políticas, runbook e links úteis da TI.</li>
-  </ol>
-</section>
-{% endblock ti_content %}
+  function showToast({ tipo, mensagem }) {
+    const icons = {
+      "novo_bug":         { icon: "fa-bug",                cor: "var(--accent-amber)" },
+      "novo_erro":        { icon: "fa-circle-exclamation", cor: "var(--accent-ruby)" },
+      "alerta_seguranca": { icon: "fa-shield-halved",      cor: "var(--accent-violet)" },
+    };
+    const cfg = icons[tipo] || { icon: "fa-bell", cor: "var(--accent-cyan)" };
+
+    const toast = document.createElement("div");
+    toast.style.cssText = `
+      background: var(--bg-elevated); border: 1px solid ${cfg.cor};
+      color: var(--text-primary); padding: 14px 18px; border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3); display: flex; align-items: center;
+      gap: 12px; font-size: 0.88rem; max-width: 320px; pointer-events: all;
+      animation: slideIn 0.3s ease; border-left: 4px solid ${cfg.cor};
+    `;
+    toast.innerHTML = `<i class="fa-solid ${cfg.icon}" style="color:${cfg.cor};"></i> ${mensagem}`;
+    toast.onclick = () => toast.remove();
+
+    const container = document.getElementById("ti-toast");
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 7000);
+  }
+
+  connectWS();
+})();
+</script>
+<style>
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+</style>
+{% endblock %}
+{% endblock %}

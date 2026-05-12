@@ -28,6 +28,7 @@ if RENDER_EXTERNAL_HOSTNAME:
 
 # Apps
 INSTALLED_APPS = [
+    "daphne",                           # deve vir antes do staticfiles (Channels/ASGI)
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -62,13 +63,15 @@ INSTALLED_APPS = [
     "apps.seguranca",
     "apps.ti",
     "django_prometheus",
+    # === Melhorias Área de TI ===
+    "health_check",              # API unificada (v4.x) — usa /health/ endpoint
+    "channels",
 ]
 
 # Middleware (Ordem do Prometheus é importante)
 MIDDLEWARE = [
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
-    "apps.seguranca.middleware.SecurityHardeningMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "csp.middleware.CSPMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -76,6 +79,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "apps.seguranca.middleware.SecurityHardeningMiddleware",
     "apps.seguranca.middleware.ManutencaoMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -120,6 +124,24 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
+ASGI_APPLICATION = "config.asgi.application"
+
+# Django Channels — Layer para WebSockets
+if config("USE_REDIS", default=False, cast=bool):
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [config("REDIS_URL", default="redis://127.0.0.1:6379/0")],
+            },
+        }
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer",
+        }
+    }
 
 # Banco de Dados
 DATABASES = {

@@ -1,29 +1,21 @@
-# 🏢 Módulo de Infraestrutura, Estoque e Patrimônio
+# 🏭 App: Infraestrutura
 
-Este módulo gerencia o patrimônio durável e os itens consumíveis (almoxarifado) da instituição. Recentemente refatorado para o padrão **Clean Architecture**, garantindo alta performance e integridade de dados.
+Módulo de gestão de patrimônio, almoxarifado e recursos físicos da instituição.
 
-## 📐 Arquitetura de Dados (Models)
+## Responsabilidades
+- Cadastro e controle de patrimônio (equipamentos, móveis)
+- Gestão de estoque do almoxarifado
+- Solicitações de recursos e materiais
+- Relatórios de inventário
 
-- `UnidadeEscolar` & `Ambiente`: Representam a estrutura física da escola.
-- `ItemPatrimonio`: Bens duráveis com controle de tombamento e criptografia de valor.
-- `ManutencaoBem`: Registro de ordens de serviço e histórico de reparos.
-- `ItemEstoque` & `SaldoEstoque`: Controle de saldos de itens consumíveis com gatilhos de reposição mínima.
+## Modelos Principais
+- `ItemPatrimonio`, `CategoriaPatrimonio`
+- `ItemEstoque`, `MovimentacaoEstoque`
+- `SolicitacaoRecurso`
 
-## 🧠 Padrões de Projeto (Refatoração 2026)
+## Arquitetura
+Utiliza **Clean Architecture** com camada de Service e Selectors separados das Views.
 
-O módulo segue agora a separação estrita de responsabilidades:
-
-### 1. Camada de Leitura (Selectors) — `selectors.py`
-Utiliza o **Selector Pattern** para centralizar consultas complexas e cálculos de BI:
-- `InfraSelector.get_painel_metrics()`: Retorna KPIs de patrimônio e estoque.
-- `InfraSelector.get_estoque_critico()`: Filtra itens abaixo do saldo mínimo com `O(1)`.
-
-### 2. Camada de Escrita (Services) — `services/`
-Centraliza a lógica de negócio e garante transações atômicas:
-- `EstoqueService.registrar_movimentacao()`: Atualiza o saldo físico e cria o log de movimentação em uma única transação segura.
-
-## 💡 Integrações Internas
-- **Financeiro**: Gastos com manutenção geram lançamentos automáticos no Livro Diário.
-- **Dashboards**: Dados de infraestrutura são consumidos pelo Hub de Inteligência via Selectors.
-
-> Atualizado em Maio de 2026 — Refatoração Clean Architecture consolidada.
+## Permissões
+- **Gestor de Infraestrutura**: controle total de patrimônio e almoxarifado.
+- **Outros perfis**: podem fazer solicitações de recursos.

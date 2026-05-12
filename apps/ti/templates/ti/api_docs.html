@@ -1,0 +1,147 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Documentação da API — SIGE{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
+<style>
+  .api-card {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    border-radius: 24px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .api-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-cyan);
+  }
+  .endpoint-badge {
+    background: var(--bg-hover);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--accent-cyan);
+  }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<div class="painel-sige">
+
+  {# ════ HEADER ════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label" style="color: var(--accent-cyan);">Desenvolvimento · Integração · Swagger</span>
+      <h1>Documentação da <span class="nome-destaque" style="color: var(--accent-cyan);">API REST</span></h1>
+      <p style="margin-top: 5px; color: var(--text-muted);">Explore os endpoints do SIGE, consulte schemas e realize testes de integração.</p>
+    </div>
+
+    <div class="header-acoes">
+      <a href="{% url 'swagger-ui' %}" target="_blank" class="btn-sige-primario" style="background: var(--accent-cyan); box-shadow: none;">
+        <i class="fa-solid fa-rocket"></i> Abrir Swagger UI
+      </a>
+    </div>
+  </header>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px;">
+    
+    {# ── O QUE É A API ── #}
+    <article class="api-card">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 45px; height: 45px; border-radius: 12px; background: rgba(6, 182, 212, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-cyan); font-size: 1.2rem;">
+          <i class="fa-solid fa-circle-info"></i>
+        </div>
+        <h3 style="margin: 0; font-family: 'Syne', sans-serif;">Sobre a API SIGE</h3>
+      </div>
+      <p style="color: var(--text-secondary); line-height: 1.6;">
+        O SIGE expõe uma API RESTful completa baseada em <strong>Django Rest Framework</strong>. 
+        Utilizamos <strong>drf-spectacular</strong> para gerar automaticamente a especificação OpenAPI 3.0, 
+        garantindo documentação sempre atualizada com o código.
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <span class="endpoint-badge">OpenAPI 3.0</span>
+        <span class="endpoint-badge">JWT Auth</span>
+        <span class="endpoint-badge">JSON Support</span>
+      </div>
+    </article>
+
+    {# ── AUTENTICAÇÃO ── #}
+    <article class="api-card">
+      <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="width: 45px; height: 45px; border-radius: 12px; background: rgba(139, 92, 246, 0.1); display: flex; align-items: center; justify-content: center; color: var(--accent-violet); font-size: 1.2rem;">
+          <i class="fa-solid fa-key"></i>
+        </div>
+        <h3 style="margin: 0; font-family: 'Syne', sans-serif;">Segurança e Autenticação</h3>
+      </div>
+      <p style="color: var(--text-secondary); line-height: 1.6;">
+        A maioria dos endpoints exige autenticação via <strong>JSON Web Token (JWT)</strong>. 
+        Para obter um token, envie suas credenciais para o endpoint de login.
+      </p>
+      <div style="padding: 12px; background: #0f172a; border-radius: 10px; color: #38bdf8; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;">
+        Authorization: Bearer &#60;seu_token_jwt&#62;
+      </div>
+    </article>
+
+    {# ── SWAGGER UI ── #}
+    <article class="api-card" style="grid-column: 1 / -1; background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(6, 182, 212, 0.05) 100%);">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h3 style="margin: 0 0 10px 0; font-family: 'Syne', sans-serif; font-size: 1.4rem;">Interface Interativa (Swagger)</h3>
+          <p style="color: var(--text-secondary); max-width: 600px;">
+            Utilize a interface do Swagger para visualizar todos os recursos disponíveis, 
+            verificar os parâmetros de entrada exigidos e as respostas esperadas de cada endpoint.
+          </p>
+        </div>
+        <img src="https://static1.smartbear.co/swagger/media/assets/images/swagger_logo.svg" style="height: 40px; opacity: 0.8;" alt="Swagger">
+      </div>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 10px;">
+        <div style="padding: 15px; border: 1px dashed var(--border-subtle); border-radius: 12px; text-align: center;">
+          <i class="fa-solid fa-magnifying-glass" style="font-size: 1.5rem; color: var(--accent-cyan); margin-bottom: 10px; display: block;"></i>
+          <span style="font-size: 0.85rem; font-weight: 700;">Exploração</span>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Navegue pelos módulos de Usuários, Alunos, Financeiro, etc.</p>
+        </div>
+        <div style="padding: 15px; border: 1px dashed var(--border-subtle); border-radius: 12px; text-align: center;">
+          <i class="fa-solid fa-vial" style="font-size: 1.5rem; color: var(--accent-emerald); margin-bottom: 10px; display: block;"></i>
+          <span style="font-size: 0.85rem; font-weight: 700;">Testes</span>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Clique em "Try it out" para executar requisições reais.</p>
+        </div>
+        <div style="padding: 15px; border: 1px dashed var(--border-subtle); border-radius: 12px; text-align: center;">
+          <i class="fa-solid fa-code" style="font-size: 1.5rem; color: var(--accent-violet); margin-bottom: 10px; display: block;"></i>
+          <span style="font-size: 0.85rem; font-weight: 700;">Schemas</span>
+          <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Veja a estrutura exata dos objetos JSON de retorno.</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center;">
+        <a href="{% url 'swagger-ui' %}" target="_blank" class="btn-sige-primario" style="background: var(--accent-cyan); display: inline-flex; width: auto;">
+          Ir para o Swagger UI <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+    </article>
+
+  </div>
+
+  {# ════ README SECTION ════ #}
+  <div style="margin-top: 40px; padding: 30px; background: var(--bg-elevated); border-radius: 20px; border: 1px solid var(--border-subtle);">
+    <h2 style="font-family: 'Syne', sans-serif; font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+      <i class="fa-solid fa-file-lines" style="color: var(--accent-amber);"></i> Guia Rápido de Uso
+    </h2>
+    <div style="display: grid; gap: 15px; color: var(--text-secondary); line-height: 1.7; font-size: 0.95rem;">
+      <p>1. <strong>Obtenha o Token:</strong> Acesse o endpoint <code>/api/token/</code> enviando seu nome de usuário e senha.</p>
+      <p>2. <strong>Autorize no Swagger:</strong> Clique no botão "Authorize" (cadeado) no topo do Swagger UI e insira <code>Bearer &#60;seu_token&#62;</code>.</p>
+      <p>3. <strong>Consulte a Documentação:</strong> O arquivo de especificação bruta (YAML/JSON) pode ser baixado em <code>/api/schema/</code>.</p>
+      <p>4. <strong>Ambientes:</strong> A API está disponível em <code>/api/v1/</code> para todos os módulos principais.</p>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,74 +1,163 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Documentação TI — SIGE{% endblock %}
+{% block title %}Documentação e Runbook — SIGE{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/infraestrutura.css' %}">
+<style>
+  .doc-section {
+    margin-bottom: 40px;
+  }
+  .doc-section h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .doc-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+  .doc-item-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: 20px;
+    border-radius: 16px;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .doc-item-card:hover {
+    border-color: var(--accent-cyan);
+    background: var(--bg-hover);
+    transform: translateY(-2px);
+  }
+  .policy-box {
+    padding: 20px;
+    background: var(--bg-elevated);
+    border-radius: 14px;
+    border-left: 4px solid var(--accent-amber);
+    margin-bottom: 15px;
+  }
+</style>
+{% endblock %}
 
 {% block ti_content %}
-<div class="sige-card" style="max-width: 960px; margin: 0 auto;">
-    <header style="margin-bottom: 1.5rem;">
-        <h1 style="font-family: var(--font-display); font-size: 1.75rem; margin: 0 0 0.5rem 0;">
-            <i class="fa-solid fa-book-open" style="color: var(--accent-cyan);"></i>
-            Documentação TI
-        </h1>
-        <p style="color: var(--text-muted); margin: 0;">
-            Central de políticas, procedimentos e links rápidos para a equipe de TI e usuários com acesso de TI.
-        </p>
-    </header>
+<div class="painel-sige">
 
-    <div style="display: grid; gap: 1rem;">
-        <section class="sige-card" style="padding: 1.5rem; border-radius: 18px;">
-            <h2 style="margin-top: 0; font-size: 1.1rem;">Permissões e papeis</h2>
-            <p style="color: var(--text-muted);">
-                A área de TI é estruturada em dois níveis de acesso:
-            </p>
-            <ul style="margin: 0.75rem 0 0 1.2rem; color: var(--text-primary); line-height: 1.8;">
-                <li><strong>TI — Operador</strong>: acesso ao painel TI e ao dashboard de segurança.</li>
-                <li><strong>TI — Coordenação</strong>: acesso às operações avançadas e rotinas sensíveis.</li>
-                <li><strong>Superusuário</strong>: acesso total, incluindo TI e administração Django.</li>
-            </ul>
-        </section>
-
-        <section class="sige-card" style="padding: 1.5rem; border-radius: 18px;">
-            <h2 style="margin-top: 0; font-size: 1.1rem;">Links rápidos</h2>
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
-                <a href="{% url 'ti:painel' %}" class="sige-card"
-                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
-                    <strong>Painel TI</strong>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Visão geral e acessos mais usados.</p>
-                </a>
-                <a href="{% url 'ti:seguranca' %}" class="sige-card"
-                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
-                    <strong>Dashboard de Segurança</strong>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Monitoramento de logs, bugs e blacklist.
-                    </p>
-                </a>
-                <a href="{% url 'ti:operacoes' %}" class="sige-card"
-                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
-                    <strong>Operações TI</strong>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Rotinas avançadas e checklist de
-                        manutenção.</p>
-                </a>
-                <a href="/admin/" class="sige-card"
-                    style="text-decoration: none; padding: 1rem; border-radius: 14px; color: inherit; border: 1px solid var(--border-subtle);">
-                    <strong>Admin Django</strong>
-                    <p style="margin: 0.5rem 0 0 0; color: var(--text-muted);">Gerencie usuários, grupos e permissões.
-                    </p>
-                </a>
-            </div>
-        </section>
-
-        <section class="sige-card" style="padding: 1.5rem; border-radius: 18px;">
-            <h2 style="margin-top: 0; font-size: 1.1rem;">Boas práticas</h2>
-            <ul style="margin: 0.75rem 0 0 1.2rem; color: var(--text-primary); line-height: 1.8;">
-                <li>Use o painel TI apenas para operações administrativas e segurança.</li>
-                <li>Prefira o admin Django para manutenção de usuários e permissões.</li>
-                <li>Mantenha o runbook interno atualizado com variáveis de ambiente e procedimentos de deploy.</li>
-            </ul>
-        </section>
+  {# ════ HEADER ════ #}
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label" style="color: var(--accent-emerald);">Runbook · Wiki Técnica · Procedimentos</span>
+      <h1>Documentação <span class="nome-destaque" style="color: var(--accent-emerald);">TI</span></h1>
+      <p style="margin-top: 5px; color: var(--text-muted);">Central de conhecimento para administração e manutenção do ecossistema SIGE.</p>
     </div>
 
-    <p style="margin-top: 1.5rem;"><a href="{% url 'ti:painel' %}" class="btn-sige-primario">← Voltar ao painel TI</a>
-    </p>
+    <div class="header-acoes">
+      <a href="{% url 'ti:painel' %}" class="btn-sige-secundario">
+        <i class="fa-solid fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+  </header>
+
+  <div style="max-width: 1000px;">
+
+    {# ── SEÇÃO: NÍVEIS DE ACESSO ── #}
+    <section class="doc-section">
+      <h2><i class="fa-solid fa-user-shield" style="color: var(--accent-violet);"></i> Níveis de Acesso e Permissões</h2>
+      <div class="sige-card" style="padding: 25px;">
+        <p style="color: var(--text-secondary); margin-bottom: 20px;">A arquitetura de segurança do SIGE para a área técnica é dividida em camadas de privilégio:</p>
+        <div style="display: grid; gap: 12px;">
+          <div style="display: flex; gap: 15px; padding: 15px; background: var(--bg-elevated); border-radius: 12px; border-left: 4px solid var(--accent-cyan);">
+            <i class="fa-solid fa-user-gear" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+            <div>
+              <strong style="display: block;">TI — Operador (Level 1)</strong>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Monitoramento de erros, triagem de bugs e auditoria básica LGPD.</span>
+            </div>
+          </div>
+          <div style="display: flex; gap: 15px; padding: 15px; background: var(--bg-elevated); border-radius: 12px; border-left: 4px solid var(--accent-violet);">
+            <i class="fa-solid fa-user-lock" style="color: var(--accent-violet); font-size: 1.2rem;"></i>
+            <div>
+              <strong style="display: block;">TI — Coordenação (Level 2)</strong>
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Operações sensíveis, manutenção de banco, gestão de cache e configuração de ambiente.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {# ── SEÇÃO: POLÍTICAS DE SEGURANÇA ── #}
+    <section class="doc-section">
+      <h2><i class="fa-solid fa-guaranty" style="color: var(--accent-ruby);"></i> Políticas de Segurança & LGPD</h2>
+      <div class="policy-box">
+        <strong style="color: var(--accent-ruby); display: block; margin-bottom: 8px;">Privacidade por Design</strong>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Todas as telas que exibem dados sensíveis (saúde, financeiro) devem registrar logs no `LogAuditoria`. Nunca armazene PII (Informações Pessoais Identificáveis) em logs de erro comuns; utilize o `sanitizar_pii` do middleware.</p>
+      </div>
+      <div class="policy-box" style="border-left-color: var(--accent-emerald);">
+        <strong style="color: var(--accent-emerald); display: block; margin-bottom: 8px;">Backup e Retenção</strong>
+        <p style="font-size: 0.9rem; color: var(--text-secondary);">Backups do banco de dados (MySQL/PostgreSQL) são gerenciados automaticamente pelo Render diariamente. Logs de erro e auditoria devem ser mantidos por 90 dias antes da purga automática via Operações de TI.</p>
+      </div>
+    </section>
+
+    {# ── SEÇÃO: LINKS TÉCNICOS ── #}
+    <section class="doc-section">
+      <h2><i class="fa-solid fa-link" style="color: var(--accent-cyan);"></i> Atalhos e Recursos Externos</h2>
+      <div class="doc-card-grid">
+        <a href="{% url 'ti:api_docs' %}" class="doc-item-card" style="border-color: var(--accent-cyan);">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 1.05rem;">API / Swagger UI</strong>
+            <i class="fa-solid fa-code" style="color: var(--accent-cyan);"></i>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Documentação completa dos endpoints e schemas da API.</p>
+        </a>
+        <a href="/admin/" target="_blank" class="doc-item-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 1.05rem;">Admin Django</strong>
+            <i class="fa-solid fa-user-shield"></i>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Interface nativa para gestão bruta de modelos e dados.</p>
+        </a>
+        <a href="https://render.com" target="_blank" class="doc-item-card">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 1.05rem;">Render Cloud</strong>
+            <i class="fa-solid fa-cloud"></i>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Logs de servidor, variáveis de ambiente e deploy.</p>
+        </a>
+      </div>
+    </section>
+
+    {# ── SEÇÃO: PROCEDIMENTOS ── #}
+    <section class="doc-section">
+      <h2><i class="fa-solid fa-list-check" style="color: var(--accent-amber);"></i> Procedimentos de Emergência</h2>
+      <div class="sige-card" style="padding: 25px;">
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div style="padding: 12px; border: 1px solid var(--border-subtle); border-radius: 10px;">
+            <strong style="font-size: 0.9rem; color: var(--accent-ruby);">⚠️ Em caso de instabilidade:</strong>
+            <ol style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 8px;">
+              <li>Verifique os logs no Render Dashboard.</li>
+              <li>Acesse o <strong>Health Check</strong> em Operações de TI.</li>
+              <li>Se necessário, limpe o cache do sistema.</li>
+              <li>Ative o <strong>Modo Manutenção</strong> se a correção exigir parada de serviços.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
 </div>
-{% endblock ti_content %}
+{% endblock %}

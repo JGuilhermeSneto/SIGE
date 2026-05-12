@@ -29,7 +29,7 @@ class SecurityHardeningMiddleware(MiddlewareMixin):
         ip = get_client_ip(request)
 
         # 1. HONEYPOT: Acesso ao admin sem estar logado
-        if path.startswith("/admin/") and not request.user.is_authenticated:
+        if path.startswith("/admin/") and hasattr(request, "user") and not request.user.is_authenticated:
             # Incrementa contador de ameaça no cache
             key = f"threat_count_{ip}"
             count = cache.get(key, 0) + 1

@@ -1,23 +1,22 @@
-# 📄 Módulo de Documentos e Relatórios
-> Motor de geração de documentos oficiais com autenticidade garantida.
+# 📄 App: Documentos
 
-## 🚀 Novo Motor de PDF: ReportLab Premium
-Migramos o sistema do `xhtml2pdf` para o **ReportLab**, permitindo um controle pixel-perfect sobre o layout e uma performance superior.
+Módulo responsável pela geração e armazenamento de documentos oficiais da instituição.
 
-### Funcionalidades:
-- **Boletim Escolar Inteligente**: Cores dinâmicas para notas (Verde para aprovação, Vermelho para reprovação).
-- **Declaração de Matrícula**: Documento formal com cabeçalho institucional dinâmico.
-- **Autenticidade via QR Code**: Cada documento gerado possui um QR Code único para validação de veracidade.
-- **Cabeçalhos e Rodapés Dinâmicos**: Extraídos diretamente do modelo `Instituicao` (Multi-Tenancy).
+## Responsabilidades
+- Geração de Histórico Escolar em PDF com QR Code de autenticidade
+- Declarações de matrícula e frequência
+- Armazenamento seguro de documentos digitais (Cloudinary)
+- Validação de autenticidade de documentos via código único
 
-## 🛠️ Arquitetura dos Geradores
-Os geradores residem em `apps/documentos/utils/`:
-- `BasePDFGenerator`: Classe base com lógica de margens, logo e numeração de páginas.
-- `BoletimGenerator`: Lógica específica para tabelas acadêmicas e aproveitamento.
-- `DeclaracaoGenerator`: Template para textos declaratórios formais.
+## Modelos Principais
+- `DocumentoOficial`, `TipoDocumento`
+- `HistoricoEscolar`
 
-## 🔗 Integração Multi-Tenant
-O módulo consome dados da `Instituicao` ativa para personalizar o logotipo e o nome da escola no topo de cada documento, garantindo isolamento total entre diferentes clientes.
+## Permissões
+- **Aluno**: solicita e baixa os próprios documentos.
+- **Gestor**: emite e gerencia documentos de qualquer aluno.
 
-> Atualizado em Maio de 2026 — Integração ReportLab & Multi-Tenancy consolidada.
-
+## Tecnologias
+- `ReportLab` para geração de PDFs
+- `qrcode` para QR Codes de autenticidade
+- `Cloudinary` para armazenamento em nuvem

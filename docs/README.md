@@ -1,19 +1,84 @@
-# 📚 Central de Documentação SIGE
+# 📚 Documentação do SIGE
 
-Nesta pasta, você encontrará toda a documentação estratégica, manuais de infraestrutura e análises técnicas do projeto.
+> Sistema Integrado de Gestão Escolar — Central de Documentação Técnica
 
-### 📄 Documentos Disponíveis:
-- `ROADMAP.md`: Planejamento de futuras fases e funcionalidades.
-- `GAP_ANALYSIS.md`: Análise comparativa SIGE vs. Concorrentes (SUAP/SIGEDUC).
-- `INFRASTRUCTURE.md`: Guia de configuração do RabbitMQ, Prometheus e Grafana.
-- `LOGGING.md`: Manual de observabilidade e logs de auditoria LGPD.
-- `SECURITY.md`: Camadas de proteção e protocolos de segurança.
-- `TI_OPERATIONS.md`: **NOVO** — Área de TI avançada, operações administrativas e manutenção.
-- `PIPELINE.md`: Detalhes do workflow de CI/CD (GitHub Actions).
-- `DEPLOYMENT.md`: Guia de Deploy em produção (Render + Aiven).
-- `SEED_INSTRUCTIONS.md`: Instruções para o simulador de 10 anos de dados.
-- `SIGE_Requisitos.docx`: Documentação exaustiva de requisitos funcionais e não funcionais.
+Bem-vindo à documentação oficial do SIGE. Navegue pelos documentos abaixo para encontrar informações sobre instalação, arquitetura, segurança e desenvolvimento.
 
-> **Importante**: Mantenha estes documentos atualizados conforme novas funcionalidades forem implementadas.
+---
 
-> Atualizado em Maio de 2026 — Central de Documentação Consolidada + Área de TI.
+## 📂 Índice de Documentos
+
+### 🏁 Primeiros Passos
+| Documento | Descrição |
+|---|---|
+| [INSTALACAO.md](./INSTALACAO.md) | Passo a passo para configurar o ambiente local e popular o banco |
+| [ROADMAP.md](./ROADMAP.md) | Plano estratégico, fases de entrega e matriz de prioridades |
+| [tasks.md](./tasks.md) | Backlog ativo de tarefas e cronograma mensal |
+
+### 🏛️ Arquitetura e Engenharia
+| Documento | Descrição |
+|---|---|
+| [INFRAESTRUTURA.md](./INFRAESTRUTURA.md) | Cloud (Render/Aiven), cache, mensageria e variáveis de ambiente |
+| [SEGURANCA.md](./SEGURANCA.md) | Shield v1.2 — todas as camadas de proteção e conformidade LGPD |
+| [TESTES.md](./TESTES.md) | Guia de testes, cobertura atual e próximos alvos |
+
+### 🚀 DevOps e Integração
+| Documento | Descrição |
+|---|---|
+| [DEVOPS.md](./DEVOPS.md) | Pipeline de CI/CD, Docker, deploy no Render e checklist |
+| [API.md](./API.md) | API REST, autenticação JWT e guia do Swagger UI |
+
+---
+
+## 🗂️ Estrutura do Projeto (Visão Geral)
+
+```
+SIGE/
+├── apps/                   # Módulos Django
+│   ├── academico/          # Turmas, notas, frequência
+│   ├── biblioteca/         # Acervo e empréstimos
+│   ├── calendario/         # Eventos e agenda escolar
+│   ├── comum/              # Utilitários compartilhados e design system
+│   ├── comunicacao/        # Avisos e notificações internas
+│   ├── dashboards/         # BI e Hub de Inteligência
+│   ├── documentos/         # Histórico escolar e PDFs oficiais
+│   ├── financeiro/         # Faturas e controle financeiro
+│   ├── infraestrutura/     # Patrimônio e almoxarifado
+│   ├── iot/                # Integração com sensores e MQTT
+│   ├── saude/              # Prontuários e atestados
+│   ├── seguranca/          # Shield — logs, blacklist, auditoria
+│   ├── ti/                 # Área de TI, operações e chamados
+│   └── usuarios/           # Autenticação, perfis e permissões
+├── config/                 # settings.py, urls.py, wsgi.py
+├── docs/                   # 📚 Você está aqui
+├── scripts/                # Scripts utilitários e automações
+├── templates/              # Templates base globais
+├── static/ / staticfiles/  # Assets CSS/JS
+└── manage.py
+```
+
+---
+
+## ⚡ Comandos Rápidos
+
+```bash
+# Iniciar servidor local
+python manage.py runserver
+
+# Rodar todos os testes
+pytest
+
+# Rodar testes com cobertura
+pytest --cov=apps --cov-report=html
+
+# Aplicar migrações
+python manage.py migrate
+
+# Popular banco com dados de teste
+python seed_db.py
+```
+
+---
+
+> [!NOTE]
+> Para contribuir com a documentação, edite os arquivos `.md` nesta pasta e abra um Pull Request descrevendo o que foi alterado.

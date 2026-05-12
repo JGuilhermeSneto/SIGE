@@ -1,23 +1,20 @@
-# 🧠 Hub de Inteligência & Relatórios (Dashboards)
+# 📊 App: Dashboards
 
-Este aplicativo é o motor analítico central do SIGE. Ele unifica o **BI Acadêmico** e a **Central de Relatórios** em uma interface única de alto nível para gestores.
+Hub de Inteligência e Business Intelligence (BI) do SIGE.
 
-## 🚀 Funcionalidades Chave
+## Responsabilidades
+- Dashboard unificado com métricas acadêmicas e financeiras
+- Motor de Risco de Evasão (predição baseada em frequência e notas)
+- Relatórios de desempenho por turma e por aluno
+- Gráficos interativos com Chart.js e dados em tempo real
 
-- **Visão Analítica (BI)**: Gráficos dinâmicos de Evasão Preditiva, Status de Matrícula e Performance por Turma.
-- **Central de Relatórios**: Emissão rápida de documentos oficiais (Histórico Escolar, Boletins) e exportações massivas em CSV.
-- **Inteligência de Saúde**: Monitoramento de indicadores de inclusão (PCD) e alertas médicos em tempo real.
-- **Exportação Master**: Geração de dossiês gerenciais em PDF com QR Code de autenticidade.
+## Modelos Principais
+- Não possui modelos próprios — consome dados dos outros módulos via queries otimizadas.
 
-## 🏗️ Arquitetura Técnica
+## Permissões
+- **Professor**: visualiza métricas das próprias turmas.
+- **Gestor**: acesso ao hub completo com visão institucional.
 
-- **Lógica de Leitura (Selectors)**: Centralizada em `selectors.py` para garantir que o dashboard carregue em milissegundos, independente do tamanho da base.
-- **Motor de PDF**: Utiliza `utils/pdf_engine.py` (ReportLab) para geração de documentos industriais.
-- **Frontend**: Dashboards baseados em **Chart.js** com suporte a temas e glassmorphism.
-
-## 🔗 Integrações
-- **Monitoramento**: Exporta métricas de performance para o Prometheus.
-- **Processamento**: Utiliza RabbitMQ/Celery para exportações de longa duração.
-
-> Atualizado em Maio de 2026 — Unificação do Hub de Inteligência concluída.
-
+## Dependências
+- `Chart.js` para visualizações
+- `apps.academico`, `apps.financeiro`, `apps.saude` para as fontes de dados

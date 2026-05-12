@@ -1,24 +1,29 @@
-# 🛡️ Módulo de Segurança & Governança (Shield v1.2)
+# 🛡️ App: Segurança (Shield)
 
-O app `apps.seguranca` é a central de comando para a integridade do sistema, auditoria de dados e defesa ativa contra ameaças cibernéticas.
+Módulo central de segurança, auditoria e conformidade LGPD do SIGE.
 
-## 📐 Estrutura de Governança
-- **Shield Dashboard (v1.2)**: Monitoramento avançado de segurança e gestão do Hardening.
-- **Audit Log**: Registro imutável de todas as ações em dados sensíveis (Leitura/Escrita).
-- **Hardening Middleware**:
-    - **Admin Honeypot**: Detecta e bane bots em acessos não autorizados ao `/admin/`.
-    - **Auto-Blacklist**: Inteligência para banimento dinâmico de IPs geradores de erros críticos.
-- **Sanitização de PII (Scrubbing)**: Remoção automática de CPFs e E-mails de logs técnicos (LGPD compliance).
-- **MFA (Multi-Factor Authentication)**: Autenticação em duas etapas nativa.
+## Responsabilidades
+- Dashboard de segurança unificado (Shield)
+- Registro de logs de auditoria (`LogAuditoria`)
+- Captura e sanitização de erros de sistema (`LogErro`)
+- Blacklist de IPs suspeitos (`BlacklistIP`)
+- Gestão de reports de bugs enviados por usuários (`BugReport`)
+- Configuração do modo manutenção
 
-## 🚀 Engenharia de Segurança & TI
-- **Workflow de Bugs**: Reporte com validação de **Magic Numbers** (assinatura binária) para evitar injeção de malware via upload.
-- **Painel de Resolução**: Gestão do ciclo de vida de bugs com **notificações automáticas** para o usuário.
-- **Modo Manutenção**: "Kill-switch" administrativo para isolamento técnico do sistema.
-- **Proteção Brute-Force**: Bloqueio dinâmico via `django-axes`.
-- **Criptografia AES-256**: Proteção de dados em repouso.
+## Middlewares
+| Middleware | Função |
+|---|---|
+| `SecurityHardeningMiddleware` | Honeypot para admin, detecção de bots |
+| `BlacklistMiddleware` | Bloqueia IPs na lista negra |
+| `AuditMiddleware` | Registra acessos a áreas sensíveis |
+| `ExceptionMiddleware` | Captura exceções, sanitiza PII, auto-blacklist |
+| `ManutencaoMiddleware` | Controle do modo manutenção global |
 
-## 🔗 Integração Multi-Tenant
-- Isolamento estrito de logs e auditoria por instituição.
+## Modelos Principais
+- `LogAuditoria`, `LogErro`
+- `BlacklistIP`, `ConfiguracaoSeguranca`
+- `BugReport`
 
-> Atualizado em Maio de 2026 — Shield v1.2 (Hardening) — Defesa Ativa e Governança de Dados.
+## Permissões
+- **TI**: acessa todos os dashboards e pode atualizar status de bugs.
+- **Gestor**: visualiza logs de auditoria do seu escopo.

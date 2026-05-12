@@ -1,20 +1,17 @@
-# 📚 Módulo de Biblioteca
+# 📚 App: Biblioteca
 
-Este módulo gerencia o acervo acadêmico e literário da instituição, oferecendo suporte a empréstimos físicos e acesso a materiais digitais.
+Módulo de gerenciamento do acervo bibliográfico da instituição.
 
-## 📐 Estrutura de Dados
-- `Livro`: Cadastro de títulos com suporte a capas em HD e links para PDFs digitais.
-- `Emprestimo`: Controle de circulação com status de conservação e prazos de devolução.
+## Responsabilidades
+- Cadastro de livros e periódicos (ISBN, autor, editora)
+- Controle de empréstimos e devoluções
+- Histórico de empréstimos por usuário
+- Alertas de atraso na devolução
 
-## 📡 Integração OpenLibrary API
-O SIGE conta com um motor de busca inteligente que:
-- Importa dados reais de Best-Sellers via **OpenLibrary API**.
-- Realiza o download automatizado de capas em alta resolução.
-- Mapeia autores e metadados literários de forma orgânica.
+## Modelos Principais
+- `Livro`, `Exemplar`
+- `Emprestimo`, `ReservaLivro`
 
-## 🚀 Engenharia
-- **Sincronização de Imagens**: O processo de download de capas é otimizado para não bloquear a interface do usuário.
-- **Templates Premium**: Visualização do acervo em estilo "estante digital" com suporte a glassmorphism e busca rápida.
-
-> Atualizado em Maio de 2026 — Integração com OpenLibrary API consolidada.
-
+## Permissões
+- **Aluno**: pode consultar o acervo e solicitar reservas.
+- **Bibliotecário / Gestor**: gerencia empréstimos e cadastro de obras.

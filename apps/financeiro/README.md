@@ -1,28 +1,22 @@
-# 💰 Módulo Financeiro & BI Contábil
+# 💰 App: Financeiro
 
-O Módulo Financeiro do SIGE é o motor de **Business Intelligence** que acompanha a saúde contábil da instituição. Ele cruza faturas, folha de pagamento e despesas de infraestrutura.
+Módulo de gestão financeira da instituição — mensalidades, faturas e pagamentos.
 
-## 📐 Estrutura de Dados (Models)
+## Responsabilidades
+- Geração de faturas mensais por aluno
+- Controle de pagamentos e inadimplência
+- Relatórios financeiros para gestão
+- Integração futura com Gateway de Pagamento (Asaas/Efí)
 
-- `Lancamento`: O **Livro Diário**. Centraliza todas as entradas e saídas.
-- `Fatura`: Contas a receber (Mensalidades). Status: `PENDENTE`, `PAGO`, `ATRASADO`.
-- `FolhaPagamento`: Gestão mensal de salários de Professores e Gestores.
-- `CentroCusto` & `CategoriaFinanceira`: Classificação contábil para DRE.
+## Modelos Principais
+- `Fatura`, `Pagamento`
+- `PlanoFinanceiro`, `DescontoFinanceiro`
 
-## 🚀 Engenharia Financeira
+## Permissões
+- **Responsável**: visualiza faturas e comprovantes do dependente.
+- **Gestor**: cria, edita e baixa faturas; acessa relatórios globais.
 
-- **FinanceiroService**: Orquestra operações críticas (Baixa de faturas, geração de folha) sob transações atômicas.
-- **FinanceiroSelector**: Camada de leitura otimizada para geração de DRE e Fluxo de Caixa.
-- **Segurança**: Valores sensíveis são protegidos por criptografia **AES/Fernet** no nível do banco de dados.
-
-## 📊 Inteligência de Negócio
-- **Dashboard Gerencial**: Integrado ao Hub de Inteligência, fornecendo KPIs de:
-    - Inadimplência Real vs. Esperada.
-    - DRE Dinâmico (Receitas × Despesas).
-    - Projeção de Fluxo de Caixa.
-
-## 🛣️ Próximos Passos
-- **Gateway Asaas/Efí**: Integração via Webhooks para baixa automática de Pix e Boletos.
-- **Régua de Cobrança**: Notificações automáticas via Celery/RabbitMQ para faturas vencidas.
-
-> Atualizado em Maio de 2026 — BI Contábil e DRE Dinâmico consolidados.
+## Roadmap
+- [ ] Integração com Pix (Asaas/Efí)
+- [ ] Webhook para baixa automática de faturas
+- [ ] Geração de NF-e de serviços
