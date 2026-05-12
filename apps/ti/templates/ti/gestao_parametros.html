@@ -1,0 +1,123 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Parâmetros Dinâmicos — SIGE TI{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+  
+  .settings-group { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 25px; margin-bottom: 25px; }
+  .param-row { display: flex; align-items: center; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid var(--border-subtle); }
+  .param-row:last-child { border-bottom: none; }
+  
+  .param-info { flex: 1; }
+  .param-title { font-size: 0.9rem; font-weight: 700; color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; }
+  .param-desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+  
+  .param-control { display: flex; align-items: center; gap: 15px; }
+  .param-value-box { background: var(--bg-base); border: 1px solid var(--border-subtle); padding: 8px 12px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; color: #fff; min-width: 100px; text-align: center; }
+
+  .help-card { background: linear-gradient(135deg, var(--bg-surface), var(--bg-elevated)); border: 1px solid var(--accent-cyan); border-radius: var(--radius-lg); padding: 20px; position: sticky; top: 20px; }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label">TI · Controle de Comportamento</span>
+    <h1>Parâmetros <span class="nome-destaque">Dinâmicos</span></h1>
+  </div>
+  <div class="header-acoes">
+    <button class="btn-sige-primario" style="background: var(--accent-cyan); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer;" onclick="openNewParam()">
+      <i class="fa-solid fa-plus"></i> Novo Parâmetro
+    </button>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="coluna-esquerda">
+    
+    <div class="settings-group">
+      <h3 class="hub-title" style="color: var(--accent-cyan);"><i class="fa-solid fa-sliders"></i> Configurações Ativas</h3>
+      
+      {% for p in parametros %}
+      <div class="param-row">
+        <div class="param-info">
+          <span class="param-title">{{ p.chave }}</span>
+          <p class="param-desc">{{ p.descricao|default:"Sem descrição definida para este parâmetro." }}</p>
+        </div>
+        <div class="param-control">
+          <div class="param-value-box">{{ p.valor }}</div>
+          <button class="btn-sige-secundario" style="padding: 8px;" onclick="editParam('{{ p.chave }}', '{{ p.valor }}', '{{ p.descricao }}')">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+        </div>
+      </div>
+      {% empty %}
+      <div style="padding: 40px; text-align: center; opacity: 0.5;">Nenhum parâmetro configurado.</div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <aside class="coluna-direita">
+    <div class="help-card">
+       <h3 style="font-size: 0.9rem; color: var(--accent-cyan); margin-bottom: 15px;"><i class="fa-solid fa-circle-info"></i> Central de Ajuda</h3>
+       <p style="font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6;">
+         Use esta área para alterar regras de negócio sem tocar no código. <br><br>
+         <strong>Dica:</strong> Parâmetros como <code>MAINTENANCE_MODE</code> ou <code>SESSION_TIMEOUT</code> são aplicados instantaneamente em todo o ecossistema SIGE.
+       </p>
+       <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(34, 211, 238, 0.2);">
+          <span style="font-size: 0.65rem; color: var(--accent-cyan); font-weight: 800; text-transform: uppercase;">Última Alteração</span>
+          <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">{{ ultima_atualizacao|date:"d/m/Y - H:i" }}</p>
+       </div>
+    </div>
+  </aside>
+</div>
+
+{# Modal Padronizado #}
+<div id="modal-param" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(5px);">
+  <form method="post" style="background: var(--bg-surface); padding: 35px; border-radius: 20px; width: 450px; border: 1px solid var(--border-mid); box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
+    {% csrf_token %}
+    <h2 style="margin-bottom: 25px; font-size: 1.1rem; color: var(--accent-cyan);">Configurar Parâmetro</h2>
+    
+    <div style="margin-bottom: 20px;">
+      <label style="display:block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Identificador (Chave)</label>
+      <input type="text" name="chave" id="param-chave" placeholder="EX: SESSION_TIMEOUT" style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:12px; border-radius:10px; color:white; font-family: monospace;">
+    </div>
+
+    <div style="margin-bottom: 20px;">
+      <label style="display:block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Valor Atual</label>
+      <textarea name="valor" id="param-valor" style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:12px; border-radius:10px; color:white; min-height: 80px;"></textarea>
+    </div>
+
+    <div style="margin-bottom: 30px;">
+      <label style="display:block; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase;">Descrição / Propósito</label>
+      <textarea name="descricao" id="param-desc" style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:12px; border-radius:10px; color:white; min-height: 60px; font-size: 0.8rem;"></textarea>
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:flex-end;">
+      <button type="button" class="btn-sige-secundario" style="padding: 12px 20px;" onclick="document.getElementById('modal-param').style.display='none'">Descartar</button>
+      <button type="submit" class="btn-sige-primario" style="background: var(--accent-cyan); color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 700;">Gravar Alteração</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function editParam(chave, valor, desc) {
+    document.getElementById('param-chave').value = chave;
+    document.getElementById('param-valor').value = valor;
+    document.getElementById('param-desc').value = desc;
+    document.getElementById('modal-param').style.display = 'flex';
+  }
+  function openNewParam() {
+    document.getElementById('param-chave').value = '';
+    document.getElementById('param-valor').value = '';
+    document.getElementById('param-desc').value = '';
+    document.getElementById('modal-param').style.display = 'flex';
+  }
+</script>
+{% endblock %}

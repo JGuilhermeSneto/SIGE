@@ -1,0 +1,52 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Central de Auditoria — SIGE TI{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  .conteudo-geral { margin-top: 10px; padding: 0 2rem; grid-template-columns: 1fr; }
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .audit-box { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label">TI · Governança</span>
+    <h1>Central de <span class="nome-destaque">Auditoria</span></h1>
+  </div>
+  <div class="header-acoes">
+    <button class="btn-sige-secundario" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Atualizar</button>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="audit-box">
+    <div class="table-responsive">
+      <table class="sige-table">
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Usuário</th>
+            <th>Ação / Caminho</th>
+            <th>Endereço IP</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for log in logs %}
+          <tr>
+            <td style="font-size: 0.75rem; color: var(--text-muted);">{{ log.data_evento|date:"d/m/Y H:i:s" }}</td>
+            <td style="font-weight: 700;">{{ log.usuario }}</td>
+            <td><span style="opacity: 0.8; font-size: 0.8rem;">{{ log.descricao|default:log.path }}</span></td>
+            <td><code style="color: var(--accent-cyan); font-size: 0.7rem;">{{ log.ip_endereco|default:"127.0.0.1" }}</code></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

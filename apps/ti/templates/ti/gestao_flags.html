@@ -1,0 +1,130 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Gestão de Feature Flags — SIGE{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
+<style>
+  .flag-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  .flag-card:hover {
+    border-color: var(--accent-cyan);
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+  }
+  .flag-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flag-info p {
+    margin: 5px 0 0 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+  .status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .status-active { background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald); }
+  .status-inactive { background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby); }
+
+  /* Switch Style */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #333;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 18px; width: 18px;
+    left: 4px; bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  input:checked + .slider { background-color: var(--accent-emerald); }
+  input:checked + .slider:before { transform: translateX(24px); }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<div class="painel-sige">
+  
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <a href="{% url 'ti:painel' %}" style="text-decoration: none; color: var(--text-muted); font-size: 0.8rem; display: flex; align-items: center; gap: 5px; margin-bottom: 10px;">
+        <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard
+      </a>
+      <h1>Gestão de <span class="nome-destaque" style="color: var(--accent-emerald);">Feature Flags</span></h1>
+      <p style="color: var(--text-muted);">Ligue ou desligue módulos do sistema instantaneamente sem mexer no código.</p>
+    </div>
+
+    <div class="header-acoes">
+      <a href="{% url 'ti:criar_flag' %}" class="btn-sige-primario" style="background: var(--accent-emerald);">
+        <i class="fa-solid fa-plus"></i> Criar Nova Flag
+      </a>
+    </div>
+  </header>
+
+  <div style="display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 30px;">
+    {% for flag in flags %}
+    <div class="flag-card">
+      <div class="flag-info">
+        <h3>
+          {{ flag.nome }}
+          <span class="status-badge {% if flag.ativo %}status-active{% else %}status-inactive{% endif %}">
+            {% if flag.ativo %}Ativo{% else %}Inativo{% endif %}
+          </span>
+        </h3>
+        <p>{{ flag.descricao|default:"Sem descrição informada." }}</p>
+        <span style="font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; display: block;">
+          Última alteração: {{ flag.ultima_alteracao|date:"d/m/Y H:i" }}
+        </span>
+      </div>
+      
+      <form action="{% url 'ti:alternar_flag' flag.id %}" method="POST" id="form-flag-{{ flag.id }}">
+        {% csrf_token %}
+        <label class="switch">
+          <input type="checkbox" {% if flag.ativo %}checked{% endif %} onchange="document.getElementById('form-flag-{{ flag.id }}').submit()">
+          <span class="slider"></span>
+        </label>
+      </form>
+    </div>
+    {% empty %}
+    <div class="sige-glass-card" style="text-align: center; padding: 40px;">
+      <i class="fa-solid fa-toggle-off" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+      <h3>Nenhuma Feature Flag encontrada</h3>
+      <p>Crie sua primeira flag para começar a controlar o sistema em tempo real.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

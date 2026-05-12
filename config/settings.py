@@ -63,13 +63,14 @@ INSTALLED_APPS = [
     "apps.seguranca",
     "apps.ti",
     "django_prometheus",
-    # === Melhorias Área de TI ===
     "health_check",              # API unificada (v4.x) — usa /health/ endpoint
     "channels",
+    "impersonate",
 ]
 
 # Middleware (Ordem do Prometheus é importante)
 MIDDLEWARE = [
+    "apps.ti.middleware.ManutencaoMiddleware",
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -80,6 +81,7 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "apps.seguranca.middleware.SecurityHardeningMiddleware",
+    "impersonate.middleware.ImpersonateMiddleware",
     "apps.seguranca.middleware.ManutencaoMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",

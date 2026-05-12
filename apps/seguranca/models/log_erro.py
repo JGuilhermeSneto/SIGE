@@ -15,6 +15,7 @@ class LogErro(models.Model):
     metodo = models.CharField(max_length=10)
     data_ocorrencia = models.DateTimeField(auto_now_add=True)
     ip_endereco = models.GenericIPAddressField(null=True, blank=True)
+    resolvido = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-data_ocorrencia"]

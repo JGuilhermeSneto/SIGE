@@ -76,32 +76,33 @@
 {% if request.user|pode_menu_ti %}
 <div class="ti-subnav-container">
   <nav class="ti-subnav" aria-label="Área de TI">
-    <a href="{% url 'ti:painel' %}"
-      class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'painel' %}ativo{% endif %}">
+    <a href="{% url 'ti:painel' %}" class="{% if request.resolver_match.url_name == 'painel' %}ativo{% endif %}">
       <i class="fa-solid fa-gauge-high ti-icon-painel"></i> Visão geral
     </a>
-    <a href="{% url 'ti:seguranca' %}"
-      class="{% if request.resolver_match.app_name == 'seguranca' %}ativo{% endif %}">
-      <i class="fa-solid fa-shield-halved ti-icon-seguranca"></i> Segurança
+    <a href="{% url 'ti:soc' %}" class="{% if request.resolver_match.url_name == 'soc' %}ativo{% endif %}">
+      <i class="fa-solid fa-shield-halved" style="color: var(--accent-ruby);"></i> SOC (Segurança)
     </a>
-    <a href="{% url 'ti:gestao_bugs' %}"
-      class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'gestao_bugs' %}ativo{% endif %}">
+    <a href="{% url 'ti:gestao_bugs' %}" class="{% if request.resolver_match.url_name == 'gestao_bugs' %}ativo{% endif %}">
       <i class="fa-solid fa-bug ti-icon-bugs"></i> Chamados
     </a>
-    <a href="{% url 'ti:documentacao' %}"
-      class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'documentacao' %}ativo{% endif %}">
-      <i class="fa-solid fa-book-open ti-icon-documentacao"></i> Documentação
+    <a href="{% url 'ti:gestao_flags' %}" class="{% if 'flag' in request.resolver_match.url_name %}ativo{% endif %}">
+      <i class="fa-solid fa-toggle-on" style="color: var(--accent-emerald);"></i> Feature Flags
     </a>
-    <a href="{% url 'ti:api_docs' %}"
-      class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'api_docs' %}ativo{% endif %}">
-      <i class="fa-solid fa-code ti-icon-operacoes"></i> API / Swagger
+    <a href="{% url 'ti:gestao_parametros' %}" class="{% if request.resolver_match.url_name == 'gestao_parametros' %}ativo{% endif %}">
+      <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> Parâmetros
     </a>
-    {% if request.user|pode_ti_operacoes %}
-    <a href="{% url 'ti:operacoes' %}"
-      class="{% if request.resolver_match.app_name == 'ti' and request.resolver_match.url_name == 'operacoes' %}ativo{% endif %}">
-      <i class="fa-solid fa-gears ti-icon-operacoes"></i> Operações
+    <a href="{% url 'ti:infraestrutura' %}" class="{% if request.resolver_match.url_name == 'infraestrutura' %}ativo{% endif %}">
+      <i class="fa-solid fa-server" style="color: var(--accent-amber);"></i> Infraestrutura
     </a>
-    {% endif %}
+    <a href="{% url 'ti:gestao_avisos' %}" class="{% if request.resolver_match.url_name == 'gestao_avisos' or request.resolver_match.url_name == 'criar_aviso' %}ativo{% endif %}">
+      <i class="fa-solid fa-bullhorn" style="color: var(--accent-ruby);"></i> Avisos Globais
+    </a>
+    <a href="{% url 'ti:gestao_backups' %}" class="{% if request.resolver_match.url_name == 'gestao_backups' %}ativo{% endif %}">
+      <i class="fa-solid fa-database" style="color: var(--accent-violet);"></i> Backups
+    </a>
+    <a href="{% url 'ti:api_docs' %}" class="{% if request.resolver_match.url_name == 'api_docs' %}ativo{% endif %}">
+      <i class="fa-solid fa-code" style="color: var(--accent-cyan);"></i> API
+    </a>
   </nav>
 </div>
 {% endif %}

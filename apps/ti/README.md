@@ -1,37 +1,33 @@
-# 🖥️ App: TI (Área de Tecnologia da Informação)
+# 🖥️ App: TI (v7.2.4)
 
-Módulo de operações, monitoramento e gestão técnica do ecossistema SIGE.
+Módulo central de operações, observabilidade e governança técnica do ecossistema SIGE.
 
-## Responsabilidades
-- Dashboard operacional com métricas em tempo real
-- Gestão de chamados e bugs (triagem, análise, resolução)
-- Ferramentas de manutenção (limpeza de logs, health check, cache)
-- Acesso à documentação técnica e API Swagger
-- Integração com o Dashboard de Segurança (Shield)
+## 🚀 Novidades da Versão 7.2.4
+- **Security Operations Center (SOC):** Interface de defesa proativa com monitoramento de incidentes e bloqueio de IPs.
+- **Hub de Infraestrutura:** Monitor de latência e console de manutenção unificados em `/ti/infraestrutura/`.
+- **API LGPD:** Endpoint para extração de logs de auditoria para conformidade.
+- **Telemetria Avançada:** Integração com Chart.js para monitoramento histórico de carga de sistema.
 
-## URLs (Namespace: `ti`)
-| Rota | View | Acesso |
+## 📋 Responsabilidades
+- Monitoramento de recursos de hardware (CPU/RAM/Disco) via `psutil`.
+- Gestão de incidentes técnicos via `BugReport`.
+- Execução de scripts de manutenção e limpeza de infraestrutura.
+- Governança de acesso e auditoria de segurança.
+
+## 🔗 Estrutura de URLs (Namespace: `ti`)
+| Rota | Descrição | Nível de Acesso |
 |---|---|---|
-| `/ti/` | `painel_ti` | TI Operador |
-| `/ti/seguranca/` | `SecurityDashboardView` | TI Operador |
-| `/ti/bugs/` | `gestao_bugs` | TI Operador |
-| `/ti/documentacao/` | `documentacao_ti` | TI Operador |
-| `/ti/api-docs/` | `documentacao_api` | TI Operador |
-| `/ti/operacoes/` | `operacoes_ti` | TI Coordenação |
+| `/ti/` | Dashboard Geral (v7.2) | TI Operador |
+| `/ti/soc/` | Security Operations Center | TI Operador |
+| `/ti/backups/` | Gestão de Snapshots | TI Coordenação |
+| `/ti/infraestrutura/` | Hub de Serviços e Manutenção | TI Coordenação |
 
-## Permissões
-- **TI — Operador**: acesso ao painel, segurança, chamados e documentação.
-- **TI — Coordenação**: acesso adicional às operações avançadas (manutenção, DB).
-- **Superusuário**: acesso total.
+## 🛠️ Tecnologias Integradas
+- **Diagnóstico:** Lógica personalizada em `utils/diagnostico.py`.
+- **Monitoramento:** `psutil` para hardware e `connection.vendor` para DB stats.
+- **Segurança:** Blacklist dinâmica de IPs integrada ao middleware de segurança.
+- **Frontend:** SIGE Design System com Chart.js para telemetria visual.
 
-## Template Base
-Todos os templates herdam de `ti/base_ti.html`, que inclui a sub-navegação da área.
-
-## Novas Integrações (Maio 2026)
-| Recurso | Tecnologia | Arquivo |
-|---|---|---|
-| **Health Check real** | `django-health-check` | `/health/` |
-| **Notificações em tempo real** | `Django Channels` + WebSocket | `consumers.py`, `routing.py` |
-| **Monitor de filas** | `Flower` | porta `:5555` (externo) |
-
-> Consulte [`docs/INTEGRACOES_TI.md`](../../docs/INTEGRACOES_TI.md) para detalhes completos.
+---
+> Para detalhes técnicos de monitoramento e manutenção, consulte o [**Guia de Infraestrutura (v7.2.4)**](../../docs/INFRAESTRUTURA.md).
+> Para detalhes sobre a arquitetura de segurança, consulte a documentação do app `seguranca`.

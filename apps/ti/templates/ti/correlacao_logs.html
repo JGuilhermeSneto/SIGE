@@ -1,0 +1,65 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Correlação de Logs — SIGE{% endblock %}
+
+{% block ti_extra_css %}
+<style>
+  .correlation-container { margin: 30px auto; max-width: 900px; }
+  .error-summary { background: rgba(244, 63, 94, 0.05); border: 1px solid var(--accent-ruby); border-radius: 16px; padding: 20px; margin-bottom: 30px; }
+  .timeline { position: relative; padding-left: 30px; border-left: 2px solid var(--border-subtle); margin-left: 15px; }
+  .timeline-item { position: relative; margin-bottom: 25px; }
+  .timeline-item::before { content: ''; position: absolute; left: -37px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--border-subtle); border: 2px solid var(--bg-base); }
+  .timeline-item.active::before { background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); }
+  .timeline-item.error::before { background: var(--accent-ruby); box-shadow: 0 0 10px var(--accent-ruby); }
+  .timeline-content { background: var(--bg-elevated); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 15px; }
+  .timeline-time { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px; display: block; }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<div class="correlation-container">
+  
+  <header style="margin-bottom: 30px;">
+    <a href="{% url 'ti:painel' %}" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem;">
+      <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+    </a>
+    <h1 style="margin-top: 15px;">Investigação de <span style="color: var(--accent-ruby);">Causa Raiz</span></h1>
+    <p style="color: var(--text-muted);">Cruzamento de Auditoria e Erros do Sistema.</p>
+  </header>
+
+  <div class="error-summary">
+    <span class="badge" style="background: var(--accent-ruby); color: white; margin-bottom: 10px;">EXCEÇÃO DETECTADA</span>
+    <h2 style="font-size: 1.2rem; margin: 0;">{{ erro.tipo_excecao }}</h2>
+    <p style="margin: 10px 0; font-family: monospace; font-size: 0.9rem;">{{ erro.mensagem }}</p>
+    <div style="display: flex; gap: 20px; font-size: 0.8rem; opacity: 0.8;">
+      <span><i class="fa-solid fa-user"></i> {{ erro.usuario|default:"Anônimo" }}</span>
+      <span><i class="fa-solid fa-clock"></i> {{ erro.data_ocorrencia|date:"H:i:s d/m/Y" }}</span>
+      <span><i class="fa-solid fa-link"></i> {{ erro.path }}</span>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom: 20px; font-size: 1rem;"><i class="fa-solid fa-clock-rotate-left"></i> Linha do Tempo (T-5min)</h3>
+  
+  <div class="timeline">
+    {% for log in auditoria %}
+    <div class="timeline-item active">
+      <div class="timeline-content">
+        <span class="timeline-time">{{ log.data_evento|date:"H:i:s" }}</span>
+        <strong style="display: block; font-size: 0.9rem;">{{ log.descricao|default:log.path }}</strong>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">IP: {{ log.ip_endereco }} | Método: {{ log.metodo }}</span>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="timeline-item error">
+      <div class="timeline-content" style="border-color: var(--accent-ruby);">
+        <span class="timeline-time">{{ erro.data_ocorrencia|date:"H:i:s" }}</span>
+        <strong style="color: var(--accent-ruby);">MOMENTO DO ERRO</strong>
+        <p style="font-size: 0.8rem; margin: 5px 0;">O sistema interrompeu a execução.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

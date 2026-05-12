@@ -13,12 +13,13 @@ Bem-vindo à documentação oficial do SIGE. Navegue pelos documentos abaixo par
 |---|---|
 | [INSTALACAO.md](./INSTALACAO.md) | Passo a passo para configurar o ambiente local e popular o banco |
 | [ROADMAP.md](./ROADMAP.md) | Plano estratégico, fases de entrega e matriz de prioridades |
-| [tasks.md](./tasks.md) | Backlog ativo de tarefas e cronograma mensal |
+| [tasks.md](./tasks.md) | Backlog ativo de tarefas e cronograma de desenvolvimento |
+| [INFRAESTRUTURA.md](./INFRAESTRUTURA.md) | Guia unificado de engenharia, monitoramento e manutenção v7.2.4 |
 
 ### 🏛️ Arquitetura e Engenharia
 | Documento | Descrição |
 |---|---|
-| [INFRAESTRUTURA.md](./INFRAESTRUTURA.md) | Cloud (Render/Aiven), cache, mensageria e variáveis de ambiente |
+| [INFRAESTRUTURA.md](./INFRAESTRUTURA.md) | Detalhes de Cloud, Redis, WebSockets e monitoramento técnico |
 | [SEGURANCA.md](./SEGURANCA.md) | Shield v1.2 — todas as camadas de proteção e conformidade LGPD |
 | [TESTES.md](./TESTES.md) | Guia de testes, cobertura atual e próximos alvos |
 

@@ -567,6 +567,9 @@
   {% endif %}
 
   <main class="area-conteudo">
+    {# AVISOS GLOBAIS DA TI #}
+    {% render_avisos_globais %}
+    
     {% block content %}{% endblock %}
   </main>
 
@@ -660,6 +663,33 @@
   {% if vite_entry_name %}
   {% vite_entry vite_entry_name %}
   {% endif %}
+
+  <!-- JS ERROR TRACKER (TI COMMAND CENTER) -->
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      fetch('/ti/api/js-error/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+        body: JSON.stringify({
+          type: 'Runtime Error',
+          message: message,
+          url: source,
+          stack: error ? error.stack : 'N/A'
+        })
+      });
+    };
+    window.onunhandledrejection = function(event) {
+      fetch('/ti/api/js-error/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
+        body: JSON.stringify({
+          type: 'Unhandled Rejection',
+          message: event.reason ? event.reason.message : 'Promise rejected',
+          stack: event.reason ? event.reason.stack : 'N/A'
+        })
+      });
+    };
+  </script>
 
   {% block extra_js %}{% endblock %}
 </body>

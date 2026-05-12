@@ -1,0 +1,37 @@
+{% if avisos %}
+<div class="global-notices-container" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px;">
+  {% for aviso in avisos %}
+  <div class="sige-alert-banner alert-{{ aviso.tipo|lower }}" id="aviso-{{ aviso.id }}" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-radius: 12px; position: relative; animation: slideInDown 0.4s ease; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+    
+    <div style="display: flex; align-items: center; gap: 15px;">
+      <div class="alert-icon-container">
+        {% if aviso.tipo == 'CRITICO' %}
+          <i class="fa-solid fa-triangle-exclamation" style="color: #f87171;"></i>
+        {% elif aviso.tipo == 'ALERTA' %}
+          <i class="fa-solid fa-circle-exclamation" style="color: #fbbf24;"></i>
+        {% else %}
+          <i class="fa-solid fa-circle-info" style="color: #22d3ee;"></i>
+        {% endif %}
+      </div>
+      <div>
+        <strong style="display: block; font-size: 0.85rem; margin-bottom: 2px;">{{ aviso.titulo }}</strong>
+        <p style="margin: 0; font-size: 0.75rem; opacity: 0.9;">{{ aviso.mensagem }}</p>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('aviso-{{ aviso.id }}').remove()" style="background: transparent; border: none; color: inherit; cursor: pointer; opacity: 0.6; font-size: 1.2rem;">&times;</button>
+  </div>
+  {% endfor %}
+</div>
+
+<style>
+  .sige-alert-banner.alert-info { background: linear-gradient(90deg, #164e63, #0891b2); color: #fff; border-left: 5px solid #22d3ee !important; }
+  .sige-alert-banner.alert-alerta { background: linear-gradient(90deg, #78350f, #d97706); color: #fff; border-left: 5px solid #fbbf24 !important; }
+  .sige-alert-banner.alert-critico { background: linear-gradient(90deg, #7f1d1d, #dc2626); color: #fff; border-left: 5px solid #f87171 !important; }
+  
+  @keyframes slideInDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+</style>
+{% endif %}
