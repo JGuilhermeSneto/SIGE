@@ -10,6 +10,8 @@ from .utils import diagnostico
 from .models import FeatureFlag, JanelaManutencao, ParametroSistema, AvisoGlobal
 from django.views.decorators.csrf import csrf_exempt
 import json
+import random
+
 
 def get_nome_exibicao(user):
     return user.get_short_name() or user.username
@@ -98,9 +100,6 @@ def painel_ti(request):
     }
     
     return render(request, "ti/painel.html", context)
-
-# Re-importando random para a view
-import random
 
 # Mantendo as outras views (parametros, avisos, etc.) conforme implementado anteriormente
 @login_required
