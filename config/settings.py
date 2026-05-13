@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import timedelta
 from pathlib import Path
 from decouple import config, Csv
@@ -146,13 +147,23 @@ else:
     }
 
 # Banco de Dados
-DATABASES = {
-    "default": dj_database_url.config(
-        default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
-}
+TESTING = 'test' in sys.argv or 'pytest' in sys.argv or any('pytest' in arg for arg in sys.argv)
+
+if TESTING:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
 
 # Se o banco for MySQL (via Aiven), garante que o Django use o motor correto se a URL começar com mysql
 if DATABASES["default"].get("ENGINE") == "django.db.backends.mysql":
