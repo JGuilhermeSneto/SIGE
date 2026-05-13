@@ -50,7 +50,7 @@ def painel_ti(request):
     manutencoes = JanelaManutencao.objects.filter(concluida=False).order_by('inicio')
     event_feed = diagnostico.get_global_event_feed()
     from django.contrib.auth import get_user_model
-    usuarios_online = get_user_model().objects.filter(last_login__isnull=False).order_by('-last_login')[:10]
+    usuarios_online = get_user_model().objects.filter(last_login__isnull=False).only('username').order_by('-last_login')[:10]
     flags = FeatureFlag.objects.all()
     parametros = ParametroSistema.objects.all()
     avisos = AvisoGlobal.objects.all()
@@ -109,9 +109,9 @@ def painel_soc(request):
     """Painel especializado em Segurança, Auditoria e Defesa."""
     from apps.seguranca.models import LogAuditoria, LogErro, BlacklistIP
     
-    erros_recentes = LogErro.objects.all().order_by("-data_ocorrencia")[:10]
-    logs_auditoria = LogAuditoria.objects.all().order_by("-data_evento")[:30]
-    logins_recentes = LogAuditoria.objects.filter(
+    erros_recentes = LogErro.objects.select_related("usuario").all().order_by("-data_ocorrencia")[:10]
+    logs_auditoria = LogAuditoria.objects.select_related("usuario").all().order_by("-data_evento")[:30]
+    logins_recentes = LogAuditoria.objects.select_related("usuario").filter(
         Q(path__icontains='login') | Q(descricao__icontains='login') | Q(descricao__icontains='autenticado')
     ).order_by("-data_evento")[:15]
     
@@ -238,7 +238,7 @@ def infraestrutura_ti(request):
 @user_passes_test(usuario_tem_painel_ti)
 def central_auditoria(request):
     from apps.seguranca.models import LogAuditoria
-    logs = LogAuditoria.objects.all().order_by("-data_evento")[:100]
+    logs = LogAuditoria.objects.select_related("usuario").all().order_by("-data_evento")[:100]
     return render(request, "ti/central_auditoria.html", {"logs": logs})
 
 @login_required
@@ -246,7 +246,7 @@ def central_auditoria(request):
 def gestao_bugs(request):
     from apps.seguranca.models.bug_report import BugReport
     status_filtro = request.GET.get('status')
-    bugs_query = BugReport.objects.all()
+    bugs_query = BugReport.objects.select_related("usuario").all()
     
     if status_filtro:
         bugs_query = bugs_query.filter(status=status_filtro)
@@ -295,9 +295,9 @@ def api_js_error(request):
 @user_passes_test(usuario_tem_operacoes_ti)
 def logs_correlacionados(request, erro_id):
     from apps.seguranca.models import LogErro, LogAuditoria
-    erro = get_object_or_404(LogErro, id=erro_id)
+    erro = get_object_or_404(LogErro.objects.select_related("usuario"), id=erro_id)
     inicio, fim = erro.data_ocorrencia - timedelta(minutes=5), erro.data_ocorrencia + timedelta(minutes=1)
-    auditoria = LogAuditoria.objects.filter(usuario=erro.usuario, data_evento__range=(inicio, fim)).order_by('data_evento')
+    auditoria = LogAuditoria.objects.select_related("usuario").filter(usuario=erro.usuario, data_evento__range=(inicio, fim)).order_by('data_evento')
     return render(request, "ti/correlacao_logs.html", {"erro": erro, "auditoria": auditoria})
 
 
@@ -398,7 +398,7 @@ def disparar_backup(request):
 def api_logs_lgpd(request):
     """Retorna logs de auditoria em formato JSON para o monitor LGPD."""
     from apps.seguranca.models import LogAuditoria
-    logs = LogAuditoria.objects.all().order_by('-data_evento')[:20]
+    logs = LogAuditoria.objects.select_related("usuario").all().order_by('-data_evento')[:20]
     data = []
     for log in logs:
         data.append({
