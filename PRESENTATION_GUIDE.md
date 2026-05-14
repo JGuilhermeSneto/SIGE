@@ -4,6 +4,14 @@
 
 ---
 
+## 👥 EQUIPE DE ENGENHARIA (Core Developers)
+- **Pedro Henrique**
+- **Israel Cipriano**
+- **João Batista**
+- **Jose Guilherme**
+
+---
+
 ## 📑 MAPA DE CONHECIMENTO
 1. **CAPÍTULO 1:** O Sistema Web & Infraestrutura Industrial
 2. **CAPÍTULO 2:** Ecossistema IoT (Hardware & Telemetria)
@@ -80,14 +88,22 @@ Quando um aluno aproxima o cartão do leitor:
 ## 🧪 CAPÍTULO 4: Engenharia de Qualidade (Testes & QA)
 **A Visão:** Código que não se quebra. Estabilidade industrial para dados educacionais sensíveis.
 
-### 🛠️ 4.1 Pirâmide de Testes no SIGE
-- **Testes Unitários (80%)**: Validação de funções isoladas e lógica de modelos.
-- **Testes de Integração (15%)**: Validação da comunicação entre Apps (ex: Financeiro avisando o Acadêmico sobre inadimplência).
-- **Testes E2E & Stress (5%)**: Simulação de carga massiva via **Locust** ou scripts customizados em **Pytest**.
+### 🛠️ 4.1 Pirâmide de Testes & Status Atual
+- **Status do Build**: **112/112 testes passando ✅**
+- **Cobertura Global**: **~62%** (Meta Q2/2026: 75%).
+- **Testes Unitários (Pytest + Mock)**: Validação de lógicas isoladas em `services/` e `utils/`.
+- **Testes de Integração (Django TestClient)**: Validação de fluxos de ponta a ponta entre Apps (ex: Financeiro ↔ Acadêmico).
+- **Security Scans (Bandit)**: Varredura automatizada contra vulnerabilidades em tempo de CI.
 
-### 🎯 4.2 Métricas de Rigor
-- **Coverage Check**: O pipeline de CI/CD bloqueia qualquer código que baixe a cobertura global de testes (Target: **100% em módulos core**).
-- **Static Analysis**: **MyPy** (tipagem estática) e **Pylint** (qualidade de código) garantem que o SIGE siga as melhores práticas de engenharia de software do mercado.
+### 🎯 4.2 Aplicações Críticas para Testes Rígidos
+1. **`apps.academico` (~72% Cov)**: Garantir que o cálculo de médias e frequências seja infalível.
+2. **`apps.usuarios` (~75% Cov)**: Validação de identidades e permissões RBAC.
+3. **`apps.seguranca` (~65% Cov)**: Testes de firewall de aplicação e logs de auditoria.
+4. **`apps.financeiro` (~55% Cov)**: Foco em transações e conciliação bancária (Prioridade de Expansão).
+
+### 📈 Métricas de Rigor & Evolução
+- **Coverage Gate**: O pipeline de CI/CD via GitHub Actions bloqueia deploys se a cobertura global diminuir.
+- **Continuous Improvement**: Foco imediato na redução de "arquivos 0%" em módulos de saúde e dashboards.
 
 ---
 
