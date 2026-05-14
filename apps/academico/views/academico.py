@@ -9,6 +9,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.db.models import Count, Q, Avg, F, ExpressionWrapper, DecimalField
+from django.db.models.functions import Coalesce
+from decimal import Decimal
 
 from ..models.academico import (
     Disciplina,
@@ -184,7 +187,40 @@ def disciplinas_turma(request, turma_id):
     else:
         return redirect("login")
 
-    detalhes = [_calcular_detalhes_disciplina(d, turma) for d in qs.order_by("nome")]
+    qs = qs.order_by("nome").annotate(
+        alunos_count=Count("turma__alunos", distinct=True),
+        # Média da turma (simples) baseada no modelo Nota
+        media_turma=Avg(
+            ExpressionWrapper(
+                (
+                    Coalesce(F("notas__nota1"), Decimal("0.0"))
+                    + Coalesce(F("notas__nota2"), Decimal("0.0"))
+                    + Coalesce(F("notas__nota3"), Decimal("0.0"))
+                    + Coalesce(F("notas__nota4"), Decimal("0.0"))
+                )
+                / 4,
+                output_field=DecimalField(),
+            ),
+            filter=Q(notas__aluno__turma=turma),
+        ),
+    )
+
+    detalhes = []
+    for d in qs:
+        # Frequência ainda exige um cálculo um pouco mais complexo se quisermos 100% via ORM sem subqueries lentas, 
+        # mas já reduzimos 2 das 3 queries por disciplina.
+        frequencias = Frequencia.objects.filter(disciplina=d, aluno__turma=turma)
+        total_reg = frequencias.count()
+        presencas = frequencias.filter(presente=True).count()
+        freq_geral = (presencas / total_reg * 100) if total_reg > 0 else 100
+
+        detalhes.append({
+            "disciplina": d,
+            "total_alunos": d.alunos_count,
+            "media_geral": d.media_turma or 0,
+            "frequencia_geral": freq_geral,
+        })
+
     return render(
         request,
         "professor/disciplinas_turma.html",
@@ -290,26 +326,26 @@ def disciplinas_professor(request):
 
     turmas = (
         Turma.objects.filter(disciplinas__professor=professor, ano=ano_filtro)
-        .distinct()
+        .annotate(
+            disciplinas_count=Count("disciplinas", filter=Q(disciplinas__professor=professor), distinct=True),
+            alunos_count=Count("alunos", distinct=True),
+        )
         .order_by("nome")
     )
-    turmas_detalhadas = [
-        {
-            "turma": t,
-            "disciplinas_count": Disciplina.objects.filter(
-                turma=t, professor=professor
-            ).count(),
-            "alunos_count": Aluno.objects.filter(turma=t).count(),
-            "turno_display": t.get_turno_display(),
-        }
-        for t in turmas
-    ]
 
     return render(
         request,
         "professor/disciplinas_professor.html",
         {
-            "turmas_detalhadas": turmas_detalhadas,
+            "turmas_detalhadas": [
+                {
+                    "turma": t,
+                    "disciplinas_count": t.disciplinas_count,
+                    "alunos_count": t.alunos_count,
+                    "turno_display": t.get_turno_display(),
+                }
+                for t in turmas
+            ],
             "nome_exibicao": get_nome_exibicao(request.user),
             "foto_perfil_url": get_foto_perfil(request.user),
             "anos_disponiveis": anos_disponiveis,
@@ -540,7 +576,7 @@ def listar_atividades_aluno(request):
     aluno = request.user.aluno
     atividades = AtividadeProfessor.objects.filter(
         disciplina__turma=aluno.turma
-    ).select_related("disciplina")
+    ).select_related("disciplina__professor")
 
     # Coleta as entregas do aluno para estas atividades
     from ..models.academico import EntregaAtividade

@@ -9,7 +9,7 @@ User = get_user_model()
 
 class AcademicoServiceTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="prof1", password="password")
+        self.user = get_user_model().objects.create_user(username="prof1", password="password")
         self.professor = Professor.objects.create(
             user=self.user,
             nome_completo="Professor 1",
@@ -22,9 +22,8 @@ class AcademicoServiceTest(TestCase):
             {
                 "nome": "Matemática",
                 "professor_id": self.professor.id,
-                "carga_horaria": 60,
             },
-            {"nome": "Português", "carga_horaria": 40},
+            {"nome": "Português", "professor_id": self.professor.id},
         ]
         turma = AcademicoService.criar_turma_com_disciplinas(
             nome="2A", ano=2024, turno="manha", disciplinas_data=disciplinas_data
@@ -39,12 +38,12 @@ class AcademicoServiceTest(TestCase):
     def test_atualizar_grade_horaria(self):
         turma = Turma.objects.create(nome="2A", ano=2024, turno="manha")
         disc = Disciplina.objects.create(
-            nome="Matemática", turma=turma, carga_horaria=60
+            nome="Matemática", turma=turma, professor=self.professor
         )
 
         grade_data = [
-            {"disciplina_id": disc.id, "dia": "SEG", "horario": "08:00"},
-            {"disciplina_id": disc.id, "dia": "TER", "horario": "09:00"},
+            {"disciplina_id": disc.id, "dia": "segunda", "horario": "07:45 às 08:30"},
+            {"disciplina_id": disc.id, "dia": "terca", "horario": "08:50 às 09:35"},
         ]
 
         result = AcademicoService.atualizar_grade_horaria(turma, grade_data)

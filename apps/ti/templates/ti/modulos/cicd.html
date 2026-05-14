@@ -1,0 +1,236 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Orquestração CI/CD Ultra — SIGE TI{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  
+  /* ════ ULTRA PIPELINE TOPOLOGY ════ */
+  .topo-canvas {
+    background: rgba(15, 23, 41, 0.4); border-radius: 24px; padding: 30px;
+    position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 25px;
+  }
+  .pipeline-viz { display: flex; justify-content: space-between; align-items: center; position: relative; }
+  .viz-node {
+    width: 80px; text-align: center; position: relative; z-index: 2;
+  }
+  .node-icon-pro {
+    width: 50px; height: 50px; border-radius: 14px; background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px; font-size: 1.2rem; color: var(--text-muted);
+    transition: all 0.4s;
+  }
+  .viz-node.active .node-icon-pro { 
+    border-color: var(--accent-cyan); color: var(--accent-cyan); 
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+    animation: nodePulse 2s infinite;
+  }
+  .viz-node.done .node-icon-pro { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+  
+  @keyframes nodePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+  .viz-line {
+    position: absolute; top: 25px; left: 40px; right: 40px; height: 2px;
+    background: rgba(255,255,255,0.05); z-index: 1;
+  }
+  .viz-progress {
+    position: absolute; top: 0; left: 0; height: 100%; width: 50%;
+    background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan));
+    box-shadow: 0 0 10px var(--accent-cyan);
+  }
+
+  /* ════ HEALTH MONITOR ════ */
+  .health-dot-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite; }
+  .uptime-tracker { display: flex; gap: 2px; margin-top: 10px; }
+  .uptime-bar { flex: 1; height: 12px; border-radius: 2px; background: var(--accent-emerald); opacity: 0.8; }
+  .uptime-bar.error { background: var(--accent-ruby); }
+
+  /* ════ VELOCITY GAUGE ════ */
+  .velocity-gauge-wrap { position: relative; height: 60px; margin-bottom: 20px; overflow: hidden; }
+  .v-needle { position: absolute; bottom: 0; left: 50%; width: 2px; height: 40px; background: var(--accent-cyan); transform-origin: bottom; transform: translateX(-50%) rotate(45deg); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); }
+  .v-track { width: 100%; height: 60px; border-radius: 60px 60px 0 0; border: 4px solid rgba(255,255,255,0.05); border-bottom: none; }
+
+  /* Pulse do Sistema */
+  .system-pulse {
+    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
+    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
+  }
+  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><span class="system-pulse"></span> HUB DE ORQUESTRAÇÃO GLOBAL · v7.3.1</span>
+    <h1>Pipeline <span class="nome-destaque" style="color: var(--accent-cyan);">CI/CD Master</span></h1>
+  </div>
+  <div class="header-acoes">
+     <div style="display: flex; gap: 12px;">
+        <div class="status-badge status-ativo" style="padding: 10px 20px;">PUBLICANDO v7.3.1-b24</div>
+        <button class="btn-sige-primario" style="background: var(--accent-ruby); color: #fff; border: none; font-weight: 800;"><i class="fa-solid fa-rotate-left"></i> ROLLBACK DE EMERGÊNCIA</button>
+     </div>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="coluna-esquerda">
+    
+    {# 📟 PIPELINE TOPOLOGY MAP #}
+    <div class="topo-canvas">
+        <h3 class="hub-title" style="margin-bottom: 30px;"><i class="fa-solid fa-project-diagram"></i> Topologia de Deploy & Fluxo</h3>
+        <div class="pipeline-viz">
+            <div class="viz-line"><div class="viz-progress"></div></div>
+            
+            <div class="viz-node done">
+                <div class="node-icon-pro"><i class="fa-solid fa-code-commit"></i></div>
+                <span style="font-size: 0.6rem; font-weight: 800;">COMMIT</span>
+            </div>
+            <div class="viz-node done">
+                <div class="node-icon-pro"><i class="fa-solid fa-microchip"></i></div>
+                <span style="font-size: 0.6rem; font-weight: 800;">BUILD</span>
+            </div>
+            <div class="viz-node active">
+                <div class="node-icon-pro"><i class="fa-solid fa-vial"></i></div>
+                <span style="font-size: 0.6rem; font-weight: 800;">TESTES</span>
+            </div>
+            <div class="viz-node">
+                <div class="node-icon-pro"><i class="fa-solid fa-server"></i></div>
+                <span style="font-size: 0.6rem; font-weight: 800;">STAGING</span>
+            </div>
+            <div class="viz-node">
+                <div class="node-icon-pro"><i class="fa-solid fa-rocket"></i></div>
+                <span style="font-size: 0.6rem; font-weight: 800;">PROD</span>
+            </div>
+        </div>
+    </div>
+
+    {# 📊 REAL-TIME BUILD CONSOLE #}
+    <div class="hub-card" style="padding: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="hub-title" style="margin: 0;"><i class="fa-solid fa-terminal"></i> Logs de Build - Thread #4201</h3>
+            <div style="font-size: 0.6rem; color: var(--accent-cyan); font-weight: 800;"><i class="fa-solid fa-circle-notch fa-spin"></i> CONECTADO</div>
+        </div>
+        <div class="build-console-pro" id="buildConsole" style="background: #020617; border-radius: 16px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #64748b; height: 250px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
+            <div class="con-line"><span style="color: #334155; margin-right: 10px;">[20:47:01]</span> <span style="color: var(--accent-cyan);">INFO</span>: Buscando repositório remoto 'origin/main'...</div>
+            <div class="con-line"><span style="color: #334155; margin-right: 10px;">[20:47:04]</span> <span style="color: var(--accent-cyan);">INFO</span>: Baixando imagens docker: python:3.14-slim</div>
+        </div>
+    </div>
+
+  </div>
+
+  {# ════ SIDEBAR ULTRA-GOD-LEVEL ════ #}
+  <div class="coluna-direita">
+    
+    {# 🛡️ Cluster Health Pro #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-emerald);">
+        <h3 class="hub-title"><i class="fa-solid fa-heart-pulse" style="color: var(--accent-emerald);"></i> Saúde do Cluster Pro</h3>
+        
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="metric-label">Staging <small style="background: var(--accent-cyan); color: #000; padding: 1px 4px; border-radius: 3px;">v7.3.0</small></span>
+                <div class="health-dot-pulse"></div>
+            </div>
+            <div class="uptime-tracker">
+                {% for i in "123456789012345678" %}<div class="uptime-bar"></div>{% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="metric-label">Produção <small style="background: var(--accent-emerald); color: #000; padding: 1px 4px; border-radius: 3px;">v7.2.4</small></span>
+                <div class="health-dot-pulse"></div>
+            </div>
+            <div class="uptime-tracker">
+                {% for i in "1234567890123456" %}<div class="uptime-bar"></div>{% endfor %}
+                <div class="uptime-bar error" style="width: 2px;"></div>
+                <div class="uptime-bar"></div>
+            </div>
+        </div>
+
+        <div class="metric-item" style="border-bottom: none; padding-top: 10px;">
+            <span class="metric-label">Motor de Rollback</span>
+            <span class="metric-value" style="color: var(--accent-emerald); font-weight: 800;">PRONTO</span>
+        </div>
+    </article>
+
+    {# 🏎️ Build Velocity Pro #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-gauge-high" style="color: var(--accent-cyan);"></i> Velocidade de Build Pro</h3>
+        
+        <div class="velocity-gauge-wrap">
+            <div class="v-track"></div>
+            <div class="v-needle" id="velocityNeedle"></div>
+        </div>
+
+        <div class="metric-item">
+            <span class="metric-label">Tempo Médio de Build</span>
+            <span class="metric-value" style="font-family: 'Syne';">4m 12s <small style="color: var(--accent-emerald); font-size: 0.55rem;"><i class="fa-solid fa-caret-down"></i> 5%</small></span>
+        </div>
+        <div class="metric-item" style="border-bottom: none;">
+            <span class="metric-label">Commits / Dia</span>
+            <span class="metric-value" style="font-family: 'Syne';">14 <small style="color: var(--accent-emerald); font-size: 0.55rem;"><i class="fa-solid fa-caret-up"></i> 2</small></span>
+        </div>
+    </article>
+
+    {# ⚙️ Build Analytics #}
+    <article class="hub-card" style="border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-chart-pie" style="color: var(--accent-violet);"></i> Eficiência de Build</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.65rem;">
+                <span>Cobertura de Testes</span><span style="color: var(--accent-emerald);">98.4%</span>
+            </div>
+            <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 98%; height: 100%; background: var(--accent-emerald);"></div></div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-top: 5px;">
+                <span>Compressão de Assets</span><span style="color: var(--accent-cyan);">84%</span>
+            </div>
+            <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 84%; height: 100%; background: var(--accent-cyan);"></div></div>
+        </div>
+    </article>
+
+  </div>
+</div>
+
+<script>
+    // Animação do velocímetro
+    setTimeout(() => {
+        document.getElementById('velocityNeedle').style.transform = 'translateX(-50%) rotate(25deg)';
+    }, 500);
+
+    const consoleEl = document.getElementById('buildConsole');
+    const logs = [
+        ["INFO", "Compilando assets... static/core/js/dashboard.min.js"],
+        ["SUCESSO", "Artefato enviado para S3 Cluster B."],
+        ["INFO", "Iniciando atualização do ambiente de Staging..."]
+    ];
+
+    setInterval(() => {
+        const line = document.createElement('div');
+        line.className = 'con-line';
+        const now = new Date();
+        const ts = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+        
+        const randomLog = logs[Math.floor(Math.random() * logs.length)];
+        const level = randomLog[0];
+        const msg = randomLog[1];
+        
+        let lvlColor = "var(--accent-cyan)";
+        if(level === "SUCESSO") lvlColor = "var(--accent-emerald)";
+
+        line.innerHTML = `
+            <span style="color: #334155; margin-right: 10px;">${ts}</span>
+            <span style="color: ${lvlColor};">${level}</span>: 
+            <span>${msg}</span>
+        `;
+        consoleEl.appendChild(line);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }, 4000);
+</script>
+{% endblock %}

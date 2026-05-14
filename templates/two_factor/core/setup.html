@@ -1,0 +1,110 @@
+{% extends "two_factor/_base.html" %}
+{% load i18n %}
+{% load two_factor_tags %}
+
+{% block title %}{% trans "CONFIGURAR 2FA" %}{% endblock %}
+
+{% block content %}
+<div class="setup-container">
+    {% if wizard.steps.current == 'welcome' %}
+        <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">
+            {% trans "Para aumentar a segurança da sua conta, vamos configurar a autenticação de dois fatores." %}
+        </p>
+    {% elif wizard.steps.current == 'generator' %}
+        <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">
+            {% trans "Escaneie o código QR abaixo com seu aplicativo autenticador." %}
+        </p>
+        <div style="background: white; padding: 20px; border-radius: 20px; margin: 0 auto 25px; width: fit-content; box-shadow: 0 10px 30px rgba(0,0,0,0.4); border: 4px solid var(--accent-violet);">
+            <img src="{{ QR_URL }}" alt="QR Code" style="display: block; width: 180px; height: 180px;" />
+        </div>
+        <div style="background: var(--bg-elevated); padding: 15px; border-radius: 12px; border: 1px solid var(--border-subtle); margin-bottom: 25px; text-align: center;">
+            <p style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 5px; font-weight: 800; letter-spacing: 0.1em;">{% trans "Chave de Configuração Manual" %}</p>
+            <code style="color: var(--accent-cyan); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; word-break: break-all;">{{ secret_key }}</code>
+        </div>
+    {% elif wizard.steps.current == 'validation' %}
+        <p style="color: var(--text-muted); text-align: center; margin-bottom: 2rem; font-size: 0.95rem;">
+            {% trans "Digite o código gerado pelo seu aplicativo para confirmar." %}
+        </p>
+    {% endif %}
+
+    <form action="" method="post" class="tf-form-sige">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+
+        {% if form.non_field_errors %}
+          <div class="global-error">
+            {% for error in form.non_field_errors %}
+              <p><i class="fas fa-exclamation-triangle"></i> {{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="fields">
+            {% for field in form %}
+              <div class="field-wrap {% if field.errors %}error{% endif %}">
+                <label class="field-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                
+                {% if field.field.widget.input_type == 'radio' %}
+                    <div class="radio-group-sige" style="display: flex; flex-direction: column; gap: 10px;">
+                        {% for radio in field %}
+                            <label style="text-transform: none; font-weight: 400; color: white; display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 14px; background: var(--bg-elevated); border-radius: 14px; border: 1px solid var(--border-subtle); transition: all 0.3s;">
+                                {{ radio.tag }}
+                                <span>{{ radio.choice_label }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="field-box">
+                        <div class="field-icon">
+                            {% if 'token' in field.name or 'otp' in field.name %}
+                                <i class="fas fa-shield-halved"></i>
+                            {% elif 'phone' in field.name or 'number' in field.name %}
+                                <i class="fas fa-phone"></i>
+                            {% else %}
+                                <i class="fas fa-pen-to-square"></i>
+                            {% endif %}
+                        </div>
+                        {{ field }}
+                        <div class="field-accent"></div>
+                    </div>
+                {% endif %}
+
+                {% if field.errors %}
+                    <span class="field-error">{{ field.errors.0 }}</span>
+                {% endif %}
+              </div>
+            {% endfor %}
+        </div>
+
+        <div class="actions" style="display: flex; gap: 12px; margin-top: 1.5rem;">
+            {% if wizard.steps.prev %}
+                <button name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}" class="btn-entrar" style="background: var(--bg-hover); border-color: var(--border-subtle); box-shadow: none; flex: 1;">
+                    <span class="btn-text">{% trans "VOLTAR" %}</span>
+                </button>
+            {% endif %}
+            <button type="submit" class="btn-entrar" style="flex: 2;">
+                <span class="btn-text">
+                    {% if wizard.steps.current == 'validation' %}
+                        {% trans "FINALIZAR" %}
+                    {% else %}
+                        {% trans "AVANÇAR" %}
+                    {% endif %}
+                </span>
+                <i class="fas fa-chevron-right btn-icon"></i>
+                <div class="btn-shimmer"></div>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.querySelectorAll('.tf-form-sige input:not([type="radio"])').forEach(input => {
+        input.addEventListener('focus', () => input.closest('.field-wrap').classList.add('focused'));
+        input.addEventListener('blur', () => input.closest('.field-wrap').classList.remove('focused'));
+        input.addEventListener('input', (e) => {
+            const progress = (e.target.value.length / 10) * 100;
+            e.target.closest('.field-box').style.setProperty('--input-progress', Math.min(progress, 100) + '%');
+        });
+    });
+</script>
+{% endblock %}

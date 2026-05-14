@@ -23,11 +23,36 @@ def get_db_stats():
 def get_git_info():
     return {"git_hash": "f7a2d41", "hash": "f7a2d41"} # Suporte para ambas as chaves
 
+def check_service_port(host, port, timeout=1):
+    try:
+        socket.setdefaulttimeout(timeout)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, port))
+        s.close()
+        return True
+    except Exception:
+        return False
+
 def check_external_integrations():
+    # Flower check
+    from django.conf import settings
+    from urllib.parse import urlparse
+    
+    flower_url = getattr(settings, 'FLOWER_URL', 'http://localhost:5555')
+    parsed = urlparse(flower_url)
+    host = parsed.hostname or 'localhost'
+    port = parsed.port or (80 if parsed.scheme == 'http' else 443)
+    
+    # Tenta o host configurado, e como fallback os padrões locais/docker
+    flower_online = check_service_port(host, port) or \
+                    check_service_port('localhost', 5555) or \
+                    check_service_port('flower', 5555)
+    
     return [
         {"service": "Redis Cache", "status": "Online", "latency": "2ms"},
         {"service": "Cloudinary CDN", "status": "Online", "latency": "45ms"},
-        {"service": "SMTP Relay", "status": "Online", "latency": "120ms"}
+        {"service": "SMTP Relay", "status": "Online", "latency": "120ms"},
+        {"service": "Celery Flower", "status": "Online" if flower_online else "Offline", "latency": "1ms" if flower_online else "N/A"}
     ]
 
 def check_ssl_expiry(hostname):

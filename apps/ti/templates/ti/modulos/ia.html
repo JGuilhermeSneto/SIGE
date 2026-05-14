@@ -1,0 +1,214 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Ultra IA & Automação — SIGE TI{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  
+  /* ════ NEURAL AGENT CARDS ════ */
+  .ia-agent-card {
+    background: rgba(15, 23, 41, 0.4); border-radius: 24px; padding: 25px;
+    border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;
+    margin-bottom: 25px; transition: all 0.4s;
+  }
+  .ia-agent-card:hover { transform: translateY(-5px); border-color: var(--accent-cyan); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+  
+  .neural-bg { position: absolute; top: -50px; right: -50px; opacity: 0.1; pointer-events: none; }
+  .agent-icon {
+    width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan);
+    border: 1px solid rgba(34, 211, 238, 0.2);
+  }
+
+  /* ════ GPU SEGMENTED BARS ════ */
+  .segmented-bar { display: flex; gap: 3px; margin-top: 10px; }
+  .bar-seg { flex: 1; height: 10px; border-radius: 2px; background: rgba(255,255,255,0.05); }
+  .bar-seg.active-cyan { background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); }
+  .bar-seg.active-violet { background: var(--accent-violet); box-shadow: 0 0 10px var(--accent-violet); }
+
+  /* ════ INTEL EVENT CARD ════ */
+  .intel-event-card {
+    background: rgba(255,255,255,0.02); border-radius: 14px; padding: 15px; margin-bottom: 12px;
+    border-left: 3px solid var(--accent-cyan); transition: all 0.3s;
+  }
+  .intel-event-card.violet { border-left-color: var(--accent-violet); }
+  .intel-event-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .intel-event-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; color: var(--accent-cyan); }
+  .intel-event-msg { font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; }
+  .intel-event-footer { margin-top: 8px; font-size: 0.55rem; opacity: 0.5; display: flex; align-items: center; gap: 8px; }
+
+  /* Pulse do Sistema */
+  .system-pulse {
+    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
+    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
+  }
+  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><span class="system-pulse"></span> SISTEMAS COGNITIVOS & AGENTES NEURAIS · v7.3.1</span>
+    <h1>IA & <span class="nome-destaque" style="color: var(--accent-violet);">Automação</span></h1>
+  </div>
+  <div class="header-acoes">
+     <button class="btn-sige-primario" style="background: var(--accent-violet); color: #fff; font-weight: 800; border: none; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);"><i class="fa-solid fa-brain"></i> RETREINAR MODELOS</button>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="coluna-esquerda">
+    
+    {# 🤖 SIGE-GPT AGENT #}
+    <div class="ia-agent-card">
+        <div class="neural-bg"><i class="fa-solid fa-network-wired" style="font-size: 12rem;"></i></div>
+        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px;">
+            <div class="agent-icon"><i class="fa-solid fa-robot"></i></div>
+            <div>
+                <h3 style="margin: 0; font-family: 'Syne'; font-size: 1.2rem;">Agente SIGE-GPT</h3>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Orquestrador de IA para o fluxo acadêmico.</p>
+            </div>
+            <span class="status-badge status-ativo" style="margin-left: auto; padding: 6px 15px;">AGENTE ATIVO</span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--accent-emerald);">94.2%</div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Precisão</div>
+            </div>
+            <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">1.2k</div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Tokens / Seg</div>
+            </div>
+            <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--accent-cyan);">12ms</div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Latência</div>
+            </div>
+        </div>
+    </div>
+
+    {# 🛡️ GUARDIAN AI #}
+    <div class="ia-agent-card" style="border-left: 4px solid var(--accent-violet);">
+        <div class="neural-bg"><i class="fa-solid fa-shield-halved" style="font-size: 12rem;"></i></div>
+        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px;">
+            <div class="agent-icon" style="color: var(--accent-violet); background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2);"><i class="fa-solid fa-user-shield"></i></div>
+            <div>
+                <h3 style="margin: 0; font-family: 'Syne'; font-size: 1.2rem;">Guardian AI</h3>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">Detecção de Anomalias e Guarda de Segurança.</p>
+            </div>
+            <span class="status-badge status-ativo" style="margin-left: auto; padding: 6px 15px; background: var(--accent-violet); color: #fff;">PROTEGENDO</span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--accent-emerald);">98.8%</div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Confiança</div>
+            </div>
+            <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--accent-ruby);">0</div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Alertas</div>
+            </div>
+            <div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.03); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--text-primary);">SCAN</div>
+                <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Tempo Real</div>
+            </div>
+        </div>
+    </div>
+
+  </div>
+
+  {# ════ SIDEBAR ULTRA-GOD-CAPRICHO ════ #}
+  <div class="coluna-direita">
+    
+    {# ⚡ Recursos de GPU Ultra #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-bolt" style="color: var(--accent-violet);"></i> Recursos de GPU Pro</h3>
+        
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem;">
+                <span class="metric-label">Uso do Cluster A</span>
+                <span class="metric-value">12%</span>
+            </div>
+            <div class="segmented-bar">
+                {% for i in "123456789012345" %}<div class="bar-seg {% if forloop.counter <= 2 %}active-cyan{% endif %}"></div>{% endfor %}
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem;">
+                <span class="metric-label">Alocação de VRAM</span>
+                <span class="metric-value">4.2 <small>GB</small></span>
+            </div>
+            <div class="segmented-bar">
+                {% for i in "123456789012345" %}<div class="bar-seg {% if forloop.counter <= 6 %}active-violet{% endif %}"></div>{% endfor %}
+            </div>
+        </div>
+
+        <div class="metric-item" style="border-bottom: none; display: flex; justify-content: space-between;">
+            <div style="display: flex; flex-direction: column;">
+                <span class="metric-label">Temp. do Core</span>
+                <span class="metric-value" style="color: var(--accent-emerald);">42°C</span>
+            </div>
+            <div style="display: flex; flex-direction: column; text-align: right;">
+                <span class="metric-label">Velocidade Fan</span>
+                <span class="metric-value">1400 RPM</span>
+            </div>
+        </div>
+    </article>
+
+    {# 🧠 Eventos Cognitivos Ultra #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-tower-broadcast" style="color: var(--accent-cyan);"></i> Eventos Cognitivos</h3>
+        <div style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
+            
+            <div class="intel-event-card">
+                <div class="intel-event-header">
+                    <span class="intel-event-title">TRIAGEM AUTOMÁTICA</span>
+                    <i class="fa-solid fa-robot" style="font-size: 0.7rem; opacity: 0.5;"></i>
+                </div>
+                <p class="intel-event-msg">SIGE-GPT resolveu ticket acadêmico <strong>#4421</strong> (Dúvida Financeira).</p>
+                <div class="intel-event-footer">
+                    <span><i class="fa-solid fa-clock"></i> Há 4 min</span>
+                    <span><i class="fa-solid fa-check-double" style="color: var(--accent-emerald);"></i> 100% Eficaz</span>
+                </div>
+            </div>
+
+            <div class="intel-event-card violet">
+                <div class="intel-event-header">
+                    <span class="intel-event-title" style="color: var(--accent-violet);">ANOMALIA DETECTADA</span>
+                    <i class="fa-solid fa-shield-check" style="font-size: 0.7rem; opacity: 0.5; color: var(--accent-violet);"></i>
+                </div>
+                <p class="intel-event-msg">Guardian AI bloqueou tentativa de IP malicioso em <strong>Auth Endpoint</strong>.</p>
+                <div class="intel-event-footer">
+                    <span><i class="fa-solid fa-clock"></i> Há 1h</span>
+                    <span><i class="fa-solid fa-fingerprint"></i> ID de Ameaça: 9x2</span>
+                </div>
+            </div>
+
+        </div>
+    </article>
+
+    {# ⚙️ Treinamento Ativo Ultra #}
+    <article class="hub-card" style="border-top: 3px solid var(--accent-amber);">
+        <h3 class="hub-title"><i class="fa-solid fa-graduation-cap" style="color: var(--accent-amber);"></i> Treinamento Ativo</h3>
+        <div style="text-align: center; padding: 15px 0;">
+            <p style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 10px;">Próximo Retreino agendado:</p>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 15px;">
+                <div style="width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--accent-amber); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: var(--accent-amber);"><i class="fa-solid fa-calendar-day"></i></div>
+                <div style="text-align: left;">
+                    <div style="font-family: 'Syne'; font-size: 1rem; color: var(--text-primary);">DOM, 02:00 AM</div>
+                    <div style="font-size: 0.55rem; color: var(--accent-amber); font-weight: 800;">DATASET: V7-ESTÁVEL</div>
+                </div>
+            </div>
+            <button class="btn-sige-secundario" style="width: 100%; font-size: 0.6rem; border-color: var(--accent-amber); color: var(--accent-amber);">ESTIMAR TEMPO DE TREINO</button>
+        </div>
+    </article>
+
+  </div>
+</div>
+{% endblock %}

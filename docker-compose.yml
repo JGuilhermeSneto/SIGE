@@ -89,5 +89,20 @@ services:
     depends_on:
       - prometheus
 
+  flower:
+    build: .
+    command: celery -A config flower --port=5555
+    volumes:
+      - .:/app
+    ports:
+      - "5555:5555"
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
 volumes:
   mysql_data:

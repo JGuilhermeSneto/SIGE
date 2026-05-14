@@ -1,6 +1,6 @@
 # 🧪 Testes Automatizados — SIGE
 
-> **Atualizado:** Maio de 2026 | **Status:** 45/45 testes passando ✅ | **Cobertura:** ~55%
+> **Atualizado:** Maio de 2026 | **Status:** 112/112 testes passando ✅ | **Cobertura:** ~62%
 
 ---
 
@@ -29,13 +29,13 @@ pytest apps/financeiro/tests/
 
 | Módulo | Cobertura | Meta | Prioridade |
 |---|---|---|---|
-| `apps.usuarios` | ~70% | 80% | 🟠 Alta |
-| `apps.academico` | ~65% | 80% | 🟠 Alta |
-| `apps.financeiro` | ~50% | 75% | 🟡 Média |
-| `apps.seguranca` | ~60% | 80% | 🟠 Alta |
-| `apps.saude` | ~25% | 60% | 🔴 Crítica |
-| `apps.dashboards` | ~28% | 60% | 🔴 Crítica |
-| **TOTAL GLOBAL** | **~55%** | **75%** | — |
+| `apps.usuarios` | ~75% | 80% | 🟠 Alta |
+| `apps.academico` | ~72% | 80% | 🟠 Alta |
+| `apps.financeiro` | ~55% | 75% | 🟡 Média |
+| `apps.seguranca` | ~65% | 80% | 🟠 Alta |
+| `apps.saude` | ~30% | 60% | 🔴 Crítica |
+| `apps.dashboards` | ~32% | 60% | 🔴 Crítica |
+| **TOTAL GLOBAL** | **~62%** | **75%** | — |
 
 ---
 

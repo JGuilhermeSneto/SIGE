@@ -1,4 +1,4 @@
-# 🗓️ SIGE — Backlog de Desenvolvimento (v7.3.0+)
+# 🗓️ SIGE — Backlog de Desenvolvimento (v7.3.2+)
 
 Este documento detalha os objetivos estratégicos para as próximas fases, focando em performance, cobertura total de testes e expansão financeira.
 
@@ -12,7 +12,8 @@ Este documento detalha os objetivos estratégicos para as próximas fases, focan
 
 ## 🛡️ 2. Estabilidade Absoluta (Meta: 100% de Cobertura)
 *Objetivo: Garantir que nenhuma alteração quebre o core do sistema.*
-- [ ] **Testes de Camada de Serviço:** Cobrir 100% da lógica de negócio nos apps `academico`, `financeiro` e `usuarios`.
+- [x] **Testes de Camada de Usuários:** Cobertura inicial de 70% atingida.
+- [ ] **Testes de Camada de Serviço:** Cobrir 100% da lógica de negócio nos apps `academico` e `financeiro`.
 - [ ] **Testes de Integração de API:** Validar fluxos completos de autenticação e troca de dados.
 - [ ] **Mocks de Infraestrutura:** Simular falhas de Redis, S3 e SMTP para validar a resiliência do sistema.
 
@@ -28,24 +29,20 @@ Este documento detalha os objetivos estratégicos para as próximas fases, focan
 - [ ] **Webhooks de Conciliação:** Baixa automática de faturas em tempo real.
 - [ ] **Módulo de NF-e:** Geração automática de notas fiscais de serviço.
 
-## 🔐 5. Segurança & TI (Melhoria Contínua)
+## 🔐 5. Segurança & TI (Concluído na v7.3.2)
 *Objetivo: Governança de dados de nível bancário.*
-- [ ] **Refinamento da Área de TI:** Adicionar monitoramento de locks de banco e tráfego de rede.
-- [ ] **Hardening de Segurança:** Revisão constante de middlewares, proteção contra CSRF/XSS e auditoria LGPD.
-- [ ] **Manutenção Preditiva:** Alertas automáticos baseados em telemetria de hardware.
+- [x] **Refinamento da Área de TI:** Adicionado monitoramento de GPU, telemetria IA e localização total.
+- [x] **Hardening de Segurança:** Implementação de MFA Mandatório via Feature Flags e Auditoria LGPD integrada ao IAM.
+- [x] **Cofre de Snapshots Quantum:** Sistema de backup imutável com geolocalização.
 
 ---
 
 ## 📅 Cronograma Semanal (Próximas Tasks)
 
-### Semana Atual (Foco: Otimização & Testes)
-- [ ] Mapeamento de queries lentas no Hub de Infraestrutura.
-- [ ] Expansão de testes para o app `usuarios` (Meta: 70% parcial).
-- [ ] Ajustes finos no visual do dashboard principal (v7.3).
-
-### Próxima Semana (Foco: API & Financeiro)
-- [ ] Protótipo da API de Notas e Frequência.
-- [ ] Modelagem da integração com Gateway de Pagamento.
+### Semana Atual (Foco: API REST & DRF)
+- [ ] Mapeamento de endpoints para o app `academico`.
+- [ ] Configuração do SimpleJWT para autenticação mobile.
+- [ ] Documentação inicial da API via Swagger.
 
 ---
-*SIGE v7.3.0 — Rumo à excelência técnica total.*
+*SIGE v7.3.2 — Rumo à excelência técnica total.*

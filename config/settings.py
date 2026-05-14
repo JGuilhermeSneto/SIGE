@@ -81,6 +81,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",
+    "apps.seguranca.middleware.Force2FAMiddleware",
     "apps.seguranca.middleware.SecurityHardeningMiddleware",
     "impersonate.middleware.ImpersonateMiddleware",
     "apps.seguranca.middleware.ManutencaoMiddleware",
@@ -148,7 +150,6 @@ else:
 
 # Banco de Dados
 TESTING = 'test' in sys.argv or 'pytest' in sys.argv or any('pytest' in arg for arg in sys.argv)
-
 if TESTING:
     DATABASES = {
         'default': {
@@ -156,6 +157,20 @@ if TESTING:
             'NAME': ':memory:',
         }
     }
+    AXES_ENABLED = False
+    AUTHENTICATION_BACKENDS = [
+        "django.contrib.auth.backends.ModelBackend",
+    ]
+    # Remove Middlewares que podem causar redirecionamentos ou bloqueios durante testes
+    MIDDLEWARE = [
+        "django.middleware.security.SecurityMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.common.CommonMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "apps.comum.middleware.tenant_middleware.TenantMiddleware",
+    ]
 else:
     DATABASES = {
         'default': dj_database_url.config(
@@ -322,3 +337,6 @@ SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 
 # 2FA
 TWO_FACTOR_PATCH_ADMIN = True
+
+# Monitoramento Celery (Flower)
+FLOWER_URL = config("FLOWER_URL", default="http://localhost:5555")

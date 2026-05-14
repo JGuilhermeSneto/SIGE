@@ -11,8 +11,8 @@ def validar_cpf(value):
     # Remove caracteres não numéricos para validação
     cpf_limpo = re.sub(r"[^0-9]", "", value)
 
-    if not cpf_limpo:
-        raise ValidationError("CPF não pode ser vazio.")
+    if not value or not re.sub(r"[^0-9]", "", str(value)):
+        return
 
     validator = CPF()
     if not validator.validate(cpf_limpo):

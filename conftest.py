@@ -10,3 +10,4 @@ def use_dummy_cache(settings):
         }
     }
     settings.CELERY_TASK_ALWAYS_EAGER = True
+    settings.AXES_ENABLED = False

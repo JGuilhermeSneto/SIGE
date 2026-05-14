@@ -74,35 +74,55 @@
       <thead>
         <tr>
           <th>Bug / Título</th>
-          <th>Usuário / Data</th>
           <th>Status</th>
           <th>Prioridade</th>
+          <th>SLA / Prazo</th>
+          <th>Responsável</th>
+          <th>Data</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
         {% for bug in bugs %}
-        <tr style="border-left: 3px solid {% if bug.prioridade == 'CRITICA' %}var(--accent-ruby){% elif bug.prioridade == 'ALTA' %}var(--accent-amber){% else %}var(--border-subtle){% endif %};">
-          <td>
-            <strong style="display: block; color: var(--text-primary);">{{ bug.titulo }}</strong>
-            <span style="font-size: 0.75rem; color: var(--text-muted); max-width: 300px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ bug.descricao }}</span>
+        <tr>
+          <td data-label="Título">
+            <div style="font-weight: 700;">#{{ bug.id }} {{ bug.titulo }}</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ bug.usuario|default:"Anônimo" }}</div>
           </td>
-          <td>
-            <div style="font-weight: 600; font-size: 0.85rem;">{{ bug.usuario.get_full_name|default:bug.usuario.username }}</div>
-            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ bug.data_criacao|date:"d/m/Y H:i" }}</div>
-          </td>
-          <td>
-            <span class="badge-status {% if bug.status == 'NOVO' %}badge-warn{% elif bug.status == 'ANALISE' %}badge-info{% elif bug.status == 'CORRIGIDO' %}badge-ok{% else %}badge-secondary{% endif %}">
+          <td data-label="Status">
+            <span class="badge status-{% if bug.status == 'NOVO' %}active{% elif bug.status == 'CORRIGIDO' %}sucesso{% else %}pendente{% endif %}">
               {{ bug.get_status_display }}
             </span>
           </td>
-          <td>
-            <span style="font-size: 0.8rem;">
-              {% if bug.prioridade == 'CRITICA' %}<i class="fa-solid fa-circle" style="color: var(--accent-ruby); font-size: 0.6rem;"></i> Crítica
-              {% elif bug.prioridade == 'ALTA' %}<i class="fa-solid fa-circle" style="color: var(--accent-amber); font-size: 0.6rem;"></i> Alta
-              {% elif bug.prioridade == 'MEDIA' %}<i class="fa-solid fa-circle" style="color: var(--accent-cyan); font-size: 0.6rem;"></i> Média
-              {% else %}<i class="fa-solid fa-circle" style="color: var(--text-muted); font-size: 0.6rem;"></i> Baixa{% endif %}
+          <td data-label="Prioridade">
+            <span class="tag-sige" style="background: {% if bug.prioridade == 'CRITICA' %}var(--accent-ruby){% elif bug.prioridade == 'ALTA' %}var(--accent-amber){% else %}var(--bg-elevated){% endif %}; color: {% if bug.prioridade == 'CRITICA' or bug.prioridade == 'ALTA' %}#000{% else %}var(--text-primary){% endif %};">
+              {{ bug.get_prioridade_display }}
             </span>
+          </td>
+          <td data-label="SLA">
+            {% if bug.sla_limite %}
+              <div style="font-size: 0.8rem; font-weight: 700; color: {% if bug.sla_limite < now %}var(--accent-ruby){% else %}var(--accent-cyan){% endif %};">
+                {{ bug.sla_limite|date:"d/m H:i" }}
+              </div>
+              <div style="font-size: 0.6rem; opacity: 0.6;">
+                {% if bug.sla_limite < now %}EXPIRADO{% else %}Restam {{ bug.sla_limite|timeuntil }}{% endif %}
+              </div>
+            {% else %}
+              <span style="color: var(--text-muted); font-size: 0.75rem;">Não definido</span>
+            {% endif %}
+          </td>
+          <td data-label="Responsável">
+            {% if bug.responsavel %}
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div class="avatar-mini" style="width: 20px; height: 20px; font-size: 0.6rem;">{{ bug.responsavel.username|slice:":1"|upper }}</div>
+                <span style="font-size: 0.8rem;">{{ bug.responsavel.username }}</span>
+              </div>
+            {% else %}
+              <span class="status-badge status-recuperacao" style="font-size: 0.6rem;">NÃO ATRIBUÍDO</span>
+            {% endif %}
+          </td>
+          <td>
+            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ bug.data_criacao|date:"d/m/Y H:i" }}</div>
           </td>
           <td>
             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">

@@ -11,16 +11,16 @@ class PerfisViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.password = "senha123"
-        self.user = User.objects.create_user(
+        self.user = get_user_model().objects.create_user(
             username="testuser", email="test@test.com", password=self.password
         )
         self.perfil = Gestor.objects.create(
             user=self.user,
             nome_completo="Test User",
-            cpf="123.123.123-12",
+            cpf="272.766.190-26",
             data_nascimento="1980-01-01",
         )
-        self.client.login(username="testuser", password=self.password)
+        self.client.force_login(self.user)
 
     def test_editar_perfil_get(self):
         response = self.client.get(reverse("editar_perfil"))

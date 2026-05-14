@@ -81,10 +81,13 @@ def painel_super(request):
     bi_status_labels = list(status_labels_map.values())
     bi_status_data = [status_dict.get(k, 0) for k in status_labels_map]
 
-    # BI: Evolução de Matrículas
+    # BI: Evolução de Matrículas (Otimizado para 1 query)
     todos_anos = sorted(set(anos_turmas), reverse=False)[-5:]
     bi_evolucao_labels = [str(a) for a in todos_anos]
-    bi_evolucao_data = [Aluno.objects.filter(turma__ano=a).count() for a in todos_anos]
+    
+    evolucao_qs = Aluno.objects.filter(turma__ano__in=todos_anos).values("turma__ano").annotate(total=Count("id"))
+    evolucao_dict = {row["turma__ano"]: row["total"] for row in evolucao_qs}
+    bi_evolucao_data = [evolucao_dict.get(a, 0) for a in todos_anos]
 
     # BI: Atestados por Status
     atestado_status_map = {

@@ -17,4 +17,32 @@ services:
       - key: ALLOWED_HOSTS
         value: "*"
       - key: USE_REDIS
-        value: "False"
+        value: "True"
+
+  - type: worker
+    name: sige-worker
+    env: python
+    buildCommand: ./build.sh
+    startCommand: celery -A config worker --loglevel=info
+    plan: free
+    envVars:
+      - fromService:
+          name: sige-app
+          type: web
+        envVarKey: DATABASE_URL
+
+  - type: web
+    name: sige-flower
+    env: python
+    buildCommand: ./build.sh
+    startCommand: celery -A config flower --port=$PORT --basic-auth=$FLOWER_USER:$FLOWER_PASSWORD
+    plan: free
+    envVars:
+      - key: FLOWER_USER
+        value: admin
+      - key: FLOWER_PASSWORD
+        generateValue: true
+      - fromService:
+          name: sige-app
+          type: web
+        envVarKey: CELERY_BROKER_URL

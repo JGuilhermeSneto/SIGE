@@ -1,0 +1,132 @@
+/* ============================================================
+   SIGE — TI Responsive Overrides
+   ti_responsivo.css  v1.0
+============================================================ */
+
+/* ── Container Geral Responsivo ── */
+@media (max-width: 1200px) {
+    .conteudo-geral {
+        grid-template-columns: 1fr !important;
+        padding: 0 1.5rem !important;
+    }
+    
+    .coluna-direita {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+        gap: 20px !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-painel {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 0 1rem !important;
+        gap: 15px !important;
+    }
+    
+    .header-acoes {
+        width: 100% !important;
+        justify-content: flex-start !important;
+    }
+
+    .hub-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .cards {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Topologia Responsiva */
+    .topo-box {
+        padding: 15px !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .topo-box svg {
+        min-width: 600px !important;
+        height: 180px !important;
+    }
+
+    /* Tabelas Responsivas */
+    .sige-table {
+        display: block !important;
+        width: 100% !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    /* Ajustes de Subnav */
+    .ti-subnav-container {
+        padding: 0.5rem 0.5rem 0 0.5rem !important;
+    }
+
+    .ti-subnav {
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.5rem !important;
+        padding: 0.5rem !important;
+    }
+    
+    .ti-subnav a {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.6rem !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .coluna-direita {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .card-valor {
+        font-size: 1.6rem !important;
+    }
+    
+    .hub-card {
+        padding: 15px !important;
+    }
+
+    .header-painel h1 {
+        font-size: 1.4rem !important;
+    }
+
+    .metric-item {
+        font-size: 0.75rem !important;
+    }
+
+    /* Modais */
+    .stack-content, #modal-param form, #modal-detalhes-bug > div {
+        width: 95% !important;
+        padding: 20px !important;
+    }
+
+    .param-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
+    }
+
+    .param-control {
+        width: 100% !important;
+        justify-content: space-between !important;
+    }
+
+    .api-card {
+        padding: 20px !important;
+    }
+}
+
+/* ── Refinamentos Globais TI ── */
+.ti-subnav {
+    scrollbar-width: none;
+}
+.ti-subnav::-webkit-scrollbar {
+    display: none;
+}

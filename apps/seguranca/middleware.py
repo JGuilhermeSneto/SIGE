@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.core.cache import cache
+import hashlib
+import traceback
 from apps.seguranca.models import (
     LogAuditoria,
     BlacklistIP,
@@ -157,16 +159,31 @@ class ExceptionMiddleware(MiddlewareMixin):
         # Sanitiza a mensagem do erro (Remove CPFs, Emails, etc) antes de salvar
         mensagem_limpa = sanitizar_pii(str(exception))
         traceback_limpo = sanitizar_pii(traceback.format_exc())
+        tipo_excecao = type(exception).__name__
 
-        LogErro.objects.create(
-            usuario=user,
-            tipo_excecao=type(exception).__name__,
-            mensagem=mensagem_limpa,
-            traceback=traceback_limpo,
-            path=request.path,
-            metodo=request.method,
-            ip_endereco=ip,
-        )
+        # Lógica de Deduplicação
+        hash_input = f"{tipo_excecao}|{mensagem_limpa}|{request.path}"
+        hash_erro = hashlib.sha256(hash_input.encode()).hexdigest()
+
+        erro_existente = LogErro.objects.filter(hash_erro=hash_erro, resolvido=False).first()
+
+        if erro_existente:
+            erro_existente.contador += 1
+            erro_existente.usuario = user # Atualiza com o último usuário que gerou o erro
+            erro_existente.ip_endereco = ip
+            erro_existente.save()
+        else:
+            LogErro.objects.create(
+                usuario=user,
+                tipo_excecao=tipo_excecao,
+                mensagem=mensagem_limpa,
+                traceback=traceback_limpo,
+                path=request.path,
+                metodo=request.method,
+                ip_endereco=ip,
+                hash_erro=hash_erro,
+                contador=1
+            )
         return None
 
 
@@ -182,4 +199,41 @@ class BlacklistMiddleware(MiddlewareMixin):
                 return HttpResponseForbidden(
                     f"Acesso negado para o IP {ip}. Motivo: {bloqueio.motivo}."
                 )
+        return None
+
+
+class Force2FAMiddleware(MiddlewareMixin):
+    """
+    Força o uso de 2FA para usuários da área de TI.
+    Se o usuário tem permissão de TI e não está verificado via OTP, redireciona para setup.
+    """
+
+    def process_request(self, request):
+        if not request.user.is_authenticated:
+            return None
+
+        # Verifica se o 2FA obrigatório está ativo via Feature Flag
+        from apps.ti.models import FeatureFlag
+        flag_2fa = FeatureFlag.objects.filter(nome="FORCE_2FA", ativo=True).exists()
+        if not flag_2fa:
+            return None
+
+        # Ignora caminhos de setup de 2FA para evitar loop
+        path = request.path
+        if any(p in path for p in ["/account/two_factor/", "/account/otp/"]):
+            return None
+
+        from apps.ti.utils.permissoes import usuario_tem_painel_ti
+        
+        # Se for usuário de TI e NÃO estiver verificado (is_verified vem do django-otp)
+        if usuario_tem_painel_ti(request.user):
+            # Verifica se o método is_verified existe (injetado pelo OTPMiddleware)
+            is_verified = False
+            if hasattr(request.user, 'is_verified'):
+                is_verified = request.user.is_verified()
+            
+            if not is_verified:
+                # Redireciona para a configuração de 2FA
+                return redirect("two_factor:setup")
+        
         return None

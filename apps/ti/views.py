@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.http import JsonResponse
@@ -108,7 +109,7 @@ def painel_soc(request):
     """Painel especializado em Segurança, Auditoria e Defesa."""
     from apps.seguranca.models import LogAuditoria, LogErro, BlacklistIP
     
-    erros_recentes = LogErro.objects.select_related("usuario").all().order_by("-data_ocorrencia")[:10]
+    erros_recentes = LogErro.objects.select_related("usuario").all().order_by("-ultima_ocorrencia")[:10]
     logs_auditoria = LogAuditoria.objects.select_related("usuario").all().order_by("-data_evento")[:30]
     logins_recentes = LogAuditoria.objects.select_related("usuario").filter(
         Q(path__icontains='login') | Q(descricao__icontains='login') | Q(descricao__icontains='autenticado')
@@ -223,13 +224,14 @@ def infraestrutura_ti(request):
         {"id": "clear_cache", "nome": "Limpar Cache (Redis)", "desc": "Esvazia todo o cache do sistema.", "icone": "fa-fire-extinguisher"},
         {"id": "clear_sessions", "nome": "Limpar Sessões", "desc": "Remove todas as sessões expiradas do banco.", "icone": "fa-user-slash"},
         {"id": "collect_static", "nome": "Collect Static", "desc": "Sincroniza arquivos estáticos (Assets).", "icone": "fa-copy"},
-        {"id": "recalc_stats", "nome": "Recalcular Estatísticas", "desc": "Atualiza métricas de BI e dashboards.", "icone": "fa-chart-pie"},
+        {"id": "restart_flower", "nome": "Reiniciar Flower", "desc": "Força a reinicialização do monitor Celery.", "icone": "fa-seedling"},
     ]
     context = {
         "integracoes": integracoes,
         "scripts": scripts,
         "nome_exibicao": get_nome_exibicao(request.user),
         "foto_perfil_url": get_foto_perfil(request.user),
+        "flower_url": settings.FLOWER_URL,
     }
     return render(request, "ti/infraestrutura.html", context)
 
@@ -315,6 +317,15 @@ def executar_script(request, script_id):
         elif script_id == "clear_sessions":
             management.call_command("clearsessions")
             messages.success(request, "Sessões expiradas removidas.")
+        elif script_id == "restart_flower":
+            import subprocess
+            import os
+            try:
+                # Tenta matar processos antigos na porta 5555 (opcional/cauteloso)
+                subprocess.Popen(["celery", "-A", "config", "flower", "--port=5555"], shell=True if os.name == 'nt' else False)
+                messages.success(request, "Comando de reinicialização do Flower disparado!")
+            except Exception as e:
+                messages.error(request, f"Falha ao iniciar Flower: {e}")
         else:
             messages.warning(request, f"Script '{script_id}' ainda não implementado para execução via UI.")
     except Exception as e:
@@ -364,32 +375,18 @@ def gestao_backups(request):
 @login_required
 @user_passes_test(usuario_tem_operacoes_ti)
 def disparar_backup(request):
-    """Simula ou aciona o processo de dump do banco."""
-    from .models import LogBackup
-    from django.utils import timezone
+    """Aciona a rotina de backup manualmente via dashboard."""
+    from apps.ti.utils.backups import realizar_backup_sistema
     from django.contrib import messages
-    
-    # Criar registro de início
-    log = LogBackup.objects.create(
-        arquivo=f"backup_manual_{timezone.now().strftime('%Y%m%d_%H%M')}.sql",
-        status='EM_CURSO'
-    )
-    
-    # Simulação de processo assíncrono (em produção seria um Celery Task)
-    try:
-        # Simulando sucesso
-        log.status = 'SUCESSO'
-        log.tamanho_bytes = 42500000 # 42.5 MB
-        log.data_fim = timezone.now()
-        log.storage_path = "s3://sige-vault/backups/" + log.arquivo
-        log.save()
-        messages.success(request, f"Backup {log.arquivo} gerado e enviado para o cofre com sucesso!")
-    except Exception as e:
-        log.status = 'FALHA'
-        log.save()
-        messages.error(request, f"Falha crítica no backup: {str(e)}")
-        
     from django.shortcuts import redirect
+    
+    sucesso, msg = realizar_backup_sistema()
+    
+    if sucesso:
+        messages.success(request, f"Backup disparado com sucesso! Arquivo: {msg}")
+    else:
+        messages.error(request, f"Erro ao realizar backup: {msg}")
+        
     return redirect("ti:gestao_backups")
 
 @login_required
@@ -408,3 +405,51 @@ def api_logs_lgpd(request):
             "ip": log.ip_endereco
         })
     return JsonResponse({"status": "ok", "logs": data})
+
+
+# --- PLACEHOLDERS PARA NOVOS MÓDULOS ---
+
+@login_required
+@user_passes_test(usuario_tem_painel_ti)
+def placeholder_ti(request, modulo_slug):
+    """View dinâmica que carrega o template específico do módulo ou o placeholder."""
+    from django.template.loader import get_template
+    from django.template import TemplateDoesNotExist
+
+    titulos = {
+        "apm": "APM & Performance",
+        "logs": "Observabilidade & Logs",
+        "workers": "Filas & Workers",
+        "iam": "IAM & Permissões",
+        "vault": "Vault & Secrets",
+        "cicd": "CI/CD & Deploys",
+        "containers": "Containers & K8s",
+        "dns": "DNS & SSL",
+        "database": "Database Admin",
+        "dr": "Disaster Recovery",
+        "comunicacoes": "Comunicações",
+        "qualidade": "Qualidade & Testes",
+        "runbooks": "Runbooks & Docs",
+        "ia": "IA & Automação",
+        "finops": "FinOps & Custos",
+        "integracoes": "Integrações",
+        "status": "Status Page Pública",
+        "lgpd": "Governança & LGPD",
+        "politicas": "Políticas TI"
+    }
+    
+    titulo = titulos.get(modulo_slug, "Módulo")
+    template_path = f"ti/modulos/{modulo_slug}.html"
+    
+    context = {
+        "titulo": titulo,
+        "slug": modulo_slug,
+        "nome_exibicao": get_nome_exibicao(request.user),
+        "foto_perfil_url": get_foto_perfil(request.user),
+    }
+
+    try:
+        get_template(template_path)
+        return render(request, template_path, context)
+    except TemplateDoesNotExist:
+        return render(request, "ti/placeholder.html", context)

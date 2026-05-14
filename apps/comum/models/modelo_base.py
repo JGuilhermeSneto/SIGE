@@ -58,6 +58,8 @@ class PessoaBase(TenantModel):
     cpf = models.CharField(
         max_length=14,
         unique=True,
+        null=True,
+        blank=True,
         db_index=True,
         validators=[validar_cpf],
         help_text="CPF no formato XXX.XXX.XXX-XX",

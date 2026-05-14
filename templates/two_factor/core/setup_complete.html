@@ -1,0 +1,31 @@
+{% extends "two_factor/_base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Configuração Concluída" %}{% endblock %}
+
+{% block content %}
+<div style="text-align: center;">
+    <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 2.5rem; border: 2px solid rgba(16, 185, 129, 0.2); box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);">
+        <i class="fas fa-check"></i>
+    </div>
+    
+    <h2 style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 1.5rem; margin-bottom: 15px;">{% trans "Tudo pronto!" %}</h2>
+    
+    <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 30px;">
+        {% trans "A autenticação de dois fatores foi habilitada com sucesso. Sua conta agora está protegida com uma camada extra de segurança." %}
+    </p>
+
+    <div style="background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 30px; text-align: left;">
+        <h4 style="font-size: 0.8rem; text-transform: uppercase; margin-bottom: 10px; color: var(--text-primary);">{% trans "Dicas Importantes:" %}</h4>
+        <ul style="padding-left: 20px; color: var(--text-muted); font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px;">
+            <li>{% trans "Mantenha seu aplicativo autenticador seguro." %}</li>
+            <li>{% trans "Gere códigos de backup se necessário." %}</li>
+            <li>{% trans "Não compartilhe seus tokens com ninguém." %}</li>
+        </ul>
+    </div>
+
+    <a href="{% url 'ti:painel' %}" class="btn-tf" style="text-decoration: none; display: block;">
+        {% trans "IR PARA O DASHBOARD" %}
+    </a>
+</div>
+{% endblock %}

@@ -41,7 +41,7 @@ class AcademicoUtilsTest(TestCase):
         turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
         disc = Disciplina.objects.create(nome="Matemática", turma=turma)
         GradeHorario.objects.create(
-            turma=turma, disciplina=disc, dia="segunda", horario="08:00"
+            turma=turma, disciplina=disc, dia="segunda", horario="07:45 às 08:30"
         )
 
         grade = _get_grade_horario_turma(turma)
@@ -56,7 +56,7 @@ class AcademicoUtilsTest(TestCase):
         turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
         disc = Disciplina.objects.create(nome="Mat", turma=turma, professor=prof)
         GradeHorario.objects.create(
-            turma=turma, disciplina=disc, dia="segunda", horario="08:00"
+            turma=turma, disciplina=disc, dia="segunda", horario="07:45 às 08:30"
         )
 
         ocupados = _get_ocupados_por_professor(prof.id, 2024)

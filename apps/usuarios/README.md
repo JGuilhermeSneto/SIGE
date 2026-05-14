@@ -11,8 +11,8 @@ Módulo central de identidade, autenticação e perfis do SIGE.
 - Context processors para notificações globais
 
 ## Modelos Principais
-- `Usuario` (modelo customizado baseado em `AbstractUser`)
-- `PerfilAluno`, `PerfilProfessor`, `PerfilGestor`, `PerfilResponsavel`
+- `auth.User` (Modelo padrão estendido via Perfis)
+- `Gestor`, `Professor`, `Aluno`, `Responsavel` (Perfis OneToOne)
 
 ## Backends de Autenticação
 - `MatriculaAuthBackend` — login principal por matrícula

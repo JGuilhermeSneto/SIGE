@@ -1,0 +1,188 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}FinOps & Cloud Economics — SIGE TI{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  
+  /* ════ FINOPS MASTER CARDS ════ */
+  .finops-main-card {
+    background: rgba(15, 23, 41, 0.4); border-radius: 24px; padding: 30px;
+    border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden;
+  }
+  .budget-label {
+    position: absolute; top: 20px; right: 20px;
+    padding: 6px 15px; border-radius: 10px; font-size: 0.6rem; font-weight: 800;
+    background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald); border: 1px solid var(--accent-emerald);
+  }
+
+  /* ════ COST DISTRIBUTION ════ */
+  .cost-row { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+  .cost-bar-wrap { flex: 1; height: 12px; background: rgba(0,0,0,0.2); border-radius: 6px; overflow: hidden; }
+  .cost-bar-fill { height: 100%; border-radius: 6px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* ════ INVOICE CARD PRO ════ */
+  .invoice-card {
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px; padding: 12px 15px; margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.3s;
+  }
+  .invoice-card:hover { background: rgba(255,255,255,0.05); border-color: var(--accent-cyan); transform: translateX(5px); }
+  .invoice-brand { width: 35px; height: 35px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; background: var(--bg-elevated); border: 1px solid var(--border-subtle); }
+  
+  .due-badge { font-size: 0.55rem; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--text-muted); }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-amber); box-shadow: 0 0 5px var(--accent-amber); }
+
+  /* Pulse do Sistema */
+  .system-pulse {
+    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
+    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
+  }
+  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><span class="system-pulse"></span> ECONOMIA CLOUD & OTIMIZAÇÃO · v7.3.1</span>
+    <h1>FinOps & <span class="nome-destaque" style="color: var(--accent-emerald);">Custos Cloud</span></h1>
+  </div>
+  <div class="header-acoes">
+     <button class="btn-sige-primario" style="background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary);"><i class="fa-solid fa-file-invoice-dollar"></i> EXPORTAR RELATÓRIO</button>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="coluna-esquerda">
+    
+    {# 💰 VISÃO GERAL DE GASTOS #}
+    <div class="finops-main-card" style="margin-bottom: 25px;">
+        <div class="budget-label">ORÇAMENTO OK</div>
+        <h3 class="hub-title" style="margin-bottom: 30px;"><i class="fa-solid fa-chart-line"></i> Análise de Gastos Global</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+            <div>
+                <p class="header-label">Gasto Mês Atual</p>
+                <div style="font-family: 'Syne'; font-size: 2.2rem; font-weight: 800;">R$ 4.250</div>
+                <p style="font-size: 0.7rem; color: var(--accent-emerald); font-weight: 700;"><i class="fa-solid fa-arrow-trend-down"></i> 12% vs mês anterior</p>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 20px;">
+                <p class="header-label">Projetado (Previsão)</p>
+                <div style="font-family: 'Syne'; font-size: 2.2rem; font-weight: 800; color: var(--accent-cyan);">R$ 5.100</div>
+                <p style="font-size: 0.65rem; color: var(--text-muted);">Baseado em consumo linear</p>
+            </div>
+            <div style="border-left: 1px solid rgba(255,255,255,0.05); padding-left: 20px;">
+                <p class="header-label">Economia Realizada</p>
+                <div style="font-family: 'Syne'; font-size: 2.2rem; font-weight: 800; color: var(--accent-emerald);">R$ 840</div>
+                <p style="font-size: 0.65rem; color: var(--text-muted);">Mês de Maio</p>
+            </div>
+        </div>
+    </div>
+
+    {# 📊 DISTRIBUIÇÃO POR PROVEDOR #}
+    <div class="hub-card" style="padding: 30px;">
+        <h3 class="hub-title" style="margin-bottom: 25px;"><i class="fa-solid fa-server"></i> Distribuição de Custos por Provedor</h3>
+        
+        <div class="cost-row">
+            <div style="width: 120px; font-size: 0.75rem; font-weight: 800;">Aiven MySQL</div>
+            <div class="cost-bar-wrap"><div class="cost-bar-fill" style="width: 45%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div></div>
+            <div style="width: 80px; text-align: right; font-family: 'Syne'; font-size: 0.9rem;">R$ 1.850</div>
+        </div>
+        <div class="cost-row">
+            <div style="width: 120px; font-size: 0.75rem; font-weight: 800;">DigitalOcean</div>
+            <div class="cost-bar-wrap"><div class="cost-bar-fill" style="width: 30%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald);"></div></div>
+            <div style="width: 80px; text-align: right; font-family: 'Syne'; font-size: 0.9rem;">R$ 1.200</div>
+        </div>
+        <div class="cost-row">
+            <div style="width: 120px; font-size: 0.75rem; font-weight: 800;">S3 / Armazenamento</div>
+            <div class="cost-bar-wrap"><div class="cost-bar-fill" style="width: 15%; background: var(--accent-violet); box-shadow: 0 0 10px var(--accent-violet);"></div></div>
+            <div style="width: 80px; text-align: right; font-family: 'Syne'; font-size: 0.9rem;">R$ 650</div>
+        </div>
+    </div>
+
+  </div>
+
+  {# ════ SIDEBAR ULTRA-GOD-CAPRICHO ════ #}
+  <div class="coluna-direita">
+    
+    {# 📅 Faturas Próximas Pro #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-file-invoice-dollar" style="color: var(--accent-cyan);"></i> Próximas Faturas</h3>
+        
+        <div style="max-height: 380px; overflow-y: auto; padding-right: 5px;">
+            <div class="invoice-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="invoice-brand" style="color: var(--accent-cyan);"><i class="fa-solid fa-database"></i></div>
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 800;">Aiven MySQL</div>
+                        <div class="due-badge">Venc. 05/06</div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-family: 'Syne'; font-size: 0.85rem; font-weight: 800;">R$ 1.850</div>
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 0.55rem; color: var(--accent-amber);">
+                        <div class="status-dot"></div> Aguardando
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="invoice-brand" style="color: var(--accent-emerald);"><i class="fa-brands fa-digital-ocean"></i></div>
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 800;">DigitalOcean</div>
+                        <div class="due-badge">Venc. 10/06</div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-family: 'Syne'; font-size: 0.85rem; font-weight: 800;">R$ 1.200</div>
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 0.55rem; color: var(--accent-amber);">
+                        <div class="status-dot"></div> Aguardando
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-card">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div class="invoice-brand" style="color: #fff; background: #000;"><i class="fa-solid fa-v"></i></div>
+                    <div>
+                        <div style="font-size: 0.7rem; font-weight: 800;">Vercel Pro</div>
+                        <div class="due-badge">Venc. 15/06</div>
+                    </div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-family: 'Syne'; font-size: 0.85rem; font-weight: 800;">R$ 150</div>
+                    <div style="display: flex; align-items: center; justify-content: flex-end; gap: 5px; font-size: 0.55rem; color: var(--accent-emerald);">
+                        <div class="status-dot" style="background: var(--accent-emerald); box-shadow: 0 0 5px var(--accent-emerald);"></div> Pago
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 15px; background: rgba(34, 211, 238, 0.05); border-radius: 12px; border: 1px solid rgba(34, 211, 238, 0.1);">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.65rem; color: var(--text-muted);">Total Pendente</span>
+                <span style="font-family: 'Syne'; font-size: 1.1rem; font-weight: 800; color: var(--accent-cyan);">R$ 3.050</span>
+            </div>
+            <button class="btn-sige-primario" style="width: 100%; margin-top: 10px; font-size: 0.65rem; background: var(--accent-cyan); color: #000; font-weight: 800;">PROCESSAR PAGAMENTOS</button>
+        </div>
+    </article>
+
+    {# 💡 Optimization Tips #}
+    <article class="hub-card" style="border-top: 3px solid var(--accent-amber);">
+        <h3 class="hub-title"><i class="fa-solid fa-bolt-lightning" style="color: var(--accent-amber);"></i> Dica de FinOps</h3>
+        <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4;">
+            <strong style="color: var(--accent-amber);">ECONOMIA:</strong> Migrar o cluster Redis para instâncias reservadas pode economizar até <strong>R$ 240/mês</strong>.
+        </p>
+    </article>
+
+  </div>
+</div>
+{% endblock %}

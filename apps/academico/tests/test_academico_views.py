@@ -15,18 +15,18 @@ class AcademicoViewsTest(TestCase):
         self.password = "senha123"
 
         # Gestor
-        self.gestor_user = User.objects.create_superuser(
+        self.gestor_user = get_user_model().objects.create_superuser(
             username="gestor", password=self.password
         )
 
         # Professor
-        self.prof_user = User.objects.create_user(
+        self.prof_user = get_user_model().objects.create_user(
             username="prof", password=self.password
         )
         self.professor = Professor.objects.create(
             user=self.prof_user,
             nome_completo="Prof 1",
-            cpf="1",
+            cpf="304.793.180-87",
             data_nascimento="1980-01-01",
         )
 
@@ -37,13 +37,13 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_listar_turmas_gestor(self):
-        self.client.login(username="gestor", password=self.password)
+        self.client.force_login(self.gestor_user)
         response = self.client.get(reverse("listar_turmas"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "1A")
 
     def test_visualizar_disciplinas_professor(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(
             reverse("visualizar_disciplinas", args=[self.disciplina.id])
         )
@@ -51,27 +51,27 @@ class AcademicoViewsTest(TestCase):
         self.assertContains(response, "Matemática")
 
     def test_cadastrar_turma_gestor(self):
-        self.client.login(username="gestor", password=self.password)
+        self.client.force_login(self.gestor_user)
         data = {"nome": "2B", "turno": "tarde", "ano": 2024}
         response = self.client.post(reverse("cadastrar_turma"), data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Turma.objects.filter(nome="2B").count(), 1)
 
     def test_listar_atividades_professor(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(
             reverse("listar_atividades", args=[self.disciplina.id])
         )
         self.assertEqual(response.status_code, 200)
 
     def test_lancar_nota_professor(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         # Create an aluno
-        aluno_user = User.objects.create_user(username="aluno2", password=self.password)
+        aluno_user = get_user_model().objects.create_user(username="aluno2", password=self.password)
         aluno = Aluno.objects.create(
             user=aluno_user,
             nome_completo="Aluno 2",
-            cpf="3",
+            cpf="485.451.980-90",
             data_nascimento="2010-01-01",
             turma=self.turma,
         )
@@ -86,12 +86,12 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_lancar_chamada_professor(self):
-        self.client.login(username="prof", password=self.password)
-        aluno_user = User.objects.create_user(username="aluno3", password=self.password)
+        self.client.force_login(self.prof_user)
+        aluno_user = get_user_model().objects.create_user(username="aluno3", password=self.password)
         aluno = Aluno.objects.create(
             user=aluno_user,
             nome_completo="Aluno 3",
-            cpf="4",
+            cpf="108.435.590-75",
             data_nascimento="2010-01-01",
             turma=self.turma,
         )
@@ -106,23 +106,23 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_painel_relatorios_gestor(self):
-        self.client.login(username="gestor", password=self.password)
+        self.client.force_login(self.gestor_user)
         response = self.client.get(reverse("painel_relatorios"))
         self.assertEqual(response.status_code, 200)
 
     def test_visualizar_historico_proprio(self):
         # Create an aluno for this test
-        aluno_user = User.objects.create_user(
+        aluno_user = get_user_model().objects.create_user(
             username="aluno_h", password=self.password
         )
         aluno = Aluno.objects.create(
             user=aluno_user,
             nome_completo="Aluno H",
-            cpf="5",
+            cpf="164.717.370-13",
             data_nascimento="2010-01-01",
             turma=self.turma,
         )
 
-        self.client.login(username="aluno_h", password=self.password)
+        self.client.force_login(aluno_user)
         response = self.client.get(reverse("visualizar_historico", args=[aluno.id]))
         self.assertEqual(response.status_code, 200)

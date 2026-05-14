@@ -1,0 +1,216 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Logs Central God-Tier — SIGE TI{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  
+  /* ════ GOD-TIER CONSOLE ════ */
+  .cyber-console-wrap {
+    position: relative;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(135deg, var(--accent-cyan), transparent, var(--accent-violet));
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .log-console-pro {
+    background: #020617;
+    color: #10b981;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 25px;
+    border-radius: 18px;
+    height: 550px;
+    overflow-y: auto;
+    font-size: 0.8rem;
+    line-height: 1.6;
+    position: relative;
+  }
+  .log-console-pro::-webkit-scrollbar { width: 4px; }
+  .log-console-pro::-webkit-scrollbar-thumb { background: var(--accent-cyan); border-radius: 10px; }
+
+  .log-line { margin-bottom: 8px; display: flex; gap: 15px; border-left: 2px solid transparent; padding-left: 10px; transition: all 0.2s; }
+  .log-line:hover { background: rgba(255,255,255,0.03); border-left-color: var(--accent-cyan); }
+  
+  .log-ts { color: #475569; font-size: 0.7rem; }
+  .log-lvl-info { color: var(--accent-cyan); font-weight: 800; text-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
+  .log-lvl-warn { color: var(--accent-amber); font-weight: 800; }
+  .log-lvl-error { color: var(--accent-ruby); font-weight: 800; text-shadow: 0 0 10px rgba(244, 63, 94, 0.3); }
+  .log-msg { color: #e2e8f0; }
+
+  /* ════ SEARCH & FILTER PRO ════ */
+  .search-box-pro {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+  .search-box-pro:focus-within { border-color: var(--accent-cyan); box-shadow: 0 0 15px rgba(34, 211, 238, 0.1); }
+  .search-box-pro input { background: transparent; border: none; color: var(--text-primary); font-size: 0.8rem; outline: none; width: 100%; }
+
+  .filter-chip-pro {
+    padding: 5px 12px; border-radius: 8px; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-subtle); font-size: 0.65rem; color: var(--text-muted);
+    cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;
+  }
+  .filter-chip-pro.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); font-weight: 800; }
+
+  /* Pulse do Sistema */
+  .system-pulse {
+    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
+    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
+  }
+  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><span class="system-pulse"></span> AGREGADOR GLOBAL DE LOGS · v7.3.1</span>
+    <h1>Fluxo de <span class="nome-destaque" style="color: var(--accent-cyan);">Logs Master</span></h1>
+  </div>
+  <div class="header-acoes">
+     <div style="display: flex; gap: 10px; align-items: center;">
+        <div class="status-badge status-ativo" style="font-size: 0.6rem;">SYNC EM TEMPO REAL</div>
+        <div class="info-tag" style="background: var(--bg-elevated); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; border: 1px solid var(--border-subtle);">
+          EPS: <strong style="color: var(--accent-cyan);">142</strong>
+        </div>
+     </div>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="coluna-esquerda">
+    
+    {# 🔍 BUSCA & FILTROS #}
+    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 10px;">
+        <div class="search-box-pro" style="flex: 1; margin-bottom: 0;">
+            <i class="fa-solid fa-magnifying-glass" style="opacity: 0.5;"></i>
+            <input type="text" placeholder="Buscar logs por palavra-chave, IP ou ID de Trace...">
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <div class="filter-chip-pro active"><i class="fa-solid fa-layer-group"></i> Todos</div>
+            <div class="filter-chip-pro"><i class="fa-solid fa-bug"></i> Debug</div>
+            <div class="filter-chip-pro"><i class="fa-solid fa-triangle-exclamation"></i> Erros</div>
+        </div>
+    </div>
+
+    {# 📟 CONSOLE MASTER #}
+    <div class="cyber-console-wrap">
+        <div class="log-console-pro" id="logConsole">
+            <div class="log-line">
+                <span class="log-ts">20:46:01.442</span>
+                <span class="log-lvl-info">INFO</span>
+                <span class="log-msg">Coletor principal de logs conectado ao SIGE-CORE.</span>
+            </div>
+            <div class="log-line">
+                <span class="log-ts">20:46:05.120</span>
+                <span class="log-lvl-info">INFO</span>
+                <span class="log-msg">Websocket Handshake (Daphne) com sucesso para o cliente 189.x.x.x</span>
+            </div>
+        </div>
+    </div>
+
+  </div>
+
+  {# ════ SIDEBAR GOD-TIER ════ #}
+  <div class="coluna-direita">
+    
+    {# 📈 Inteligência de Logs #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-brain" style="color: var(--accent-cyan);"></i> Inteligência de Logs</h3>
+        <div class="metric-item">
+            <span class="metric-label">Eventos / Seg</span>
+            <span class="metric-value" style="font-family: 'Syne', sans-serif;">142</span>
+        </div>
+        <div class="metric-item">
+            <span class="metric-label">Nível de Ruído</span>
+            <span class="metric-value" style="color: var(--accent-emerald);">BAIXO</span>
+        </div>
+        
+        {# Visualizador de Onda Animado #}
+        <div style="height: 50px; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 3px;">
+            {% for i in "123456789012345678" %}
+            <div style="width: 4px; height: 20px; background: var(--accent-cyan); border-radius: 2px; animation: wave 1s infinite ease-in-out; animation-delay: 0.{{ forloop.counter }}s;"></div>
+            {% endfor %}
+        </div>
+        <style>
+            @keyframes wave { 0%, 100% { height: 10px; opacity: 0.3; } 50% { height: 35px; opacity: 1; } }
+        </style>
+    </article>
+
+    {# 📟 Distribuição de Fontes #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-server" style="color: var(--accent-violet);"></i> Origem dos Dados</h3>
+        <div style="margin-top: 15px;">
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 4px;"><span>App Django</span><span>70%</span></div>
+                <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 70%; height: 100%; background: var(--accent-cyan);"></div></div>
+            </div>
+            <div style="margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 4px;"><span>Web Worker</span><span>20%</span></div>
+                <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 20%; height: 100%; background: var(--accent-violet);"></div></div>
+            </div>
+            <div style="margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 4px;"><span>Logs DB</span><span>10%</span></div>
+                <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 100%; height: 100%; background: var(--accent-emerald); opacity: 0.4;"></div></div>
+            </div>
+        </div>
+    </article>
+
+    {# ⚙️ Controle de Stream #}
+    <article class="hub-card" style="border-top: 3px solid var(--accent-amber);">
+        <h3 class="hub-title"><i class="fa-solid fa-sliders" style="color: var(--accent-amber);"></i> Controle de Fluxo</h3>
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
+            <button class="btn-sige-secundario" style="width: 100%; font-size: 0.65rem; border-color: var(--accent-cyan); color: var(--accent-cyan);">CONECTAR AO CLUSTER-A</button>
+            <button class="btn-sige-secundario" style="width: 100%; font-size: 0.65rem; border-color: var(--accent-amber); color: var(--accent-amber);">ALTERNAR TRACE IDS</button>
+            <button class="btn-sige-secundario" style="width: 100%; font-size: 0.65rem; border-color: var(--accent-ruby); color: var(--accent-ruby);">FORÇAR ROTAÇÃO</button>
+        </div>
+    </article>
+
+  </div>
+</div>
+
+<script>
+    const consoleEl = document.getElementById('logConsole');
+    const logs = [
+        ["INFO", "API: GET /financeiro/stats/ (200 OK) [TraceID: f472b]"],
+        ["INFO", "Tarefa: DailyBackupJob iniciada com sucesso."],
+        ["AVISO", "DB: Query lenta detectada (1.4s) na tabela 'aluno'."],
+        ["INFO", "WS: Cliente 189.x.x.x conectado ao canal /ws/ti/notifications/"],
+        ["ERRO", "AUTH: Falha crítica de MFA para o usuário 'financeiro_coord'."]
+    ];
+
+    setInterval(() => {
+        const line = document.createElement('div');
+        line.className = 'log-line';
+        const now = new Date();
+        const ts = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+        
+        const randomLog = logs[Math.floor(Math.random() * logs.length)];
+        const level = randomLog[0];
+        const msg = randomLog[1];
+        
+        let lvlClass = "log-lvl-info";
+        if(level === "AVISO") lvlClass = "log-lvl-warn";
+        if(level === "ERRO") lvlClass = "log-lvl-error";
+
+        line.innerHTML = `
+            <span class="log-ts">${ts}</span>
+            <span class="${lvlClass}">${level}</span>
+            <span class="log-msg">${msg}</span>
+        `;
+        consoleEl.appendChild(line);
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+    }, 3000);
+</script>
+{% endblock %}

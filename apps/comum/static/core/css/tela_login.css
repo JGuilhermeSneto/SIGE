@@ -791,11 +791,34 @@ html[data-theme="indigo-profundo"] .splash-logo {
   100% { transform: translateY(-2px) scale(1.2) rotate(0deg); }
 }
 
-@keyframes arrowShoot {
-  0%   { transform: translateX(0); }
-  40%  { transform: translateX(6px); }
-  70%  { transform: translateX(-2px); }
-  100% { transform: translateX(4px); }
+/* ════════════════════════════════════════
+   TWO FACTOR (SIGE EXTENSION)
+═════════════════════════════════════════*/
+.tf-form-sige {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tf-form-sige .field-wrap {
+  animation-delay: 0s !important; /* Overrides cascade for direct feel */
+}
+
+.radio-group-sige label:hover {
+  background: var(--bg-hover) !important;
+  border-color: var(--accent-violet) !important;
+  transform: translateX(5px);
+}
+
+.radio-group-sige input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+@keyframes liquidFocus {
+  0%, 100% { box-shadow: 0 0 15px rgba(124, 111, 255, 0.1); }
+  50% { box-shadow: 0 0 25px rgba(124, 111, 255, 0.25); }
 }
 
 @keyframes sweepLine {

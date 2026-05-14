@@ -41,6 +41,17 @@ class BugReport(TenantModel):
 
     data_criacao = models.DateTimeField(auto_now_add=True)
     data_atualizacao = models.DateTimeField(auto_now=True)
+    
+    # SLA e Gestão
+    responsavel = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="chamados_atribuidos",
+        verbose_name="Técnico Responsável"
+    )
+    sla_limite = models.DateTimeField(null=True, blank=True, verbose_name="Prazo SLA")
 
     # Metadados técnicos capturados automaticamente
     browser_info = models.TextField(blank=True, null=True)
@@ -50,6 +61,22 @@ class BugReport(TenantModel):
         verbose_name = "Report de Bug"
         verbose_name_plural = "Reports de Bugs"
         ordering = ["-data_criacao"]
+
+    def save(self, *args, **kwargs):
+        if not self.sla_limite and self.prioridade:
+            from django.utils import timezone
+            from datetime import timedelta
+            
+            prazos = {
+                "CRITICA": 4,   # 4 horas
+                "ALTA": 24,     # 24 horas
+                "MEDIA": 72,    # 72 horas
+                "BAIXA": 168,   # 7 dias
+            }
+            horas = prazos.get(self.prioridade, 72)
+            self.sla_limite = timezone.now() + timedelta(hours=horas)
+            
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"[{self.prioridade}] {self.titulo} - {self.status}"

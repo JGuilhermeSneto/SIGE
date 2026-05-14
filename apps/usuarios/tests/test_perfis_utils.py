@@ -79,12 +79,12 @@ class PerfisUtilsTest(TestCase):
         gestor = Gestor.objects.create(
             user=user_sem_foto,
             nome_completo="Gestor Foto",
-            cpf="555.666.777-88",
+            cpf="254.120.300-34",
             data_nascimento="1975-01-01",
             cargo="diretor",
         )
         resultado_padrao = get_foto_perfil(user_sem_foto)
-        self.assertTrue(resultado_padrao.endswith("core/img/default-user.png"))
+        self.assertIn("ui-avatars.com", resultado_padrao)
 
         user_com_foto = User.objects.create_user(
             username="comfoto", email="comfoto@example.com", password="senha123"

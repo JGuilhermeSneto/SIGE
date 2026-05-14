@@ -4,50 +4,100 @@
 {% block title %}Avisos Globais — SIGE TI{% endblock %}
 
 {% block ti_extra_css %}
-<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/gestao_painel.css' %}">
 <style>
-  .conteudo-geral { margin-top: 10px; padding: 0 2rem; grid-template-columns: 1fr; }
-  .header-painel { padding: 0 2rem; margin-top: 20px; }
-  .aviso-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-  .aviso-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; position: relative; border-left: 5px solid var(--accent-cyan); }
-  .tag-info { border-left-color: var(--accent-cyan); }
-  .tag-alerta { border-left-color: var(--accent-amber); }
-  .tag-critico { border-left-color: var(--accent-ruby); }
+  .aviso-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+    gap: 25px; 
+  }
+  .aviso-card { 
+    background: var(--bg-surface); 
+    border: 1px solid var(--border-subtle); 
+    border-radius: var(--radius-lg); 
+    padding: 25px; 
+    position: relative; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 200px;
+  }
+  .aviso-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); border-color: var(--border-mid); }
+  
+  .card-indicator { 
+    position: absolute; 
+    top: 0; left: 0; bottom: 0; 
+    width: 6px; 
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  }
+  
+  .tag-info .card-indicator { background: var(--accent-cyan); }
+  .tag-alerta .card-indicator { background: var(--accent-amber); }
+  .tag-critico .card-indicator { background: var(--accent-ruby); }
+  
+  .aviso-meta { 
+    margin-top: 20px; 
+    padding-top: 15px; 
+    border-top: 1px solid var(--border-subtle); 
+    font-size: 0.7rem; 
+    color: var(--text-muted); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+  }
 </style>
 {% endblock %}
 
 {% block ti_content %}
-<header class="header-painel">
-  <div class="header-esquerda">
-    <span class="header-label">TI · Comunicação</span>
-    <h1>Avisos <span class="nome-destaque">Globais</span></h1>
-  </div>
-  <div class="header-acoes">
-    <a href="{% url 'ti:criar_aviso' %}" class="btn-sige-primario" style="background: var(--accent-violet); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 700;">
-      <i class="fa-solid fa-plus"></i> Novo Aviso
-    </a>
-  </div>
-</header>
+<div class="painel-sige">
+  
+  <header class="header-painel">
+    <div class="header-esquerda">
+      <span class="header-label">TI · Comunicação Interna</span>
+      <h1>Avisos <span class="nome-destaque">Globais</span></h1>
+      <p style="margin-top: 5px; color: var(--text-muted);">Gerencie mensagens em massa para todos os usuários do sistema.</p>
+    </div>
+    <div class="header-acoes">
+      <a href="{% url 'ti:criar_aviso' %}" class="btn-sige-primario">
+        <i class="fa-solid fa-plus"></i> Novo Aviso
+      </a>
+    </div>
+  </header>
 
-<div class="conteudo-geral">
-  <div class="aviso-grid">
-    {% for a in avisos %}
-    <article class="aviso-card tag-{{ a.tipo|lower }}">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-        <h3 style="font-size: 1rem; margin: 0; font-weight: 800;">{{ a.titulo }}</h3>
-        <span class="badge {% if a.ativo %}status-active{% else %}status-inactive{% endif %}">
-          {% if a.ativo %}ATIVO{% else %}OFF{% endif %}
-        </span>
+  <div class="conteudo-geral" style="grid-template-columns: 1fr;">
+    <div class="aviso-grid">
+      {% for a in avisos %}
+      <article class="aviso-card tag-{{ a.tipo|lower }}">
+        <div class="card-indicator"></div>
+        
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+            <h3 style="font-size: 1.1rem; margin: 0; font-weight: 800; color: var(--text-primary); font-family: 'Syne', sans-serif;">{{ a.titulo }}</h3>
+            <span class="status-badge {% if a.ativo %}status-aprovado{% else %}status-recuperacao{% endif %}" style="font-size: 0.6rem; padding: 2px 8px;">
+              {% if a.ativo %}ATIVO{% else %}OFF{% endif %}
+            </span>
+          </div>
+          <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;">{{ a.mensagem }}</p>
+        </div>
+
+        <div class="aviso-meta">
+          <span><i class="fa-solid fa-calendar-day" style="margin-right: 5px;"></i> {{ a.data_criacao|date:"d/m/Y" }}</span>
+          {% if a.expira_em %}
+            <span style="color: var(--accent-amber); font-weight: 700;">
+              <i class="fa-solid fa-hourglass-half"></i> Expira em {{ a.expira_em|timeuntil }}
+            </span>
+          {% endif %}
+        </div>
+      </article>
+      {% empty %}
+      <div class="vazio-state" style="grid-column: 1/-1;">
+        <i class="fa-solid fa-bullhorn"></i>
+        <p>Nenhum comunicado global ativo no momento.</p>
       </div>
-      <p style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5;">{{ a.mensagem }}</p>
-      <div style="margin-top: 15px; font-size: 0.65rem; color: var(--text-muted); display: flex; justify-content: space-between;">
-        <span><i class="fa-solid fa-clock"></i> {{ a.data_criacao|date:"d/m" }}</span>
-        {% if a.expira_em %}<span>Expira {{ a.expira_em|timeuntil }}</span>{% endif %}
-      </div>
-    </article>
-    {% empty %}
-    <div style="grid-column: 1/-1; text-align: center; padding: 60px; opacity: 0.5;">Nenhum aviso global.</div>
-    {% endfor %}
+      {% endfor %}
+    </div>
   </div>
+
 </div>
 {% endblock %}

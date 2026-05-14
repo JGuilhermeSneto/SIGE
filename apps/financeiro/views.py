@@ -56,10 +56,17 @@ def listar_faturas(request):
         else Fatura.objects.all()
     )
 
-    qtd_todas = base_qs.count()
-    qtd_pendentes = base_qs.filter(status="PENDENTE", data_vencimento__gte=hoje).count()
-    qtd_pagas = base_qs.filter(status="PAGO").count()
-    qtd_atrasadas = base_qs.filter(status="PENDENTE", data_vencimento__lt=hoje).count()
+    # Otimização de Performance: Uma única query para todos os contadores
+    contadores = base_qs.aggregate(
+        todas=Count("id"),
+        pendentes=Count("id", filter=Q(status="PENDENTE", data_vencimento__gte=hoje)),
+        pagas=Count("id", filter=Q(status="PAGO")),
+        atrasadas=Count("id", filter=Q(status="PENDENTE", data_vencimento__lt=hoje)),
+    )
+    qtd_todas = contadores["todas"]
+    qtd_pendentes = contadores["pendentes"]
+    qtd_pagas = contadores["pagas"]
+    qtd_atrasadas = contadores["atrasadas"]
 
     context = {
         "faturas": page_obj,  # Agora passamos o objeto paginado

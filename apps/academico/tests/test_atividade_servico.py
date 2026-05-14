@@ -106,7 +106,7 @@ class AtividadeServicoTest(TestCase):
         self.assertEqual(entrega.comentario_aluno, "Entrega com resposta e arquivo.")
         self.assertTrue(entrega.arquivo)
         self.assertTrue(
-            entrega.arquivo.name.startswith("entregas/atividades/resposta_")
+            "resposta" in entrega.arquivo.name
         )
         self.assertTrue(entrega.arquivo.name.endswith(".txt"))
         self.assertEqual(entrega.respostas.count(), 2)

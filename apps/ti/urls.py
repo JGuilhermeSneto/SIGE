@@ -33,4 +33,7 @@ urlpatterns = [
     path("avisos/", views.gestao_avisos, name="gestao_avisos"),
     path("avisos/novo/", views.criar_aviso, name="criar_aviso"),
     path("auditoria/", views.central_auditoria, name="central_auditoria"),
+    
+    # Placeholders para Expansão v7.3
+    path("hub/<slug:modulo_slug>/", views.placeholder_ti, name="placeholder_modulo"),
 ]

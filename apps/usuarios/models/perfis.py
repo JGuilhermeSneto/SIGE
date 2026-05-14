@@ -143,8 +143,8 @@ class Aluno(PessoaBase):
             from datetime import datetime
 
             ano = datetime.now().year
-            t_id = self.turma.pk if self.turma else 0
-            u_id = self.user.pk if self.user else 0
+            t_id = self.turma_id if self.turma_id else 0
+            u_id = self.user_id if self.user_id else 0
 
             # A matrícula usa o padrão YYYY (ano) + TTT (id turma) + UUUU (id user)
             self.matricula = f"{ano}{t_id:03d}{u_id:04d}"

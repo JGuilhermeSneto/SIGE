@@ -1,108 +1,254 @@
 {% extends "core/base.html" %}
 {% load static custom_tags ti_tags %}
 
-{# Layout da área de TI: subnavegação + conteúdo (Shield, operações, visão geral). #}
+{# Layout da área de TI Expandido v7.3: Menu 8 Áreas (4x2) #}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/ti_responsivo.css' %}">
 {% block ti_extra_css %}{% endblock %}
 <style>
-  .ti-subnav-container {
-    padding: 1rem 2rem 0 2rem;
+  :root {
+    --nav-bg: var(--bg-surface);
+    --nav-border: var(--border-subtle);
+    
+    /* Paleta estendida para 8 áreas */
+    --icon-ops: var(--accent-cyan);
+    --icon-sec: #ef4444;
+    --icon-infra: var(--accent-amber);
+    --icon-data: #818cf8;
+    --icon-cfg: #2dd4bf;
+    --icon-sup: #60a5fa;
+    --icon-est: #ff0080;
+    --icon-gov: #fbbf24; /* Governance Gold */
+    
+    /* Cores individuais mantidas conforme pedido anterior */
+    --icon-vga: var(--accent-cyan);
+    --icon-apm: #f472b6;
+    --icon-obs: #a855f7;
+    --icon-wrk: #fb923c;
+    --icon-soc: #34d399;
+    --icon-iam: #ef4444;
+    --icon-vlt: #facc15;
+    --icon-hub: var(--accent-amber);
+    --icon-ccd: #38bdf8;
+    --icon-dns: #c084fc;
+    --icon-cfr: #818cf8;
+    --icon-db: #4ade80;
+    --icon-dr: #fb7185;
+    --icon-flg: #2dd4bf;
+    --icon-prm: #fcd34d;
+    --icon-com: #94a3b8;
+    --icon-tkt: #60a5fa;
+    --icon-avs: #f87171;
+    --icon-rbk: #4ade80;
+    --icon-ia: #ff0080;
+    --icon-fin: #10b981;
+    --icon-api: #8b5cf6;
+    --icon-aud: #fbbf24;
+    --icon-lgpd: #f97316;
+    --icon-pol: #06b6d4;
+  }
+
+  .ti-nav-wrapper {
+    padding: 1.5rem 2rem;
     background: var(--bg-base);
   }
 
-  .ti-subnav {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.75rem;
-    padding: 0.65rem 1rem;
-    border-radius: 14px;
-    border: 1px solid var(--border-subtle);
-    background: var(--bg-elevated);
+  .ti-nav-grid {
+    display: grid;
+    /* Força 4 colunas como layout padrão */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
   }
 
-  .ti-subnav a {
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 0.45rem 0.85rem;
-    border-radius: 10px;
+  .ti-nav-group {
+    background: var(--nav-bg);
+    border: 1px solid var(--nav-border);
+    border-radius: 18px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 180px; /* Mantém altura consistente */
+  }
+
+  .ti-group-header {
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
     color: var(--text-muted);
-    transition: all 0.2s ease;
+    padding: 5px 12px 10px 12px;
     display: flex;
     align-items: center;
     gap: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 5px;
   }
 
-  .ti-subnav a:hover {
-    color: var(--text-primary);
-    background: var(--bg-hover);
-    transform: translateY(-1px);
+  .ti-nav-group a {
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--text-secondary);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
-  .ti-subnav a.ativo {
-    color: var(--text-primary);
+  .ti-nav-group a i { 
+    font-size: 1rem; 
+    width: 24px; 
+    display: flex;
+    justify-content: center;
+    transition: transform 0.3s;
+  }
+
+  .ti-nav-group a:hover {
     background: var(--bg-hover);
-    border: 1px solid var(--border-mid);
+    color: var(--text-primary);
+    transform: translateX(3px);
+  }
+
+  .ti-nav-group a:hover i { transform: scale(1.25); filter: brightness(1.2); }
+
+  .ti-nav-group a.ativo {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
     box-shadow: var(--shadow-sm);
   }
 
-  /* Cores dos ícones baseadas no padrão do sistema */
-  .ti-subnav a i {
-    font-size: 0.95rem;
-    opacity: 0.8;
+  @media (max-width: 1100px) {
+    .ti-nav-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
-  .ti-subnav a.ativo i {
-    opacity: 1;
-  }
-
-  .ti-icon-painel { color: var(--accent-cyan); }
-  .ti-icon-seguranca { color: var(--accent-ruby); }
-  .ti-icon-bugs { color: var(--accent-amber); }
-  .ti-icon-documentacao { color: var(--accent-emerald); }
-  .ti-icon-operacoes { color: var(--accent-violet); }
-
-  @media (max-width: 768px) {
-    .ti-subnav-container {
-      padding: 1rem 1rem 0 1rem;
-    }
+  @media (max-width: 650px) {
+    .ti-nav-grid { grid-template-columns: 1fr; }
+    .ti-nav-wrapper { padding: 1rem; }
   }
 </style>
 {% endblock %}
 
 {% block content %}
 {% if request.user|pode_menu_ti %}
-<div class="ti-subnav-container">
-  <nav class="ti-subnav" aria-label="Área de TI">
-    <a href="{% url 'ti:painel' %}" class="{% if request.resolver_match.url_name == 'painel' %}ativo{% endif %}">
-      <i class="fa-solid fa-gauge-high ti-icon-painel"></i> Visão geral
-    </a>
-    <a href="{% url 'ti:soc' %}" class="{% if request.resolver_match.url_name == 'soc' %}ativo{% endif %}">
-      <i class="fa-solid fa-shield-halved" style="color: var(--accent-ruby);"></i> SOC (Segurança)
-    </a>
-    <a href="{% url 'ti:gestao_bugs' %}" class="{% if request.resolver_match.url_name == 'gestao_bugs' %}ativo{% endif %}">
-      <i class="fa-solid fa-bug ti-icon-bugs"></i> Chamados
-    </a>
-    <a href="{% url 'ti:gestao_flags' %}" class="{% if 'flag' in request.resolver_match.url_name %}ativo{% endif %}">
-      <i class="fa-solid fa-toggle-on" style="color: var(--accent-emerald);"></i> Feature Flags
-    </a>
-    <a href="{% url 'ti:gestao_parametros' %}" class="{% if request.resolver_match.url_name == 'gestao_parametros' %}ativo{% endif %}">
-      <i class="fa-solid fa-sliders" style="color: var(--accent-cyan);"></i> Parâmetros
-    </a>
-    <a href="{% url 'ti:infraestrutura' %}" class="{% if request.resolver_match.url_name == 'infraestrutura' %}ativo{% endif %}">
-      <i class="fa-solid fa-server" style="color: var(--accent-amber);"></i> Infraestrutura
-    </a>
-    <a href="{% url 'ti:gestao_avisos' %}" class="{% if request.resolver_match.url_name == 'gestao_avisos' or request.resolver_match.url_name == 'criar_aviso' %}ativo{% endif %}">
-      <i class="fa-solid fa-bullhorn" style="color: var(--accent-ruby);"></i> Avisos Globais
-    </a>
-    <a href="{% url 'ti:gestao_backups' %}" class="{% if request.resolver_match.url_name == 'gestao_backups' %}ativo{% endif %}">
-      <i class="fa-solid fa-database" style="color: var(--accent-violet);"></i> Backups
-    </a>
-    <a href="{% url 'ti:api_docs' %}" class="{% if request.resolver_match.url_name == 'api_docs' %}ativo{% endif %}">
-      <i class="fa-solid fa-code" style="color: var(--accent-cyan);"></i> API
-    </a>
+<div class="ti-nav-wrapper">
+  <nav class="ti-nav-grid" aria-label="SIGE Mission Control">
+    
+    {# ── 1. OPERAÇÕES ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-desktop" style="color: var(--icon-ops);"></i> OPERAÇÕES</div>
+      <a href="{% url 'ti:painel' %}" class="{% if request.resolver_match.url_name == 'painel' %}ativo{% endif %}">
+        <i class="fa-solid fa-gauge-high" style="color: var(--icon-vga);"></i> Visão Geral
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'apm' %}" class="{% if 'apm' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-chart-line" style="color: var(--icon-apm);"></i> Métricas APM
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'logs' %}" class="{% if 'logs' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-list-ul" style="color: var(--icon-obs);"></i> Central de Logs
+      </a>
+    </div>
+
+    {# ── 2. SEGURANÇA ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-lock" style="color: var(--icon-sec);"></i> SEGURANÇA</div>
+      <a href="{% url 'ti:soc' %}" class="{% if request.resolver_match.url_name == 'soc' %}ativo{% endif %}">
+        <i class="fa-solid fa-shield-halved" style="color: var(--icon-soc);"></i> Defesa SOC
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'iam' %}" class="{% if 'iam' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-user-shield" style="color: var(--icon-iam);"></i> Acessos IAM
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'vault' %}" class="{% if 'vault' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-key" style="color: var(--icon-vlt);"></i> Cofre Vault
+      </a>
+    </div>
+
+    {# ── 3. INFRAESTRUTURA ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-server" style="color: var(--icon-infra);"></i> INFRAESTRUTURA</div>
+      <a href="{% url 'ti:infraestrutura' %}" class="{% if request.resolver_match.url_name == 'infraestrutura' %}ativo{% endif %}">
+        <i class="fa-solid fa-hubspot" style="color: var(--icon-hub);"></i> Hub de Serviços
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'cicd' %}" class="{% if 'cicd' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-rocket" style="color: var(--icon-ccd);"></i> Pipeline CI/CD
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'dns' %}" class="{% if 'dns' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-globe" style="color: var(--icon-dns);"></i> DNS & SSL
+      </a>
+    </div>
+
+    {# ── 4. COMPLIANCE (NOVA ÁREA) ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-stamp" style="color: var(--icon-gov);"></i> COMPLIANCE</div>
+      <a href="{% url 'ti:central_auditoria' %}" class="{% if request.resolver_match.url_name == 'central_auditoria' %}ativo{% endif %}">
+        <i class="fa-solid fa-fingerprint" style="color: var(--icon-aud);"></i> Auditoria
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'lgpd' %}" class="{% if 'lgpd' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-user-lock" style="color: var(--icon-lgpd);"></i> LGPD & Privacidade
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'politicas' %}" class="{% if 'politicas' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-file-contract" style="color: var(--icon-pol);"></i> Políticas TI
+      </a>
+    </div>
+
+    {# ── 5. DADOS & BACKUP ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-database" style="color: var(--icon-data);"></i> DADOS</div>
+      <a href="{% url 'ti:gestao_backups' %}" class="{% if request.resolver_match.url_name == 'gestao_backups' %}ativo{% endif %}">
+        <i class="fa-solid fa-vault" style="color: var(--icon-cfr);"></i> Snapshots
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'database' %}" class="{% if 'database' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-database" style="color: var(--icon-db);"></i> Gestão DB
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'dr' %}" class="{% if 'dr' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-life-ring" style="color: var(--icon-dr);"></i> Plano DR
+      </a>
+    </div>
+
+    {# ── 6. CONFIGURAÇÃO ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-gears" style="color: var(--icon-cfg);"></i> CONFIG</div>
+      <a href="{% url 'ti:gestao_flags' %}" class="{% if 'flag' in request.resolver_match.url_name %}ativo{% endif %}">
+        <i class="fa-solid fa-toggle-on" style="color: var(--icon-flg);"></i> Feature Flags
+      </a>
+      <a href="{% url 'ti:gestao_parametros' %}" class="{% if request.resolver_match.url_name == 'gestao_parametros' %}ativo{% endif %}">
+        <i class="fa-solid fa-sliders" style="color: var(--icon-prm);"></i> Parâmetros
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'comunicacoes' %}" class="{% if 'comunicacoes' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-envelope-open-text" style="color: var(--icon-com);"></i> Mensageria
+      </a>
+    </div>
+
+    {# ── 7. SUPORTE ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-circle-question" style="color: var(--icon-sup);"></i> SUPORTE</div>
+      <a href="{% url 'ti:gestao_bugs' %}" class="{% if request.resolver_match.url_name == 'gestao_bugs' %}ativo{% endif %}">
+        <i class="fa-solid fa-ticket" style="color: var(--icon-tkt);"></i> Chamados SLA
+      </a>
+      <a href="{% url 'ti:gestao_avisos' %}" class="{% if request.resolver_match.url_name == 'gestao_avisos' %}ativo{% endif %}">
+        <i class="fa-solid fa-bullhorn" style="color: var(--icon-avs);"></i> Avisos Globais
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'runbooks' %}" class="{% if 'runbooks' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-book-medical" style="color: var(--icon-rbk);"></i> Guia Runbooks
+      </a>
+    </div>
+
+    {# ── 8. ESTRATÉGICO ── #}
+    <div class="ti-nav-group">
+      <div class="ti-group-header"><i class="fa-solid fa-brain" style="color: var(--icon-est);"></i> ESTRATÉGICO</div>
+      <a href="{% url 'ti:placeholder_modulo' 'ia' %}" class="{% if 'ia' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-robot" style="color: var(--icon-ia);"></i> IA & Automação
+      </a>
+      <a href="{% url 'ti:placeholder_modulo' 'finops' %}" class="{% if 'finops' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-coins" style="color: var(--icon-fin);"></i> FinOps Custos
+      </a>
+      <a href="{% url 'ti:api_docs' %}" class="{% if request.resolver_match.url_name == 'api_docs' %}ativo{% endif %}">
+        <i class="fa-solid fa-code" style="color: var(--icon-api);"></i> Documentação API
+      </a>
+    </div>
+
   </nav>
 </div>
 {% endif %}

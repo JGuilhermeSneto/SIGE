@@ -25,7 +25,7 @@ class AcademicoViewsTest(TestCase):
         self.professor = Professor.objects.create(
             user=self.prof_user,
             nome_completo="Prof Teste",
-            cpf="111.111.111-11",
+            cpf="135.253.110-38",
             data_nascimento="1980-01-01",
         )
 
@@ -44,13 +44,13 @@ class AcademicoViewsTest(TestCase):
         self.aluno = Aluno.objects.create(
             user=self.aluno_user,
             nome_completo="Aluno Teste",
-            cpf="222.222.222-22",
+            cpf="056.262.330-84",
             data_nascimento="2010-01-01",
             turma=self.turma,
         )
 
     def test_visualizar_disciplinas_acesso_professor(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(
             reverse("visualizar_disciplinas", args=[self.disciplina.id])
         )
@@ -58,37 +58,37 @@ class AcademicoViewsTest(TestCase):
         self.assertEqual(response.context["disciplina"], self.disciplina)
 
     def test_listar_turmas_acesso_admin(self):
-        self.client.login(username="admin", password=self.password)
+        self.client.force_login(self.super_user)
         response = self.client.get(reverse("listar_turmas"))
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.turma, response.context["turmas"])
 
     def test_listar_atividades_acesso_professor(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(
             reverse("listar_atividades", args=[self.disciplina.id])
         )
         self.assertEqual(response.status_code, 200)
 
     def test_cadastrar_atividade_get(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(
             reverse("cadastrar_atividade", args=[self.disciplina.id])
         )
         self.assertEqual(response.status_code, 200)
 
     def test_listar_atividades_aluno(self):
-        self.client.login(username="aluno", password=self.password)
+        self.client.force_login(self.aluno_user)
         response = self.client.get(reverse("listar_atividades_aluno"))
         self.assertEqual(response.status_code, 200)
 
     def test_listar_materiais_aluno(self):
-        self.client.login(username="aluno", password=self.password)
+        self.client.force_login(self.aluno_user)
         response = self.client.get(reverse("listar_materiais_aluno"))
         self.assertEqual(response.status_code, 200)
 
     def test_cadastrar_disciplina_post(self):
-        self.client.login(username="admin", password=self.password)
+        self.client.force_login(self.super_user)
         data = {
             "nome": "Física",
             "professor": self.professor.id,

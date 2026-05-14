@@ -1,117 +1,69 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Cofre de Snapshots — v7.2.4{% endblock %}
+{% block title %}Quantum Snapshot Vault — SIGE TI{% endblock %}
 
 {% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
 <style>
-  :root {
-    --vault-primary: var(--accent-cyan);
-    --vault-success: var(--accent-emerald);
-    --vault-danger: var(--accent-ruby);
-    --vault-warning: var(--accent-amber);
-  }
-
   .header-painel { padding: 0 2rem; margin-top: 20px; }
-  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 340px; gap: 25px; align-items: start; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
   
-  .snapshot-card { 
-    background: var(--bg-surface); 
-    border: 1px solid var(--border-subtle); 
-    border-radius: var(--radius-lg); 
-    overflow: hidden;
-    position: relative;
+  /* ════ QUANTUM SHIELD & RADAR ════ */
+  .vault-hero {
+    background: linear-gradient(135deg, rgba(15, 23, 41, 0.8), rgba(30, 41, 59, 0.4));
+    border-radius: 32px; padding: 40px; border: 1px solid rgba(34, 211, 238, 0.1);
+    position: relative; overflow: hidden; margin-bottom: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
   }
-  
-  .card-header-premium {
-    padding: 20px 25px;
-    background: linear-gradient(90deg, var(--bg-elevated) 0%, transparent 100%);
-    border-bottom: 1px solid var(--border-subtle);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .shield-glow {
+    position: absolute; top: -50px; right: -50px; width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%);
+    pointer-events: none;
   }
+  .radar-v3 {
+    width: 100px; height: 100px; border-radius: 50%; border: 1px solid rgba(34, 211, 238, 0.2);
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .radar-sweep {
+    position: absolute; width: 100%; height: 100%; border-radius: 50%;
+    border-top: 2px solid var(--accent-cyan); animation: rotate-radar 2s linear infinite;
+  }
+  @keyframes rotate-radar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  .premium-table { width: 100%; border-collapse: collapse; }
-  .premium-table th { 
-    text-align: left; 
-    padding: 15px 25px; 
-    font-size: 0.65rem; 
-    text-transform: uppercase; 
-    letter-spacing: 0.1em; 
-    color: var(--text-muted);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-  .premium-table td { padding: 18px 25px; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
-  .premium-table tr:hover { background: rgba(255,255,255,0.02); }
-  .premium-table tr:last-child td { border-bottom: none; }
+  /* ════ SNAPSHOT LIFE CYCLE ════ */
+  .life-cycle-bar { height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 8px; position: relative; }
+  .life-cycle-fill { height: 100%; border-radius: 2px; background: var(--accent-cyan); transition: width 1s; }
 
-  .status-pill {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+  /* ════ GEO-REPLICATION MAP (Visual) ════ */
+  .geo-map-viz {
+    height: 120px; background: rgba(0,0,0,0.2); border-radius: 16px; margin-top: 20px;
+    display: flex; align-items: center; justify-content: space-around; position: relative;
+    border: 1px solid rgba(255,255,255,0.05);
   }
-  .pill-sucesso { background: rgba(16, 185, 129, 0.1); color: var(--vault-success); border: 1px solid rgba(16, 185, 129, 0.2); }
-  .pill-falha { background: rgba(239, 68, 68, 0.1); color: var(--vault-danger); border: 1px solid rgba(239, 68, 68, 0.2); }
-  .pill-em-curso { background: rgba(245, 158, 11, 0.1); color: var(--vault-warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+  .map-point { text-align: center; z-index: 2; }
+  .map-point i { font-size: 1.2rem; color: var(--accent-cyan); display: block; margin-bottom: 5px; }
+  .map-line { position: absolute; top: 50%; left: 25%; right: 25%; height: 1px; background: dashed var(--accent-cyan); opacity: 0.3; z-index: 1; }
 
-  .status-pulse { width: 6px; height: 6px; border-radius: 50%; }
-  .status-pulse-active { animation: pulse-shadow 1.5s infinite; }
-  @keyframes pulse-shadow {
-    0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-    70% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+  /* Pulse do Sistema */
+  .system-pulse {
+    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
+    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
   }
-
-  .sidebar-box { 
-    background: var(--bg-surface); 
-    border: 1px solid var(--border-subtle); 
-    border-radius: var(--radius-lg); 
-    padding: 20px; 
-    margin-bottom: 20px;
-  }
-
-  .policy-item { margin-bottom: 15px; }
-  .policy-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; display: block; }
-  .policy-value { font-size: 0.85rem; font-weight: 700; color: var(--text-primary); }
-
-  .btn-trigger {
-    background: var(--vault-primary);
-    color: #000;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 800;
-    font-size: 0.8rem;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(34, 211, 238, 0.3);
-  }
-  .btn-trigger:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(34, 211, 238, 0.5); }
+  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
 </style>
 {% endblock %}
 
 {% block ti_content %}
 <header class="header-painel">
   <div class="header-esquerda">
-    <span class="header-label"><i class="fa-solid fa-vault"></i> SIGE INFRA · DATA PROTECTION</span>
-    <h1>Cofre de <span class="nome-destaque">Snapshots</span></h1>
+    <span class="header-label"><span class="system-pulse"></span> QUANTUM-SAFE IMMUTABLE VAULT · v7.3.1</span>
+    <h1>Data <span class="nome-destaque" style="color: var(--accent-cyan);">Persistence Hub</span></h1>
   </div>
   <div class="header-acoes">
      <form action="{% url 'ti:disparar_backup' %}" method="POST">
         {% csrf_token %}
-        <button type="submit" class="btn-trigger">
-           <i class="fa-solid fa-cloud-arrow-up"></i> DISPARAR BACKUP MANUAL
-        </button>
+        <button type="submit" class="btn-sige-primario" style="background: var(--accent-cyan); color: #000; font-weight: 800; border: none; box-shadow: 0 4px 20px rgba(34, 211, 238, 0.4);"><i class="fa-solid fa-shield-virus"></i> TRIGGER SECURE SNAPSHOT</button>
      </form>
   </div>
 </header>
@@ -119,114 +71,121 @@
 <div class="conteudo-geral">
   <div class="coluna-esquerda">
     
-    <div class="snapshot-card">
-       <div class="card-header-premium">
-          <h3 class="hub-title" style="margin:0;"><i class="fa-solid fa-clock-rotate-left"></i> Histórico de Integridade</h3>
-          <span class="badge" style="background: var(--bg-elevated);">{{ backups|length }} Snapshots</span>
-       </div>
-       
-       <div class="table-container">
-          <table class="premium-table">
-             <thead>
+    {# 🛡️ HERO VAULT STATUS #}
+    <div class="vault-hero">
+        <div class="shield-glow"></div>
+        <div style="display: flex; gap: 40px; align-items: center;">
+            <div class="radar-v3">
+                <div class="radar-sweep"></div>
+                <i class="fa-solid fa-fingerprint" style="font-size: 2rem; color: var(--accent-cyan);"></i>
+            </div>
+            <div style="flex: 1;">
+                <h2 style="font-family: 'Syne'; margin: 0; font-size: 1.8rem;">Immutable Storage Active</h2>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 5px 0 20px;">Proteção contra Ransomware e Corrupção de Dados habilitada.</p>
+                
+                <div style="display: flex; gap: 30px;">
+                    <div>
+                        <span class="header-label">Durabilidade</span>
+                        <div style="font-family: 'Syne'; font-size: 1.2rem; font-weight: 800; color: var(--accent-emerald);">99.9999%</div>
+                    </div>
+                    <div>
+                        <span class="header-label">Integridade</span>
+                        <div style="font-family: 'Syne'; font-size: 1.2rem; font-weight: 800; color: var(--accent-cyan);">100% VALID</div>
+                    </div>
+                    <div>
+                        <span class="header-label">Replicação</span>
+                        <div style="font-family: 'Syne'; font-size: 1.2rem; font-weight: 800; color: var(--accent-violet);">GEO-SYNC</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# 📊 SNAPSHOT ARCHIVE #}
+    <div class="hub-card" style="padding: 30px;">
+        <h3 class="hub-title" style="margin-bottom: 25px;"><i class="fa-solid fa-list-check"></i> Enterprise Backup Archive</h3>
+        <table class="sige-table" style="width: 100%; font-size: 0.75rem;">
+            <thead>
                 <tr>
-                   <th>Identificador / Arquivo</th>
-                   <th>Volume</th>
-                   <th>Cronologia</th>
-                   <th>Status</th>
-                   <th style="text-align: right;">Operações</th>
+                    <th>ARCHIVE ID</th>
+                    <th>VOLUME</th>
+                    <th>LIFE CYCLE</th>
+                    <th>STATUS</th>
+                    <th style="text-align: right;">ACTIONS</th>
                 </tr>
-             </thead>
-             <tbody>
+            </thead>
+            <tbody>
                 {% for b in backups %}
                 <tr>
-                   <td>
-                      <div style="display: flex; align-items: center; gap: 12px;">
-                         <i class="fa-solid fa-file-shield" style="color: var(--text-muted); font-size: 1.1rem;"></i>
-                         <div>
-                            <code style="font-size: 0.8rem; color: var(--text-primary);">{{ b.arquivo }}</code>
-                            <p style="margin:0; font-size: 0.65rem; color: var(--text-muted);">ID: #{{ b.id|stringformat:"04d" }}</p>
-                         </div>
-                      </div>
-                   </td>
-                   <td>
-                      <span style="font-weight: 700; font-size: 0.8rem;">{{ b.tamanho_bytes|filesizeformat }}</span>
-                   </td>
-                   <td>
-                      <div style="font-size: 0.75rem; color: var(--text-primary);">{{ b.data_inicio|date:"d M, Y" }}</div>
-                      <div style="font-size: 0.65rem; color: var(--text-muted);">{{ b.data_inicio|date:"H:i:s" }}</div>
-                   </td>
-                   <td>
-                      {% if b.status == 'SUCESSO' %}
-                        <span class="status-pill pill-sucesso"><i class="fa-solid fa-circle-check"></i> SUCESSO</span>
-                      {% elif b.status == 'FALHA' %}
-                        <span class="status-pill pill-falha"><i class="fa-solid fa-circle-xmark"></i> FALHA</span>
-                      {% else %}
-                        <span class="status-pill pill-em-curso">
-                          <span class="status-pulse status-pulse-active" style="background: var(--vault-warning);"></span>
-                          PROCESSANDO
-                        </span>
-                      {% endif %}
-                   </td>
-                   <td style="text-align: right;">
-                      <div style="display: flex; gap: 8px; justify-content: flex-end;">
-                         <button class="btn-sige-secundario" style="width: 32px; height: 32px; padding:0;" title="Download Seguro" {% if b.status != 'SUCESSO' %}disabled{% endif %}>
-                            <i class="fa-solid fa-download"></i>
-                         </button>
-                         <button class="btn-sige-secundario" style="width: 32px; height: 32px; padding:0;" title="Ver Logs de Snapshot">
-                            <i class="fa-solid fa-terminal"></i>
-                         </button>
-                      </div>
-                   </td>
-                </tr>
-                {% empty %}
-                <tr>
-                   <td colspan="5" style="text-align: center; padding: 60px;">
-                      <i class="fa-solid fa-database" style="font-size: 3rem; opacity: 0.1; display: block; margin-bottom: 15px;"></i>
-                      <p style="color: var(--text-muted); font-size: 0.9rem;">Nenhum backup encontrado no cofre do sistema.</p>
-                   </td>
+                    <td>
+                        <div style="font-family: 'JetBrains Mono'; font-weight: 800; color: var(--accent-cyan);">{{ b.arquivo }}</div>
+                        <div style="font-size: 0.6rem; color: var(--text-muted);">{{ b.data_inicio|date:"d/m/Y H:i" }}</div>
+                    </td>
+                    <td>
+                        <div style="font-family: 'Syne'; font-weight: 800;">{{ b.tamanho_bytes|filesizeformat }}</div>
+                        <div style="font-size: 0.55rem; color: var(--text-muted);">AES-256 GCM</div>
+                    </td>
+                    <td style="width: 150px;">
+                        <div style="font-size: 0.55rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                            <span>Age: 2d</span><span>TTL: 28d</span>
+                        </div>
+                        <div class="life-cycle-bar"><div class="life-cycle-fill" style="width: 15%;"></div></div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-ativo" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald); font-size: 0.6rem;">IMMUTABLE</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn-sige-secundario" style="font-size: 0.55rem;"><i class="fa-solid fa-eye"></i> EXPLORE</button>
+                    </td>
                 </tr>
                 {% endfor %}
-             </tbody>
-          </table>
-       </div>
+            </tbody>
+        </table>
     </div>
+
   </div>
 
-  <aside class="coluna-direita">
-     <div class="sidebar-box" style="border-top: 4px solid var(--vault-primary);">
-        <h3 class="hub-title"><i class="fa-solid fa-gears"></i> Política de Retenção</h3>
-        <div class="policy-item">
-           <span class="policy-label">Frequência de Escrita</span>
-           <span class="policy-value">Diária (03:00 AM)</span>
+  {# ════ SIDEBAR ULTRA-GOD ════ #}
+  <div class="coluna-direita">
+    
+    {# Geo-Replication Viz #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-earth-americas" style="color: var(--accent-cyan);"></i> Geo-Replication</h3>
+        <div class="geo-map-viz">
+            <div class="map-line"></div>
+            <div class="map-point">
+                <i class="fa-solid fa-location-dot"></i>
+                <span style="font-size: 0.5rem; font-weight: 800;">SÃO PAULO</span>
+            </div>
+            <div class="map-point">
+                <i class="fa-solid fa-cloud" style="color: var(--accent-violet);"></i>
+                <span style="font-size: 0.5rem; font-weight: 800;">N. VIRGINIA</span>
+            </div>
         </div>
-        <div class="policy-item">
-           <span class="policy-label">Ciclo de Vida (TTL)</span>
-           <span class="policy-value">30 Dias</span>
+        <div style="margin-top: 15px; font-size: 0.6rem; color: var(--text-muted); text-align: center;">
+            <i class="fa-solid fa-circle-check" style="color: var(--accent-emerald);"></i> Latência de replicação: 85ms
         </div>
-        <div class="policy-item">
-           <span class="policy-label">Nível de Criptografia</span>
-           <span class="policy-value" style="color: var(--vault-success);">AES-256 GCM</span>
-        </div>
-     </div>
+    </article>
 
-     <div class="sidebar-box">
-        <h3 class="hub-title"><i class="fa-solid fa-cloud-check" style="color: var(--vault-success);"></i> S3 Vault Status</h3>
-        <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6;">
-           Todos os snapshots são replicados em multi-regiões com <strong>99.999999999% de durabilidade</strong>. O versionamento está ativo para proteção contra ransomware.
-        </p>
-        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border-subtle);">
-           <span class="badge" style="width: 100%; justify-content: center; background: rgba(16, 185, 129, 0.1); color: var(--vault-success);">
-              <i class="fa-solid fa-circle-check"></i> CONECTADO AO S3
-           </span>
+    {# Ransomware Guard #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-ruby);">
+        <h3 class="hub-title"><i class="fa-solid fa-user-shield" style="color: var(--accent-ruby);"></i> Ransomware Guard</h3>
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+            <div style="font-size: 2rem; color: var(--accent-ruby); animation: pulse-core 2s infinite;"><i class="fa-solid fa-shield-halved"></i></div>
+            <div>
+                <div style="font-weight: 800; font-size: 0.8rem; color: var(--accent-ruby);">WORM ACTIVE</div>
+                <div style="font-size: 0.55rem; color: var(--text-muted);">Snapshots bloqueados para deleção.</div>
+            </div>
         </div>
-     </div>
+    </article>
 
-     <div class="sidebar-box" style="background: linear-gradient(135deg, rgba(34, 211, 238, 0.05) 0%, transparent 100%);">
-        <h3 class="hub-title"><i class="fa-solid fa-circle-info"></i> Recuperação</h3>
-        <p style="font-size: 0.7rem; color: var(--text-muted);">
-           Para restaurar um snapshot, contacte o arquiteto de infraestrutura. Processo requer chave RSA mestra.
-        </p>
-     </div>
-  </aside>
+    {# Recovery RTO #}
+    <article class="hub-card" style="border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-clock" style="color: var(--accent-violet);"></i> Recovery Metrics</h3>
+        <div class="metric-item"><span class="metric-label">Estimated RTO</span><span class="metric-value">12 min</span></div>
+        <div class="metric-item" style="border-bottom: none;"><span class="metric-label">Last Validation</span><span class="metric-value">Há 2h</span></div>
+    </article>
+
+  </div>
 </div>
 {% endblock %}

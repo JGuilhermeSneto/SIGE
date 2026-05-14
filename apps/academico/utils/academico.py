@@ -191,22 +191,32 @@ def _calcular_detalhes_disciplina(disciplina, turma):
 
 
 def _acumular_notas_professor(disciplinas_filtradas):
-    """Calcula métricas globais de preenchimento para o professor."""
+    """Calcula métricas globais de preenchimento para o professor de forma otimizada."""
     from apps.usuarios.models.perfis import Aluno
+    from ..models.desempenho import Nota
+    from django.db.models import Count, Q
+
+    # 1. Busca alunos únicos envolvidos nestas disciplinas
+    alunos_ids_qs = Aluno.objects.filter(turma__disciplinas__in=disciplinas_filtradas).values_list("id", flat=True).distinct()
+    total_alunos_unicos = alunos_ids_qs.count()
+
+    # 2. Anota cada disciplina com as contagens necessárias em massa
+    # Usamos distinct=True nos Counts para evitar inflar números por causa dos joins
+    disciplinas_anotadas = disciplinas_filtradas.annotate(
+        alunos_count=Count("turma__alunos", distinct=True),
+        n1=Count("notas__nota1"),
+        n2=Count("notas__nota2"),
+        n3=Count("notas__nota3"),
+        n4=Count("notas__nota4"),
+    )
 
     total_notas_possiveis = 0
     total_notas_lancadas = 0
-    alunos_ids = set()
     disciplinas_detalhadas = []
 
-    for disciplina in disciplinas_filtradas:
-        turma = disciplina.turma
-        alunos_da_turma = Aluno.objects.filter(turma=turma).values_list("id", flat=True)
-        alunos_count = alunos_da_turma.count()
-        alunos_ids.update(alunos_da_turma)
-
-        notas_possiveis_disc = alunos_count * 4
-        notas_lancadas_disc = _contar_notas_lancadas(disciplina, turma)
+    for d in disciplinas_anotadas:
+        notas_possiveis_disc = d.alunos_count * 4
+        notas_lancadas_disc = (d.n1 or 0) + (d.n2 or 0) + (d.n3 or 0) + (d.n4 or 0)
 
         total_notas_possiveis += notas_possiveis_disc
         total_notas_lancadas += notas_lancadas_disc
@@ -219,8 +229,8 @@ def _acumular_notas_professor(disciplinas_filtradas):
 
         disciplinas_detalhadas.append(
             {
-                "disciplina": disciplina,
-                "alunos_count": alunos_count,
+                "disciplina": d,
+                "alunos_count": d.alunos_count,
                 "notas_lancadas": notas_lancadas_disc,
                 "notas_possiveis": notas_possiveis_disc,
                 "percentual": percentual,
@@ -230,6 +240,6 @@ def _acumular_notas_professor(disciplinas_filtradas):
     return (
         total_notas_possiveis,
         total_notas_lancadas,
-        len(alunos_ids),
+        total_alunos_unicos,
         disciplinas_detalhadas,
     )

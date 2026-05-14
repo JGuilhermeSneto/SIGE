@@ -19,7 +19,6 @@ class AcademicoService:
                     nome=d["nome"],
                     turma=turma,
                     professor_id=d.get("professor_id"),
-                    carga_horaria=d.get("carga_horaria", 40),
                 )
         return turma
 
