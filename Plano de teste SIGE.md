@@ -69,16 +69,30 @@ O plano de teste tem como objetivo garantir que o ecossistema SIGE atenda aos re
 
 ---
 
-## 10. Cronograma de Testes
+## 10. Cronograma de Testes (Maio 2026)
 | Atividade | Responsável | Início | Conclusão |
 |---|---|---|---|
-| Planejamento | Jose Guilherme | 10/05/2026 | 12/05/2026 |
-| Execução (Sprints) | Equipe (Pedro/Israel/João) | 13/05/2026 | 25/05/2026 |
-| Relatório Final | Jose Guilherme | 26/05/2026 | 28/05/2026 |
+| Planejamento Inicial | Jose Guilherme | 10/05/2026 | 12/05/2026 |
+| Execução de Testes Unitários | Equipe Dev | 13/05/2026 | 18/05/2026 |
+| **Auditoria de Segurança (SOC)** | Israel Cipriano | 19/05/2026 | 21/05/2026 |
+| **Teste de Estresse IoT/MQTT** | Pedro Henrique | 22/05/2026 | 24/05/2026 |
+| Validação Mobile API | João Batista | 25/05/2026 | 27/05/2026 |
+| Relatório Final Q2 | Jose Guilherme | 28/05/2026 | 30/05/2026 |
 
 ---
 
-## 11. Relatórios e Comunicação
+## 🚀 11. Futuras Tasks & Testes Automatizados
+Para garantir a evolução contínua do SIGE Apex, as seguintes frentes de automação estão agendadas para o próximo ciclo:
+
+1. **E2E com Playwright**: Automação completa do fluxo de matrícula do aluno e lançamento de notas pelo professor (Simulação real de navegador).
+2. **Stress Testing com Locust**: Simulação de 5.000 dispositivos IoT enviando dados simultâneos para validar a resiliência do Redis e Workers Celery.
+3. **Mutation Testing**: Aplicação de testes de mutação no módulo `apps.academico` para garantir que os testes unitários são verdadeiramente eficazes.
+4. **Contract Testing**: Implementação de testes de contrato entre o Backend (DRF) e o App Mobile para evitar quebras de interface em updates.
+5. **Automação de Penetration Test**: Integração de ferramentas de scan dinâmico (DAST) no pipeline de CI/CD para detectar vulnerabilidades de runtime.
+
+---
+
+## 12. Relatórios e Comunicação
 - O status dos testes será compartilhado via **Flower** (monitoramento de tasks) e **Slack/E-mail**.
 - Defeitos serão reportados e rastreados no **Trello/GitHub Issues**.
 - Reuniões semanais de alinhamento com a equipe de desenvolvimento para revisão do backlog de bugs.
