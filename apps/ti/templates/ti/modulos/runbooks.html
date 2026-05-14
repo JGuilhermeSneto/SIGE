@@ -1,0 +1,84 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Runbooks — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<style>
+  .rb-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px; }
+  .rb-sidebar {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 20px;
+  }
+  .rb-item {
+    padding: 10px 15px; border-radius: 10px; margin-bottom: 5px; font-size: 0.75rem; color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+  }
+  .rb-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+  .rb-item.active { background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); border: 1px solid rgba(34, 211, 238, 0.2); }
+
+  .rb-content {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 35px;
+  }
+  .rb-code {
+    background: #000; border-radius: 12px; padding: 20px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; color: #fff; margin: 20px 0; border: 1px solid var(--border-subtle);
+  }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel" style="padding: 0 20px; margin-top: 20px;">
+  <div class="header-esquerda">
+    <span class="header-label"><i class="fa-solid fa-book"></i> PROCEDIMENTOS OPERACIONAIS (SOP)</span>
+    <h1>Guia de <span class="nome-destaque" style="color: var(--accent-emerald);">Runbooks</span></h1>
+  </div>
+</header>
+
+<div class="rb-grid">
+  <aside class="rb-sidebar">
+    <h4 style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px;">Incidentes Comuns</h4>
+    <div class="rb-item active"><i class="fa-solid fa-fire"></i> CPU em 100%</div>
+    <div class="rb-item"><i class="fa-solid fa-database"></i> Erro de Conexão DB</div>
+    <div class="rb-item"><i class="fa-solid fa-key"></i> Reset de MFA Master</div>
+    
+    <h4 style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin: 25px 0 15px 0;">Manutenção</h4>
+    <div class="rb-item"><i class="fa-solid fa-broom"></i> Limpeza de Logs</div>
+    <div class="rb-item"><i class="fa-solid fa-upload"></i> Deploy de Emergência</div>
+  </aside>
+
+  <main class="rb-content">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+       <div>
+          <h2 style="margin-top: 0; font-family: 'Syne';">Incidente: CPU em 100%</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Procedimento para identificar e mitigar picos de processamento anormais.</p>
+       </div>
+       <span class="status-badge status-ativo" style="background: var(--accent-ruby);">CRÍTICO</span>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 30px 0;">
+
+    <h3 style="font-family: 'Syne'; font-size: 1.1rem;">1. Diagnóstico Inicial</h3>
+    <p style="font-size: 0.8rem; line-height: 1.6;">Acesse o terminal do servidor e verifique quais processos estão consumindo mais recursos utilizando o comando <code>htop</code> ou <code>top</code>.</p>
+    
+    <div class="rb-code">
+       # Verificando processos Python/Gunicorn<br>
+       ps aux | grep python | sort -rk 3,3 | head -n 5
+    </div>
+
+    <h3 style="font-family: 'Syne'; font-size: 1.1rem;">2. Mitigação</h3>
+    <p style="font-size: 0.8rem; line-height: 1.6;">Se o problema for causado por uma tarefa longa no Celery, você pode tentar purgar a fila se não houver dados críticos pendentes.</p>
+    
+    <div class="rb-code" style="color: var(--accent-amber); border-color: var(--accent-amber);">
+       # PERIGO: Isso limpará TODAS as tarefas pendentes<br>
+       celery -A config purge
+    </div>
+
+    <h3 style="font-family: 'Syne'; font-size: 1.1rem;">3. Prevenção</h3>
+    <ul style="font-size: 0.8rem; line-height: 1.8; color: var(--text-muted);">
+       <li>Verifique se há loops infinitos em middlewares recentemente alterados.</li>
+       <li>Confirme se o cache do Redis está operacional.</li>
+       <li>Considere o escalonamento horizontal (adicionar mais workers).</li>
+    </ul>
+  </main>
+</div>
+{% endblock %}

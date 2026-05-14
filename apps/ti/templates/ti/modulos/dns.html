@@ -1,0 +1,252 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}DNS & SSL Elite Hub — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  :root {
+    --dns-cyan: rgba(34, 211, 238, 0.4);
+    --dns-amber: rgba(245, 158, 11, 0.4);
+  }
+
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { 
+    padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start;
+    background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.05) 0%, transparent 50%);
+  }
+
+  /* ════ GLASS CARD APEX ════ */
+  .hub-card, .zone-card {
+    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08); padding: 25px; position: relative; overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transform-style: preserve-3d;
+  }
+  .hub-card:hover, .zone-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 20px 50px rgba(34, 211, 238, 0.15);
+  }
+
+  /* ════ DNS RECORD ROWS ════ */
+  .record-row {
+    display: grid; grid-template-columns: 80px 1fr 1fr 100px; align-items: center; padding: 15px 20px;
+    background: rgba(255,255,255,0.02); border-radius: 16px; margin-bottom: 12px;
+    border: 1px solid rgba(255,255,255,0.03); transition: 0.3s;
+  }
+  .record-row:hover {
+    background: rgba(34, 211, 238, 0.05); border-color: rgba(34, 211, 238, 0.2);
+    transform: scale(1.01);
+  }
+
+  .record-type {
+    width: 60px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 900; background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan);
+    border: 1px solid rgba(34, 211, 238, 0.2); box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+  }
+
+  .record-name { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text-primary); font-weight: 600; }
+  .record-value { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #64748b; }
+
+  /* ════ SSL CERTIFICATE HUD ════ */
+  .ssl-status-hub {
+    display: flex; align-items: center; gap: 20px; padding: 20px;
+    background: rgba(16, 185, 129, 0.05); border-radius: 20px; border: 1px solid rgba(16, 185, 129, 0.1);
+  }
+  .ssl-icon-glow {
+    width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.1);
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+    color: var(--accent-emerald); box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+    animation: sslPulse 2.5s infinite;
+  }
+  @keyframes sslPulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+
+  /* ════ PROPAGATION WORLD MAP ════ */
+  .propagation-map {
+    height: 120px; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'), rgba(0,0,0,0.3);
+    border-radius: 16px; position: relative; margin-top: 20px; overflow: hidden;
+  }
+  .map-dot {
+    position: absolute; width: 6px; height: 6px; background: var(--accent-emerald);
+    border-radius: 50%; box-shadow: 0 0 8px var(--accent-emerald);
+    animation: dotPulse 2s infinite;
+  }
+  @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.5); opacity: 1; } 100% { transform: scale(1); opacity: 0.5; } }
+
+  /* Grid Overlay */
+  .grid-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
+                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 50px 50px; pointer-events: none; z-index: -1;
+  }
+
+  .uptime-badge {
+    background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan);
+    padding: 6px 16px; border-radius: 30px; font-size: 0.65rem; font-weight: 800;
+    border: 1px solid rgba(34, 211, 238, 0.2); display: flex; align-items: center; gap: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<div class="grid-overlay"></div>
+
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><span class="system-pulse"></span> GLOBAL DOMAIN ENGINE · v7.3.2-APEX</span>
+    <h1 style="letter-spacing: -1px;">Gestão <span class="nome-destaque" style="color: var(--accent-cyan); text-shadow: 0 0 20px var(--dns-cyan);">DNS & SSL</span></h1>
+  </div>
+  <div class="header-acoes">
+     <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="uptime-badge">
+            <span class="system-pulse" style="width: 6px; height: 6px; margin: 0;"></span>
+            RESOLVER UPTIME: <span id="dnsUptime">99.99%</span>
+        </div>
+        <button class="btn-sige-primario" style="background: var(--accent-cyan); color: #000; border: none; font-weight: 800;">
+            <i class="fa-solid fa-plus"></i> ADD RECORD
+        </button>
+     </div>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="col-main">
+    
+    {# 🌐 DOMAIN ZONE EXPLORER #}
+    <article class="zone-card" style="margin-bottom: 25px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div>
+                <h3 style="margin: 0; font-family: 'Syne'; font-size: 1.4rem;"><i class="fa-solid fa-globe" style="color: var(--accent-cyan);"></i> sige.edu.br</h3>
+                <span style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Cloudflare Managed · Zone ID: #ELITE-4402</span>
+            </div>
+            <div style="text-align: right;">
+                <span class="status-badge status-ativo" style="padding: 5px 15px;">ACTIVE ZONE</span>
+            </div>
+        </div>
+
+        <div class="record-row">
+            <span class="record-type">A</span>
+            <span class="record-name">@</span>
+            <span class="record-value">172.67.141.22</span>
+            <span class="status-badge status-ativo" style="font-size: 0.5rem; background: rgba(34, 211, 238, 0.1);">PROXIED</span>
+        </div>
+
+        <div class="record-row">
+            <span class="record-type" style="color: var(--accent-violet); background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.2);">CNAME</span>
+            <span class="record-name">www</span>
+            <span class="record-value">sige.edu.br</span>
+            <span class="status-badge status-ativo" style="font-size: 0.5rem; background: rgba(34, 211, 238, 0.1);">PROXIED</span>
+        </div>
+
+        <div class="record-row">
+            <span class="record-type" style="color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2);">MX</span>
+            <span class="record-name">@</span>
+            <span class="record-value">mail.sige.edu.br</span>
+            <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: 800;">PRIORITY: 10</span>
+        </div>
+
+        <div class="record-row" style="border-bottom: none; margin-bottom: 0;">
+            <span class="record-type" style="color: var(--accent-ruby); background: rgba(225, 29, 72, 0.1); border-color: rgba(225, 29, 72, 0.2);">TXT</span>
+            <span class="record-name">_google-verify</span>
+            <span class="record-value">v=spf1 include:_spf.google.com ~all</span>
+            <i class="fa-solid fa-shield-check" style="color: var(--accent-emerald);"></i>
+        </div>
+    </article>
+
+    {# 🛡️ SSL CERTIFICATE STATUS #}
+    <article class="zone-card">
+        <h3 style="margin-bottom: 25px; font-family: 'Syne';"><i class="fa-solid fa-certificate"></i> Certificados SSL Ativos</h3>
+        
+        <div class="ssl-status-hub">
+            <div class="ssl-icon-glow">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <strong style="font-size: 1rem; font-family: 'Syne';">Wildcard sige.edu.br</strong>
+                    <span class="status-badge status-ativo">SECURITY OK</span>
+                </div>
+                <div style="display: flex; gap: 20px; font-size: 0.65rem; color: var(--text-muted);">
+                    <span>Emissor: <strong style="color: var(--text-primary);">Let's Encrypt R3</strong></span>
+                    <span>Expira em: <strong style="color: var(--accent-emerald);">84 dias</strong></span>
+                    <span>Tipo: <strong style="color: var(--text-primary);">DV RSA 2048</strong></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="record-row" style="margin-top: 20px; background: rgba(0,0,0,0.2);">
+            <i class="fa-solid fa-lock" style="color: var(--accent-cyan);"></i>
+            <span class="record-name">api.sige.edu.br</span>
+            <span class="record-value">Cloudflare Inc ECC CA-3</span>
+            <span style="font-size: 0.6rem; font-weight: 800; color: var(--accent-emerald);">RENOVAÇÃO AUTOMÁTICA</span>
+        </div>
+    </article>
+
+  </div>
+
+  <div class="col-side">
+    {# 🌍 GLOBAL PROPAGATION #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-earth-americas"></i> Propagação Global</h3>
+        <div class="propagation-map">
+            <div class="map-dot" style="top: 30%; left: 20%;"></div>
+            <div class="map-dot" style="top: 40%; left: 45%; animation-delay: 0.5s;"></div>
+            <div class="map-dot" style="top: 25%; right: 25%; animation-delay: 1.2s;"></div>
+            <div class="map-dot" style="bottom: 30%; left: 30%; animation-delay: 0.8s;"></div>
+            <div class="map-dot" style="bottom: 20%; right: 20%; animation-delay: 0.3s;"></div>
+        </div>
+        <div style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-bottom: 10px;">
+                <span>Global Health</span><strong style="color: var(--accent-emerald);">100% SYNCHRONIZED</strong>
+            </div>
+            <div style="height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px;">
+                <div style="width: 100%; height: 100%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald);"></div>
+            </div>
+        </div>
+    </article>
+
+    {# 🚦 TRAFFIC ANALYSIS #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-chart-line"></i> Requisições DNS</h3>
+        <div style="text-align: center; padding: 20px 0;">
+            <div style="font-family: 'Syne'; font-size: 2.8rem; font-weight: 800; color: var(--accent-violet);">12.8k</div>
+            <p style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Total Resolvido (24h)</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.6rem; padding-top: 15px; border-top: 1px solid var(--border-subtle);">
+            <span>Tempo Médio: <strong>14ms</strong></span>
+            <span>Cache Hit: <strong style="color: var(--accent-emerald);">94%</strong></span>
+        </div>
+    </article>
+
+    {# 🚨 DNS SECURITY #}
+    <article class="hub-card" style="border-top: 3px solid var(--accent-ruby);">
+        <h3 class="hub-title" style="color: var(--accent-ruby);"><i class="fa-solid fa-shield-virus"></i> Segurança DNS</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem;">
+                <span>DNSSEC Status</span>
+                <span class="status-badge" style="background: var(--accent-emerald); font-size: 0.5rem;">PROTEGIDO</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.65rem;">
+                <span>DDoS Protection</span>
+                <span class="status-badge" style="background: var(--accent-cyan); font-size: 0.5rem;">ATIVO</span>
+            </div>
+        </div>
+    </article>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Simulated Resolver Stats ---
+        const uptimeEl = document.getElementById('dnsUptime');
+        setInterval(() => {
+            const val = (99.98 + Math.random() * 0.02).toFixed(2);
+            uptimeEl.innerText = `${val}%`;
+        }, 3000);
+    });
+</script>
+{% endblock %}

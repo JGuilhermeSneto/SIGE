@@ -1,0 +1,78 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Status Page — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<style>
+  .status-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+  .status-banner {
+    background: var(--accent-emerald); color: #000; padding: 20px; border-radius: 15px;
+    display: flex; align-items: center; gap: 20px; font-weight: 800; margin-bottom: 40px;
+  }
+  .system-row {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 15px; padding: 20px;
+    margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .uptime-grid { display: flex; gap: 2px; margin-top: 8px; }
+  .uptime-bar { width: 4px; height: 15px; background: var(--accent-emerald); border-radius: 1px; opacity: 0.6; }
+  .uptime-bar.warning { background: var(--accent-amber); opacity: 1; }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel" style="padding: 0 20px; margin-top: 20px;">
+  <div class="header-esquerda">
+    <span class="header-label"><i class="fa-solid fa-signal"></i> MONITORAMENTO PÚBLICO DE DISPONIBILIDADE</span>
+    <h1>Status do <span class="nome-destaque" style="color: var(--accent-emerald);">Sistema</span></h1>
+  </div>
+</header>
+
+<div class="status-container">
+  <div class="status-banner">
+     <i class="fa-solid fa-check-circle" style="font-size: 2rem;"></i>
+     <div>
+        <div style="font-size: 1.1rem;">TODOS OS SISTEMAS OPERACIONAIS</div>
+        <div style="font-size: 0.7rem; opacity: 0.7;">Última verificação: {{ agora|date:"H:i:s" }}</div>
+     </div>
+  </div>
+
+  <h3 style="font-family: 'Syne'; margin-bottom: 20px;">Componentes do Core</h3>
+  
+  <div class="system-row">
+     <div>
+        <div style="font-weight: 800; font-size: 0.9rem;">Portal do Aluno / Professor</div>
+        <div class="uptime-grid">
+           {% for i in "12345678901234567890123456789012345678901234567890" %}
+           <div class="uptime-bar"></div>
+           {% endfor %}
+        </div>
+     </div>
+     <span style="color: var(--accent-emerald); font-weight: 800; font-size: 0.75rem;">OPERACIONAL</span>
+  </div>
+
+  <div class="system-row">
+     <div>
+        <div style="font-weight: 800; font-size: 0.9rem;">API REST & Integrações</div>
+        <div class="uptime-grid">
+           {% for i in "12345678901234567890123456789012345678901234567890" %}
+           <div class="uptime-bar {% if forloop.counter == 32 %}warning{% endif %}"></div>
+           {% endfor %}
+        </div>
+     </div>
+     <span style="color: var(--accent-emerald); font-weight: 800; font-size: 0.75rem;">OPERACIONAL</span>
+  </div>
+
+  <div class="system-row">
+     <div>
+        <div style="font-weight: 800; font-size: 0.9rem;">Processamento de Boletos / Pix</div>
+        <div class="uptime-grid">
+           {% for i in "12345678901234567890123456789012345678901234567890" %}
+           <div class="uptime-bar"></div>
+           {% endfor %}
+        </div>
+     </div>
+     <span style="color: var(--accent-emerald); font-weight: 800; font-size: 0.75rem;">OPERACIONAL</span>
+  </div>
+</div>
+{% endblock %}

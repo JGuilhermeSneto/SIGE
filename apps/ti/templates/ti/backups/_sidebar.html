@@ -1,0 +1,68 @@
+{# apps/ti/templates/ti/backups/_sidebar.html #}
+<div class="col-side side-stack">
+
+  {# ── Geo-Sync ── #}
+  <div class="card">
+    <div class="shine"></div>
+    <div class="card-title"><i class="fa-solid fa-earth-americas"></i> Geo-Replication</div>
+    <div class="geo-map">
+      <div class="geo-map__particle"></div>
+      <div style="text-align: center; z-index: 2;">
+        <i class="fa-solid fa-location-dot" style="color: var(--c-cyan); font-size: 1rem;"></i>
+        <div style="font-family: var(--font-mono); font-size: 0.45rem; color: var(--c-dim); margin-top: 4px;">BR-SP</div>
+      </div>
+      <div style="text-align: center; z-index: 2;">
+        <i class="fa-solid fa-cloud" style="color: var(--c-violet); font-size: 1rem;"></i>
+        <div style="font-family: var(--font-mono); font-size: 0.45rem; color: var(--c-dim); margin-top: 4px;">US-VA</div>
+      </div>
+    </div>
+    <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div style="font-size: 0.55rem; color: var(--c-dim);">Latency: <strong style="color: var(--c-emerald);">85ms</strong></div>
+        <div style="font-size: 0.55rem; color: var(--c-dim);">Sync: <strong style="color: var(--c-emerald);">100%</strong></div>
+    </div>
+  </div>
+
+  {# ── Logs ── #}
+  <div class="card">
+    <div class="shine"></div>
+    <div class="card-title"><i class="fa-solid fa-terminal"></i> Event Stream</div>
+    <div class="terminal-body" id="backupLogs">
+      <div class="term-line"><span class="term-cursor"></span></div>
+    </div>
+  </div>
+
+  {# ── WORM ── #}
+  <div class="card" style="border-left: 2px solid var(--c-ruby);">
+    <div class="shine"></div>
+    <div class="worm-body">
+        <i class="fa-solid fa-shield-halved worm-icon"></i>
+        <div>
+            <div style="font-family: var(--font-display); font-weight: 800; font-size: 0.65rem; color: var(--c-ruby);">WORM SHIELD</div>
+            <p style="font-size: 0.5rem; color: var(--c-dim);">Immutable Lock: Active (30d)</p>
+        </div>
+    </div>
+  </div>
+
+  {# ── Metrics ── #}
+  <div class="card">
+    <div class="shine"></div>
+    <div class="card-title"><i class="fa-solid fa-bolt"></i> Recovery</div>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+        <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.55rem; margin-bottom: 4px; color: var(--c-dim);">
+                <span>RTO Index</span>
+                <strong style="color: var(--c-violet);">12m</strong>
+            </div>
+            <div class="rto-bar"><div style="width: 40%; height: 100%; background: var(--c-violet);"></div></div>
+        </div>
+        <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.55rem; margin-bottom: 4px; color: var(--c-dim);">
+                <span>RPO Accuracy</span>
+                <strong style="color: var(--c-cyan);">99%</strong>
+            </div>
+            <div class="rto-bar"><div style="width: 95%; height: 100%; background: var(--c-cyan);"></div></div>
+        </div>
+    </div>
+  </div>
+
+</div>

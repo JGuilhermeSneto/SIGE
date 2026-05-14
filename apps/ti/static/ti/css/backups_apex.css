@@ -1,0 +1,205 @@
+/* ══════════════════════════════════════
+   DESIGN TOKENS APEX v4 - ELITE HUD
+══════════════════════════════════════ */
+:root {
+  --c-bg:        var(--bg-base);
+  --c-surface:   color-mix(in srgb, var(--bg-surface) 60%, transparent);
+  --c-border:    var(--border-subtle);
+  --c-border-hi: color-mix(in srgb, var(--primary) 30%, transparent);
+
+  --c-cyan:      var(--accent-cyan, #22d3ee);
+  --c-emerald:   var(--accent-emerald, #10b981);
+  --c-ruby:      var(--accent-ruby, #f43f5e);
+  --c-violet:    var(--accent-violet, #8b5cf6);
+  --c-amber:     var(--accent-amber, #f59e0b);
+
+  --c-text:      var(--text-primary);
+  --c-muted:     var(--text-secondary);
+  --c-dim:       var(--text-muted);
+
+  --radius-lg:   12px;
+  --radius-md:   8px;
+  --radius-sm:   4px;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'DM Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { 
+  background: var(--c-bg); 
+  color: var(--c-text); 
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  font-size: 12px; /* Ultra-compact */
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: var(--c-dim); border-radius: 3px; }
+
+/* ══════════════════════════════════════
+   BACKGROUND - ELITE
+══════════════════════════════════════ */
+.bg-layer {
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background: 
+    radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary) 10%, transparent) 0%, transparent 60%),
+    var(--c-bg);
+}
+.grid-layer {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: 
+    linear-gradient(color-mix(in srgb, var(--c-text) 3%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--c-text) 3%, transparent) 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(circle at 50% 0%, black 30%, transparent 90%);
+}
+
+/* ══════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════ */
+.page-wrap { padding: 15px 25px; max-width: 1500px; margin: 0 auto; }
+
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+/* ══════════════════════════════════════
+   HEADER - ELITE
+══════════════════════════════════════ */
+.page-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 12px; border-bottom: 1px solid var(--c-border);
+}
+.page-header__meta {
+  display: flex; align-items: center; gap: 8px; font-family: var(--font-mono);
+  font-size: 0.55rem; color: var(--c-dim); letter-spacing: 0.2em; text-transform: uppercase;
+}
+
+.page-title {
+  font-family: var(--font-display); font-size: 1.4rem; font-weight: 900;
+  letter-spacing: -0.5px; color: #fff;
+}
+.page-title em { font-style: normal; color: var(--c-cyan); opacity: 0.8; }
+
+.vault-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(16,185,129,0.03); border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 4px; padding: 4px 10px; font-family: var(--font-mono);
+  font-size: 0.5rem; color: var(--c-emerald);
+}
+
+.btn-sige-primario, .btn-sige-secundario {
+  padding: 6px 14px; border-radius: var(--radius-sm); font-family: var(--font-display);
+  font-size: 0.6rem; font-weight: 800; cursor: pointer; transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 8px; text-decoration: none; border: none;
+}
+.btn-sige-primario {
+  background: linear-gradient(135deg, var(--c-cyan), #0891b2); color: #000;
+  box-shadow: 0 2px 10px rgba(34,211,238,0.2);
+}
+.btn-sige-primario:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(34,211,238,0.3); filter: brightness(1.1); }
+
+.btn-sige-secundario {
+  background: rgba(255,255,255,0.03); border: 1px solid var(--c-border); color: var(--c-text);
+}
+.btn-sige-secundario:hover { background: rgba(255,255,255,0.08); border-color: var(--c-border-hi); transform: translateY(-1px); }
+
+/* ══════════════════════════════════════
+   CARDS - ELITE
+══════════════════════════════════════ */
+.card, .vault-hero {
+  background: var(--c-surface); backdrop-filter: blur(8px);
+  border: 1px solid var(--c-border); border-radius: var(--radius-lg);
+  padding: 15px; position: relative; overflow: hidden; transition: border-color 0.3s;
+}
+.card:hover { border-color: var(--c-border-hi); }
+
+/* Scanline effect */
+.card::after, .vault-hero::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(color-mix(in srgb, var(--c-text) 5%, transparent) 50%, transparent 50%);
+  background-size: 100% 2px; z-index: 10; opacity: 0.15;
+}
+
+.shine {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 0.3s;
+  background: radial-gradient(circle at var(--x) var(--y), rgba(34,211,238,0.06) 0%, transparent 60%);
+}
+.card:hover .shine, .snap-row:hover .shine { opacity: 1; }
+
+.card-title {
+  font-family: var(--font-display); font-size: 0.65rem; font-weight: 800;
+  color: var(--c-dim); text-transform: uppercase; letter-spacing: 0.1em;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+}
+.card-title i { font-size: 0.8rem; color: var(--c-cyan); opacity: 0.5; }
+
+/* ══════════════════════════════════════
+   HERO VAULT - ULTRA COMPACT
+══════════════════════════════════════ */
+.vault-hero { padding: 15px 20px; border-left: 2px solid var(--c-cyan); }
+.vault-hero__badge {
+  position: absolute; top: 12px; right: 12px; font-family: var(--font-mono);
+  font-size: 0.5rem; color: var(--c-emerald); opacity: 0.7;
+}
+.vault-hero__inner { display: flex; gap: 20px; align-items: center; }
+
+.orbital-wrap { width: 60px; height: 60px; flex-shrink: 0; }
+.orbital-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(34,211,238,0.05); }
+.orbital-ring:nth-child(1) { border-top: 1.5px solid var(--c-cyan); animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.orbital-core { font-size: 1.4rem; color: var(--c-cyan); opacity: 0.8; }
+
+.vault-hero__heading { font-family: var(--font-display); font-size: 1.1rem; font-weight: 900; color: #fff; margin-bottom: 2px; }
+.vault-hero__sub { font-size: 0.65rem; color: var(--c-dim); margin-bottom: 12px; }
+
+.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stat-cell { background: rgba(0,0,0,0.2); border: 1px solid var(--c-border); border-radius: var(--radius-sm); padding: 8px 12px; }
+.stat-cell__label { font-family: var(--font-mono); font-size: 0.45rem; color: var(--c-dim); text-transform: uppercase; margin-bottom: 2px; }
+.stat-cell__value { font-family: var(--font-display); font-size: 0.9rem; font-weight: 900; color: #fff; }
+
+/* ══════════════════════════════════════
+   SNAPSHOT LIST - ELITE
+══════════════════════════════════════ */
+.snap-cols {
+  display: grid; grid-template-columns: 2fr 1fr 120px 100px 140px;
+  padding: 8px 12px; font-family: var(--font-mono); font-size: 0.5rem;
+  color: var(--c-dim); text-transform: uppercase; border-bottom: 1px solid var(--c-border);
+}
+
+.snap-row {
+  display: grid; grid-template-columns: 2fr 1fr 120px 100px 140px;
+  align-items: center; padding: 10px 12px; background: rgba(255,255,255,0.005);
+  border: 1px solid transparent; border-radius: 6px; margin-bottom: 4px; transition: 0.2s;
+}
+.snap-row:hover { background: rgba(34,211,238,0.02); border-color: var(--c-border); transform: translateX(3px); }
+
+.snap-filename { font-family: var(--font-mono); font-size: 0.7rem; color: #cbd5e1; }
+.snap-date { font-size: 0.6rem; color: var(--c-dim); }
+
+.snap-size { font-family: var(--font-display); font-size: 0.85rem; font-weight: 800; color: var(--c-cyan); opacity: 0.9; }
+
+.status-chip { padding: 3px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.5rem; text-transform: uppercase; }
+.status-chip--ok { background: rgba(16,185,129,0.05); color: var(--c-emerald); border: 1px solid rgba(16,185,129,0.1); }
+
+.btn-dl { 
+  background: transparent; border: 1px solid var(--c-emerald); color: var(--c-emerald);
+  padding: 4px 10px; border-radius: 4px; font-family: var(--font-display); font-size: 0.55rem; font-weight: 700;
+  text-decoration: none; transition: 0.2s;
+}
+.btn-dl:hover { background: var(--c-emerald); color: #000; }
+
+/* ══════════════════════════════════════
+   SIDEBAR - ELITE
+══════════════════════════════════════ */
+.side-stack { display: flex; flex-direction: column; gap: 12px; }
+.terminal-body { background: #000; padding: 10px; height: 120px; font-size: 0.55rem; line-height: 1.4; }
+.geo-map { height: 100px; }
+.worm-body { padding: 10px; border-radius: 6px; }
+.worm-icon { font-size: 1.2rem; }

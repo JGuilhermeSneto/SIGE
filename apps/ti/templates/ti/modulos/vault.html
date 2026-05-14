@@ -1,269 +1,280 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Ultra Vault & Secrets — SIGE TI{% endblock %}
+{% block title %}Cyber Vault Apex — SIGE Mission Control{% endblock %}
 
 {% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
 <style>
+  :root {
+    --vault-amber: rgba(251, 191, 36, 0.4);
+    --vault-emerald: rgba(16, 185, 129, 0.4);
+    --vault-ruby: rgba(244, 63, 94, 0.4);
+  }
+
   .header-painel { padding: 0 2rem; margin-top: 20px; }
-  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-  
-  /* ════ GOD-TIER VAULT CARDS ════ */
+  .conteudo-geral { 
+    padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start;
+    background: radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.05) 0%, transparent 50%);
+  }
+
+  /* ════ GLASS CARD APEX ════ */
+  .hub-card, .vault-pro-row {
+    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08); padding: 25px; position: relative; overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transform-style: preserve-3d;
+  }
+  .hub-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+    border-color: rgba(251, 191, 36, 0.3);
+    box-shadow: 0 20px 50px rgba(251, 191, 36, 0.15);
+  }
+
+  /* ════ VAULT ROWS APEX ════ */
   .vault-pro-row {
-    background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);
-    border-left: 3px solid transparent;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 0 16px 16px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 1px solid rgba(255,255,255,0.02);
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px; border-radius: 20px; border-left: 4px solid transparent;
+    background: rgba(255,255,255,0.02); transition: 0.4s;
   }
   .vault-pro-row:hover {
-    background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, transparent 100%);
-    border-left-color: var(--accent-amber);
+    background: rgba(251, 191, 36, 0.05); border-left-color: var(--accent-amber);
     transform: scale(1.01) translateX(10px);
-    box-shadow: -10px 0 20px rgba(251, 191, 36, 0.1);
   }
 
-  .key-meta { display: flex; align-items: center; gap: 20px; }
   .key-icon-glow {
-    width: 50px; height: 50px; border-radius: 14px;
+    width: 55px; height: 55px; border-radius: 16px;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(15, 23, 41, 0.6);
-    border: 1px solid rgba(255,255,255,0.05);
-    font-size: 1.4rem;
-    color: var(--accent-amber);
-    box-shadow: 0 0 15px rgba(251, 191, 36, 0.1);
+    background: rgba(15, 23, 41, 0.8); border: 1px solid rgba(255,255,255,0.05);
+    font-size: 1.5rem; color: var(--accent-amber);
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.1);
   }
 
-  /* ════ COMPLIANCE ITEM ════ */
-  .compliance-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.03);
-  }
-  .compliance-label { display: flex; align-items: center; gap: 10px; font-size: 0.7rem; color: var(--text-muted); }
-  .check-glow {
-    color: var(--accent-emerald); font-size: 0.9rem;
-    filter: drop-shadow(0 0 5px var(--accent-emerald));
-  }
-
-  /* ════ INTELLIGENCE LOG ════ */
-  .intel-card {
-    position: relative; padding: 15px; border-radius: 14px;
-    background: rgba(255,255,255,0.02); margin-bottom: 12px;
-    border: 1px solid transparent; transition: all 0.3s;
-  }
-  .intel-card.danger { border-left: 3px solid var(--accent-ruby); background: rgba(244, 63, 94, 0.05); }
-  .intel-card.success { border-left: 3px solid var(--accent-emerald); background: rgba(16, 185, 129, 0.05); }
-  
-  .intel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-  .intel-title { font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; }
-  .intel-body { font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; }
-  .intel-footer { margin-top: 8px; font-size: 0.55rem; opacity: 0.5; display: flex; align-items: center; gap: 8px; }
-
-  /* ════ SECURITY GAUGE ════ */
-  .gauge-container { width: 150px; height: 150px; position: relative; margin: 0 auto; }
-  .gauge-svg { transform: rotate(-90deg); width: 150px; height: 150px; }
+  /* ════ SECURITY GAUGE APEX ════ */
+  .gauge-container { width: 140px; height: 140px; position: relative; margin: 0 auto; }
+  .gauge-svg { transform: rotate(-90deg); width: 140px; height: 140px; }
   .gauge-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 10; }
-  .gauge-fill { fill: none; stroke: var(--accent-emerald); stroke-width: 10; stroke-dasharray: 251; stroke-dashoffset: 20; stroke-linecap: round; filter: drop-shadow(0 0 8px var(--accent-emerald)); animation: fillGauge 2s ease-out; }
-  @keyframes fillGauge { from { stroke-dashoffset: 251; } to { stroke-dashoffset: 20; } }
-  .gauge-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-
-  /* Pulse do Sistema */
-  .system-pulse {
-    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
-    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
+  .gauge-fill { 
+    fill: none; stroke: var(--accent-emerald); stroke-width: 10; stroke-dasharray: 282; 
+    stroke-dashoffset: 282; stroke-linecap: round; filter: drop-shadow(0 0 12px var(--accent-emerald));
+    transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+
+  /* ════ INTEL CARDS APEX ════ */
+  .intel-card {
+    padding: 18px; border-radius: 18px; background: rgba(255,255,255,0.02);
+    margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.03);
+    transition: 0.3s;
+  }
+  .intel-card.danger { border-left: 4px solid var(--accent-ruby); background: rgba(244, 63, 94, 0.05); }
+  .intel-card.success { border-left: 4px solid var(--accent-emerald); background: rgba(16, 185, 129, 0.05); }
+
+  /* Grid Overlay */
+  .grid-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
+                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px; pointer-events: none; z-index: -1;
+  }
+
+  .seal-badge {
+    background: rgba(251, 191, 36, 0.1); color: var(--accent-amber);
+    padding: 6px 16px; border-radius: 30px; font-size: 0.65rem; font-weight: 800;
+    border: 1px solid rgba(251, 191, 36, 0.2); display: flex; align-items: center; gap: 8px;
+  }
 </style>
 {% endblock %}
 
 {% block ti_content %}
+<div class="grid-overlay"></div>
+
 <header class="header-painel">
   <div class="header-esquerda">
-    <span class="header-label"><span class="system-pulse"></span> CAMADA DE CRIPTOGRAFIA QUANTUM-SAFE</span>
-    <h1>Cyber <span class="nome-destaque" style="color: var(--accent-amber);">Vault Pro</span></h1>
+    <span class="header-label"><span class="system-pulse" style="background: var(--accent-amber); box-shadow: 0 0 10px var(--accent-amber);"></span> SECRETS MANAGEMENT ENGINE · v7.3.2-APEX</span>
+    <h1 style="letter-spacing: -1px;">Cyber <span class="nome-destaque" style="color: var(--accent-amber); text-shadow: 0 0 20px var(--vault-amber);">Vault Center</span></h1>
   </div>
   <div class="header-acoes">
-     <button class="btn-sige-primario" style="background: var(--accent-amber); color: #000; font-weight: 800; border: none; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);"><i class="fa-solid fa-plus-circle"></i> NOVO CLUSTER DE SEGREDOS</button>
+     <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="seal-badge">
+            <i class="fa-solid fa-lock-open" style="font-size: 0.7rem;"></i>
+            VAULT STATUS: <span id="vaultStatus">UNSEALED</span>
+        </div>
+        <button class="btn-sige-primario" style="background: var(--accent-amber); color: #000; border: none; font-weight: 800; box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);">
+            <i class="fa-solid fa-key"></i> NOVO SEGREDO
+        </button>
+     </div>
   </div>
 </header>
 
 <div class="conteudo-geral">
-  <div class="coluna-esquerda">
+  <div class="col-main">
     
-    {# 🛡️ SECURITY POSTURE HUB #}
+    {# 🛡️ SECURITY POSTURE HUD #}
     <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 30px;">
-        <div class="hub-card" style="text-align: center; padding: 25px;">
+        <article class="hub-card" style="text-align: center; padding: 30px;">
             <div class="gauge-container">
                 <svg class="gauge-svg">
-                    <circle class="gauge-bg" cx="75" cy="75" r="40"></circle>
-                    <circle class="gauge-fill" cx="75" cy="75" r="40"></circle>
+                    <circle class="gauge-bg" cx="70" cy="70" r="45"></circle>
+                    <circle class="gauge-fill" id="securityGauge" cx="70" cy="70" r="45"></circle>
                 </svg>
-                <div class="gauge-text">
-                    <div style="font-size: 1.8rem; font-weight: 800; font-family: 'Syne', sans-serif;">98<span style="font-size: 0.8rem;">%</span></div>
-                    <div style="font-size: 0.5rem; text-transform: uppercase; letter-spacing: 1px; color: var(--accent-emerald);">Seguro</div>
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                    <div style="font-family: 'Syne'; font-size: 2.2rem; font-weight: 800; color: var(--accent-emerald);">98<span style="font-size: 0.8rem;">%</span></div>
+                    <div style="font-size: 0.5rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">Security</div>
                 </div>
             </div>
-            <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 10px;">Postura de Segurança</p>
-        </div>
+        </article>
 
-        <div class="hub-card" style="display: flex; flex-direction: column; justify-content: center; padding: 25px;">
-            <p class="header-label">Diversidade de Segredos</p>
-            <div style="display: flex; gap: 8px; margin: 15px 0;">
-                <div style="width: 25%; height: 8px; background: var(--accent-cyan); border-radius: 4px;"></div>
-                <div style="width: 45%; height: 8px; background: var(--accent-violet); border-radius: 4px;"></div>
-                <div style="width: 30%; height: 8px; background: var(--accent-amber); border-radius: 4px;"></div>
+        <article class="hub-card" style="display: flex; flex-direction: column; justify-content: center;">
+            <h4 class="hub-title" style="font-size: 0.7rem; margin-bottom: 20px;"><i class="fa-solid fa-chart-pie"></i> Distribuição de Chaves</h4>
+            <div style="display: flex; gap: 5px; height: 10px; border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                <div style="width: 25%; background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div>
+                <div style="width: 45%; background: var(--accent-violet); box-shadow: 0 0 10px var(--accent-violet);"></div>
+                <div style="width: 30%; background: var(--accent-amber); box-shadow: 0 0 10px var(--accent-amber);"></div>
             </div>
-            <div style="font-size: 0.65rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px;">
-                <span><i class="fa-solid fa-circle" style="color: var(--accent-cyan); font-size: 0.4rem;"></i> API</span>
-                <span><i class="fa-solid fa-circle" style="color: var(--accent-violet); font-size: 0.4rem;"></i> DB</span>
-                <span><i class="fa-solid fa-circle" style="color: var(--accent-amber); font-size: 0.4rem;"></i> CERT</span>
+            <div style="font-size: 0.55rem; color: var(--text-muted); display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <span><i class="fa-solid fa-circle" style="color: var(--accent-cyan); font-size: 0.4rem;"></i> API (25%)</span>
+                <span><i class="fa-solid fa-circle" style="color: var(--accent-violet); font-size: 0.4rem;"></i> DB (45%)</span>
+                <span><i class="fa-solid fa-circle" style="color: var(--accent-amber); font-size: 0.4rem;"></i> CERT (30%)</span>
             </div>
-        </div>
+        </article>
 
-        <div class="hub-card" style="display: flex; flex-direction: column; justify-content: center; padding: 25px;">
-            <p class="header-label">Status de Compliance</p>
-            <h2 style="font-size: 2.2rem; font-family: 'Syne', sans-serif; color: var(--accent-emerald);">ATIVO</h2>
-            <p style="font-size: 0.65rem; color: var(--text-muted);">Último scan: há 2 min</p>
-        </div>
+        <article class="hub-card" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <h4 class="hub-title" style="font-size: 0.7rem; margin-bottom: 10px;"><i class="fa-solid fa-clipboard-check"></i> Compliance Scan</h4>
+            <div style="font-size: 2.2rem; font-family: 'Syne'; font-weight: 800; color: var(--accent-emerald); text-shadow: 0 0 15px var(--vault-emerald);">PASS</div>
+            <p style="font-size: 0.6rem; color: var(--text-muted);">Próximo scan em 14:02</p>
+        </article>
     </div>
 
-    {# 🔑 SECRETS EXPLORER #}
-    <div class="hub-card" style="padding: 30px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <h3 class="hub-title" style="margin: 0; font-size: 0.9rem;"><i class="fa-solid fa-vault"></i> Explorador de Segredos</h3>
-            <div class="ip-box-security">BLOQUEADO POR MFA VIA HARDWARE</div>
+    {# 🔑 SECRETS EXPLORER APEX #}
+    <article class="hub-card" style="padding: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h3 class="hub-title" style="margin: 0;"><i class="fa-solid fa-vault"></i> Secrets Explorer</h3>
+            <span class="badge" style="background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby); font-size: 0.55rem; border: 1px solid rgba(244, 63, 94, 0.2);">HARDWARE MFA REQUIRED</span>
         </div>
 
         <div class="vault-pro-row">
-            <div class="key-meta">
+            <div style="display: flex; align-items: center; gap: 20px;">
                 <div class="key-icon-glow"><i class="fa-solid fa-database"></i></div>
                 <div>
-                    <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-primary);">DB_CONNECTION_PROD</div>
-                    <div style="font-family: monospace; font-size: 0.8rem; opacity: 0.4; letter-spacing: 3px;">••••••••••••••••••••••••••••</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; font-family: 'Syne'; color: var(--text-primary);">DB_CONNECTION_PROD</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #475569; letter-spacing: 4px;">••••••••••••••••••••••••</div>
                 </div>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 0.6rem; color: var(--text-muted); margin-bottom: 8px;">NÍVEL: <strong style="color: var(--accent-ruby);">CRÍTICO</strong></div>
-                <button class="btn-sige-primario" style="font-size: 0.6rem; padding: 8px 16px; background: var(--bg-hover); color: var(--accent-amber); border: 1px solid var(--accent-amber);"><i class="fa-solid fa-lock-open"></i> REVELAR</button>
+                <span style="font-size: 0.6rem; color: var(--accent-ruby); font-weight: 800; display: block; margin-bottom: 10px;">CRITICAL</span>
+                <button class="btn-sige-secundario" style="font-size: 0.55rem; padding: 6px 15px; border-color: var(--accent-amber); color: var(--accent-amber);">REVEAL SECRET</button>
             </div>
         </div>
 
         <div class="vault-pro-row">
-            <div class="key-meta">
-                <div class="key-icon-glow" style="color: #f472b6;"><i class="fa-brands fa-aws"></i></div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="key-icon-glow" style="color: #f472b6; box-shadow: 0 0 20px rgba(244, 114, 182, 0.1);"><i class="fa-brands fa-aws"></i></div>
                 <div>
-                    <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-primary);">AWS_S3_SECRET_KEY</div>
-                    <div style="font-family: monospace; font-size: 0.8rem; opacity: 0.4; letter-spacing: 3px;">••••••••••••••••••••••••••••</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; font-family: 'Syne'; color: var(--text-primary);">AWS_S3_SECRET_KEY</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #475569; letter-spacing: 4px;">••••••••••••••••••••••••</div>
                 </div>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 0.6rem; color: var(--text-muted); margin-bottom: 8px;">NÍVEL: <strong style="color: var(--accent-cyan);">ALTO</strong></div>
-                <button class="btn-sige-primario" style="font-size: 0.6rem; padding: 8px 16px; background: var(--bg-hover); color: var(--accent-amber); border: 1px solid var(--accent-amber);"><i class="fa-solid fa-lock-open"></i> REVELAR</button>
+                <span style="font-size: 0.6rem; color: var(--accent-cyan); font-weight: 800; display: block; margin-bottom: 10px;">HIGH</span>
+                <button class="btn-sige-secundario" style="font-size: 0.55rem; padding: 6px 15px; border-color: var(--accent-amber); color: var(--accent-amber);">REVEAL SECRET</button>
             </div>
         </div>
 
         <div class="vault-pro-row" style="margin-bottom: 0;">
-            <div class="key-meta">
-                <div class="key-icon-glow" style="color: var(--accent-emerald);"><i class="fa-solid fa-microchip"></i></div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="key-icon-glow" style="color: var(--accent-emerald); box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);"><i class="fa-solid fa-microchip"></i></div>
                 <div>
-                    <div style="font-weight: 800; font-size: 0.9rem; color: var(--text-primary);">STRIPE_LIVE_KEY</div>
-                    <div style="font-family: monospace; font-size: 0.8rem; opacity: 0.4; letter-spacing: 3px;">••••••••••••••••••••••••••••</div>
+                    <div style="font-weight: 800; font-size: 0.95rem; font-family: 'Syne'; color: var(--text-primary);">STRIPE_LIVE_KEY</div>
+                    <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #475569; letter-spacing: 4px;">••••••••••••••••••••••••</div>
                 </div>
             </div>
             <div style="text-align: right;">
-                <div style="font-size: 0.6rem; color: var(--text-muted); margin-bottom: 8px;">NÍVEL: <strong style="color: var(--accent-amber);">MÉDIO</strong></div>
-                <button class="btn-sige-primario" style="font-size: 0.6rem; padding: 8px 16px; background: var(--bg-hover); color: var(--accent-amber); border: 1px solid var(--accent-amber);"><i class="fa-solid fa-lock-open"></i> REVELAR</button>
+                <span style="font-size: 0.6rem; color: var(--accent-amber); font-weight: 800; display: block; margin-bottom: 10px;">MEDIUM</span>
+                <button class="btn-sige-secundario" style="font-size: 0.55rem; padding: 6px 15px; border-color: var(--accent-amber); color: var(--accent-amber);">REVEAL SECRET</button>
             </div>
         </div>
-    </div>
+    </article>
 
   </div>
 
-  {# ════ SIDEBAR ULTRA-CAPRICHADA ════ #}
-  <div class="coluna-direita">
-    
-    {# 🛡️ Audit Compliance Pro #}
-    <div class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-emerald);">
-        <h3 class="hub-title"><i class="fa-solid fa-clipboard-check" style="color: var(--accent-emerald);"></i> Conformidade de Auditoria</h3>
-        
-        <div class="compliance-item">
-            <div class="compliance-label"><i class="fa-solid fa-shield-virus"></i> Criptografia AES-256</div>
-            <i class="fa-solid fa-circle-check check-glow"></i>
+  <div class="col-side">
+     {# 🛡️ AUDIT COMPLIANCE APEX #}
+     <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-emerald);">
+        <h3 class="hub-title"><i class="fa-solid fa-shield-check" style="color: var(--accent-emerald);"></i> Global Compliance</h3>
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem;">
+                <span>AES-256 Encryption</span>
+                <i class="fa-solid fa-circle-check" style="color: var(--accent-emerald); filter: drop-shadow(0 0 5px var(--accent-emerald));"></i>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem;">
+                <span>Hardware MFA Auth</span>
+                <i class="fa-solid fa-circle-check" style="color: var(--accent-emerald); filter: drop-shadow(0 0 5px var(--accent-emerald));"></i>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem;">
+                <span>Auto Key Rotation</span>
+                <i class="fa-solid fa-circle-check" style="color: var(--accent-emerald); filter: drop-shadow(0 0 5px var(--accent-emerald));"></i>
+            </div>
         </div>
-        <div class="compliance-item">
-            <div class="compliance-label"><i class="fa-solid fa-fingerprint"></i> MFA para Segredos</div>
-            <i class="fa-solid fa-circle-check check-glow"></i>
-        </div>
-        <div class="compliance-item">
-            <div class="compliance-label"><i class="fa-solid fa-book-security"></i> Log de Acessos</div>
-            <i class="fa-solid fa-circle-check check-glow"></i>
-        </div>
-        <div class="compliance-item" style="border-bottom: none;">
-            <div class="compliance-label"><i class="fa-solid fa-arrows-rotate"></i> Auto-Rotação de Chaves</div>
-            <i class="fa-solid fa-circle-check check-glow"></i>
-        </div>
-
-        <div style="margin-top: 15px; padding: 10px; background: rgba(16, 185, 129, 0.05); border-radius: 10px; border: 1px solid rgba(16, 185, 129, 0.1);">
-            <div style="display: flex; justify-content: space-between; font-size: 0.6rem; font-weight: 800; color: var(--accent-emerald); margin-bottom: 4px;">
+        <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 18px; border: 1px solid rgba(16, 185, 129, 0.1);">
+            <div style="display: flex; justify-content: space-between; font-size: 0.6rem; font-weight: 800; color: var(--accent-emerald); margin-bottom: 5px;">
                 <span>SLA COMPLIANCE</span><span>100%</span>
             </div>
-            <div style="height: 3px; background: rgba(0,0,0,0.2);"><div style="width: 100%; height: 100%; background: var(--accent-emerald);"></div></div>
+            <div style="height: 4px; background: rgba(0,0,0,0.3); border-radius: 2px;">
+                <div style="width: 100%; height: 100%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald);"></div>
+            </div>
         </div>
-    </div>
+     </article>
 
-    {# 🚨 Access Intelligence Ultra #}
-    <div class="hub-card" style="border-top: 3px solid var(--accent-ruby);">
-        <h3 class="hub-title"><i class="fa-solid fa-tower-broadcast" style="color: var(--accent-ruby);"></i> Inteligência de Acesso</h3>
-        
-        <div style="max-height: 400px; overflow-y: auto; padding-right: 5px;">
-            {# Tentativa Bloqueada #}
+     {# 🚨 ACCESS INTEL APEX #}
+     <article class="hub-card" style="border-top: 3px solid var(--accent-ruby);">
+        <h3 class="hub-title"><i class="fa-solid fa-tower-broadcast" style="color: var(--accent-ruby);"></i> Access Intelligence</h3>
+        <div style="margin-top: 15px; max-height: 350px; overflow-y: auto; padding-right: 5px;">
             <div class="intel-card danger">
-                <div class="intel-header">
-                    <span class="intel-title" style="color: var(--accent-ruby);">TENTATIVA BLOQUEADA</span>
-                    <i class="fa-solid fa-ban" style="color: var(--accent-ruby); font-size: 0.7rem;"></i>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: var(--accent-ruby); letter-spacing: 1px;">BLOCKED ATTEMPT</span>
+                    <i class="fa-solid fa-ban" style="font-size: 0.7rem; color: var(--accent-ruby);"></i>
                 </div>
-                <p class="intel-body">IP <code>45.x.x.x</code> tentou acessar <code>AWS_KEY</code> sem o desafio MFA obrigatório.</p>
-                <div class="intel-footer">
-                    <span><i class="fa-solid fa-location-dot"></i> Londres, UK</span>
-                    <span><i class="fa-solid fa-clock"></i> 20:15</span>
+                <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                    IP <code>45.x.x.x</code> tentou acesso a <code>AWS_KEY</code> sem MFA.
+                </p>
+                <div style="margin-top: 10px; font-size: 0.55rem; color: var(--text-muted); opacity: 0.6;">
+                    <i class="fa-solid fa-location-dot"></i> London, UK · 20:15
                 </div>
             </div>
 
-            {# Leitura Autorizada #}
             <div class="intel-card success">
-                <div class="intel-header">
-                    <span class="intel-title" style="color: var(--accent-emerald);">LEITURA AUTORIZADA</span>
-                    <i class="fa-solid fa-unlock-keyhole" style="color: var(--accent-emerald); font-size: 0.7rem;"></i>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 0.65rem; font-weight: 800; color: var(--accent-emerald); letter-spacing: 1px;">AUTHORIZED READ</span>
+                    <i class="fa-solid fa-unlock-keyhole" style="font-size: 0.7rem; color: var(--accent-emerald);"></i>
                 </div>
-                <p class="intel-body">Usuário <code>admin</code> revelou segredo <code>DB_PASS</code> via hardware token.</p>
-                <div class="intel-footer">
-                    <span><i class="fa-solid fa-location-dot"></i> São Paulo, BR</span>
-                    <span><i class="fa-solid fa-clock"></i> 19:40</span>
-                </div>
-            </div>
-
-            {# Geofencing Alert #}
-            <div class="intel-card" style="border-left: 3px solid var(--accent-amber); background: rgba(251, 191, 36, 0.05);">
-                <div class="intel-header">
-                    <span class="intel-title" style="color: var(--accent-amber);">ALERTA DE GEO-FENCING</span>
-                    <i class="fa-solid fa-map-pin" style="color: var(--accent-amber); font-size: 0.7rem;"></i>
-                </div>
-                <p class="intel-body">Acesso detectado fora da zona segura padrão (América Latina).</p>
-                <div class="intel-footer">
-                    <span><i class="fa-solid fa-earth-americas"></i> Auditoria Ativa</span>
+                <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.4; margin: 0;">
+                    Usuário <code>admin</code> revelou <code>DB_PASS</code> via token físico.
+                </p>
+                <div style="margin-top: 10px; font-size: 0.55rem; color: var(--text-muted); opacity: 0.6;">
+                    <i class="fa-solid fa-location-dot"></i> São Paulo, BR · 19:40
                 </div>
             </div>
         </div>
-
-        <button class="btn-sige-secundario" style="width: 100%; margin-top: 10px; font-size: 0.65rem; border-color: var(--accent-ruby); color: var(--accent-ruby);">REPORTAR AMEAÇA</button>
-    </div>
-
+        <button class="btn-sige-secundario" style="width: 100%; margin-top: 10px; font-size: 0.65rem; border-color: var(--accent-ruby); color: var(--accent-ruby); font-weight: 800;">REPORT THREAT</button>
+     </article>
   </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Security Gauge Animation ---
+        setTimeout(() => {
+            document.getElementById('securityGauge').style.strokeDashoffset = '5.6'; // 98%
+        }, 500);
+
+        // --- Simulated Seal Status Fluctuation ---
+        const statusEl = document.getElementById('vaultStatus');
+        setInterval(() => {
+            const val = Math.random() > 0.9 ? 'SEALING...' : 'UNSEALED';
+            statusEl.innerText = val;
+            statusEl.parentElement.style.opacity = val === 'UNSEALED' ? '1' : '0.6';
+        }, 10000);
+    });
+</script>
 {% endblock %}

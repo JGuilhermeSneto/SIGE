@@ -29,6 +29,10 @@ class SecurityHardeningMiddleware(MiddlewareMixin):
     def process_request(self, request):
         path = request.path
         ip = get_client_ip(request)
+        
+        # Ignora localhost (Desenvolvimento)
+        if ip in ["127.0.0.1", "::1"]:
+            return None
 
         # 1. HONEYPOT: Acesso ao admin sem estar logado
         if path.startswith("/admin/") and hasattr(request, "user") and not request.user.is_authenticated:
@@ -141,6 +145,10 @@ class ExceptionMiddleware(MiddlewareMixin):
         ip = get_client_ip(request)
         user = request.user if request.user.is_authenticated else None
 
+        # Ignora localhost (Desenvolvimento)
+        if ip in ["127.0.0.1", "::1"]:
+            return None
+
         # Monitora volume de erros para Auto-Blacklist (Rate Limiting de erros)
         key = f"error_count_{ip}"
         count = cache.get(key, 0) + 1
@@ -192,6 +200,10 @@ class BlacklistMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         ip = get_client_ip(request)
+
+        # Ignora localhost (Desenvolvimento)
+        if ip in ["127.0.0.1", "::1"]:
+            return None
         bloqueio = BlacklistIP.objects.filter(ip_endereco=ip).first()
 
         if bloqueio:

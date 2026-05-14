@@ -36,4 +36,5 @@ urlpatterns = [
     
     # Placeholders para Expansão v7.3
     path("hub/<slug:modulo_slug>/", views.placeholder_ti, name="placeholder_modulo"),
+    path("backups/download/<int:backup_id>/", views.download_backup, name="download_backup"),
 ]

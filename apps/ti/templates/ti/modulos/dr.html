@@ -1,0 +1,231 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Disaster Recovery Apex — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  :root {
+    --dr-emerald: rgba(16, 185, 129, 0.4);
+    --dr-ruby: rgba(244, 63, 94, 0.4);
+    --dr-amber: rgba(245, 158, 11, 0.4);
+  }
+
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { 
+    padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;
+    background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
+  }
+
+  /* ════ GLASS CARD APEX ════ */
+  .dr-status-card, .hub-card, .scenario-card {
+    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08); padding: 30px; position: relative; overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transform-style: preserve-3d;
+  }
+  .dr-status-card:hover, .hub-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 20px 50px rgba(16, 185, 129, 0.15);
+  }
+
+  /* ════ STATUS ATMOSPHERE ════ */
+  .status-glow {
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+    pointer-events: none; z-index: 0; animation: glowPulse 4s infinite;
+  }
+  @keyframes glowPulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+
+  /* ════ FAILOVER CONTROLS ════ */
+  .scenario-card {
+    display: flex; justify-content: space-between; align-items: center; padding: 20px 25px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
+    margin-bottom: 15px; border-radius: 20px; transition: 0.3s;
+  }
+  .scenario-card:hover {
+    background: rgba(244, 63, 94, 0.05); border-color: rgba(244, 63, 94, 0.2);
+    transform: scale(1.02);
+  }
+  .failover-btn {
+    background: var(--accent-ruby); color: #fff; border: none; padding: 12px 24px;
+    border-radius: 12px; font-weight: 800; font-size: 0.65rem; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.3); transition: all 0.3s;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .failover-btn:hover { background: #be123c; transform: scale(1.05); box-shadow: 0 0 20px var(--dr-ruby); }
+
+  /* ════ REPLICATION HUD ════ */
+  .replica-node {
+    display: flex; justify-content: space-between; align-items: center; padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .replica-status { font-size: 0.55rem; font-weight: 800; padding: 2px 8px; border-radius: 4px; }
+  .status-sync { background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald); }
+  .status-delay { background: rgba(245, 158, 11, 0.1); color: var(--accent-amber); animation: blink 1s infinite; }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* Grid Overlay */
+  .grid-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
+                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 50px 50px; pointer-events: none; z-index: -1;
+  }
+
+  .dr-badge {
+    background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald);
+    padding: 6px 16px; border-radius: 30px; font-size: 0.65rem; font-weight: 800;
+    border: 1px solid rgba(16, 185, 129, 0.2); display: flex; align-items: center; gap: 8px;
+  }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<div class="grid-overlay"></div>
+
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><span class="system-pulse" style="background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald);"></span> BUSINESS CONTINUITY ENGINE · v7.3.2-APEX</span>
+    <h1 style="letter-spacing: -1px;">Disaster <span class="nome-destaque" style="color: var(--accent-ruby); text-shadow: 0 0 20px var(--dr-ruby);">Recovery Center</span></h1>
+  </div>
+  <div class="header-acoes">
+     <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="dr-badge">
+            <span class="system-pulse" style="width: 6px; height: 6px; margin: 0; background: var(--accent-emerald);"></span>
+            READY FOR FAILOVER: <span id="syncStatus">100%</span>
+        </div>
+        <button class="btn-sige-primario" style="background: var(--accent-ruby); color: #fff; border: none; font-weight: 800; box-shadow: 0 0 20px rgba(244, 63, 94, 0.3);">
+            <i class="fa-solid fa-radiation"></i> MASTER FAILOVER
+        </button>
+     </div>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="col-main">
+    
+    {# 📟 GLOBAL SYSTEM STATE #}
+    <article class="dr-status-card" style="text-align: center; margin-bottom: 30px;">
+       <div class="status-glow"></div>
+       <div style="position: relative; z-index: 1;">
+           <i class="fa-solid fa-shield-heart" style="font-size: 4rem; color: var(--accent-emerald); filter: drop-shadow(0 0 20px var(--dr-emerald)); margin-bottom: 20px;"></i>
+           <h3 style="font-family: 'Syne'; font-size: 1.8rem; margin: 0; letter-spacing: -1px;">SISTEMA EM ESTADO NOMINAL</h3>
+           <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 500px; margin: 15px auto;">
+               Todos os nós de replicação estão sincronizados. O centro de recuperação está pronto para assumir a carga total em caso de falha crítica na região principal.
+           </p>
+           
+           <div style="display: flex; justify-content: center; gap: 40px; margin-top: 30px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.05);">
+              <div style="text-align: center;">
+                 <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">RPO (Data Loss)</div>
+                 <div style="font-family: 'Syne'; font-size: 1.6rem; font-weight: 800; color: var(--accent-cyan);">&lt; 10s</div>
+              </div>
+              <div style="text-align: center;">
+                 <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">RTO (Recovery)</div>
+                 <div style="font-family: 'Syne'; font-size: 1.6rem; font-weight: 800; color: var(--accent-cyan);">12 min</div>
+              </div>
+              <div style="text-align: center;">
+                 <div style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px;">Drift de Dados</div>
+                 <div style="font-family: 'Syne'; font-size: 1.6rem; font-weight: 800; color: var(--accent-emerald);">0.00%</div>
+              </div>
+           </div>
+       </div>
+    </article>
+
+    {# 🚦 FAILOVER SCENARIOS #}
+    <article class="hub-card" style="padding: 30px;">
+       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+           <h3 style="margin: 0; font-family: 'Syne';"><i class="fa-solid fa-tower-broadcast" style="color: var(--accent-ruby);"></i> Cenários de Contingência</h3>
+           <span style="font-size: 0.6rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 6px;">MODO: MANUAL-OVERRIDE</span>
+       </div>
+       
+       <div class="scenario-card">
+          <div>
+             <div style="font-weight: 800; font-size: 0.9rem; font-family: 'Syne';">Queda do Database Principal</div>
+             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Redirecionar tráfego para a réplica de Virginia (USA). Latência estimada: +45ms.</div>
+          </div>
+          <button class="failover-btn">INICIAR FAILOVER</button>
+       </div>
+
+       <div class="scenario-card">
+          <div>
+             <div style="font-weight: 800; font-size: 0.9rem; font-family: 'Syne';">Indisponibilidade Regional (AWS)</div>
+             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Migrar stack completa para Azure West-Europe. RTO esperado: 15 minutos.</div>
+          </div>
+          <button class="failover-btn">MIGRAR REGIÃO</button>
+       </div>
+
+       <div class="scenario-card" style="margin-bottom: 0;">
+          <div>
+             <div style="font-weight: 800; font-size: 0.9rem; font-family: 'Syne';">Ataque DDoS de Nível 7</div>
+             <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Ativar 'Under Attack Mode' e rotas de tunelamento blindadas.</div>
+          </div>
+          <button class="failover-btn" style="background: var(--accent-amber); color: #000;">ATIVAR SHIELD</button>
+       </div>
+    </article>
+  </div>
+
+  <div class="col-side">
+     {# 🏁 LAST SIMULATED DR #}
+     <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-emerald);">
+        <h3 class="hub-title"><i class="fa-solid fa-clock-rotate-left"></i> Último Simulado DR</h3>
+        <div style="padding: 15px; background: rgba(16, 185, 129, 0.05); border-radius: 18px; border: 1px solid rgba(16, 185, 129, 0.1);">
+           <div style="font-size: 1rem; font-weight: 800; color: var(--accent-emerald); font-family: 'Syne';">SUCESSO TOTAL</div>
+           <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 5px;">Realizado em: <strong>12/04/2026</strong></div>
+           <div style="margin-top: 15px; display: flex; justify-content: space-between; font-size: 0.6rem;">
+               <span>Tempo Medido:</span><strong style="color: var(--text-primary);">12m 45s</strong>
+           </div>
+           <div style="display: flex; justify-content: space-between; font-size: 0.6rem; margin-top: 5px;">
+               <span>Consistência:</span><strong style="color: var(--accent-emerald);">100%</strong>
+           </div>
+        </div>
+     </article>
+
+     {# 🌍 GLOBAL REPLICAS #}
+     <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+        <h3 class="hub-title"><i class="fa-solid fa-cloud-arrow-down"></i> Global Replication</h3>
+        <div style="margin-top: 10px;">
+            <div class="replica-node">
+                <span style="font-size: 0.7rem; font-weight: 800;">Virginia (USA)</span>
+                <span class="replica-status status-sync">SYNCED</span>
+            </div>
+            <div class="replica-node">
+                <span style="font-size: 0.7rem; font-weight: 800;">Frankfurt (GER)</span>
+                <span class="replica-status status-sync">SYNCED</span>
+            </div>
+            <div class="replica-node" style="border-bottom: none;">
+                <span style="font-size: 0.7rem; font-weight: 800;">Local On-Prem</span>
+                <span class="replica-status status-delay">DELAY (2m)</span>
+            </div>
+        </div>
+     </article>
+
+     {# ⚠️ RISK ASSESSMENT #}
+     <article class="hub-card" style="border-top: 3px solid var(--accent-amber);">
+        <h3 class="hub-title" style="color: var(--accent-amber);"><i class="fa-solid fa-triangle-exclamation"></i> Resiliência Atual</h3>
+        <div style="text-align: center; padding: 20px 0;">
+            <div style="font-family: 'Syne'; font-size: 2.8rem; font-weight: 800; color: var(--accent-amber);">A+</div>
+            <p style="font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase;">Rating de Continuidade</p>
+        </div>
+        <div style="height: 4px; background: rgba(0,0,0,0.2); border-radius: 2px;">
+            <div style="width: 95%; height: 100%; background: var(--accent-amber); box-shadow: 0 0 10px var(--accent-amber);"></div>
+        </div>
+     </article>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Sync Status Random Fluctuation ---
+        const syncEl = document.getElementById('syncStatus');
+        setInterval(() => {
+            const val = (99.95 + Math.random() * 0.05).toFixed(2);
+            syncEl.innerText = `${val}%`;
+        }, 3000);
+    });
+</script>
+{% endblock %}

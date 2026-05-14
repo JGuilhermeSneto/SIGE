@@ -1,0 +1,72 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Qualidade & Testes — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<style>
+  .qa-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; padding: 20px; }
+  .qa-main-card {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 30px;
+    margin-bottom: 25px;
+  }
+  .coverage-bar { height: 12px; background: rgba(0,0,0,0.2); border-radius: 6px; overflow: hidden; margin: 15px 0; }
+  .coverage-fill { height: 100%; background: var(--accent-emerald); width: 68%; }
+  .test-row {
+    padding: 12px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.75rem;
+  }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel" style="padding: 0 20px; margin-top: 20px;">
+  <div class="header-esquerda">
+    <span class="header-label"><i class="fa-solid fa-vial"></i> GARANTIA DE QUALIDADE & CI/CD STYLES</span>
+    <h1>Qualidade & <span class="nome-destaque" style="color: var(--accent-emerald);">Testes</span></h1>
+  </div>
+</header>
+
+<div class="qa-grid">
+  <div class="col-main">
+    <article class="qa-main-card">
+       <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0; font-family: 'Syne';">Cobertura de Testes (Coverage)</h3>
+          <span style="font-family: 'Syne'; font-size: 1.5rem; font-weight: 800; color: var(--accent-emerald);">68.4%</span>
+       </div>
+       <div class="coverage-bar"><div class="coverage-fill"></div></div>
+       <p style="font-size: 0.65rem; color: var(--text-muted);">Meta: <strong>100%</strong> (Em progresso conforme tasks.md)</p>
+    </article>
+
+    <article class="hub-card" style="padding: 25px;">
+       <h3 style="margin-top: 0; font-family: 'Syne'; margin-bottom: 20px;"><i class="fa-solid fa-microscope"></i> Resultados das Suítes</h3>
+       <div class="test-row">
+          <span>Suíte Acadêmica (Core)</span>
+          <span style="color: var(--accent-emerald); font-weight: 800;"><i class="fa-solid fa-check"></i> 142 PASSED</span>
+       </div>
+       <div class="test-row">
+          <span>Suíte Financeira (Real-time)</span>
+          <span style="color: var(--accent-emerald); font-weight: 800;"><i class="fa-solid fa-check"></i> 88 PASSED</span>
+       </div>
+       <div class="test-row">
+          <span>API REST (Endpoints)</span>
+          <span style="color: var(--accent-amber); font-weight: 800;"><i class="fa-solid fa-triangle-exclamation"></i> 45 PASSED (2 FAILED)</span>
+       </div>
+       <div class="test-row">
+          <span>Segurança (Audit Logs)</span>
+          <span style="color: var(--accent-emerald); font-weight: 800;"><i class="fa-solid fa-check"></i> 12 PASSED</span>
+       </div>
+    </article>
+  </div>
+
+  <div class="col-side">
+     <article class="hub-card" style="border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-code-pull-request"></i> CI Pipeline Status</h3>
+        <div style="padding: 10px 0;">
+           <div style="font-size: 0.75rem; font-weight: 800; color: var(--accent-emerald);"><i class="fa-solid fa-circle-play"></i> PIPELINE #442</div>
+           <div style="font-size: 0.6rem; color: var(--text-muted); margin-top: 5px;">Build: SUCESSO | Deploy: PENDENTE</div>
+        </div>
+     </article>
+  </div>
+</div>
+{% endblock %}

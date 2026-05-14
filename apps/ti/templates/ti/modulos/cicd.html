@@ -1,80 +1,128 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Orquestração CI/CD Ultra — SIGE TI{% endblock %}
+{% block title %}CI/CD Master Hub — SIGE Mission Control{% endblock %}
 
 {% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+  :root {
+    --pipeline-cyan: rgba(34, 211, 238, 0.4);
+    --pipeline-emerald: rgba(16, 185, 129, 0.4);
+  }
+
   .header-painel { padding: 0 2rem; margin-top: 20px; }
-  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
-  
-  /* ════ ULTRA PIPELINE TOPOLOGY ════ */
+  .conteudo-geral { 
+    padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start;
+    background: radial-gradient(circle at 50% 0%, rgba(34, 211, 238, 0.05) 0%, transparent 50%);
+  }
+
+  /* ════ GLASS CARD APEX ════ */
+  .hub-card {
+    background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(15px); border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08); padding: 25px; position: relative; overflow: hidden;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.3s;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    transform-style: preserve-3d;
+  }
+  .hub-card:hover {
+    transform: translateY(-8px) rotateX(2deg) rotateY(1deg);
+    border-color: rgba(34, 211, 238, 0.3);
+    box-shadow: 0 20px 50px rgba(34, 211, 238, 0.15);
+  }
+
+  /* ════ PIPELINE VISUALIZER ════ */
   .topo-canvas {
-    background: rgba(15, 23, 41, 0.4); border-radius: 24px; padding: 30px;
+    background: rgba(15, 23, 41, 0.8); border-radius: 24px; padding: 40px;
     position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);
-    margin-bottom: 25px;
+    margin-bottom: 25px; box-shadow: inset 0 0 40px rgba(0,0,0,0.5);
   }
   .pipeline-viz { display: flex; justify-content: space-between; align-items: center; position: relative; }
-  .viz-node {
-    width: 80px; text-align: center; position: relative; z-index: 2;
-  }
+  
+  .viz-node { width: 90px; text-align: center; position: relative; z-index: 2; }
   .node-icon-pro {
-    width: 50px; height: 50px; border-radius: 14px; background: var(--bg-elevated);
-    border: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 10px; font-size: 1.2rem; color: var(--text-muted);
-    transition: all 0.4s;
+    width: 55px; height: 55px; border-radius: 16px; background: rgba(30, 41, 59, 0.8);
+    border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px; font-size: 1.3rem; color: #475569; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .viz-node.active .node-icon-pro { 
-    border-color: var(--accent-cyan); color: var(--accent-cyan); 
-    box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
-    animation: nodePulse 2s infinite;
+    background: rgba(34, 211, 238, 0.1); border-color: var(--accent-cyan); color: var(--accent-cyan); 
+    box-shadow: 0 0 30px var(--pipeline-cyan); animation: nodePulse 2s infinite;
   }
-  .viz-node.done .node-icon-pro { border-color: var(--accent-emerald); color: var(--accent-emerald); }
+  .viz-node.done .node-icon-pro { 
+    background: rgba(16, 185, 129, 0.1); border-color: var(--accent-emerald); color: var(--accent-emerald);
+    box-shadow: 0 0 20px var(--pipeline-emerald);
+  }
   
-  @keyframes nodePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+  @keyframes nodePulse { 0%, 100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.1); filter: brightness(1.5); } }
 
   .viz-line {
-    position: absolute; top: 25px; left: 40px; right: 40px; height: 2px;
-    background: rgba(255,255,255,0.05); z-index: 1;
+    position: absolute; top: 27px; left: 45px; right: 45px; height: 2px;
+    background: rgba(255,255,255,0.03); z-index: 1;
   }
   .viz-progress {
     position: absolute; top: 0; left: 0; height: 100%; width: 50%;
     background: linear-gradient(90deg, var(--accent-emerald), var(--accent-cyan));
-    box-shadow: 0 0 10px var(--accent-cyan);
+    box-shadow: 0 0 15px var(--accent-cyan); transition: width 1.5s ease-in-out;
   }
 
-  /* ════ HEALTH MONITOR ════ */
-  .health-dot-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite; }
-  .uptime-tracker { display: flex; gap: 2px; margin-top: 10px; }
-  .uptime-bar { flex: 1; height: 12px; border-radius: 2px; background: var(--accent-emerald); opacity: 0.8; }
-  .uptime-bar.error { background: var(--accent-ruby); }
-
-  /* ════ VELOCITY GAUGE ════ */
-  .velocity-gauge-wrap { position: relative; height: 60px; margin-bottom: 20px; overflow: hidden; }
-  .v-needle { position: absolute; bottom: 0; left: 50%; width: 2px; height: 40px; background: var(--accent-cyan); transform-origin: bottom; transform: translateX(-50%) rotate(45deg); transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); }
-  .v-track { width: 100%; height: 60px; border-radius: 60px 60px 0 0; border: 4px solid rgba(255,255,255,0.05); border-bottom: none; }
-
-  /* Pulse do Sistema */
-  .system-pulse {
-    width: 8px; height: 8px; background: var(--accent-emerald); border-radius: 50%; display: inline-block;
-    margin-right: 8px; box-shadow: 0 0 10px var(--accent-emerald); animation: pulse-core 2s infinite;
+  /* ════ FLOW PARTICLES ════ */
+  .pipeline-particle {
+    position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
+    box-shadow: 0 0 10px #fff; top: -1px; animation: particleMove 3s infinite linear;
+    z-index: 2; opacity: 0;
   }
-  @keyframes pulse-core { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+  @keyframes particleMove {
+    0% { left: 0%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* ════ BUILD CONSOLE PREMIUM ════ */
+  .build-console-pro {
+    background: #020617; border-radius: 20px; padding: 25px;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.75rem;
+    color: #94a3b8; height: 300px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8); line-height: 1.6;
+  }
+  .con-line { margin-bottom: 8px; animation: lineFadeIn 0.4s ease-out forwards; }
+  @keyframes lineFadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* Grid Overlay */
+  .grid-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), 
+                      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px; pointer-events: none; z-index: -1;
+  }
+
+  /* Header Uptime Badge */
+  .uptime-badge {
+    background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald);
+    padding: 6px 16px; border-radius: 30px; font-size: 0.65rem; font-weight: 800;
+    border: 1px solid rgba(16, 185, 129, 0.2); display: flex; align-items: center; gap: 8px;
+  }
 </style>
 {% endblock %}
 
 {% block ti_content %}
+<div class="grid-overlay"></div>
+
 <header class="header-painel">
   <div class="header-esquerda">
-    <span class="header-label"><span class="system-pulse"></span> HUB DE ORQUESTRAÇÃO GLOBAL · v7.3.1</span>
-    <h1>Pipeline <span class="nome-destaque" style="color: var(--accent-cyan);">CI/CD Master</span></h1>
+    <span class="header-label"><span class="system-pulse"></span> GLOBAL ORCHESTRATION HUB · v7.3.2-APEX</span>
+    <h1 style="letter-spacing: -1px;">Pipeline <span class="nome-destaque" style="color: var(--accent-cyan); text-shadow: 0 0 20px var(--pipeline-cyan);">CI/CD Master</span></h1>
   </div>
   <div class="header-acoes">
-     <div style="display: flex; gap: 12px;">
-        <div class="status-badge status-ativo" style="padding: 10px 20px;">PUBLICANDO v7.3.1-b24</div>
-        <button class="btn-sige-primario" style="background: var(--accent-ruby); color: #fff; border: none; font-weight: 800;"><i class="fa-solid fa-rotate-left"></i> ROLLBACK DE EMERGÊNCIA</button>
+     <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="uptime-badge">
+            <span class="system-pulse" style="width: 6px; height: 6px; margin: 0;"></span>
+            ENGINE UPTIME: <span id="pipelineUptime">124:15:30</span>
+        </div>
+        <button class="btn-sige-primario" style="background: var(--accent-ruby); color: #fff; border: none; font-weight: 800; box-shadow: 0 0 15px rgba(244, 63, 94, 0.3);">
+            <i class="fa-solid fa-rotate-left"></i> EMERGENCY ROLLBACK
+        </button>
      </div>
   </div>
 </header>
@@ -82,116 +130,123 @@
 <div class="conteudo-geral">
   <div class="coluna-esquerda">
     
-    {# 📟 PIPELINE TOPOLOGY MAP #}
+    {# 📟 PIPELINE TOPOLOGY MAP APEX #}
     <div class="topo-canvas">
-        <h3 class="hub-title" style="margin-bottom: 30px;"><i class="fa-solid fa-project-diagram"></i> Topologia de Deploy & Fluxo</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+            <h3 class="hub-title" style="margin: 0;"><i class="fa-solid fa-project-diagram"></i> Fluxo de Entrega Contínua</h3>
+            <span class="badge" style="background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); font-size: 0.55rem; padding: 5px 12px;">THREAD ATIVA: #DEPLOY-X9</span>
+        </div>
+        
         <div class="pipeline-viz">
-            <div class="viz-line"><div class="viz-progress"></div></div>
+            <div class="viz-line">
+                <div class="viz-progress" id="pipelineProgress"></div>
+                <div class="pipeline-particle"></div>
+                <div class="pipeline-particle" style="animation-delay: 1.5s;"></div>
+            </div>
             
-            <div class="viz-node done">
+            <div class="viz-node done" title="Código Validado">
                 <div class="node-icon-pro"><i class="fa-solid fa-code-commit"></i></div>
-                <span style="font-size: 0.6rem; font-weight: 800;">COMMIT</span>
+                <span style="font-size: 0.65rem; font-weight: 800; color: var(--accent-emerald);">COMMIT</span>
             </div>
-            <div class="viz-node done">
-                <div class="node-icon-pro"><i class="fa-solid fa-microchip"></i></div>
-                <span style="font-size: 0.6rem; font-weight: 800;">BUILD</span>
+            <div class="viz-node done" title="Docker Build Sucesso">
+                <div class="node-icon-pro"><i class="fa-solid fa-cube"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800; color: var(--accent-emerald);">BUILD</span>
             </div>
-            <div class="viz-node active">
-                <div class="node-icon-pro"><i class="fa-solid fa-vial"></i></div>
-                <span style="font-size: 0.6rem; font-weight: 800;">TESTES</span>
+            <div class="viz-node active" title="Executando Testes Unitários">
+                <div class="node-icon-pro"><i class="fa-solid fa-vial-circle-check"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800; color: var(--accent-cyan);">TESTES</span>
             </div>
-            <div class="viz-node">
-                <div class="node-icon-pro"><i class="fa-solid fa-server"></i></div>
-                <span style="font-size: 0.6rem; font-weight: 800;">STAGING</span>
+            <div class="viz-node" title="Aguardando Aprovação">
+                <div class="node-icon-pro"><i class="fa-solid fa-shield-halved"></i></div>
+                <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted);">STAGING</span>
             </div>
-            <div class="viz-node">
+            <div class="viz-node" title="Deploy em Produção">
                 <div class="node-icon-pro"><i class="fa-solid fa-rocket"></i></div>
-                <span style="font-size: 0.6rem; font-weight: 800;">PROD</span>
+                <span style="font-size: 0.65rem; font-weight: 800; color: var(--text-muted);">PRODUCTION</span>
             </div>
         </div>
     </div>
 
     {# 📊 REAL-TIME BUILD CONSOLE #}
-    <div class="hub-card" style="padding: 25px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h3 class="hub-title" style="margin: 0;"><i class="fa-solid fa-terminal"></i> Logs de Build - Thread #4201</h3>
-            <div style="font-size: 0.6rem; color: var(--accent-cyan); font-weight: 800;"><i class="fa-solid fa-circle-notch fa-spin"></i> CONECTADO</div>
+    <div class="hub-card" style="padding: 30px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <h3 class="hub-title" style="margin: 0;"><i class="fa-solid fa-terminal"></i> Build Logs</h3>
+                <span style="font-size: 0.6rem; color: var(--accent-cyan); background: rgba(34, 211, 238, 0.05); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(34, 211, 238, 0.1);">LIVE STREAM</span>
+            </div>
+            <button class="btn-sige-secundario" style="font-size: 0.55rem; padding: 5px 12px;"><i class="fa-solid fa-download"></i> EXPORT LOGS</button>
         </div>
-        <div class="build-console-pro" id="buildConsole" style="background: #020617; border-radius: 16px; padding: 20px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #64748b; height: 250px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); box-shadow: inset 0 0 20px rgba(0,0,0,0.5);">
-            <div class="con-line"><span style="color: #334155; margin-right: 10px;">[20:47:01]</span> <span style="color: var(--accent-cyan);">INFO</span>: Buscando repositório remoto 'origin/main'...</div>
-            <div class="con-line"><span style="color: #334155; margin-right: 10px;">[20:47:04]</span> <span style="color: var(--accent-cyan);">INFO</span>: Baixando imagens docker: python:3.14-slim</div>
+        <div class="build-console-pro" id="buildConsole">
+            <div class="con-line"><span style="color: #334155;">[21:18:01]</span> <span style="color: var(--accent-cyan); font-weight: 800;">SYSTEM</span>: Orquestrador v7.3.2 iniciado com sucesso.</div>
+            <div class="con-line"><span style="color: #334155;">[21:18:04]</span> <span style="color: var(--accent-violet); font-weight: 800;">GIT</span>: Novo commit detectado: <code style="color: var(--text-primary);">a7b2c9d</code> - "Refactor APM UI"</div>
+            <div class="con-line"><span style="color: #334155;">[21:18:07]</span> <span style="color: var(--accent-cyan); font-weight: 800;">DOCKER</span>: Iniciando compilação da imagem multi-stage...</div>
         </div>
     </div>
 
   </div>
 
-  {# ════ SIDEBAR ULTRA-GOD-LEVEL ════ #}
   <div class="coluna-direita">
     
-    {# 🛡️ Cluster Health Pro #}
+    {# 🛡️ Cluster Health APEX #}
     <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-emerald);">
-        <h3 class="hub-title"><i class="fa-solid fa-heart-pulse" style="color: var(--accent-emerald);"></i> Saúde do Cluster Pro</h3>
+        <h3 class="hub-title"><i class="fa-solid fa-heart-pulse" style="color: var(--accent-emerald);"></i> Cluster Health</h3>
         
-        <div style="margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span class="metric-label">Staging <small style="background: var(--accent-cyan); color: #000; padding: 1px 4px; border-radius: 3px;">v7.3.0</small></span>
-                <div class="health-dot-pulse"></div>
+        <div style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.7rem; font-weight: 800;">STAGING ENVIRONMENT</span>
+                <span class="status-badge status-ativo" style="font-size: 0.5rem;">ONLINE</span>
             </div>
-            <div class="uptime-tracker">
-                {% for i in "123456789012345678" %}<div class="uptime-bar"></div>{% endfor %}
-            </div>
-        </div>
-
-        <div style="margin-bottom: 15px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <span class="metric-label">Produção <small style="background: var(--accent-emerald); color: #000; padding: 1px 4px; border-radius: 3px;">v7.2.4</small></span>
-                <div class="health-dot-pulse"></div>
-            </div>
-            <div class="uptime-tracker">
-                {% for i in "1234567890123456" %}<div class="uptime-bar"></div>{% endfor %}
-                <div class="uptime-bar error" style="width: 2px;"></div>
-                <div class="uptime-bar"></div>
+            <div style="display: flex; gap: 3px;">
+                {% for i in "123456789012345678901234" %}
+                <div style="flex: 1; height: 15px; background: var(--accent-emerald); border-radius: 2px; opacity: 0.8;"></div>
+                {% endfor %}
             </div>
         </div>
 
-        <div class="metric-item" style="border-bottom: none; padding-top: 10px;">
-            <span class="metric-label">Motor de Rollback</span>
-            <span class="metric-value" style="color: var(--accent-emerald); font-weight: 800;">PRONTO</span>
+        <div style="margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 0.7rem; font-weight: 800;">PRODUCTION CLUSTER</span>
+                <span class="status-badge status-ativo" style="font-size: 0.5rem;">ONLINE</span>
+            </div>
+            <div style="display: flex; gap: 3px;">
+                {% for i in "123456789012345678901234" %}
+                <div style="flex: 1; height: 15px; background: var(--accent-emerald); border-radius: 2px; opacity: 0.8; {% if forloop.counter == 18 %}background: var(--accent-amber); opacity: 1;{% endif %}"></div>
+                {% endfor %}
+            </div>
         </div>
     </article>
 
-    {# 🏎️ Build Velocity Pro #}
+    {# 🏎️ Build Velocity APEX #}
     <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
-        <h3 class="hub-title"><i class="fa-solid fa-gauge-high" style="color: var(--accent-cyan);"></i> Velocidade de Build Pro</h3>
+        <h3 class="hub-title"><i class="fa-solid fa-gauge-high" style="color: var(--accent-cyan);"></i> Build Efficiency</h3>
         
-        <div class="velocity-gauge-wrap">
-            <div class="v-track"></div>
-            <div class="v-needle" id="velocityNeedle"></div>
+        <div style="text-align: center; padding: 20px 0;">
+            <div style="font-family: 'Syne'; font-size: 3rem; font-weight: 800; color: var(--accent-cyan); line-height: 1;">4.2<span style="font-size: 1rem; opacity: 0.5;">min</span></div>
+            <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;">Média de Ciclo (Cycle Time)</p>
         </div>
 
         <div class="metric-item">
-            <span class="metric-label">Tempo Médio de Build</span>
-            <span class="metric-value" style="font-family: 'Syne';">4m 12s <small style="color: var(--accent-emerald); font-size: 0.55rem;"><i class="fa-solid fa-caret-down"></i> 5%</small></span>
+            <span class="metric-label">Taxa de Sucesso</span>
+            <span class="metric-value" style="color: var(--accent-emerald);">99.2%</span>
         </div>
         <div class="metric-item" style="border-bottom: none;">
-            <span class="metric-label">Commits / Dia</span>
-            <span class="metric-value" style="font-family: 'Syne';">14 <small style="color: var(--accent-emerald); font-size: 0.55rem;"><i class="fa-solid fa-caret-up"></i> 2</small></span>
+            <span class="metric-label">Deploys Hoje</span>
+            <span class="metric-value" style="color: var(--accent-cyan);">24</span>
         </div>
     </article>
 
-    {# ⚙️ Build Analytics #}
+    {# ⚙️ Automations #}
     <article class="hub-card" style="border-top: 3px solid var(--accent-violet);">
-        <h3 class="hub-title"><i class="fa-solid fa-chart-pie" style="color: var(--accent-violet);"></i> Eficiência de Build</h3>
-        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 15px;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.65rem;">
-                <span>Cobertura de Testes</span><span style="color: var(--accent-emerald);">98.4%</span>
+        <h3 class="hub-title"><i class="fa-solid fa-robot"></i> Automações Ativas</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+                <span style="font-size: 0.65rem;">Auto-scaling Watcher</span>
+                <span class="status-badge" style="background: var(--accent-violet); font-size: 0.5rem;">ATIVO</span>
             </div>
-            <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 98%; height: 100%; background: var(--accent-emerald);"></div></div>
-            
-            <div style="display: flex; justify-content: space-between; font-size: 0.65rem; margin-top: 5px;">
-                <span>Compressão de Assets</span><span style="color: var(--accent-cyan);">84%</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+                <span style="font-size: 0.65rem;">Snyk Security Scan</span>
+                <span class="status-badge" style="background: var(--accent-violet); font-size: 0.5rem;">ATIVO</span>
             </div>
-            <div style="height: 4px; background: rgba(0,0,0,0.2);"><div style="width: 84%; height: 100%; background: var(--accent-cyan);"></div></div>
         </div>
     </article>
 
@@ -199,38 +254,56 @@
 </div>
 
 <script>
-    // Animação do velocímetro
-    setTimeout(() => {
-        document.getElementById('velocityNeedle').style.transform = 'translateX(-50%) rotate(25deg)';
-    }, 500);
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Pipeline Progress Animation ---
+        setTimeout(() => {
+            document.getElementById('pipelineProgress').style.width = '55%';
+        }, 500);
 
-    const consoleEl = document.getElementById('buildConsole');
-    const logs = [
-        ["INFO", "Compilando assets... static/core/js/dashboard.min.js"],
-        ["SUCESSO", "Artefato enviado para S3 Cluster B."],
-        ["INFO", "Iniciando atualização do ambiente de Staging..."]
-    ];
+        // --- Console Dynamic Logs ---
+        const consoleEl = document.getElementById('buildConsole');
+        const logs = [
+            ["DOCKER", "Layer cache hit for python:3.14-slim"],
+            ["TEST", "Running unit tests: 142/142 passed."],
+            ["TEST", "Coverage report generated: 98.4%"],
+            ["STAGING", "Deploying artifact sige-core-v7.3.2.tar.gz"],
+            ["SYSTEM", "Syncing configuration with Redis Cluster..."]
+        ];
 
-    setInterval(() => {
-        const line = document.createElement('div');
-        line.className = 'con-line';
-        const now = new Date();
-        const ts = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
-        
-        const randomLog = logs[Math.floor(Math.random() * logs.length)];
-        const level = randomLog[0];
-        const msg = randomLog[1];
-        
-        let lvlColor = "var(--accent-cyan)";
-        if(level === "SUCESSO") lvlColor = "var(--accent-emerald)";
+        setInterval(() => {
+            const line = document.createElement('div');
+            line.className = 'con-line';
+            const now = new Date();
+            const ts = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
+            
+            const randomLog = logs[Math.floor(Math.random() * logs.length)];
+            const source = randomLog[0];
+            const msg = randomLog[1];
+            
+            let sourceColor = "var(--accent-cyan)";
+            if(source === "TEST") sourceColor = "var(--accent-emerald)";
+            if(source === "GIT") sourceColor = "var(--accent-violet)";
 
-        line.innerHTML = `
-            <span style="color: #334155; margin-right: 10px;">${ts}</span>
-            <span style="color: ${lvlColor};">${level}</span>: 
-            <span>${msg}</span>
-        `;
-        consoleEl.appendChild(line);
-        consoleEl.scrollTop = consoleEl.scrollHeight;
-    }, 4000);
+            line.innerHTML = `
+                <span style="color: #334155;">${ts}</span> 
+                <span style="color: ${sourceColor}; font-weight: 800;">${source}</span>: 
+                <span>${msg}</span>
+            `;
+            consoleEl.appendChild(line);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            
+            if (consoleEl.children.length > 50) consoleEl.removeChild(consoleEl.firstChild);
+        }, 3000);
+
+        // --- Uptime Counter ---
+        let totalSeconds = 447330; // 124:15:30
+        setInterval(() => {
+            totalSeconds++;
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = totalSeconds % 60;
+            document.getElementById('pipelineUptime').innerText = `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }, 1000);
+    });
 </script>
 {% endblock %}

@@ -20,20 +20,36 @@ from django.contrib import admin
 from django.urls import URLPattern, URLResolver, include, path
 
 from config.api_views import dashboard_resumo, ping
-from config.jwt_views import EmailTokenObtainPairView
+from config.jwt_views import SIGETokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from two_factor.urls import urlpatterns as tf_urls
 
 from apps.comunicacao.api import ComunicadoViewSet
-from apps.academico.api import NotificacaoViewSet
+from apps.academico.api import (
+    NotificacaoViewSet,
+    TurmaViewSet,
+    DisciplinaViewSet,
+    GradeHorarioViewSet,
+    AtividadeProfessorViewSet,
+    FrequenciaViewSet,
+    NotaViewSet,
+    MaterialDidaticoViewSet,
+)
 from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
 from apps.saude.api import SaudeViewSet
 
 from apps.financeiro.api import FaturaViewSet, PagamentoViewSet
 
 router = DefaultRouter()
+router.register(r"academico/turmas", TurmaViewSet, basename="turmas")
+router.register(r"academico/disciplinas", DisciplinaViewSet, basename="disciplinas")
+router.register(r"academico/grade", GradeHorarioViewSet, basename="grade-horario")
+router.register(r"academico/atividades", AtividadeProfessorViewSet, basename="atividades")
+router.register(r"academico/frequencia", FrequenciaViewSet, basename="frequencia")
+router.register(r"academico/notas", NotaViewSet, basename="notas")
+router.register(r"academico/materiais", MaterialDidaticoViewSet, basename="materiais")
 router.register(r"academico/notificacoes", NotificacaoViewSet, basename="notificacoes")
 router.register(r"financeiro/faturas", FaturaViewSet, basename="faturas")
 router.register(r"financeiro/pagamentos", PagamentoViewSet, basename="pagamentos")
@@ -46,7 +62,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("admin/", admin.site.urls),
     path("api/ping/", ping, name="api-ping"),
     path("api/dashboard/resumo/", dashboard_resumo, name="api-dashboard-resumo"),
-    path("api/token/", EmailTokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/", SIGETokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include(router.urls)),
 

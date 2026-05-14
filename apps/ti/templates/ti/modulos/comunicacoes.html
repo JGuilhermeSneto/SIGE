@@ -1,0 +1,168 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Comunicações — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'ti/css/comunicacoes_apex.css' %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel" style="padding: 0 20px; margin-top: 15px;">
+  <div class="header-esquerda">
+    <span class="header-label" style="font-family: var(--font-mono); font-size: 0.55rem; letter-spacing: 0.2em; color: var(--c-dim);">
+      <i class="fa-solid fa-tower-broadcast"></i> BROADCAST & RELAY ENGINE v4.0
+    </span>
+    <h1 style="font-family: var(--font-display); font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; color: #fff;">
+      Mensageria & <span style="color: var(--c-cyan); opacity: 0.8;">Comunicações</span>
+    </h1>
+  </div>
+  <div class="header-acoes">
+      <button class="btn-sige-primario" style="font-size: 0.6rem; padding: 6px 14px;">
+          <i class="fa-solid fa-paper-plane"></i> NOVO COMUNICADO
+      </button>
+  </div>
+</header>
+
+<div class="comm-grid">
+  <div class="col-main">
+    
+    {# ── Provider Status ── #}
+    <div class="provider-row">
+       <article class="card-apex">
+          <div class="shine"></div>
+          <div class="provider-card">
+            <div class="provider-icon" style="color: #ea4335;"><i class="fa-solid fa-envelope"></i></div>
+            <div style="flex: 1;">
+               <div class="provider-label">SMTP Relay (Gmail)</div>
+               <div class="provider-status">ENDPOINT: <span style="color: var(--c-emerald);">CONNECTED</span></div>
+            </div>
+            <div class="provider-stats">
+               <div class="provider-val">99.2%</div>
+               <div class="provider-meta">SUCCESS RATE</div>
+            </div>
+          </div>
+       </article>
+
+       <article class="card-apex">
+          <div class="shine"></div>
+          <div class="provider-card">
+            <div class="provider-icon" style="color: #25d366;"><i class="fa-brands fa-whatsapp"></i></div>
+            <div style="flex: 1;">
+               <div class="provider-label">WhatsApp Cloud</div>
+               <div class="provider-status">API: <span style="color: var(--c-emerald);">ONLINE</span></div>
+            </div>
+            <div class="provider-stats">
+               <div class="provider-val">100%</div>
+               <div class="provider-meta">API UPTIME</div>
+            </div>
+          </div>
+       </article>
+    </div>
+
+    {# ── Real-time Queue ── #}
+    <article class="card-apex">
+       <div class="shine"></div>
+       <div class="card-title"><i class="fa-solid fa-list-ul"></i> Live Event Stream</div>
+       <table class="queue-table">
+          <thead>
+            <tr>
+              <th>DESTINATÁRIO</th>
+              <th>CANAL</th>
+              <th>ASSUNTO / CONTEÚDO</th>
+              <th>DATA / HORA</th>
+              <th style="text-align:right;">STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+             <tr>
+                <td><code style="color: var(--c-cyan);">aluno.joao@gmail.com</code></td>
+                <td><i class="fa-solid fa-envelope"></i> SMTP</td>
+                <td>Sua nota foi lançada (Física III)</td>
+                <td style="font-family: var(--font-mono); font-size: 0.6rem;">19:58:22</td>
+                <td style="text-align:right;"><span class="status-tag status-tag--sent">DELIVERED</span></td>
+             </tr>
+             <tr>
+                <td><code style="color: var(--c-cyan);">+55 11 99999-9999</code></td>
+                <td><i class="fa-brands fa-whatsapp"></i> WPP</td>
+                <td>Aviso de Reunião de Pais</td>
+                <td style="font-family: var(--font-mono); font-size: 0.6rem;">19:58:45</td>
+                <td style="text-align:right;"><span class="status-tag status-tag--queue">PENDING</span></td>
+             </tr>
+             <tr>
+                <td><code style="color: var(--c-cyan);">gestao@sige.edu.br</code></td>
+                <td><i class="fa-solid fa-envelope"></i> SMTP</td>
+                <td>Relatório de Auditoria — Diário</td>
+                <td style="font-family: var(--font-mono); font-size: 0.6rem;">19:57:10</td>
+                <td style="text-align:right;"><span class="status-tag status-tag--sent">DELIVERED</span></td>
+             </tr>
+          </tbody>
+       </table>
+    </article>
+  </div>
+
+  <div class="col-side side-stack" style="display: flex; flex-direction: column; gap: 15px;">
+     
+     {# ── Volume Metrics ── #}
+     <article class="card-apex" style="border-left: 2px solid var(--c-cyan);">
+        <div class="shine"></div>
+        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Distribution Load</div>
+        <div style="margin-top: 10px;">
+           <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--c-dim);">
+              <span>Sent (Today)</span><strong style="color: #fff;">1,240</strong>
+           </div>
+           <div class="bar-container"><div class="bar-fill" style="width: 75%;"></div></div>
+           
+           <div style="display: flex; justify-content: space-between; font-size: 0.6rem; margin-top: 12px; color: var(--c-dim);">
+              <span>Monthly Quota</span><strong style="color: var(--c-amber);">90%</strong>
+           </div>
+           <div class="bar-container"><div class="bar-fill" style="width: 90%; background: var(--c-amber); box-shadow: 0 0 10px var(--c-amber);"></div></div>
+        </div>
+     </article>
+
+     {# ── Health / Bounces ── #}
+     <article class="card-apex" style="border-left: 2px solid var(--c-ruby);">
+        <div class="shine"></div>
+        <div class="card-title" style="color: var(--c-ruby);"><i class="fa-solid fa-circle-exclamation"></i> Bounce Intelligence</div>
+        <div style="text-align: center; padding: 15px 0;">
+           <div class="bounce-radial">
+              <div class="bounce-val">0.8%</div>
+           </div>
+           <p style="font-size: 0.55rem; color: var(--c-dim); margin-top: 8px;">SAFE ZONE (< 2%)</p>
+        </div>
+     </article>
+
+     {# ── Configuration ── #}
+     <article class="card-apex">
+        <div class="shine"></div>
+        <div class="card-title"><i class="fa-solid fa-sliders"></i> Engine Config</div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.6rem;">
+                <span style="color: var(--c-dim);">Retry Policy</span>
+                <span style="color: var(--c-emerald);">3x EXPONENTIAL</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.6rem;">
+                <span style="color: var(--c-dim);">Sanitization</span>
+                <span style="color: var(--c-emerald);">ACTIVE</span>
+            </div>
+        </div>
+     </article>
+  </div>
+</div>
+
+<script>
+(function() {
+  document.addEventListener('mousemove', e => {
+    document.querySelectorAll('.card-apex').forEach(card => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      card.style.setProperty('--x', `${x}px`);
+      card.style.setProperty('--y', `${y}px`);
+    });
+  });
+})();
+</script>
+{% endblock %}

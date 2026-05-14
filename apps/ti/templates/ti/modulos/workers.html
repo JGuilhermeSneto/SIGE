@@ -1,0 +1,103 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}Workers & Queues — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<style>
+  .worker-grid { display: grid; grid-template-columns: 1fr 350px; gap: 20px; padding: 20px; }
+  .worker-card {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 20px;
+    margin-bottom: 20px; position: relative;
+  }
+  .worker-status-indicator {
+    width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 10px;
+    box-shadow: 0 0 8px currentColor;
+  }
+  .worker-status-indicator.ativo { color: var(--accent-emerald); }
+  .worker-status-indicator.idle { color: var(--accent-amber); }
+
+  .task-progress { height: 6px; background: rgba(0,0,0,0.2); border-radius: 3px; overflow: hidden; margin-top: 15px; }
+  .task-fill { height: 100%; background: var(--accent-violet); width: 0%; transition: width 1s; }
+  .task-fill.ativo { width: 70%; }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel" style="padding: 0 20px; margin-top: 20px;">
+  <div class="header-esquerda">
+    <span class="header-label"><i class="fa-solid fa-gears"></i> ORQUESTRAÇÃO DE TAREFAS ASSÍNCRONAS</span>
+    <h1>Workers & <span class="nome-destaque" style="color: var(--accent-violet);">Queues</span></h1>
+  </div>
+  <div class="header-acoes">
+     <button class="btn-sige-primario" style="background: var(--accent-violet); border: none; font-size: 0.65rem;"><i class="fa-solid fa-plus"></i> ESCALAR WORKERS</button>
+  </div>
+</header>
+
+<div class="worker-grid">
+  <div class="col-main">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+       {% for worker in workers %}
+       <article class="worker-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+             <div style="display: flex; align-items: center;">
+                <span class="worker-status-indicator {{ worker.status }}"></span>
+                <strong style="font-size: 0.85rem;">{{ worker.name }}</strong>
+             </div>
+             <span class="status-badge" style="font-size: 0.55rem; background: rgba(255,255,255,0.05);">{{ worker.status|upper }}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);">
+             <span>Tarefas Processadas</span><strong>{{ worker.tasks }}</strong>
+          </div>
+          <div class="task-progress"><div class="task-fill {{ worker.status }}"></div></div>
+       </article>
+       {% endfor %}
+    </div>
+
+    <article class="hub-card" style="margin-top: 20px; padding: 25px;">
+       <h3 style="margin-top: 0; font-family: 'Syne';"><i class="fa-solid fa-list"></i> Fila de Tarefas Pendentes</h3>
+       <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+          <div class="metric-item" style="padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+             <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                <i class="fa-solid fa-file-pdf" style="color: var(--accent-ruby); font-size: 1.2rem;"></i>
+                <div>
+                   <div style="font-weight: 800;">Gerar Relatório Acadêmico Anual</div>
+                   <div style="font-size: 0.6rem; color: var(--text-muted);">ID: tasks.reports.generate_annual | Prioridade: ALTA</div>
+                </div>
+             </div>
+             <span class="status-badge status-pending">NA FILA</span>
+          </div>
+          
+          <div class="metric-item" style="padding: 15px; background: rgba(255,255,255,0.02); border-radius: 12px;">
+             <div style="display: flex; align-items: center; gap: 15px; flex: 1;">
+                <i class="fa-solid fa-envelope" style="color: var(--accent-cyan); font-size: 1.2rem;"></i>
+                <div>
+                   <div style="font-weight: 800;">Envio de Notificações Push (Mobile)</div>
+                   <div style="font-size: 0.6rem; color: var(--text-muted);">ID: tasks.notify.push_broadcast | Prioridade: MÉDIA</div>
+                </div>
+             </div>
+             <span class="status-badge status-ativo">PROCESSANDO</span>
+          </div>
+       </div>
+    </article>
+  </div>
+
+  <div class="col-side">
+     <article class="hub-card" style="border-top: 3px solid var(--accent-violet);">
+        <h3 class="hub-title"><i class="fa-solid fa-bolt"></i> Rendimento Global</h3>
+        <div style="text-align: center; padding: 20px 0;">
+           <div style="font-family: 'Syne'; font-size: 2.2rem; font-weight: 800; color: var(--accent-violet);">{{ tasks.processed_today }}</div>
+           <p style="font-size: 0.65rem; color: var(--text-muted);">Tarefas processadas hoje</p>
+        </div>
+     </article>
+
+     <article class="hub-card" style="border-top: 3px solid var(--accent-ruby); margin-top: 20px;">
+        <h3 class="hub-title"><i class="fa-solid fa-circle-xmark"></i> Falhas (24h)</h3>
+        <div style="text-align: center; padding: 20px 0;">
+           <div style="font-family: 'Syne'; font-size: 2.2rem; font-weight: 800; color: var(--accent-ruby);">{{ tasks.failed_24h }}</div>
+           <p style="font-size: 0.65rem; color: var(--text-muted);">Erros de execução</p>
+        </div>
+     </article>
+  </div>
+</div>
+{% endblock %}

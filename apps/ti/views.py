@@ -412,7 +412,7 @@ def api_logs_lgpd(request):
 @login_required
 @user_passes_test(usuario_tem_painel_ti)
 def placeholder_ti(request, modulo_slug):
-    """View dinâmica que carrega o template específico do módulo ou o placeholder."""
+    """View dinâmica que carrega o template específico do módulo com dados reais."""
     from django.template.loader import get_template
     from django.template import TemplateDoesNotExist
 
@@ -446,10 +446,52 @@ def placeholder_ti(request, modulo_slug):
         "slug": modulo_slug,
         "nome_exibicao": get_nome_exibicao(request.user),
         "foto_perfil_url": get_foto_perfil(request.user),
+        "recursos": diagnostico.get_system_resources(),
+        "performance": diagnostico.get_request_stats(),
+        "agora": timezone.now(),
     }
+
+    # Injeção de dados específicos por módulo
+    if modulo_slug == "lgpd":
+        context["lgpd"] = diagnostico.get_lgpd_stats()
+    elif modulo_slug in ["database", "infraestrutura"]:
+        context["db_stats"] = diagnostico.get_db_stats()
+        context["db_connections"] = diagnostico.get_db_connections()
+        context["slow_queries"] = diagnostico.get_slow_queries()
+    elif modulo_slug == "ia":
+        context["anomalia"] = diagnostico.get_anomaly_status()
+    elif modulo_slug == "finops":
+        context["finops"] = diagnostico.get_finops_data()
+    elif modulo_slug == "workers":
+        context["workers"] = diagnostico.get_worker_status()
+        context["tasks"] = diagnostico.get_task_queue_stats()
+    elif modulo_slug == "dns":
+        context["ssl_info"] = diagnostico.check_ssl_expiry(request.get_host())
+    elif modulo_slug == "logs":
+        context["event_feed"] = diagnostico.get_global_event_feed()
 
     try:
         get_template(template_path)
         return render(request, template_path, context)
     except TemplateDoesNotExist:
         return render(request, "ti/placeholder.html", context)
+
+
+@login_required
+@user_passes_test(usuario_tem_painel_ti)
+def download_backup(request, backup_id):
+    """Serve o arquivo de backup para download seguro."""
+    from .models import LogBackup
+    from django.http import FileResponse, Http404
+    import os
+    
+    backup = get_object_or_404(LogBackup, id=backup_id)
+    if backup.status != 'SUCESSO':
+        raise Http404("Este backup não foi concluído com sucesso.")
+    
+    caminho_arquivo = os.path.join(settings.BASE_DIR, 'media', 'backups', backup.arquivo)
+    
+    if os.path.exists(caminho_arquivo):
+        return FileResponse(open(caminho_arquivo, 'rb'), as_attachment=True, filename=backup.arquivo)
+    
+    raise Http404("Arquivo de backup não encontrado no servidor.")

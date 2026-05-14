@@ -15,21 +15,21 @@ GRUPO_TI_OPERADOR = "TI — Operador"
 GRUPO_TI_COORDENACAO = "TI — Coordenação"
 
 
-def usuario_tem_painel_ti(user: AbstractUser) -> bool:
+def usuario_tem_painel_ti(user) -> bool:
     """Usuário ativo com permissão básica de TI ou superusuário."""
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
-    return user.is_superuser or user.has_perm(COD_PERM_BASICO)
+    return getattr(user, "is_superuser", False) or user.has_perm(COD_PERM_BASICO)
 
 
-def usuario_tem_operacoes_ti(user: AbstractUser) -> bool:
+def usuario_tem_operacoes_ti(user) -> bool:
     """Inclui operações avançadas (integrações, rotinas sensíveis)."""
     if not getattr(user, "is_authenticated", False) or not getattr(user, "is_active", False):
         return False
-    return user.is_superuser or user.has_perm(COD_PERM_OPERACOES)
+    return getattr(user, "is_superuser", False) or user.has_perm(COD_PERM_OPERACOES)
 
 
-def usuario_e_apenas_ti(user: AbstractUser) -> bool:
+def usuario_e_apenas_ti(user) -> bool:
     """
     Perfil exclusivamente TI: sem painéis acadêmicos (gestor/prof/aluno).
 
@@ -37,7 +37,7 @@ def usuario_e_apenas_ti(user: AbstractUser) -> bool:
     """
     if not usuario_tem_painel_ti(user):
         return False
-    if user.is_superuser:
+    if getattr(user, "is_superuser", False):
         return False
     if any(
         hasattr(user, attr)
