@@ -129,6 +129,16 @@
     .ti-nav-grid { grid-template-columns: 1fr; }
     .ti-nav-wrapper { padding: 1rem; }
   }
+
+  /* ⚡ ANIMAÇÕES LIVE */
+  .update-pulse { animation: pulse-border 1.5s ease-out; }
+  @keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(34, 211, 238, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(34, 211, 238, 0); }
+  }
+  .value-up { color: #10b981 !important; transition: color 0.3s; }
+  .value-down { color: #ef4444 !important; transition: color 0.3s; }
 </style>
 {% endblock %}
 
@@ -157,11 +167,11 @@
       <a href="{% url 'ti:soc' %}" class="{% if request.resolver_match.url_name == 'soc' %}ativo{% endif %}">
         <i class="fa-solid fa-shield-halved" style="color: var(--icon-soc);"></i> Defesa SOC
       </a>
-      <a href="{% url 'ti:placeholder_modulo' 'iam' %}" class="{% if 'iam' in request.path %}ativo{% endif %}">
-        <i class="fa-solid fa-user-shield" style="color: var(--icon-iam);"></i> Acessos IAM
+      <a href="{% url 'ti:placeholder_modulo' 'waf' %}" class="{% if 'waf' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-shield-virus" style="color: var(--icon-ccd);"></i> Firewall WAF
       </a>
-      <a href="{% url 'ti:placeholder_modulo' 'vault' %}" class="{% if 'vault' in request.path %}ativo{% endif %}">
-        <i class="fa-solid fa-key" style="color: var(--icon-vlt);"></i> Cofre Vault
+      <a href="{% url 'ti:placeholder_modulo' 'honey' %}" class="{% if 'honey' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-shrimp" style="color: var(--icon-avs);"></i> Honey-Tokens
       </a>
     </div>
 
@@ -186,10 +196,10 @@
         <i class="fa-solid fa-fingerprint" style="color: var(--icon-aud);"></i> Auditoria
       </a>
       <a href="{% url 'ti:placeholder_modulo' 'lgpd' %}" class="{% if 'lgpd' in request.path %}ativo{% endif %}">
-        <i class="fa-solid fa-user-lock" style="color: var(--icon-lgpd);"></i> LGPD & Privacidade
+        <i class="fa-solid fa-user-lock" style="color: var(--icon-lgpd);"></i> LGPD Shield
       </a>
-      <a href="{% url 'ti:placeholder_modulo' 'politicas' %}" class="{% if 'politicas' in request.path %}ativo{% endif %}">
-        <i class="fa-solid fa-file-contract" style="color: var(--icon-pol);"></i> Políticas TI
+      <a href="{% url 'ti:placeholder_modulo' 'pii' %}" class="{% if 'pii' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-magnifying-glass-chart" style="color: var(--icon-pol);"></i> PII Radar
       </a>
     </div>
 
@@ -199,11 +209,11 @@
       <a href="{% url 'ti:gestao_backups' %}" class="{% if request.resolver_match.url_name == 'gestao_backups' %}ativo{% endif %}">
         <i class="fa-solid fa-vault" style="color: var(--icon-cfr);"></i> Snapshots
       </a>
+      <a href="{% url 'ti:placeholder_modulo' 'vault' %}" class="{% if 'vault' in request.path %}ativo{% endif %}">
+        <i class="fa-solid fa-key" style="color: var(--icon-vlt);"></i> Secret Vault
+      </a>
       <a href="{% url 'ti:placeholder_modulo' 'database' %}" class="{% if 'database' in request.path %}ativo{% endif %}">
         <i class="fa-solid fa-database" style="color: var(--icon-db);"></i> Gestão DB
-      </a>
-      <a href="{% url 'ti:placeholder_modulo' 'dr' %}" class="{% if 'dr' in request.path %}ativo{% endif %}">
-        <i class="fa-solid fa-life-ring" style="color: var(--icon-dr);"></i> Plano DR
       </a>
     </div>
 
@@ -254,4 +264,58 @@
 {% endif %}
 
 {% block ti_content %}{% endblock %}
+
+<script>
+  // SIGE Apex - Universal Live Monitoring Engine
+  async function refreshTIMetrics() {
+    try {
+      const response = await fetch("{% url 'ti:api_metrics' %}");
+      const data = await response.json();
+      
+      // 1. Atualizar Recursos (CPU/RAM)
+      updateValue('live-cpu', data.recursos.cpu_percent + '%');
+      updateValue('live-ram', data.recursos.ram_percent + '%');
+      
+      // 2. Atualizar Semáforo de Saúde
+      if (data.health) {
+        data.health.forEach((svc, index) => {
+          const dot = document.getElementById(`health-dot-${index}`);
+          if (dot) {
+            dot.className = `health-dot dot-${svc.status}`;
+          }
+          const info = document.getElementById(`health-info-${index}`);
+          if (info) {
+            info.innerText = svc.info;
+          }
+        });
+      }
+
+      // 3. Atualizar Alertas SOC
+      updateValue('live-waf-blocks', data.waf.bloqueios_hoje);
+      
+      // 4. Update Time
+      const timeEl = document.getElementById('live-clock');
+      if (timeEl) timeEl.innerText = data.agora;
+
+      // Despachar evento para que templates específicos (como o painel) saibam que os dados mudaram
+      window.dispatchEvent(new CustomEvent('tiMetricsUpdated', { detail: data }));
+
+    } catch (error) {
+      console.error("Erro ao sincronizar métricas de TI:", error);
+    }
+  }
+
+  function updateValue(id, newValue) {
+    const el = document.getElementById(id);
+    if (el && el.innerText !== newValue.toString()) {
+      el.classList.add('update-pulse');
+      el.innerText = newValue;
+      setTimeout(() => el.classList.remove('update-pulse'), 1500);
+    }
+  }
+
+  // Iniciar monitoramento instantâneo
+  refreshTIMetrics();
+  setInterval(refreshTIMetrics, 2000);
+</script>
 {% endblock %}

@@ -6,7 +6,7 @@ from apps.academico.utils.academico import (
     _get_grade_horario_turma,
     _get_ocupados_por_professor,
 )
-from apps.academico.models.academico import Turma, Disciplina, GradeHorario
+from apps.academico.models import Turma, Disciplina, GradeHorario
 from apps.usuarios.models.perfis import Professor
 from django.contrib.auth import get_user_model
 

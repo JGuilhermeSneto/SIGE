@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from apps.saude.models.ficha_medica import FichaMedica, AtestadoMedico
 from apps.usuarios.models.perfis import Aluno, Gestor
-from apps.academico.models.academico import Turma
+from apps.academico.models import Turma
 from django.utils import timezone
 
 User = get_user_model()

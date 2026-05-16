@@ -10,14 +10,14 @@ from decimal import Decimal, InvalidOperation
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from ..models.academico import (
+from ..models import (
     AtividadeProfessor,
     EntregaAtividade,
     RespostaAluno,
     Questao,
     Alternativa,
 )
-from ..models.desempenho import NotaAtividade
+from ..models import NotaAtividade
 from .notificacao_servico import NotificacaoServico
 
 

@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models.academico import Turma, Disciplina, GradeHorario, AtividadeProfessor, Questao, Alternativa, MaterialDidatico
-from .models.desempenho import Frequencia, Nota, NotaAtividade, Notificacao
+from .models import (
+    Turma, Disciplina, GradeHorario, AtividadeProfessor, Questao, Alternativa, MaterialDidatico,
+    Frequencia, Nota, NotaAtividade, Notificacao
+)
 from apps.usuarios.models import Professor, Aluno
 
 

@@ -196,7 +196,7 @@ def revisar_atestado(request, atestado_id):
                 # --- LÓGICA PARA ALUNOS ---
                 if hasattr(atestado.usuario, "aluno"):
                     aluno = atestado.usuario.aluno
-                    from apps.academico.models.desempenho import Frequencia
+                    from apps.academico.models import Frequencia
 
                     faltas = Frequencia.objects.filter(
                         aluno=aluno,
@@ -213,7 +213,7 @@ def revisar_atestado(request, atestado_id):
                 # --- LÓGICA PARA PROFESSORES ---
                 elif hasattr(atestado.usuario, "professor"):
                     professor = atestado.usuario.professor
-                    from apps.academico.models.academico import (
+                    from apps.academico.models import (
                         GradeHorario,
                         PlanejamentoAula,
                     )

@@ -17,8 +17,8 @@ from django.db.models import (
 )
 from django.db.models.functions import Coalesce
 
-from apps.academico.models.academico import Turma, Disciplina
-from apps.academico.models.desempenho import Nota
+from apps.academico.models import Turma, Disciplina
+from apps.academico.models import Nota
 from apps.usuarios.models.perfis import Aluno
 from apps.saude.models.ficha_medica import FichaMedica
 from apps.usuarios.utils.perfis import (

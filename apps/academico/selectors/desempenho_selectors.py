@@ -1,6 +1,6 @@
 from django.db.models import Prefetch
-from ..models.academico import Disciplina, PlanejamentoAula, MaterialDidatico
-from ..models.desempenho import Nota, Frequencia
+from ..models import Disciplina, PlanejamentoAula, MaterialDidatico
+from ..models import Nota, Frequencia
 
 
 class DesempenhoSelector:

@@ -4,6 +4,12 @@ from django.utils import timezone
 from .models import Fatura, Pagamento
 from django.db.models import Sum, Count, Q
 from django.utils.timezone import now
+from .selectors import FinanceiroSelectors
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.units import cm
+import datetime
 
 
 @login_required
@@ -312,7 +318,7 @@ def registrar_pagamento(request, fatura_id):
 
 
 from django.contrib import messages
-from apps.academico.models.desempenho import Notificacao
+from apps.academico.models import Notificacao
 
 
 @login_required
@@ -345,3 +351,66 @@ def notificar_fatura(request, fatura_id):
         request, f"Notificação enviada com sucesso para {fatura.aluno.nome_completo}."
     )
     return redirect("financeiro:detalhes_fatura", fatura_id=fatura.id)
+
+
+@login_required
+def exportar_inadimplentes_pdf(request):
+    """Gera um relatório de inadimplência em PDF para a gestão."""
+    if not (hasattr(request.user, "gestor") or request.user.is_superuser):
+        from django.http import HttpResponseForbidden
+        return HttpResponseForbidden("Acesso negado.")
+
+    dados = FinanceiroSelectors.get_inadimplentes_detalhado()
+    
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = 'attachment; filename="relatorio_inadimplencia.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+
+    # Cabeçalho
+    p.setFont("Helvetica-Bold", 16)
+    p.drawCentredString(width / 2, height - 2 * cm, "SIGE - RELATÓRIO DE INADIMPLÊNCIA")
+    p.setFont("Helvetica", 10)
+    p.drawCentredString(width / 2, height - 2.6 * cm, f"Gerado em: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}")
+    
+    p.line(1 * cm, height - 3 * cm, width - 1 * cm, height - 3 * cm)
+
+    # Tabela
+    y = height - 4 * cm
+    p.setFont("Helvetica-Bold", 10)
+    p.drawString(1 * cm, y, "ALUNO")
+    p.drawString(8 * cm, y, "TURMA")
+    p.drawString(12 * cm, y, "QTD")
+    p.drawString(14 * cm, y, "VENC. ANTIGO")
+    p.drawString(17 * cm, y, "TOTAL DEVIDO")
+
+    y -= 0.6 * cm
+    p.setFont("Helvetica", 9)
+    
+    total_geral = 0
+    for item in dados:
+        if y < 3 * cm:
+            p.showPage()
+            y = height - 2 * cm
+            p.setFont("Helvetica", 9)
+
+        p.drawString(1 * cm, y, item["aluno"].nome_completo[:35])
+        p.drawString(8 * cm, y, item["aluno"].turma.nome[:20])
+        p.drawString(12 * cm, y, str(item["qtd_faturas"]))
+        p.drawString(14 * cm, y, item["vencimento_mais_antigo"].strftime('%d/%m/%Y'))
+        p.drawString(17 * cm, y, f"R$ {item['total_devido']:,.2f}")
+        
+        total_geral += item["total_devido"]
+        y -= 0.5 * cm
+        p.line(1 * cm, y + 0.2 * cm, width - 1 * cm, y + 0.2 * cm)
+        y -= 0.3 * cm
+
+    # Resumo Final
+    y -= 1 * cm
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(12 * cm, y, f"TOTAL ACUMULADO: R$ {total_geral:,.2f}")
+
+    p.showPage()
+    p.save()
+    return response

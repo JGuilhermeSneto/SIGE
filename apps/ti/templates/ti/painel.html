@@ -36,6 +36,12 @@
   /* Corrigindo erro das barras verdes */
   .latency-monitor { height: 60px; display: flex; align-items: flex-end; gap: 3px; padding: 10px 0; overflow: hidden; position: relative; }
   .bar-v7 { flex: 1; background: var(--accent-emerald); border-radius: 2px; opacity: 0.6; min-width: 4px; }
+
+  /* 🚥 SEMAFORO DE SAÚDE */
+  .health-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot-green { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+  .dot-yellow { background: #facc15; box-shadow: 0 0 10px rgba(250, 204, 21, 0.5); }
+  .dot-red { background: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
 </style>
 {% endblock %}
 
@@ -45,9 +51,10 @@
     <span class="header-label"><span class="system-pulse"></span> SIGE · CORE v7.2.4</span>
     <h1>Operações <span class="nome-destaque">v7.2</span></h1>
   </div>
-  <div class="header-acoes">
-     <div style="display: flex; gap: 10px;">
-        <div class="info-tag" style="background: var(--bg-elevated); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; border: 1px solid var(--border-subtle);">
+    <div class="header-acoes">
+      <div style="display: flex; gap: 10px; align-items: center;">
+         <div id="live-clock" style="font-family: 'JetBrains Mono'; font-size: 0.8rem; color: var(--accent-cyan); font-weight: 800; background: rgba(34, 211, 238, 0.1); padding: 8px 15px; border-radius: 10px; border: 1px solid rgba(34, 211, 238, 0.2);">00:00:00</div>
+         <div class="info-tag" style="background: var(--bg-elevated); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; border: 1px solid var(--border-subtle);">
           <i class="fa-solid fa-code-branch"></i> Git: <strong style="color: var(--accent-cyan);">{{ git_info.git_hash }}</strong>
         </div>
         <div class="info-tag" style="background: var(--bg-elevated); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; border: 1px solid var(--border-subtle);">
@@ -160,8 +167,8 @@
        {# Hub 3: Operações & DevOps #}
        <article class="hub-card">
           <h3 class="hub-title"><i class="fa-solid fa-microchip" style="color: var(--accent-violet);"></i> DevOps & Tasks</h3>
-          <div class="metric-item"><span class="metric-label">CPU Load</span><span class="metric-value">{{ recursos.cpu_percent }}%</span></div>
-          <div class="metric-item"><span class="metric-label">RAM Usage</span><span class="metric-value">{{ recursos.ram_percent }}%</span></div>
+          <div class="metric-item"><span class="metric-label">CPU Load</span><span class="metric-value" id="live-cpu">{{ recursos.cpu_percent }}%</span></div>
+          <div class="metric-item"><span class="metric-label">RAM Usage</span><span class="metric-value" id="live-ram">{{ recursos.ram_percent }}%</span></div>
           <div class="metric-item"><span class="metric-label">Task Queue</span><span class="metric-value">{{ tasks.pending }} pendentes</span></div>
           <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
              <div style="display: flex; gap: 5px;">
@@ -239,6 +246,33 @@
        <a href="{% url 'ti:soc' %}" class="btn-sige-secundario" style="width: 100%; display: block; text-align: center; font-size: 0.65rem; text-decoration: none;">
           <i class="fa-solid fa-magnifying-glass-chart"></i> Analisar SOC Completo
        </a>
+    </article>
+
+    {# 🚥 SERVIÇOS STATUS (SEMÁFORO) #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-emerald);">
+       <h3 class="hub-title"><i class="fa-solid fa-traffic-light"></i> Saúde dos Serviços</h3>
+       <div style="display: flex; flex-direction: column; gap: 12px;">
+          {% for svc in health_light %}
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem;">
+             <div style="display: flex; align-items: center; gap: 10px;">
+                <span class="health-dot dot-{{ svc.status }}" id="health-dot-{{ forloop.counter0 }}"></span>
+                <span style="font-weight: 600;">{{ svc.nome }}</span>
+             </div>
+             <span style="opacity: 0.7; font-size: 0.6rem;" id="health-info-{{ forloop.counter0 }}">{{ svc.info }}</span>
+          </div>
+          {% endfor %}
+       </div>
+    </article>
+
+    {# 🛡️ RADAR DE SEGURANÇA 8.0 #}
+    <article class="hub-card" style="margin-bottom: 20px; border-top: 3px solid var(--accent-cyan);">
+       <h3 class="hub-title"><i class="fa-solid fa-user-shield"></i> Radar de Segurança</h3>
+       <div class="metric-item"><span class="metric-label">Bloqueios WAF (Hoje)</span><span class="metric-value" id="live-waf-blocks">{{ waf_stats.bloqueios_hoje }}</span></div>
+       <div class="metric-item"><span class="metric-label">Iscas Ativas</span><span class="metric-value">{{ honey_stats.total_tokens }}</span></div>
+       <div class="metric-item"><span class="metric-label">Status Honey-Token</span><span class="metric-value" style="color: var(--accent-emerald);">{{ honey_stats.status }}</span></div>
+       <div style="margin-top: 10px; font-size: 0.6rem; text-align: center; color: var(--accent-cyan);">
+          <i class="fa-solid fa-vault"></i> Vault: <strong>AES-256 ENCRYPTED</strong>
+       </div>
     </article>
 
     {# Event Feed Global #}

@@ -12,7 +12,7 @@ from django.utils.timezone import now
 def gerar_calendario(ano=None, mes=None, user=None):
     """Gera dados para o mini-calendário, agora identificando suspensões por usuário."""
     from apps.calendario.models.calendario import EventoCalendario
-    from apps.academico.models.academico import PlanejamentoAula
+    from apps.academico.models import PlanejamentoAula
     from django.db.models import Q
 
     hoje = now().date()

@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required, user_passes_test
 from ..selectors import relatorios as selectors_rel
 from apps.usuarios.utils.perfis import is_super_ou_gestor
+from ..models import QuestaoBanco, AlternativaBanco, Disciplina
 
 # ReportLab para geração de PDF
 from reportlab.pdfgen import canvas
@@ -219,3 +220,66 @@ def visualizar_historico(request, aluno_id=None):
         return HttpResponse("Histórico não encontrado.", status=404)
 
     return render(request, "relatorios/historico_escolar.html", dados)
+
+
+@login_required
+def gerar_prova_pdf(request, disciplina_id):
+    """Gera uma prova em PDF sorteando questões do banco."""
+    disciplina = get_object_or_404(Disciplina, id=disciplina_id)
+    qtd_questoes = int(request.GET.get("qtd", 10))
+    
+    # Sorteio de questões
+    questoes = QuestaoBanco.objects.filter(disciplina=disciplina).order_by('?')[:qtd_questoes]
+    
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="prova_{disciplina.nome}.pdf"'
+
+    p = canvas.Canvas(response, pagesize=A4)
+    width, height = A4
+
+    # Cabeçalho da Prova
+    p.setFont("Helvetica-Bold", 14)
+    p.drawCentredString(width / 2, height - 2 * cm, "AVALIAÇÃO ACADÊMICA")
+    p.setFont("Helvetica", 10)
+    p.drawString(1 * cm, height - 3 * cm, f"DISCIPLINA: {disciplina.nome.upper()}")
+    p.drawString(12 * cm, height - 3 * cm, f"DATA: ____/____/____")
+    p.drawString(1 * cm, height - 3.6 * cm, "ALUNO(A): ____________________________________________________________________")
+    
+    p.line(1 * cm, height - 4.2 * cm, width - 1 * cm, height - 4.2 * cm)
+
+    y = height - 5.5 * cm
+    p.setFont("Helvetica", 11)
+    
+    for i, q in enumerate(questoes, 1):
+        if y < 4 * cm:
+            p.showPage()
+            y = height - 2 * cm
+            p.setFont("Helvetica", 11)
+
+        # Enunciado
+        texto_questao = f"{i}. {q.enunciado}"
+        p.drawString(1 * cm, y, texto_questao[:90])
+        if len(texto_questao) > 90:
+             y -= 0.5 * cm
+             p.drawString(1.5 * cm, y, texto_questao[90:])
+        
+        y -= 0.8 * cm
+        
+        # Alternativas (se houver)
+        if q.tipo == 'MULTIPLA_ESCOLHA':
+            letras = ['a', 'b', 'c', 'd', 'e']
+            for j, alt in enumerate(q.alternativas.all()):
+                p.drawString(1.5 * cm, y, f"{letras[j]}) {alt.texto}")
+                y -= 0.6 * cm
+        else:
+            # Espaço para dissertativa
+            y -= 0.2 * cm
+            for _ in range(3):
+                p.line(1.5 * cm, y, width - 1.5 * cm, y)
+                y -= 0.7 * cm
+
+        y -= 0.5 * cm
+
+    p.showPage()
+    p.save()
+    return response

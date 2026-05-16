@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils import timezone
 
-from apps.academico.models.academico import (
+from apps.academico.models import (
     Alternativa,
     AtividadeProfessor,
     Disciplina,

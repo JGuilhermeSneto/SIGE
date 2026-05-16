@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from apps.usuarios.models.perfis import Professor
-from apps.academico.models.academico import Disciplina, GradeHorario, PlanejamentoAula
+from apps.academico.models import Disciplina, GradeHorario, PlanejamentoAula
 from apps.usuarios.utils.perfis import get_nome_exibicao, get_foto_perfil
 
 # Mapeia weekday() do Python para os DIA_CHOICES da GradeHoraria

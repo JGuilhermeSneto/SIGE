@@ -2,7 +2,7 @@ import factory
 from django.contrib.auth.models import User
 from apps.comum.models.tenant import Instituicao
 from apps.usuarios.models.perfis import Aluno, Responsavel
-from apps.academico.models.academico import Turma
+from apps.academico.models import Turma
 
 
 class UserFactory(factory.django.DjangoModelFactory):

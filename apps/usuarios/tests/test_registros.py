@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from apps.usuarios.models.perfis import Aluno, Professor, Gestor
-from apps.academico.models.academico import Turma
+from apps.academico.models import Turma
 
 User = get_user_model()
 

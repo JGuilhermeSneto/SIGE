@@ -2,7 +2,7 @@
 
 from django.db import models
 from django.contrib.auth import get_user_model
-from ..models.desempenho import Notificacao
+from ..models import Notificacao
 
 User = get_user_model()
 

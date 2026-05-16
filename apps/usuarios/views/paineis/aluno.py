@@ -12,8 +12,8 @@ from apps.academico.utils.academico import (
     _get_grade_horario_turma,
     _calcular_situacao_nota,
 )
-from apps.academico.models.academico import PlanejamentoAula, MaterialDidatico
-from apps.academico.models.desempenho import Notificacao, Frequencia
+from apps.academico.models import PlanejamentoAula, MaterialDidatico
+from apps.academico.models import Notificacao, Frequencia
 from apps.comunicacao.models.comunicado import Comunicado
 from apps.academico.selectors.desempenho_selectors import DesempenhoSelector
 

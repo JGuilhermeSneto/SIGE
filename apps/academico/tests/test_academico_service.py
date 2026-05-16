@@ -1,5 +1,5 @@
 from django.test import TestCase
-from apps.academico.models.academico import Turma, Disciplina, GradeHorario
+from apps.academico.models import Turma, Disciplina, GradeHorario
 from apps.academico.services.academico_service import AcademicoService
 from apps.usuarios.models.perfis import Professor
 from django.contrib.auth import get_user_model

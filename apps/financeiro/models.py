@@ -204,3 +204,59 @@ class Pagamento(models.Model):
         if total_pago >= self.fatura.valor:
             self.fatura.status = "PAGO"
             self.fatura.save()
+
+
+class AcordoFinanceiro(TenantModel):
+    """Renegociação de dívidas acumuladas (Faturas Atrasadas)."""
+    STATUS_CHOICES = [('ATIVO', 'Ativo'), ('CONCLUIDO', 'Concluído'), ('QUEBRADO', 'Quebrado')]
+
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE, related_name='acordos')
+    faturas_originais = models.ManyToManyField(Fatura, related_name='acordos_origem')
+    valor_total_original = models.DecimalField(max_digits=12, decimal_places=2)
+    valor_com_desconto = models.DecimalField(max_digits=12, decimal_places=2)
+    numero_parcelas = models.PositiveIntegerField(default=1)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ATIVO')
+    data_acordo = models.DateTimeField(auto_now_add=True)
+    observacoes = models.TextField(blank=True)
+
+    class Meta:
+        db_table = "fin_acordo"
+        verbose_name = "Acordo Financeiro"
+        verbose_name_plural = "Acordos Financeiros"
+
+    def __str__(self):
+        return f"Acordo #{self.id} - {self.aluno.nome_completo}"
+
+
+class ParcelaAcordo(TenantModel):
+    """Parcelas geradas a partir de um Acordo Financeiro."""
+    acordo = models.ForeignKey(AcordoFinanceiro, on_delete=models.CASCADE, related_name='parcelas')
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    data_vencimento = models.DateField()
+    status = models.CharField(max_length=20, choices=Fatura.STATUS_CHOICES, default='PENDENTE')
+    link_pagamento = EncryptedURLField(blank=True, null=True, max_length=1000)
+
+    class Meta:
+        db_table = "fin_parcela_acordo"
+
+    def __str__(self):
+        return f"Parcela {self.id} do Acordo {self.acordo.id}"
+
+
+class ConfiguracaoGateway(TenantModel):
+    """Configurações seguras para integração com Asaas, Efí, etc."""
+    GATEWAYS = [('ASAAS', 'Asaas'), ('EFI', 'Efí (Gerencianet)'), ('STRIPE', 'Stripe')]
+
+    nome = models.CharField(max_length=50, choices=GATEWAYS)
+    api_key = EncryptedCharField(max_length=500)
+    client_id = EncryptedCharField(max_length=500, blank=True, null=True)
+    webhook_secret = EncryptedCharField(max_length=500, blank=True, null=True)
+    ativo = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = "fin_config_gateway"
+        verbose_name = "Configuração de Gateway"
+        verbose_name_plural = "Configurações de Gateways"
+
+    def __str__(self):
+        return f"Gateway {self.get_nome_display()} ({'Ativo' if self.ativo else 'Inativo'})"

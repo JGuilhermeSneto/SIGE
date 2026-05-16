@@ -68,7 +68,7 @@ def _get_grade_horario_turma(turma, data_inicio=None, data_fim=None):
         horario: {dia: None for dia in DIAS_SEMANA} for horario in horarios
     }
 
-    from ..models.academico import GradeHorario, PlanejamentoAula
+    from ..models import GradeHorario, PlanejamentoAula
 
     registros = GradeHorario.objects.filter(turma=turma).select_related("disciplina")
 
@@ -104,7 +104,7 @@ def _get_grade_horario_turma(turma, data_inicio=None, data_fim=None):
 def _get_ocupados_por_professor(professor_id, ano_letivo, turma_id_atual=None):
     """IDENTIFICA slots já ocupados por um professor em outras turmas."""
     ocupados = set()
-    from ..models.academico import GradeHorario
+    from ..models import GradeHorario
 
     queryset = GradeHorario.objects.filter(turma__ano=ano_letivo).select_related(
         "disciplina__professor", "turma"
@@ -132,7 +132,7 @@ def _get_ocupados_por_professor(professor_id, ano_letivo, turma_id_atual=None):
 def _contar_notas_lancadas(disciplina, turma):
     """Conta total de avaliações preenchidas."""
     from django.db.models import Count
-    from ..models.desempenho import Nota
+    from ..models import Nota
 
     notas_qs = Nota.objects.filter(disciplina=disciplina, aluno__turma=turma)
     contagem = notas_qs.aggregate(
@@ -152,7 +152,7 @@ def _contar_notas_lancadas(disciplina, turma):
 def _calcular_detalhes_disciplina(disciplina, turma):
     """Calcula estatísticas de nota e frequência para uma disciplina."""
     from apps.usuarios.models.perfis import Aluno
-    from ..models.desempenho import Nota, Frequencia
+    from ..models import Nota, Frequencia
     from django.db.models import ExpressionWrapper, F, Avg, DecimalField
     from django.db.models.functions import Coalesce
     from decimal import Decimal
@@ -193,7 +193,7 @@ def _calcular_detalhes_disciplina(disciplina, turma):
 def _acumular_notas_professor(disciplinas_filtradas):
     """Calcula métricas globais de preenchimento para o professor de forma otimizada."""
     from apps.usuarios.models.perfis import Aluno
-    from ..models.desempenho import Nota
+    from ..models import Nota
     from django.db.models import Count, Q
 
     # 1. Busca alunos únicos envolvidos nestas disciplinas

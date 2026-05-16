@@ -13,8 +13,8 @@ from datetime import date
 from django.db.models import Count, Q
 from django.urls import reverse
 
-from ..models.desempenho import Nota, Frequencia
-from ..models.academico import Disciplina
+from ..models import Nota, Frequencia
+from ..models import Disciplina
 from apps.saude.models.ficha_medica import AtestadoMedico
 from apps.usuarios.models.perfis import Aluno
 from apps.usuarios.utils.perfis import (

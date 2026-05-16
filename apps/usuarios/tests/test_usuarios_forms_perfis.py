@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from apps.academico.models.academico import Turma
+from apps.academico.models import Turma
 from apps.usuarios.forms.perfis import ProfessorForm, AlunoForm, GestorForm
 from apps.usuarios.models.perfis import Professor, Aluno, Gestor
 

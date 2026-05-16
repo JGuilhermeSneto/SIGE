@@ -19,4 +19,5 @@ urlpatterns = [
         name="notificar_fatura",
     ),
     path("painel/", views.painel_financeiro, name="painel_financeiro"),
+    path("relatorio/inadimplencia/", views.exportar_inadimplentes_pdf, name="exportar_inadimplentes"),
 ]

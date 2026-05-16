@@ -1,8 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from apps.academico.models.academico import Turma, Disciplina, AtividadeProfessor
-from apps.academico.models.desempenho import Nota, Frequencia
+from apps.academico.models import Turma, Disciplina, AtividadeProfessor
+from apps.academico.models import Nota, Frequencia
 from apps.usuarios.models.perfis import Professor, Aluno, Gestor
 from django.utils import timezone
 

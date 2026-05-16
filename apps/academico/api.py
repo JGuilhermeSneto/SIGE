@@ -3,8 +3,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from .models.academico import Turma, Disciplina, GradeHorario, AtividadeProfessor, MaterialDidatico
-from .models.desempenho import Frequencia, Nota, Notificacao
+from .models import (
+    Turma, Disciplina, GradeHorario, AtividadeProfessor, MaterialDidatico,
+    Frequencia, Nota, Notificacao
+)
 from .serializers import (
     TurmaSerializer,
     DisciplinaSerializer,

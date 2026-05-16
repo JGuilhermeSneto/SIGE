@@ -15,14 +15,14 @@ from django.db.models import (
     ExpressionWrapper,
 )
 from django.db.models.functions import Coalesce
-from apps.academico.models.academico import (
+from apps.academico.models import (
     Turma,
     Disciplina,
     AtividadeProfessor,
     PlanejamentoAula,
     EntregaAtividade,
 )
-from apps.academico.models.desempenho import Nota
+from apps.academico.models import Nota
 from apps.usuarios.models.perfis import Aluno, Professor
 
 

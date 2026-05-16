@@ -7,14 +7,14 @@ from datetime import timedelta
 from django.db import transaction
 
 from apps.usuarios.models.perfis import Aluno, Professor, Gestor, Responsavel
-from apps.academico.models.academico import (
+from apps.academico.models import (
     Turma,
     Disciplina,
     GradeHorario,
     AtividadeProfessor,
     MaterialDidatico,
 )
-from apps.academico.models.desempenho import Nota, Frequencia
+from apps.academico.models import Nota, Frequencia
 from apps.infraestrutura.models.patrimonio import (
     UnidadeEscolar,
     CategoriaBem,

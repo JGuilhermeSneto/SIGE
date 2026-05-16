@@ -7,7 +7,7 @@ em ``models.academico``.
 
 from django import forms
 from apps.comum.forms.base_formularios import BaseModelForm
-from ..models.academico import Turma, Disciplina, AtividadeProfessor, MaterialDidatico
+from ..models import Turma, Disciplina, AtividadeProfessor, MaterialDidatico
 from apps.usuarios.models.perfis import Professor
 
 

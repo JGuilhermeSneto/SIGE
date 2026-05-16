@@ -41,8 +41,11 @@ from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
 from apps.saude.api import SaudeViewSet
 
 from apps.financeiro.api import FaturaViewSet, PagamentoViewSet
+from apps.leads.views import LeadViewSet, FunnelStageViewSet
 
 router = DefaultRouter()
+router.register(r"leads", LeadViewSet, basename="leads")
+router.register(r"leads-stages", FunnelStageViewSet, basename="leads-stages")
 router.register(r"academico/turmas", TurmaViewSet, basename="turmas")
 router.register(r"academico/disciplinas", DisciplinaViewSet, basename="disciplinas")
 router.register(r"academico/grade", GradeHorarioViewSet, basename="grade-horario")
@@ -89,9 +92,11 @@ urlpatterns: list[URLPattern | URLResolver] = [
     
     # Honeypots (Bloqueio automático de IPs maliciosos)
     path("wp-admin/", include("apps.seguranca.urls.honeypot")),
-    path("phpmyadmin/", include("apps.seguranca.urls.honeypot")),
+    path("wp-login.php", include("apps.seguranca.urls.honeypot")),
     path(".env", include("apps.seguranca.urls.honeypot")),
     path("xmlrpc.php", include("apps.seguranca.urls.honeypot")),
+    path("phpmyadmin/", include("apps.seguranca.urls.honeypot")),
+    path("config.php", include("apps.seguranca.urls.honeypot")),
 
     # Rotas de Autenticação Multi-Fator (2FA)
     path("", include(tf_urls)),

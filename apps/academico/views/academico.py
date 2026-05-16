@@ -13,7 +13,7 @@ from django.db.models import Count, Q, Avg, F, ExpressionWrapper, DecimalField
 from django.db.models.functions import Coalesce
 from decimal import Decimal
 
-from ..models.academico import (
+from ..models import (
     Disciplina,
     Turma,
     GradeHorario,
@@ -24,8 +24,8 @@ from ..models.academico import (
     RespostaAluno,
     MaterialDidatico,
 )
-from ..models.desempenho import Notificacao
-from ..models.desempenho import Nota, NotaAtividade, Frequencia
+from ..models import Notificacao
+from ..models import Nota, NotaAtividade, Frequencia
 from apps.usuarios.models.perfis import Professor, Aluno
 from ..forms.academico import (
     DisciplinaForm,
@@ -507,8 +507,8 @@ def lancar_notas_atividade(request, disciplina_id, atividade_id):
         return redirect("listar_atividades", disciplina_id=disciplina.id)
 
     from apps.usuarios.models.perfis import Aluno
-    from ..models.desempenho import NotaAtividade
-    from ..models.academico import EntregaAtividade
+    from ..models import NotaAtividade
+    from ..models import EntregaAtividade
 
     alunos = Aluno.objects.filter(turma=disciplina.turma).order_by("nome_completo")
 
@@ -579,8 +579,8 @@ def listar_atividades_aluno(request):
     ).select_related("disciplina__professor")
 
     # Coleta as entregas do aluno para estas atividades
-    from ..models.academico import EntregaAtividade
-    from ..models.desempenho import NotaAtividade
+    from ..models import EntregaAtividade
+    from ..models import NotaAtividade
 
     entregas = EntregaAtividade.objects.filter(aluno=aluno)
     entregas_dict = {e.atividade_id: e for e in entregas}

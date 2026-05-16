@@ -22,4 +22,5 @@ urlpatterns = [
     ),
     path("historico/meu/", relatorios.visualizar_historico, name="meu_historico"),
     path("buscar-alunos/", relatorios.buscar_alunos_ajax, name="buscar_alunos_ajax"),
+    path("prova/<int:disciplina_id>/gerar/", relatorios.gerar_prova_pdf, name="gerar_prova_pdf"),
 ]

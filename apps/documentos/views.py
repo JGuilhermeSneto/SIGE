@@ -2,8 +2,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .utils.renderizador import render_to_pdf
 from apps.usuarios.models.perfis import Aluno
-from apps.academico.models.academico import Disciplina
-from apps.academico.models.desempenho import Nota, Frequencia
+from apps.academico.models import Disciplina
+from apps.academico.models import Nota, Frequencia
 from django.utils import timezone
 
 

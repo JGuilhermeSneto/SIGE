@@ -7,8 +7,8 @@ O que é: camada “selector” para manter views finas e SQL/ORM reutilizável.
 from django.db.models import Count, Q, Avg, F
 from django.utils import timezone
 from apps.usuarios.models.perfis import Aluno, Professor, Gestor
-from ..models.academico import Turma, Disciplina
-from ..models.desempenho import Nota, Frequencia
+from ..models import Turma, Disciplina
+from ..models import Nota, Frequencia
 from django.contrib.auth import get_user_model
 
 User = get_user_model()

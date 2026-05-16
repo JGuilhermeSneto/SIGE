@@ -1,84 +1,238 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Runbooks — SIGE Mission Control{% endblock %}
+{% block title %}Runbooks & Wiki — SIGE Mission Control{% endblock %}
 
 {% block ti_extra_css %}
 <style>
-  .rb-grid { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 20px; }
+  .rb-grid { display: grid; grid-template-columns: 320px 1fr; gap: 30px; padding: 25px; }
+  
   .rb-sidebar {
-    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 20px;
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 24px; padding: 25px;
+    height: calc(100vh - 180px); position: sticky; top: 120px; overflow-y: auto;
   }
+  
+  .rb-category { margin-bottom: 30px; }
+  .rb-category-title {
+    font-size: 0.65rem; font-weight: 800; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; padding-left: 10px;
+  }
+  
   .rb-item {
-    padding: 10px 15px; border-radius: 10px; margin-bottom: 5px; font-size: 0.75rem; color: var(--text-muted);
-    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 10px;
+    padding: 12px 18px; border-radius: 12px; margin-bottom: 4px; font-size: 0.8rem; color: var(--text-muted);
+    cursor: pointer; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; gap: 12px;
+    border: 1px solid transparent;
   }
-  .rb-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
-  .rb-item.active { background: rgba(34, 211, 238, 0.1); color: var(--accent-cyan); border: 1px solid rgba(34, 211, 238, 0.2); }
+  .rb-item i { width: 16px; font-size: 0.9rem; text-align: center; }
+  .rb-item:hover { background: rgba(255,255,255,0.03); color: var(--text-primary); transform: translateX(5px); }
+  .rb-item.active { 
+    background: linear-gradient(90deg, rgba(34, 211, 238, 0.15) 0%, rgba(34, 211, 238, 0.05) 100%);
+    color: var(--accent-cyan); border: 1px solid rgba(34, 211, 238, 0.2); font-weight: 600;
+  }
 
-  .rb-content {
-    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 35px;
+  .rb-content-wrapper {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 24px; 
+    min-height: calc(100vh - 180px); position: relative; overflow: hidden;
   }
+  
+  .rb-page { display: none; padding: 40px; animation: fadeIn 0.4s ease-out; }
+  .rb-page.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
   .rb-code {
-    background: #000; border-radius: 12px; padding: 20px; font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem; color: #fff; margin: 20px 0; border: 1px solid var(--border-subtle);
+    background: #0d1117; border-radius: 16px; padding: 25px; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem; color: #e6edf3; margin: 25px 0; border: 1px solid #30363d; position: relative;
   }
+  .rb-code::before {
+    content: "Terminal"; position: absolute; top: -10px; left: 20px; 
+    background: var(--accent-cyan); color: #000; font-size: 10px; font-weight: 800;
+    padding: 2px 10px; border-radius: 4px; text-transform: uppercase;
+  }
+
+  .doc-section { margin-bottom: 45px; }
+  .doc-section h3 { font-family: 'Syne'; font-size: 1.4rem; margin-bottom: 15px; color: var(--text-primary); }
+  .doc-section p { font-size: 0.95rem; line-height: 1.7; color: var(--text-muted); margin-bottom: 20px; }
+  
+  .tech-badge {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle);
+    font-size: 0.7rem; font-weight: 600; color: var(--text-primary); margin-right: 8px; margin-bottom: 8px;
+  }
+
+  .status-tag {
+    font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase;
+  }
+  .status-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .status-stable { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
 </style>
 {% endblock %}
 
 {% block ti_content %}
-<header class="header-painel" style="padding: 0 20px; margin-top: 20px;">
+<header class="header-painel" style="padding: 0 25px; margin-top: 25px;">
   <div class="header-esquerda">
-    <span class="header-label"><i class="fa-solid fa-book"></i> PROCEDIMENTOS OPERACIONAIS (SOP)</span>
-    <h1>Guia de <span class="nome-destaque" style="color: var(--accent-emerald);">Runbooks</span></h1>
+    <span class="header-label"><i class="fa-solid fa-book-atlas"></i> CENTRAL DE DOCUMENTAÇÃO & RUNBOOKS</span>
+    <h1>Wiki <span class="nome-destaque" style="color: var(--accent-cyan);">Técnica Apex</span></h1>
+  </div>
+  <div class="header-direita">
+    <div class="tech-badge"><i class="fa-solid fa-code-branch"></i> v8.0.0-Stable</div>
   </div>
 </header>
 
 <div class="rb-grid">
   <aside class="rb-sidebar">
-    <h4 style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px;">Incidentes Comuns</h4>
-    <div class="rb-item active"><i class="fa-solid fa-fire"></i> CPU em 100%</div>
-    <div class="rb-item"><i class="fa-solid fa-database"></i> Erro de Conexão DB</div>
-    <div class="rb-item"><i class="fa-solid fa-key"></i> Reset de MFA Master</div>
-    
-    <h4 style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin: 25px 0 15px 0;">Manutenção</h4>
-    <div class="rb-item"><i class="fa-solid fa-broom"></i> Limpeza de Logs</div>
-    <div class="rb-item"><i class="fa-solid fa-upload"></i> Deploy de Emergência</div>
+    <div class="rb-category">
+      <div class="rb-category-title">Operações & Incidentes</div>
+      <div class="rb-item active" onclick="showPage('cpu')"><i class="fa-solid fa-microchip"></i> CPU em 100%</div>
+      <div class="rb-item" onclick="showPage('db')"><i class="fa-solid fa-database"></i> Erros de Banco</div>
+      <div class="rb-item" onclick="showPage('mfa')"><i class="fa-solid fa-shield-keyhole"></i> Emergência 2FA</div>
+    </div>
+
+    <div class="rb-category">
+      <div class="rb-category-title">Arquitetura & Design</div>
+      <div class="rb-item" onclick="showPage('arquitetura')"><i class="fa-solid fa-sitemap"></i> Ecossistema SIGE</div>
+      <div class="rb-item" onclick="showPage('seguranca')"><i class="fa-solid fa-user-shield"></i> SOC & Honeypots</div>
+    </div>
+
+    <div class="rb-category">
+      <div class="rb-category-title">Qualidade & QA</div>
+      <div class="rb-item" onclick="showPage('testes')"><i class="fa-solid fa-vial"></i> Estratégia de Testes</div>
+      <div class="rb-item" onclick="showPage('qa-flow')"><i class="fa-solid fa-diagram-project"></i> Ciclo de Vida Bug</div>
+    </div>
+
+    <div class="rb-category">
+      <div class="rb-category-title">Manual do Dev</div>
+      <div class="rb-item" onclick="showPage('comandos')"><i class="fa-solid fa-terminal"></i> Comandos Úteis</div>
+      <div class="rb-item" onclick="showPage('fluxos')"><i class="fa-solid fa-arrows-spin"></i> Fluxos de Negócio</div>
+    </div>
   </aside>
 
-  <main class="rb-content">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-       <div>
-          <h2 style="margin-top: 0; font-family: 'Syne';">Incidente: CPU em 100%</h2>
-          <p style="font-size: 0.85rem; color: var(--text-muted);">Procedimento para identificar e mitigar picos de processamento anormais.</p>
-       </div>
-       <span class="status-badge status-ativo" style="background: var(--accent-ruby);">CRÍTICO</span>
-    </div>
+  <main class="rb-content-wrapper">
+    <!-- PAGE: CPU -->
+    <section id="page-cpu" class="rb-page active">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2 style="font-family: 'Syne'; margin: 0;">Incidente: CPU em 100%</h2>
+        <span class="status-tag status-critical">Crítico</span>
+      </div>
+      <div class="doc-section">
+        <p>Utilize este runbook quando o sistema apresentar lentidão extrema ou o monitor de recursos indicar saturação de processamento.</p>
+        <h3>1. Diagnóstico</h3>
+        <p>Acesse o servidor via SSH e utilize o comando <code>top</code> ou <code>htop</code>.</p>
+        <div class="rb-code"># Buscar top 5 processos gastões<br>ps aux | sort -rk 3,3 | head -n 5</div>
+      </div>
+    </section>
 
-    <hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 30px 0;">
+    <!-- PAGE: ARQUITETURA -->
+    <section id="page-arquitetura" class="rb-page">
+      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Arquitetura do Ecossistema SIGE</h2>
+      <div class="doc-section">
+        <h3>1. Core Engine (Django v6.x)</h3>
+        <p>O coração do sistema opera sob o padrão <strong>Service Layer Pattern</strong>, garantindo o desacoplamento total da lógica de negócio das Views e facilitando a testabilidade.</p>
+        
+        <h3>2. Stack Tecnológica</h3>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 30px;">
+          <span class="tech-badge"><i class="fa-brands fa-python"></i> Python 3.13+</span>
+          <span class="tech-badge"><i class="fa-solid fa-server"></i> Django 6.0.3</span>
+          <span class="tech-badge"><i class="fa-solid fa-database"></i> PostgreSQL / Redis</span>
+          <span class="tech-badge"><i class="fa-brands fa-react"></i> React + Vite (SPA)</span>
+          <span class="tech-badge"><i class="fa-solid fa-bolt"></i> Celery (Async)</span>
+        </div>
 
-    <h3 style="font-family: 'Syne'; font-size: 1.1rem;">1. Diagnóstico Inicial</h3>
-    <p style="font-size: 0.8rem; line-height: 1.6;">Acesse o terminal do servidor e verifique quais processos estão consumindo mais recursos utilizando o comando <code>htop</code> ou <code>top</code>.</p>
+        <h3>3. Frentes de Operação</h3>
+        <ul style="color: var(--text-muted); font-size: 0.9rem; line-height: 2;">
+          <li><strong>Web Interface:</strong> SPA focada em alta densidade de dados com Design Glassmorphism.</li>
+          <li><strong>Canal Mobile:</strong> React Native com autenticação SimpleJWT e Push Notifications.</li>
+          <li><strong>Camada IoT (ESP32):</strong> Protocolo MQTT sobre WebSockets para automação física e controle de acesso.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- PAGE: SEGURANÇA -->
+    <section id="page-seguranca" class="rb-page">
+      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Segurança, Compliance & SOC</h2>
+      <div class="doc-section">
+        <h3>1. Proteção de Dados (PII)</h3>
+        <p>Implementação de criptografia robusta <strong>AES-256 GCM</strong> para todos os dados sensíveis (Personally Identifiable Information), garantindo conformidade total com a LGPD.</p>
+        
+        <h3>2. SOC & Defesa de Borda</h3>
+        <p>Monitoramento ativo via <code>SecurityShieldMiddleware</code>. O sistema detecta e bane automaticamente atacantes que tentam acessar vetores sensíveis.</p>
+        <div class="rb-code" style="color: var(--accent-emerald);">
+          # Monitorando Honeypots em tempo real<br>
+          tail -f logs/security_audit.log | grep "BLOCK_IP"
+        </div>
+
+        <h3>3. Backup & Resiliência (Snapshot Quantum)</h3>
+        <p>Backups imutáveis e redundantes gerados automaticamente a cada ciclo de manutenção, permitindo a restauração total do ambiente em menos de 15 minutos.</p>
+      </div>
+    </section>
+
+    <!-- PAGE: TESTES -->
+    <section id="page-testes" class="rb-page">
+      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Estratégia de Testes & Qualidade</h2>
+      <div class="doc-section">
+        <h3>1. Testes Unitários</h3>
+        <p>Garantem que funções individuais e modelos funcionem conforme o esperado.</p>
+        <div class="rb-code">python manage.py test apps.academico.tests</div>
+        
+        <h3>2. Testes de Integração</h3>
+        <p>Validam a comunicação entre módulos (ex: Financeiro gerando faturas após matrícula).</p>
+        
+        <h3>3. Cobertura de Código</h3>
+        <p>Mantemos uma meta de 85% de cobertura mínima em módulos críticos.</p>
+      </div>
+    </section>
+
+    <!-- PAGE: COMANDOS -->
+    <section id="page-comandos" class="rb-page">
+      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Comandos Úteis de Administração</h2>
+      <div class="doc-section">
+        <div class="rb-code">
+          # Limpar Cache Total<br>
+          python manage.py clear_cache<br><br>
+          
+          # Criar Superusuário Emergencial<br>
+          python manage.py createsuperuser<br><br>
+          
+          # Sincronizar Estáticos via Terminal<br>
+          python manage.py collectstatic --noinput
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE: FLUXOS -->
+    <section id="page-fluxos" class="rb-page">
+      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Fluxos de Negócio Críticos</h2>
+      <div class="doc-section">
+        <h3>1. Ciclo Acadêmico</h3>
+        <p>Matrícula &rarr; Enturmação &rarr; Lançamento de Notas &rarr; Fechamento Bimestral.</p>
+        
+        <h3>2. Ciclo Financeiro</h3>
+        <p>Geração de Carnê &rarr; Baixa Bancária &rarr; Emissão de NF &rarr; Gestão de Inadimplência.</p>
+      </div>
+    </section>
     
-    <div class="rb-code">
-       # Verificando processos Python/Gunicorn<br>
-       ps aux | grep python | sort -rk 3,3 | head -n 5
-    </div>
-
-    <h3 style="font-family: 'Syne'; font-size: 1.1rem;">2. Mitigação</h3>
-    <p style="font-size: 0.8rem; line-height: 1.6;">Se o problema for causado por uma tarefa longa no Celery, você pode tentar purgar a fila se não houver dados críticos pendentes.</p>
-    
-    <div class="rb-code" style="color: var(--accent-amber); border-color: var(--accent-amber);">
-       # PERIGO: Isso limpará TODAS as tarefas pendentes<br>
-       celery -A config purge
-    </div>
-
-    <h3 style="font-family: 'Syne'; font-size: 1.1rem;">3. Prevenção</h3>
-    <ul style="font-size: 0.8rem; line-height: 1.8; color: var(--text-muted);">
-       <li>Verifique se há loops infinitos em middlewares recentemente alterados.</li>
-       <li>Confirme se o cache do Redis está operacional.</li>
-       <li>Considere o escalonamento horizontal (adicionar mais workers).</li>
-    </ul>
+    <!-- Mais páginas podem ser adicionadas aqui -->
   </main>
 </div>
+
+<script>
+  function showPage(pageId) {
+    // Esconder todas as páginas
+    document.querySelectorAll('.rb-page').forEach(p => p.classList.remove('active'));
+    // Desativar todos os itens do menu
+    document.querySelectorAll('.rb-item').forEach(i => i.classList.remove('active'));
+    
+    // Mostrar a página selecionada
+    const targetPage = document.getElementById('page-' + pageId);
+    if (targetPage) {
+      targetPage.classList.add('active');
+    }
+    
+    // Marcar item do menu como ativo
+    const activeItem = event.currentTarget;
+    if (activeItem && activeItem.classList.contains('rb-item')) {
+      activeItem.classList.add('active');
+    }
+  }
+</script>
 {% endblock %}

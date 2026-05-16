@@ -10,4 +10,8 @@ from .academico import (
     PlanejamentoAula,
     MaterialDidatico,
 )
-from .desempenho import Frequencia, Nota, NotaAtividade, Notificacao, Presenca
+from .desempenho_v8 import (
+    Frequencia, Nota, NotaAtividade, Notificacao, Presenca,
+    RubricaAvaliacao, QuestaoBanco, AlternativaBanco, ProvaGerada,
+    RiscoEvasao
+)

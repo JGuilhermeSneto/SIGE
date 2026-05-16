@@ -4,7 +4,7 @@ Consultas otimizadas (``prefetch_related``) para atividades e entregas.
 O que é: evita N+1 queries nas telas de professor que listam questões e alternativas.
 """
 
-from ..models.academico import AtividadeProfessor, EntregaAtividade, Questao
+from ..models import AtividadeProfessor, EntregaAtividade, Questao
 
 
 class AtividadeSeletores:

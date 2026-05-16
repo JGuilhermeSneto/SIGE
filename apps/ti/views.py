@@ -97,6 +97,9 @@ def painel_ti(request):
         "ti_status_cards": ti_status_cards,
         "db_connections": diagnostico.get_db_connections(),
         "cache_stats": diagnostico.get_cache_stats(),
+        "health_light": diagnostico.get_service_health_traffic_light(),
+        "waf_stats": diagnostico.get_waf_stats(),
+        "honey_stats": diagnostico.get_honey_token_stats(),
         "ultima_atualizacao": timezone.now(),
     }
     
@@ -317,6 +320,10 @@ def executar_script(request, script_id):
         elif script_id == "clear_sessions":
             management.call_command("clearsessions")
             messages.success(request, "Sessões expiradas removidas.")
+        elif script_id == "collect_static":
+            # Executa com --noinput para não travar pedindo confirmação
+            management.call_command("collectstatic", interactive=False)
+            messages.success(request, "Arquivos estáticos sincronizados com sucesso (Collect Static concluído)!")
         elif script_id == "restart_flower":
             import subprocess
             import os
@@ -407,6 +414,24 @@ def api_logs_lgpd(request):
     return JsonResponse({"status": "ok", "logs": data})
 
 
+@login_required
+@user_passes_test(usuario_tem_painel_ti)
+def api_ti_metrics(request):
+    """Endpoint central para atualizações em tempo real (AJAX/WebSockets)."""
+    from .utils import diagnostico
+    
+    data = {
+        "recursos": diagnostico.get_system_resources(),
+        "health": diagnostico.get_service_health_traffic_light(),
+        "waf": diagnostico.get_waf_stats(),
+        "tasks": diagnostico.get_task_queue_stats(),
+        "eventos": diagnostico.get_global_event_feed()[:5], # Apenas os mais recentes
+        "performance": diagnostico.get_request_stats(),
+        "agora": timezone.now().strftime("%H:%M:%S")
+    }
+    return JsonResponse(data)
+
+
 # --- PLACEHOLDERS PARA NOVOS MÓDULOS ---
 
 @login_required
@@ -469,6 +494,19 @@ def placeholder_ti(request, modulo_slug):
         context["ssl_info"] = diagnostico.check_ssl_expiry(request.get_host())
     elif modulo_slug == "logs":
         context["event_feed"] = diagnostico.get_global_event_feed()
+    elif modulo_slug == "waf":
+        context["waf"] = diagnostico.get_waf_stats()
+        from .models import RegraWAF
+        context["regras"] = RegraWAF.objects.all()
+    elif modulo_slug == "honey":
+        context["honey"] = diagnostico.get_honey_token_stats()
+        from .models import HoneyToken
+        context["tokens"] = HoneyToken.objects.all()
+    elif modulo_slug == "pii":
+        context["pii"] = diagnostico.get_pii_scan_results()
+    elif modulo_slug == "vault":
+        from .models import CofreSegredo
+        context["segredos"] = CofreSegredo.objects.all()
 
     try:
         get_template(template_path)

@@ -1,4 +1,4 @@
-from apps.academico.models.desempenho import Notificacao
+from apps.academico.models import Notificacao
 from apps.saude.models.ficha_medica import AtestadoMedico
 
 
@@ -38,7 +38,7 @@ def notificacoes_sige(request):
     # 3. PENDÊNCIAS DE PROFESSOR (Entregas de Atividades)
     if hasattr(user, "professor"):
         try:
-            from apps.academico.models.academico import EntregaAtividade
+            from apps.academico.models import EntregaAtividade
 
             professor = user.professor
             entregas_qs = EntregaAtividade.objects.filter(

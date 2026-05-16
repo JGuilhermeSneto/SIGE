@@ -22,6 +22,7 @@ urlpatterns = [
     path("flags/nova/", views.criar_flag, name="criar_flag"),
     path("flags/<int:flag_id>/alternar/", views.alternar_flag, name="alternar_flag"),
     path("api/js-error/", views.api_js_error, name="api_js_error"),
+    path("api/metrics/", views.api_ti_metrics, name="api_metrics"),
     path("erro/<int:erro_id>/correlacao/", views.logs_correlacionados, name="correlacao_logs"),
     
     # Novas Interfaces de Gestão

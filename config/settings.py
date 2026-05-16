@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "two_factor",
     "apps.seguranca",
     "apps.ti",
+    "apps.leads",
     "django_prometheus",
     "health_check",              # API unificada (v4.x) — usa /health/ endpoint
     "channels",
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
 
 # Middleware (Ordem do Prometheus é importante)
 MIDDLEWARE = [
+    "apps.seguranca.middleware.SecurityShieldMiddleware",
     "apps.ti.middleware.ManutencaoMiddleware",
     "django_prometheus.middleware.PrometheusBeforeMiddleware",
     "django.middleware.security.SecurityMiddleware",

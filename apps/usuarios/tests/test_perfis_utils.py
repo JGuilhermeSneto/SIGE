@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
-from apps.academico.models.academico import Turma
+from apps.academico.models import Turma
 from apps.usuarios.models.perfis import Aluno, Gestor, Professor
 from apps.usuarios.utils.perfis import (
     get_foto_perfil,

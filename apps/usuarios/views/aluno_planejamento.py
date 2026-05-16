@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from apps.academico.models.academico import Disciplina, PlanejamentoAula
+from apps.academico.models import Disciplina, PlanejamentoAula
 from apps.usuarios.utils.perfis import get_nome_exibicao, get_foto_perfil
 
 

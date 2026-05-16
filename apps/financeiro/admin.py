@@ -6,7 +6,27 @@ from .models import (
     CentroCusto,
     Lancamento,
     FolhaPagamento,
+    AcordoFinanceiro,
+    ParcelaAcordo,
+    ConfiguracaoGateway,
 )
+
+
+class ParcelaAcordoInline(admin.TabularInline):
+    model = ParcelaAcordo
+    extra = 0
+
+@admin.register(AcordoFinanceiro)
+class AcordoFinanceiroAdmin(admin.ModelAdmin):
+    list_display = ("id", "aluno", "valor_total_original", "valor_com_desconto", "status", "data_acordo")
+    list_filter = ("status", "data_acordo")
+    search_fields = ("aluno__nome_completo",)
+    inlines = [ParcelaAcordoInline]
+
+@admin.register(ConfiguracaoGateway)
+class ConfiguracaoGatewayAdmin(admin.ModelAdmin):
+    list_display = ("nome", "ativo")
+    list_editable = ("ativo",)
 
 
 class PagamentoInline(admin.TabularInline):

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.utils import timezone
 from apps.usuarios.models.perfis import Aluno, Professor
-from apps.academico.models.academico import Turma, Disciplina, AtividadeProfessor
+from apps.academico.models import Turma, Disciplina, AtividadeProfessor
 
 User = get_user_model()
 
@@ -157,7 +157,7 @@ class AcademicoViewsTest(TestCase):
         )
         self.assertEqual(response.status_code, 302)
 
-        from apps.academico.models.desempenho import NotaAtividade
+        from apps.academico.models import NotaAtividade
 
         self.assertTrue(
             NotaAtividade.objects.filter(
@@ -194,7 +194,7 @@ class AcademicoViewsTest(TestCase):
         self.assertRedirects(response, reverse("listar_turmas"))
 
     def test_marcar_notificacao_lida(self):
-        from apps.academico.models.desempenho import Notificacao
+        from apps.academico.models import Notificacao
 
         notif = Notificacao.objects.create(
             usuario=self.aluno_user, titulo="Teste", mensagem="Msg"
@@ -206,7 +206,7 @@ class AcademicoViewsTest(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_marcar_todas_notificacoes_lidas(self):
-        from apps.academico.models.desempenho import Notificacao
+        from apps.academico.models import Notificacao
 
         Notificacao.objects.create(usuario=self.aluno_user, titulo="T1", mensagem="M1")
         Notificacao.objects.create(usuario=self.aluno_user, titulo="T2", mensagem="M2")
@@ -225,7 +225,7 @@ class AcademicoViewsTest(TestCase):
             disciplina=self.disciplina,
         )
         # Adiciona uma questão para poder liberar gabarito
-        from apps.academico.models.academico import Questao
+        from apps.academico.models import Questao
 
         Questao.objects.create(
             atividade=atividade, enunciado="Q1", tipo="MULTIPLA_ESCOLHA"

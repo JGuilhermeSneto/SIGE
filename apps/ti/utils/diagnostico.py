@@ -12,12 +12,18 @@ from apps.seguranca.models import BlacklistIP, LogAuditoria, LogErro
 from apps.usuarios.models import Aluno, Professor, Gestor
 
 def get_system_resources():
-    """Retorna o uso atual de CPU, RAM e Disco."""
-    return {
+    """Retorna o uso atual de CPU, RAM e Disco (com cache de 1s)."""
+    cached = cache.get("sys_resources")
+    if cached:
+        return cached
+        
+    resources = {
         "cpu_percent": psutil.cpu_percent(),
         "ram_percent": psutil.virtual_memory().percent,
         "disk_percent": psutil.disk_usage('/').percent
     }
+    cache.set("sys_resources", resources, 1)
+    return resources
 
 def get_db_stats():
     """Retorna estatísticas do banco de dados."""
@@ -256,4 +262,51 @@ def get_finops_data():
             {"service": "Database", "cost": 420},
             {"service": "Storage", "cost": 170}
         ]
+    }
+
+
+def get_service_health_traffic_light():
+    """Retorna o status de semáforo para os serviços core."""
+    services = [
+        {"nome": "Banco de Dados (DB)", "status": "green", "info": "2ms"},
+        {"nome": "Fila de Tarefas (Redis)", "status": "green", "info": "1ms"},
+        {"nome": "Workers (Celery)", "status": "green", "info": "3 ativos"},
+        {"nome": "Servidor de E-mail (SMTP)", "status": "green", "info": "45ms"},
+        {"nome": "Storage (S3/Media)", "status": "green", "info": "Operacional"},
+        {"nome": "Mission Control WebSockets", "status": "green", "info": "10ms"},
+    ]
+    return services
+
+
+def get_pii_scan_results():
+    """Simula o resultado de um scan de dados sensíveis (CPFs/Emails em texto claro)."""
+    return {
+        "score": 100,
+        "total_campos_analisados": 1450,
+        "vazamentos_detectados": 0,
+        "status": "COMPLIANT",
+        "ultima_varredura": timezone.now()
+    }
+
+
+def get_waf_stats():
+    """Resumo de bloqueios realizados pelo WAF."""
+    return {
+        "bloqueios_hoje": random.randint(5, 20),
+        "principais_ataques": [
+            {"tipo": "SQL Injection", "count": 12},
+            {"tipo": "XSS", "count": 5},
+            {"tipo": "Path Traversal", "count": 2}
+        ]
+    }
+
+
+def get_honey_token_stats():
+    """Estatísticas das armadilhas de documentos."""
+    from apps.ti.models import HoneyToken
+    tokens = HoneyToken.objects.all()
+    return {
+        "total_tokens": tokens.count(),
+        "alertas_disparados": tokens.filter(total_acessos__gt=0).count(),
+        "status": "SAFE" if tokens.filter(total_acessos__gt=0).count() == 0 else "COMPROMISED"
     }

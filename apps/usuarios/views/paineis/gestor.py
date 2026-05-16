@@ -8,7 +8,7 @@ import json
 from ...utils.perfis import get_nome_exibicao, get_foto_perfil
 from apps.academico.utils.interface_usuario import gerar_calendario
 from apps.academico.utils.filtros import _get_anos_filtro
-from apps.academico.models.academico import Turma, Disciplina
+from apps.academico.models import Turma, Disciplina
 from apps.usuarios.models.perfis import Professor, Aluno
 from apps.comunicacao.models.comunicado import Comunicado
 

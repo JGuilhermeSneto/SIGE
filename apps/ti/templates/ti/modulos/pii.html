@@ -1,0 +1,89 @@
+{% extends "ti/base_ti.html" %}
+{% load static %}
+
+{% block title %}PII Radar — SIGE Mission Control{% endblock %}
+
+{% block ti_extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
+<style>
+  .header-painel { padding: 0 2rem; margin-top: 20px; }
+  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  .hub-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 18px; margin-bottom: 20px; }
+  .hub-title { font-size: 0.75rem; font-weight: 800; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-transform: uppercase; color: var(--text-primary); }
+  .metric-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.7rem; }
+  .metric-item:last-child { border-bottom: none; }
+</style>
+{% endblock %}
+
+{% block ti_content %}
+<header class="header-painel">
+  <div class="header-esquerda">
+    <span class="header-label"><i class="fa-solid fa-magnifying-glass-chart"></i> COMPLIANCE & PRIVACIDADE</span>
+    <h1>PII <span class="nome-destaque" style="color: var(--accent-emerald);">Radar</span></h1>
+  </div>
+  <div class="header-acoes">
+     <div class="info-tag" style="background: var(--bg-elevated); padding: 8px 15px; border-radius: 10px; font-size: 0.65rem; border: 1px solid var(--border-subtle);">
+        ÚLTIMO SCAN: <strong style="color: var(--accent-emerald);">{{ pii.ultima_varredura|date:"d/m/Y H:i" }}</strong>
+     </div>
+  </div>
+</header>
+
+<div class="conteudo-geral">
+  <div class="coluna-esquerda">
+    <div style="display: grid; grid-template-columns: 240px 1fr; gap: 20px; margin-bottom: 20px;">
+       <article class="hub-card" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+          <p class="card-label" style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px;">Compliance Score</p>
+          <div style="font-size: 3rem; font-weight: 900; color: var(--accent-emerald);">{{ pii.score }}</div>
+          <span class="status-badge status-ativo" style="background: var(--accent-emerald); margin: 10px auto 0 auto; font-size: 0.55rem;">CONFORME</span>
+       </article>
+       
+       <div style="display: grid; grid-template-rows: 1fr 1fr; gap: 20px;">
+          <article class="hub-card">
+             <div class="metric-item"><span class="metric-label">Campos Analisados</span><span class="metric-value">{{ pii.total_campos_analisados }}</span></div>
+             <div class="metric-item"><span class="metric-label">Vazamentos Detectados</span><span class="metric-value" style="color: var(--accent-emerald);">{{ pii.vazamentos_detectados }}</span></div>
+          </article>
+          <article class="hub-card" style="display: flex; align-items: center; justify-content: center; background: var(--bg-elevated);">
+             <button class="btn-sige-primario" style="width: 100%; font-size: 0.7rem; background: var(--accent-emerald); border-color: var(--accent-emerald);">EXECUTAR VARREDURA COMPLETA</button>
+          </article>
+       </div>
+    </div>
+
+    <article class="hub-card">
+       <h3 class="hub-title"><i class="fa-solid fa-list-check"></i> Histórico de Compliance</h3>
+       <table class="sige-table" style="font-size: 0.75rem;">
+          <thead>
+             <tr>
+                <th>Data</th>
+                <th>Escopo</th>
+                <th>Arquivos</th>
+                <th>Status</th>
+             </tr>
+          </thead>
+          <tbody>
+             <tr>
+                <td>Hoje, 10:15</td>
+                <td>PostgreSQL (Main)</td>
+                <td>1450</td>
+                <td><span class="badge status-active" style="font-size: 0.6rem;">OK</span></td>
+             </tr>
+             <tr>
+                <td>Ontem, 23:45</td>
+                <td>Media Storage</td>
+                <td>840</td>
+                <td><span class="badge status-active" style="font-size: 0.6rem;">OK</span></td>
+             </tr>
+          </tbody>
+       </table>
+    </article>
+  </div>
+
+  <div class="coluna-direita">
+    <article class="hub-card">
+       <h3 class="hub-title"><i class="fa-solid fa-user-lock"></i> Proteção Ativa</h3>
+       <div class="metric-item"><span class="metric-label">Criptografia</span><span class="metric-value">AES-256</span></div>
+       <div class="metric-item"><span class="metric-label">Mascaramento</span><span class="metric-value">ATIVO</span></div>
+       <div class="metric-item"><span class="metric-label">Logs LGPD</span><span class="metric-value">S3 Vault</span></div>
+    </article>
+  </div>
+</div>
+{% endblock %}

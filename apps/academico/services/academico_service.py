@@ -1,5 +1,5 @@
 from django.db import transaction
-from ..models.academico import Turma, Disciplina, GradeHorario
+from ..models import Turma, Disciplina, GradeHorario
 from apps.usuarios.models.perfis import Professor
 
 
