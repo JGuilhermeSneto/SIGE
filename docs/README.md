@@ -15,6 +15,8 @@ Bem-vindo à documentação oficial do SIGE. Navegue pelos documentos abaixo par
 | [ROADMAP.md](./ROADMAP.md) | Plano estratégico, fases de entrega e matriz de prioridades |
 | [tasks.md](./tasks.md) | Backlog ativo de tarefas e cronograma de desenvolvimento |
 | [INFRAESTRUTURA.md](./INFRAESTRUTURA.md) | Guia unificado de engenharia, monitoramento e manutenção v7.2.4 |
+| [COMPENDIO_TECNICO.md](./COMPENDIO_TECNICO.md) | **Super-Compêndio Técnico-Estratégico — Visão 360 do Ecossistema** |
+| [GUIA_APRESENTACAO.md](./GUIA_APRESENTACAO.md) | **Guia de Apresentação (Script de 10 min para Stakeholders)** |
 
 ### 🏛️ Arquitetura e Engenharia
 | Documento | Descrição |
