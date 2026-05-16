@@ -1,18 +1,28 @@
-# 📢 App: Comunicação
+# 💬 App: Comunicação (v1.0)
 
-Módulo de avisos, notificações internas e comunicados da instituição.
+Módulo de mensagens internas e notificações do SIGE.
+
+![Testes](https://img.shields.io/badge/Testes-Parcial-orange?style=flat-square&logo=pytest)
+![Cobertura](https://img.shields.io/badge/Cobertura-~50%25-orange?style=flat-square)
 
 ## Responsabilidades
-- Criação e publicação de avisos e comunicados
-- Notificações internas para usuários (alunos, professores, responsáveis)
-- Sistema de mensagens entre usuários
-- Integração com e-mail para notificações externas
+- Mensagens internas entre usuários do sistema
+- Comunicados institucionais (gestores → toda escola)
+- Notificações automáticas por eventos (notas, chamadas, atividades)
+- Histórico de conversas e leitura de mensagens
 
 ## Modelos Principais
-- `Aviso`, `Notificacao`
-- `MensagemInterna`
+- `Mensagem`, `Conversa`, `Comunicado`
 
 ## Permissões
-- **Aluno / Responsável**: recebe notificações e pode enviar mensagens.
-- **Professor**: cria avisos para suas turmas.
-- **Gestor**: cria comunicados institucionais para todos.
+- **Gestor**: envio de comunicados para toda a escola
+- **Professor**: mensagens para alunos e responsáveis da turma
+- **Aluno/Responsável**: mensagens individuais
+
+## ⚠️ Status QA (v8.0 Apex)
+A suíte de testes de comunicação está em estabilização parcial. Uma das views apresenta falhas de permissão que estão na fila de correção.
+
+| Área | Status |
+|---|:---:|
+| Listagem de mensagens | ✅ Estável |
+| Envio de mensagens | ⚠️ Em correção |

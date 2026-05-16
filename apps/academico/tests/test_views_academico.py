@@ -25,7 +25,7 @@ class AcademicoViewsTest(TestCase):
         self.professor = Professor.objects.create(
             user=self.prof_user,
             nome_completo="Prof Teste",
-            cpf="135.253.110-38",
+            cpf="893.434.452-02",
             data_nascimento="1980-01-01",
         )
 
@@ -44,7 +44,7 @@ class AcademicoViewsTest(TestCase):
         self.aluno = Aluno.objects.create(
             user=self.aluno_user,
             nome_completo="Aluno Teste",
-            cpf="056.262.330-84",
+            cpf="109.796.860-08",
             data_nascimento="2010-01-01",
             turma=self.turma,
         )
@@ -95,7 +95,7 @@ class AcademicoViewsTest(TestCase):
             "turma": self.turma.id,
         }
         response = self.client.post(
-            reverse("cadastrar_disciplina_para_turma", args=[self.turma.id]), data
+            reverse("cadastrar_disciplina_turma", args=[self.turma.id]), data
         )
         self.assertTrue(Disciplina.objects.filter(nome="Física").exists())
         self.assertRedirects(
@@ -103,12 +103,12 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_cadastrar_atividade_post(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         data = {
             "titulo": "Novo Trabalho",
             "tipo": "TRABALHO",
-            "data": "2024-05-10",
-            "prazo_final": "2024-05-20T23:59",
+            "data": timezone.now().date().isoformat(),
+            "prazo_final": (timezone.now() + timezone.timedelta(days=7)).strftime("%Y-%m-%dT%H:%M"),
             "valor": "10.0",
         }
         response = self.client.post(
@@ -122,31 +122,31 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_cadastrar_turma_post(self):
-        self.client.login(username="admin", password=self.password)
-        data = {"nome": "2B", "turno": "tarde", "ano": 2024}
+        self.client.force_login(self.super_user)
+        data = {"nome": "2B", "turno": "tarde", "ano": timezone.now().year}
         response = self.client.post(reverse("cadastrar_turma"), data)
         self.assertTrue(Turma.objects.filter(nome="2B").exists())
         self.assertRedirects(response, reverse("listar_turmas"))
 
     def test_editar_turma_post(self):
-        self.client.login(username="admin", password=self.password)
-        data = {"nome": "1A-Editada", "turno": "noite", "ano": 2024}
+        self.client.force_login(self.super_user)
+        data = {"nome": "1A-Editada", "turno": "noite", "ano": timezone.now().year}
         response = self.client.post(reverse("editar_turma", args=[self.turma.id]), data)
         self.turma.refresh_from_db()
         self.assertEqual(self.turma.nome, "1A-Editada")
         self.assertRedirects(response, reverse("listar_turmas"))
 
     def test_grade_horaria_get(self):
-        self.client.login(username="admin", password=self.password)
+        self.client.force_login(self.super_user)
         response = self.client.get(reverse("grade_horaria", args=[self.turma.id]))
         self.assertEqual(response.status_code, 200)
 
     def test_lancar_notas_atividade_post(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         atividade = AtividadeProfessor.objects.create(
-            titulo="Atividade com Nota",
+            titulo="Atividade with Nota",
             tipo="ATIVIDADE",
-            data="2024-05-10",
+            data=timezone.now().date().isoformat(),
             prazo_final=timezone.now(),
             disciplina=self.disciplina,
         )
@@ -166,19 +166,19 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_visualizar_grade_professor_get(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(
             reverse("visualizar_grade_professor", args=[self.turma.id])
         )
         self.assertEqual(response.status_code, 200)
 
     def test_disciplinas_professor_get(self):
-        self.client.login(username="prof", password=self.password)
+        self.client.force_login(self.prof_user)
         response = self.client.get(reverse("disciplinas_professor"))
         self.assertEqual(response.status_code, 200)
 
     def test_excluir_disciplina(self):
-        self.client.login(username="admin", password=self.password)
+        self.client.force_login(self.super_user)
         response = self.client.post(
             reverse("excluir_disciplina", args=[self.disciplina.id])
         )
@@ -188,7 +188,7 @@ class AcademicoViewsTest(TestCase):
         )
 
     def test_excluir_turma(self):
-        self.client.login(username="admin", password=self.password)
+        self.client.force_login(self.super_user)
         response = self.client.post(reverse("excluir_turma", args=[self.turma.id]))
         self.assertFalse(Turma.objects.filter(id=self.turma.id).exists())
         self.assertRedirects(response, reverse("listar_turmas"))
@@ -197,30 +197,31 @@ class AcademicoViewsTest(TestCase):
         from apps.academico.models import Notificacao
 
         notif = Notificacao.objects.create(
-            usuario=self.aluno_user, titulo="Teste", mensagem="Msg"
+            usuario=self.aluno_user, titulo="Teste", mensagem="Msg", tipo="SISTEMA"
         )
-        self.client.login(username="aluno", password=self.password)
+        self.client.force_login(self.aluno.user)
         response = self.client.get(reverse("marcar_notificacao_lida", args=[notif.id]))
+        self.assertEqual(response.status_code, 302)
         notif.refresh_from_db()
         self.assertTrue(notif.lida)
-        self.assertEqual(response.status_code, 302)
 
     def test_marcar_todas_notificacoes_lidas(self):
         from apps.academico.models import Notificacao
 
-        Notificacao.objects.create(usuario=self.aluno_user, titulo="T1", mensagem="M1")
-        Notificacao.objects.create(usuario=self.aluno_user, titulo="T2", mensagem="M2")
-        self.client.login(username="aluno", password=self.password)
-        self.client.get(reverse("marcar_todas_notificacoes_lidas"))
+        Notificacao.objects.create(usuario=self.aluno_user, titulo="T1", mensagem="M1", tipo="SISTEMA")
+        Notificacao.objects.create(usuario=self.aluno_user, titulo="T2", mensagem="M2", tipo="SISTEMA")
+        self.client.force_login(self.aluno.user)
+        response = self.client.get(reverse("marcar_todas_notificacoes_lidas"))
+        self.assertEqual(response.status_code, 302)
         self.assertFalse(
-            Notificacao.objects.filter(usuario=self.aluno_user, lida=False).exists()
+            Notificacao.objects.filter(usuario=self.aluno.user, lida=False).exists()
         )
 
     def test_controlar_liberacao_gabarito_sim(self):
         atividade = AtividadeProfessor.objects.create(
             titulo="Ativ Gabarito",
             tipo="ATIVIDADE",
-            data="2024-05-10",
+            data=timezone.now().date().isoformat(),
             prazo_final=timezone.now(),
             disciplina=self.disciplina,
         )
@@ -228,7 +229,7 @@ class AcademicoViewsTest(TestCase):
         from apps.academico.models import Questao
 
         Questao.objects.create(
-            atividade=atividade, enunciado="Q1", tipo="MULTIPLA_ESCOLHA"
+            atividade=atividade, texto="Q1", tipo="OBJETIVA"
         )
 
         self.client.login(username="prof", password=self.password)

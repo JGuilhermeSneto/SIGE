@@ -1,22 +1,24 @@
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from django.utils import timezone
 from apps.usuarios.models.perfis import Aluno, Professor, Gestor
-from apps.academico.models import Turma
 
 User = get_user_model()
+from apps.academico.models import Turma
 
 
 class RegistrosViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
         self.password = "senha123"
-        self.super_user = get_user_model().objects.create_superuser(
+        self.super_user = User.objects.create_superuser(
             username="admin", email="admin@test.com", password=self.password
         )
         self.client.force_login(self.super_user)
 
-        self.turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
+        self.current_year = timezone.now().year
+        self.turma = Turma.objects.create(nome="1A", turno="manha", ano=self.current_year)
 
     def test_listar_usuarios_acesso(self):
         response = self.client.get(reverse("usuarios"))
@@ -44,7 +46,7 @@ class RegistrosViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_desativar_usuario(self):
-        other_user = get_user_model().objects.create_user(username="other", password=self.password)
+        other_user = User.objects.create_user(username="other", password=self.password)
         response = self.client.post(reverse("desativar_usuario", args=[other_user.id]))
         other_user.refresh_from_db()
         self.assertFalse(other_user.is_active)
@@ -56,7 +58,7 @@ class RegistrosViewsTest(TestCase):
             "senha": "senha123",
             "senha_confirmacao": "senha123",
             "nome_completo": "Novo Professor",
-            "cpf": "164.717.370-13",
+            "cpf": "893.434.452-02",
             "data_nascimento": "1980-01-01",
             "telefone": "84999999999",
             "area_atuacao": "matematica",
@@ -73,7 +75,7 @@ class RegistrosViewsTest(TestCase):
             "senha": "senha123",
             "senha_confirmacao": "senha123",
             "nome_completo": "Novo Aluno",
-            "cpf": "080.354.550-94",
+            "cpf": "109.796.860-08",
             "data_nascimento": "2010-01-01",
             "turma": self.turma.id,
             "telefone": "84888888888",
@@ -87,7 +89,7 @@ class RegistrosViewsTest(TestCase):
         self.assertRedirects(response, reverse("listar_alunos"))
 
     def test_reativar_usuario(self):
-        other_user = get_user_model().objects.create_user(
+        other_user = User.objects.create_user(
             username="inactive", password=self.password, is_active=False
         )
         response = self.client.post(reverse("reativar_usuario", args=[other_user.id]))
@@ -96,11 +98,11 @@ class RegistrosViewsTest(TestCase):
         self.assertRedirects(response, reverse("listar_desativados"))
 
     def test_excluir_professor(self):
-        prof_user = get_user_model().objects.create_user(
+        prof_user = User.objects.create_user(
             username="prof_del", password=self.password
         )
         prof = Professor.objects.create(
-            user=prof_user, nome_completo="Del Prof", cpf="135.253.110-38"
+            user=prof_user, nome_completo="Del Prof", cpf="893.434.452-02"
         )
         response = self.client.post(reverse("excluir_professor", args=[prof.id]))
         self.assertFalse(Professor.objects.filter(id=prof.id).exists())
@@ -111,7 +113,8 @@ class RegistrosViewsTest(TestCase):
             username="aluno_del", password=self.password
         )
         aluno = Aluno.objects.create(
-            user=aluno_user, nome_completo="Del Aluno", cpf="056.262.330-84"
+            user=aluno_user, nome_completo="Del Aluno", cpf="109.796.860-08",
+            turma=self.turma
         )
         response = self.client.post(reverse("excluir_aluno", args=[aluno.id]))
         self.assertFalse(Aluno.objects.filter(id=aluno.id).exists())

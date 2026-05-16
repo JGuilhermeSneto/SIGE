@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.utils import timezone
 from apps.academico.utils.academico import (
     _calcular_situacao_nota,
     _formatar_nota,
@@ -38,28 +39,34 @@ class AcademicoUtilsTest(TestCase):
         self.assertEqual(_get_turno_key(None), "")
 
     def test_get_grade_horario_turma(self):
-        turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
-        disc = Disciplina.objects.create(nome="Matemática", turma=turma)
+        user = User.objects.create_user(username="prof_grade", password="pw")
+        prof = Professor.objects.create(
+            user=user, nome_completo="Prof Grade", cpf="893.434.452-02", data_nascimento="1980-01-01"
+        )
+        ano = timezone.now().year
+        turma = Turma.objects.create(nome="1A", turno="manha", ano=ano)
+        disc = Disciplina.objects.create(nome="Matemática", turma=turma, professor=prof)
         GradeHorario.objects.create(
             turma=turma, disciplina=disc, dia="segunda", horario="07:45 às 08:30"
         )
 
         grade = _get_grade_horario_turma(turma)
         self.assertIsNotNone(grade)
-        self.assertEqual(grade["08:00"]["segunda"], "Matemática")
+        self.assertEqual(grade["07:45 às 08:30"]["segunda"], "Matemática")
 
     def test_get_ocupados_por_professor(self):
         user = User.objects.create_user(username="prof1", password="pw")
         prof = Professor.objects.create(
-            user=user, nome_completo="Prof", cpf="1", data_nascimento="1980-01-01"
+            user=user, nome_completo="Prof", cpf="109.796.860-08", data_nascimento="1980-01-01"
         )
-        turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
+        ano = timezone.now().year
+        turma = Turma.objects.create(nome="1A", turno="manha", ano=ano)
         disc = Disciplina.objects.create(nome="Mat", turma=turma, professor=prof)
         GradeHorario.objects.create(
             turma=turma, disciplina=disc, dia="segunda", horario="07:45 às 08:30"
         )
 
-        ocupados = _get_ocupados_por_professor(prof.id, 2024)
+        ocupados = _get_ocupados_por_professor(prof.id, ano)
         # 08:00 é o primeiro horário da manhã em constantes.py
         # Vamos verificar se "segunda-0" está no set
         self.assertTrue(any("segunda" in o for o in ocupados))

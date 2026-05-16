@@ -31,7 +31,8 @@ class AcademicoViewsTest(TestCase):
         )
 
         # Turma e Disciplina
-        self.turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
+        self.current_year = timezone.now().year
+        self.turma = Turma.objects.create(nome="1A", turno="manha", ano=self.current_year)
         self.disciplina = Disciplina.objects.create(
             nome="Matemática", turma=self.turma, professor=self.professor
         )
@@ -52,10 +53,10 @@ class AcademicoViewsTest(TestCase):
 
     def test_cadastrar_turma_gestor(self):
         self.client.force_login(self.gestor_user)
-        data = {"nome": "2B", "turno": "tarde", "ano": 2024}
+        data = {"nome": "2B", "turno": "tarde", "ano": self.current_year}
         response = self.client.post(reverse("cadastrar_turma"), data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(Turma.objects.filter(nome="2B").count(), 1)
+        self.assertEqual(Turma.objects.filter(nome="2B", ano=self.current_year).count(), 1)
 
     def test_listar_atividades_professor(self):
         self.client.force_login(self.prof_user)
