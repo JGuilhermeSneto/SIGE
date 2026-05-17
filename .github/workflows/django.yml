@@ -173,7 +173,7 @@ jobs:
     name: "🚀 Deploy to Production"
     runs-on: ubuntu-latest
     needs: [lint, test]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && secrets.SSH_HOST != ''
 
     environment:
       name: production
