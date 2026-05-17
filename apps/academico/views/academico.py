@@ -622,7 +622,7 @@ def marcar_notificacao_lida(request, notificacao_id):
 
     if notificacao.url_destino:
         return redirect(notificacao.url_destino)
-    return redirect_user(request.user)
+    return redirect(redirect_user(request.user))
 
 
 @login_required

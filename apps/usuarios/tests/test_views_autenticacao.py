@@ -38,5 +38,5 @@ class AutenticacaoViewsTest(TestCase):
 
     def test_redirect_user_view(self):
         self.client.login(username="testuser", password=self.password)
-        response = self.client.get(reverse("redirect_user"))
+        response = self.client.get(reverse("dashboard"))
         self.assertRedirects(response, reverse("painel_gestor"))
