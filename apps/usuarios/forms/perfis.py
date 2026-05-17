@@ -17,6 +17,8 @@ User = get_user_model()
 
 def clean_cpf_to_username(cpf):
     """Limpa o CPF para usar como username (apenas números)."""
+    if not cpf:
+        return ""
     return "".join(filter(str.isdigit, cpf))
 
 
@@ -70,6 +72,8 @@ class ProfessorForm(BaseModelForm):
 
     def clean_cpf(self):
         cpf = self.cleaned_data.get("cpf")
+        if not cpf:
+            return cpf
         un = clean_cpf_to_username(cpf)
         qs = User.objects.filter(username=un)
         if self.instance.pk and getattr(self.instance, "user", None):
@@ -169,6 +173,8 @@ class AlunoForm(BaseModelForm):
 
     def clean_cpf(self):
         cpf = self.cleaned_data.get("cpf")
+        if not cpf:
+            return cpf
         un = clean_cpf_to_username(cpf)
         qs = User.objects.filter(username=un)
         if self.instance.pk and getattr(self.instance, "user", None):
@@ -261,6 +267,8 @@ class GestorForm(BaseModelForm):
 
     def clean_cpf(self):
         cpf = self.cleaned_data.get("cpf")
+        if not cpf:
+            return cpf
         un = clean_cpf_to_username(cpf)
         qs = User.objects.filter(username=un)
         if self.instance.pk and getattr(self.instance, "user", None):

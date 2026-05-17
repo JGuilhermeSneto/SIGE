@@ -390,13 +390,22 @@
 
         <!-- DROPDOWN -->
         <nav class="dropdown-menu" id="dropdown-menu">
-          {# Classe link-editar ativa a animação de caneta #}
+          {# Para alunos: vai para a página de perfil completo; para outros: edita direto #}
+          {% if request.user|has_attr:"aluno" %}
+          <a href="{% url 'perfil_aluno' %}" class="link-editar">
+            <span class="dd-icon">
+              <i class="fa-solid fa-id-card"></i>
+            </span>
+            Meu Perfil
+          </a>
+          {% else %}
           <a href="{% url 'editar_perfil' %}" class="link-editar">
             <span class="dd-icon">
               <i class="fa-solid fa-user-pen"></i>
             </span>
             Editar Perfil
           </a>
+          {% endif %}
           {# Classe link-sair ativa a animação de porta/seta #}
           <a href="{% url 'logout' %}" class="link-sair">
             <span class="dd-icon">

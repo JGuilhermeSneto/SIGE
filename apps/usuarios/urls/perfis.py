@@ -33,6 +33,7 @@ urlpatterns = [
         name="salvar_planejamento",
     ),
     path("painel/aluno/", paineis.painel_aluno, name="painel_aluno"),
+    path("painel/aluno/perfil/", paineis.perfil_aluno, name="perfil_aluno"),
     path(
         "painel/aluno/roteiros/",
         aluno_planejamento.meus_roteiros_aluno,

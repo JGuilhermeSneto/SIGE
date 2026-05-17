@@ -1,0 +1,306 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Meu Perfil — {{ aluno.nome_completo }}{% endblock %}
+
+{% block extra_css %}
+<style>
+:root { --grad: linear-gradient(135deg, #7c6fff 0%, #22d3ee 100%); }
+.perfil-wrap { max-width: 1100px; margin: 0 auto; padding: 30px 20px; display: flex; flex-direction: column; gap: 24px; }
+.card-perfil { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; overflow: hidden; }
+
+/* ── Hero ── */
+.hero { position: relative; padding: 0 0 30px 0; }
+.hero-banner { height: 130px; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); position: relative; }
+.hero-banner::after { content:''; position:absolute; inset:0; background: var(--grad); opacity:.15; }
+.hero-body { display: flex; align-items: flex-end; gap: 24px; padding: 0 30px; margin-top: -48px; position: relative; }
+.avatar-wrap { position: relative; flex-shrink: 0; }
+.avatar-ring { width: 100px; height: 100px; border-radius: 50%; padding: 3px; background: var(--grad); box-shadow: 0 0 30px rgba(124,111,255,.4); }
+.avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--bg-surface); }
+.avatar-status { position: absolute; bottom: 6px; right: 6px; width: 16px; height: 16px; border-radius: 50%; background: #34d399; border: 2px solid var(--bg-surface); }
+.hero-info { padding-top: 55px; flex: 1; }
+.hero-info h1 { margin: 0 0 4px 0; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); }
+.hero-info p { margin: 0; font-size: .85rem; color: var(--text-muted); }
+.hero-actions { display: flex; gap: 10px; margin-left: auto; padding-top: 55px; }
+.btn-hero { display: inline-flex; align-items: center; gap: 7px; padding: 9px 18px; border-radius: 10px; font-size: .8rem; font-weight: 700; text-decoration: none; transition: all .2s; }
+.btn-hero-primary { background: var(--grad); color: #fff; }
+.btn-hero-secondary { background: var(--bg-elevated); color: var(--text-secondary); border: 1px solid var(--border-subtle); }
+.btn-hero-secondary:hover { border-color: var(--accent-violet); color: var(--accent-violet); }
+
+/* ── Stats row ── */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.stat-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 20px; text-align: center; transition: transform .2s, border-color .2s; }
+.stat-card:hover { transform: translateY(-3px); border-color: var(--border-mid); }
+.stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; font-size: 1.1rem; }
+.stat-val { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: .72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; font-weight: 700; }
+
+/* ── Info grid ── */
+.info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 24px; }
+.info-group h3 { font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); font-weight: 800; margin: 0 0 14px 0; }
+.info-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); }
+.info-row:last-child { border-bottom: none; }
+.info-row i { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: .8rem; flex-shrink: 0; background: var(--bg-elevated); color: var(--text-muted); }
+.info-row .lbl { font-size: .7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing:.04em; }
+.info-row .val { font-size: .88rem; color: var(--text-primary); font-weight: 600; }
+
+/* ── Disciplinas ── */
+.sec-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 14px; border-bottom: 1px solid var(--border-subtle); }
+.sec-header h2 { margin:0; font-size: 1rem; font-weight: 800; color: var(--text-primary); display:flex; align-items:center; gap:10px; }
+.disc-table { width: 100%; border-collapse: collapse; }
+.disc-table th { padding: 10px 16px; text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); font-weight: 800; border-bottom: 1px solid var(--border-subtle); }
+.disc-table td { padding: 14px 16px; border-bottom: 1px solid var(--border-subtle); font-size: .85rem; color: var(--text-secondary); vertical-align: middle; }
+.disc-table tr:last-child td { border-bottom: none; }
+.disc-table tr:hover td { background: rgba(255,255,255,.02); }
+.nota-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 36px; padding: 4px 10px; border-radius: 8px; font-weight: 800; font-size: .85rem; }
+.nota-ap { background: rgba(52,211,153,.15); color: #34d399; }
+.nota-rec { background: rgba(251,191,36,.15); color: #fbbf24; }
+.nota-rep { background: rgba(244,63,94,.15); color: #f43f5e; }
+.nota-nd { background: var(--bg-elevated); color: var(--text-muted); }
+.freq-bar-wrap { display: flex; align-items: center; gap: 8px; }
+.freq-bar { flex: 1; height: 6px; border-radius: 4px; background: var(--bg-elevated); overflow: hidden; }
+.freq-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
+.freq-ok { background: #34d399; }
+.freq-alert { background: #fbbf24; }
+.freq-bad { background: #f43f5e; }
+
+/* ── Responsáveis ── */
+.resp-list { display: flex; flex-direction: column; gap: 10px; padding: 16px 24px 24px; }
+.resp-item { display: flex; align-items: center; gap: 14px; padding: 14px; background: var(--bg-elevated); border-radius: 12px; border: 1px solid var(--border-subtle); }
+.resp-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,#7c6fff,#22d3ee); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800; font-size:.9rem; flex-shrink:0; }
+.resp-info .name { font-size: .9rem; font-weight: 700; color: var(--text-primary); }
+.resp-info .role { font-size: .75rem; color: var(--text-muted); margin-top:2px; }
+.tag-cp { margin-left: auto; font-size: .65rem; font-weight: 800; padding: 3px 9px; border-radius: 20px; background: rgba(124,111,255,.15); color: var(--accent-violet); border: 1px solid rgba(124,111,255,.3); }
+
+@media(max-width:768px) {
+  .stats-row { grid-template-columns: repeat(2,1fr); }
+  .info-grid { grid-template-columns: 1fr; }
+  .hero-body { flex-wrap: wrap; }
+  .hero-actions { padding-top: 0; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="perfil-wrap">
+
+  {# ── Hero Card ── #}
+  <div class="card-perfil hero">
+    <div class="hero-banner"></div>
+    <div class="hero-body">
+      <div class="avatar-wrap">
+        <div class="avatar-ring">
+          {% if foto_perfil_url %}
+            <img class="avatar-img" src="{{ foto_perfil_url }}" alt="{{ aluno.nome_completo }}">
+          {% else %}
+            <div class="avatar-img" style="background:linear-gradient(135deg,#7c6fff,#22d3ee);display:flex;align-items:center;justify-content:center;color:#fff;font-size:2rem;font-weight:800;">
+              {{ aluno.nome_completo|first|upper }}
+            </div>
+          {% endif %}
+        </div>
+        <div class="avatar-status" title="Matrícula Ativa"></div>
+      </div>
+      <div class="hero-info">
+        <h1>{{ aluno.nome_completo }}</h1>
+        <p>
+          <i class="fa-solid fa-id-card" style="color:var(--accent-violet);margin-right:5px;"></i>
+          Matrícula {{ aluno.matricula }}
+          &nbsp;·&nbsp;
+          <i class="fa-solid fa-graduation-cap" style="color:var(--accent-cyan);margin-right:5px;"></i>
+          {{ aluno.turma.nome }} — {{ aluno.turma.get_turno_display }} · {{ ano_letivo }}
+          &nbsp;·&nbsp;
+          <span class="nota-badge {% if aluno.status_matricula == 'ATIVO' %}nota-ap{% else %}nota-rec{% endif %}" style="font-size:.7rem;padding:3px 9px;">
+            {{ aluno.get_status_matricula_display }}
+          </span>
+        </p>
+      </div>
+      <div class="hero-actions">
+        <a href="{% url 'editar_perfil' %}" class="btn-hero btn-hero-secondary">
+          <i class="fa-solid fa-pen"></i> Editar Perfil
+        </a>
+        <a href="{% url 'painel_aluno' %}" class="btn-hero btn-hero-primary">
+          <i class="fa-solid fa-gauge-high"></i> Meu Painel
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {# ── Stats Row ── #}
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(124,111,255,.15);color:var(--accent-violet);">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div class="stat-val" style="color:{% if media_geral >= 7 %}#34d399{% elif media_geral >= 5 %}#fbbf24{% else %}#f43f5e{% endif %}">
+        {{ media_geral|floatformat:1|default:"—" }}
+      </div>
+      <div class="stat-lbl">Média Geral</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(56,189,248,.15);color:var(--accent-cyan);">
+        <i class="fa-solid fa-calendar-check"></i>
+      </div>
+      <div class="stat-val" style="color:{% if percentual_frequencia >= 75 %}#34d399{% elif percentual_frequencia >= 60 %}#fbbf24{% else %}#f43f5e{% endif %}">
+        {{ percentual_frequencia|floatformat:0 }}%
+      </div>
+      <div class="stat-lbl">Frequência</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(52,211,153,.15);color:#34d399;">
+        <i class="fa-solid fa-book"></i>
+      </div>
+      <div class="stat-val">{{ disciplinas_com_notas|length }}</div>
+      <div class="stat-lbl">Disciplinas</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:rgba(251,191,36,.15);color:#fbbf24;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="stat-val" style="color:#f43f5e;">{{ faltas_gerais }}</div>
+      <div class="stat-lbl">Faltas no Ano</div>
+    </div>
+  </div>
+
+  {# ── Info Pessoal + Responsáveis ── #}
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;">
+
+    <div class="card-perfil">
+      <div class="sec-header">
+        <h2><i class="fa-solid fa-user" style="color:var(--accent-violet);"></i> Dados Pessoais & Acadêmicos</h2>
+      </div>
+      <div class="info-grid">
+        <div class="info-group">
+          <h3>Identificação</h3>
+          <div class="info-row">
+            <i class="fa-solid fa-id-badge"></i>
+            <div><div class="lbl">Matrícula</div><div class="val">{{ aluno.matricula|default:"—" }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-fingerprint"></i>
+            <div><div class="lbl">CPF</div><div class="val">{{ aluno.cpf|default:"—" }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-cake-candles"></i>
+            <div><div class="lbl">Data de Nascimento</div><div class="val">{{ aluno.data_nascimento|date:"d/m/Y"|default:"—" }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-map-pin"></i>
+            <div><div class="lbl">Naturalidade</div><div class="val">{{ aluno.naturalidade|default:"—" }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-phone"></i>
+            <div><div class="lbl">Telefone</div><div class="val">{{ aluno.telefone|default:"—" }}</div></div>
+          </div>
+        </div>
+        <div class="info-group">
+          <h3>Situação Escolar</h3>
+          <div class="info-row">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <div><div class="lbl">Turma</div><div class="val">{{ aluno.turma.nome }} — {{ aluno.turma.get_turno_display }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-calendar"></i>
+            <div><div class="lbl">Ano Letivo</div><div class="val">{{ ano_letivo }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-circle-check"></i>
+            <div><div class="lbl">Status da Matrícula</div><div class="val">{{ aluno.get_status_matricula_display }}</div></div>
+          </div>
+          <div class="info-row">
+            <i class="fa-solid fa-trophy"></i>
+            <div><div class="lbl">Situação Geral</div><div class="val">{{ situacao.texto|default:"Sem dados" }}</div></div>
+          </div>
+          {% if aluno.possui_necessidade_especial %}
+          <div class="info-row">
+            <i class="fa-solid fa-universal-access" style="color:var(--accent-cyan);"></i>
+            <div><div class="lbl">Necessidade Especial</div><div class="val">{{ aluno.descricao_necessidade|default:"Ativo" }}</div></div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card-perfil">
+      <div class="sec-header">
+        <h2><i class="fa-solid fa-people-roof" style="color:var(--accent-cyan);"></i> Responsáveis</h2>
+      </div>
+      <div class="resp-list">
+        {% for resp in responsaveis %}
+        <div class="resp-item">
+          <div class="resp-avatar">{{ resp.nome_completo|first|upper }}</div>
+          <div class="resp-info">
+            <div class="name">{{ resp.nome_completo }}</div>
+            <div class="role">{{ resp.parentesco|default:"Responsável" }}</div>
+          </div>
+          {% if resp.controle_parental_ativo %}
+          <span class="tag-cp"><i class="fa-solid fa-shield-heart"></i> Controle Parental</span>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p style="color:var(--text-muted);font-size:.85rem;padding:10px 0;">Nenhum responsável cadastrado.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  {# ── Histórico de Disciplinas ── #}
+  <div class="card-perfil">
+    <div class="sec-header">
+      <h2><i class="fa-solid fa-book-open" style="color:var(--accent-emerald);"></i> Histórico Escolar — {{ ano_letivo }}</h2>
+      <a href="{% url 'gerar_boletim_pdf' aluno.id %}" target="_blank" class="btn-hero btn-hero-secondary" style="font-size:.75rem;padding:7px 14px;">
+        <i class="fa-solid fa-file-pdf"></i> Boletim PDF
+      </a>
+    </div>
+    <table class="disc-table">
+      <thead>
+        <tr>
+          <th>Disciplina</th>
+          <th>Professor</th>
+          <th>1º Bim</th>
+          <th>2º Bim</th>
+          <th>3º Bim</th>
+          <th>4º Bim</th>
+          <th>Média</th>
+          <th>Frequência</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in disciplinas_com_notas %}
+        {% with nota=item.nota %}
+        <tr>
+          <td><strong style="color:var(--text-primary);">{{ item.disciplina.nome }}</strong></td>
+          <td style="color:var(--text-muted);font-size:.8rem;">{{ item.disciplina.professor.nome_completo|truncatechars:25|default:"—" }}</td>
+          <td><span class="nota-badge {% if nota.nota1 %}{% if nota.nota1 >= 7 %}nota-ap{% elif nota.nota1 >= 5 %}nota-rec{% else %}nota-rep{% endif %}{% else %}nota-nd{% endif %}">{{ nota.nota1|default:"—" }}</span></td>
+          <td><span class="nota-badge {% if nota.nota2 %}{% if nota.nota2 >= 7 %}nota-ap{% elif nota.nota2 >= 5 %}nota-rec{% else %}nota-rep{% endif %}{% else %}nota-nd{% endif %}">{{ nota.nota2|default:"—" }}</span></td>
+          <td><span class="nota-badge {% if nota.nota3 %}{% if nota.nota3 >= 7 %}nota-ap{% elif nota.nota3 >= 5 %}nota-rec{% else %}nota-rep{% endif %}{% else %}nota-nd{% endif %}">{{ nota.nota3|default:"—" }}</span></td>
+          <td><span class="nota-badge {% if nota.nota4 %}{% if nota.nota4 >= 7 %}nota-ap{% elif nota.nota4 >= 5 %}nota-rec{% else %}nota-rep{% endif %}{% else %}nota-nd{% endif %}">{{ nota.nota4|default:"—" }}</span></td>
+          <td>
+            {% if nota and nota.media %}
+              <span class="nota-badge {% if nota.media >= 7 %}nota-ap{% elif nota.media >= 5 %}nota-rec{% else %}nota-rep{% endif %}" style="font-size:.9rem;">
+                {{ nota.media|floatformat:1 }}
+              </span>
+            {% else %}
+              <span class="nota-badge nota-nd">—</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="freq-bar-wrap">
+              <div class="freq-bar">
+                <div class="freq-fill {% if item.percentual_presenca >= 75 %}freq-ok{% elif item.percentual_presenca >= 60 %}freq-alert{% else %}freq-bad{% endif %}"
+                  style="width:{{ item.percentual_presenca }}%"></div>
+              </div>
+              <span style="font-size:.75rem;color:var(--text-muted);min-width:38px;">{{ item.percentual_presenca|floatformat:0 }}%</span>
+            </div>
+          </td>
+        </tr>
+        {% endwith %}
+        {% empty %}
+        <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:30px;">Nenhuma disciplina registrada.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}
