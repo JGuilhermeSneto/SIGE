@@ -122,6 +122,61 @@
     .nav-lateral a i.icon-sidebar-receitas {
       color: var(--accent-emerald);
     }
+
+    /* Notificações */
+    .notif-item {
+      background: transparent;
+      transition: all 0.2s;
+    }
+    .notif-item.notif-unread {
+      background: rgba(var(--accent-violet-rgb), 0.03);
+    }
+    .notif-item:hover {
+      background: var(--bg-elevated) !important;
+    }
+    .notif-item:hover .notif-quick-actions {
+      opacity: 1 !important;
+    }
+    .notif-icon-box {
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+    }
+    .notif-icon-sistema {
+      background: rgba(124, 111, 255, 0.1) !important;
+      color: var(--accent-violet) !important;
+    }
+    .notif-icon-entrega {
+      background: rgba(6, 182, 212, 0.1) !important;
+      color: var(--accent-cyan) !important;
+    }
+    .notif-icon-atestado {
+      background: rgba(244, 63, 94, 0.1) !important;
+      color: var(--accent-ruby) !important;
+    }
+    .notif-icon-correcao {
+      background: rgba(16, 185, 129, 0.1) !important;
+      color: var(--accent-emerald) !important;
+    }
+    .notif-icon-nota {
+      background: rgba(245, 158, 11, 0.1) !important;
+      color: var(--accent-amber) !important;
+    }
+    .notif-icon-chamada {
+      background: rgba(59, 130, 246, 0.1) !important;
+      color: #3b82f6 !important;
+    }
+    .notif-icon-gabarito {
+      background: rgba(6, 182, 212, 0.1) !important;
+      color: var(--accent-cyan) !important;
+    }
+    .notif-title {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .notif-unread .notif-title {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
   </style>
 
   <script>
@@ -280,24 +335,14 @@
           <div class="modal-notif-body" style="padding: 5px 0; overflow-y: auto; flex: 1; scrollbar-width: thin;">
             {% if global_notifs_recentes %}
             {% for n in global_notifs_recentes %}
-            <div class="notif-item"
-              style="position: relative; display: flex; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); text-decoration: none; transition: all 0.2s; background: {% if not n.lida %}rgba(var(--accent-violet-rgb), 0.03){% else %}transparent{% endif %};"
-              onmouseover="this.style.background='var(--bg-elevated)'; if(this.querySelector('.notif-quick-actions')) this.querySelector('.notif-quick-actions').style.opacity='1'"
-              onmouseout="this.style.background='{% if not n.lida %}rgba(var(--accent-violet-rgb), 0.03){% else %}transparent{% endif %}'; if(this.querySelector('.notif-quick-actions')) this.querySelector('.notif-quick-actions').style.opacity='0'">
+            <div class="notif-item {% if not n.lida %}notif-unread{% endif %}"
+              style="position: relative; display: flex; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border-subtle); text-decoration: none;">
 
               <!-- Link principal para destino -->
               <a href="{% url 'marcar_notificacao_lida' n.id %}" style="position: absolute; inset: 0; z-index: 1;"></a>
 
               <!-- Ícone com Identidade Visual -->
-              <div class="notif-icon-box" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; z-index: 2; position: relative;
-                              {% if n.tipo == 'SISTEMA' %} background: rgba(124, 111, 255, 0.1); color: var(--accent-violet);
-                              {% elif n.tipo == 'ENTREGA' %} background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);
-                              {% elif n.tipo == 'ATESTADO' %} background: rgba(244, 63, 94, 0.1); color: var(--accent-ruby);
-                              {% elif n.tipo == 'CORRECAO' %} background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald);
-                              {% elif n.tipo == 'NOTA' %} background: rgba(245, 158, 11, 0.1); color: var(--accent-amber);
-                              {% elif n.tipo == 'CHAMADA' %} background: rgba(59, 130, 246, 0.1); color: #3b82f6;
-                              {% elif n.tipo == 'GABARITO' %} background: rgba(6, 182, 212, 0.1); color: var(--accent-cyan);
-                              {% else %} background: var(--bg-elevated); color: var(--text-muted); {% endif %}">
+              <div class="notif-icon-box notif-icon-{{ n.tipo|lower|default:'default' }}" style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.1rem; z-index: 2; position: relative;">
 
                 {% if n.tipo == 'SISTEMA' %}<i class="fa-solid fa-circle-info"></i>
                 {% elif n.tipo == 'ENTREGA' %}<i class="fa-solid fa-file-signature"></i>
@@ -311,9 +356,7 @@
 
               <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; z-index: 2; position: relative;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong
-                    style="font-size: 0.88rem; color: {% if not n.lida %}var(--text-primary){% else %}var(--text-muted){% endif %}; font-weight: {% if not n.lida %}700{% else %}500{% endif %};">{{
-                    n.titulo }}</strong>
+                  <strong class="notif-title" style="font-size: 0.88rem;">{{ n.titulo }}</strong>
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span style="font-size: 0.7rem; color: var(--text-dim);">{{ n.criado_em|date:"d/m H:i" }}</span>
                     <!-- Ações Rápidas -->
@@ -335,7 +378,7 @@
                   </div>
                 </div>
                 <p
-                  style="margin: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                  style="margin: 0; font-size: 0.8rem; color: var(--text-dim); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
                   {{ n.mensagem }}</p>
               </div>
             </div>

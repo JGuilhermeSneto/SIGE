@@ -158,8 +158,8 @@
     // Inicialização específica se necessário
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
-        let mes = parseInt(urlParams.get('mes') || {{ mes_filtro }});
-        let ano = parseInt(urlParams.get('ano') || {{ ano_filtro }});
+        let mes = parseInt(urlParams.get('mes') || "{{ mes_filtro }}");
+        let ano = parseInt(urlParams.get('ano') || "{{ ano_filtro }}");
 
         // Ajuste de overflow de meses
         if (mes > 12) { mes = 1; ano++; }
