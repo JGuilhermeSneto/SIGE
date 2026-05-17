@@ -1,15 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.utils import timezone
-from .models import Fatura, Pagamento
+from .models import Fatura, Pagamento, Lancamento, FolhaPagamento, CategoriaFinanceira
 from django.db.models import Sum, Count, Q
 from django.utils.timezone import now
 from .selectors import FinanceiroSelectors
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
 from reportlab.lib.units import cm
 import datetime
+import json
+from django.contrib import messages
+from apps.academico.models import Notificacao
 
 
 @login_required
@@ -85,10 +87,6 @@ def listar_faturas(request):
         "hoje": hoje,
     }
     return render(request, "financeiro/listar_faturas.html", context)
-
-
-from .models import Fatura, Pagamento, Lancamento, FolhaPagamento, CategoriaFinanceira
-import json
 
 
 @login_required
@@ -317,10 +315,6 @@ def registrar_pagamento(request, fatura_id):
     return render(request, "financeiro/form_pagamento.html", context)
 
 
-from django.contrib import messages
-from apps.academico.models import Notificacao
-
-
 @login_required
 def notificar_fatura(request, fatura_id):
     """Dispara uma notificação de sistema para o aluno sobre a fatura."""
@@ -336,9 +330,15 @@ def notificar_fatura(request, fatura_id):
         return redirect("financeiro:detalhes_fatura", fatura_id=fatura.id)
 
     # Criação da notificação
-    mensagem = f"Aviso de Fatura: {fatura.descricao} no valor de R$ {fatura.valor}. Vencimento em {fatura.data_vencimento.strftime('%d/%m/%Y')}."
+    mensagem = (
+        f"Aviso de Fatura: {fatura.descricao} no valor de R$ {fatura.valor}. "
+        f"Vencimento em {fatura.data_vencimento.strftime('%d/%m/%Y')}."
+    )
     if fatura.esta_atrasada:
-        mensagem = f"Atraso: A fatura {fatura.descricao} (R$ {fatura.valor}) venceu em {fatura.data_vencimento.strftime('%d/%m/%Y')}. Regularize a situação."
+        mensagem = (
+            f"Atraso: A fatura {fatura.descricao} (R$ {fatura.valor}) venceu "
+            f"em {fatura.data_vencimento.strftime('%d/%m/%Y')}. Regularize a situação."
+        )
 
     Notificacao.objects.create(
         usuario=fatura.aluno.user,
@@ -361,7 +361,7 @@ def exportar_inadimplentes_pdf(request):
         return HttpResponseForbidden("Acesso negado.")
 
     dados = FinanceiroSelectors.get_inadimplentes_detalhado()
-    
+
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="relatorio_inadimplencia.pdf"'
 
@@ -372,8 +372,11 @@ def exportar_inadimplentes_pdf(request):
     p.setFont("Helvetica-Bold", 16)
     p.drawCentredString(width / 2, height - 2 * cm, "SIGE - RELATÓRIO DE INADIMPLÊNCIA")
     p.setFont("Helvetica", 10)
-    p.drawCentredString(width / 2, height - 2.6 * cm, f"Gerado em: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}")
-    
+    p.drawCentredString(
+        width / 2, height - 2.6 * cm,
+        f"Gerado em: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}"
+    )
+
     p.line(1 * cm, height - 3 * cm, width - 1 * cm, height - 3 * cm)
 
     # Tabela
@@ -387,7 +390,7 @@ def exportar_inadimplentes_pdf(request):
 
     y -= 0.6 * cm
     p.setFont("Helvetica", 9)
-    
+
     total_geral = 0
     for item in dados:
         if y < 3 * cm:
@@ -400,7 +403,7 @@ def exportar_inadimplentes_pdf(request):
         p.drawString(12 * cm, y, str(item["qtd_faturas"]))
         p.drawString(14 * cm, y, item["vencimento_mais_antigo"].strftime('%d/%m/%Y'))
         p.drawString(17 * cm, y, f"R$ {item['total_devido']:,.2f}")
-        
+
         total_geral += item["total_devido"]
         y -= 0.5 * cm
         p.line(1 * cm, y + 0.2 * cm, width - 1 * cm, y + 0.2 * cm)
