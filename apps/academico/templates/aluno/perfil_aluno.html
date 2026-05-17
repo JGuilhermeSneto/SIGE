@@ -78,6 +78,11 @@
   .hero-body { flex-wrap: wrap; }
   .hero-actions { padding-top: 0; }
 }
+
+/* Helper classes to avoid dynamic style linter warnings */
+.color-ok { color: #34d399 !important; }
+.color-alert { color: #fbbf24 !important; }
+.color-bad { color: #f43f5e !important; }
 </style>
 {% endblock %}
 
@@ -131,7 +136,7 @@
       <div class="stat-icon" style="background:rgba(124,111,255,.15);color:var(--accent-violet);">
         <i class="fa-solid fa-chart-line"></i>
       </div>
-      <div class="stat-val" style="color:{% if media_geral >= 7 %}#34d399{% elif media_geral >= 5 %}#fbbf24{% else %}#f43f5e{% endif %}">
+      <div class="stat-val {% if media_geral >= 7 %}color-ok{% elif media_geral >= 5 %}color-alert{% else %}color-bad{% endif %}">
         {{ media_geral|floatformat:1|default:"—" }}
       </div>
       <div class="stat-lbl">Média Geral</div>
@@ -140,7 +145,7 @@
       <div class="stat-icon" style="background:rgba(56,189,248,.15);color:var(--accent-cyan);">
         <i class="fa-solid fa-calendar-check"></i>
       </div>
-      <div class="stat-val" style="color:{% if percentual_frequencia >= 75 %}#34d399{% elif percentual_frequencia >= 60 %}#fbbf24{% else %}#f43f5e{% endif %}">
+      <div class="stat-val {% if percentual_frequencia >= 75 %}color-ok{% elif percentual_frequencia >= 60 %}color-alert{% else %}color-bad{% endif %}">
         {{ percentual_frequencia|floatformat:0 }}%
       </div>
       <div class="stat-lbl">Frequência</div>
@@ -288,7 +293,7 @@
             <div class="freq-bar-wrap">
               <div class="freq-bar">
                 <div class="freq-fill {% if item.percentual_presenca >= 75 %}freq-ok{% elif item.percentual_presenca >= 60 %}freq-alert{% else %}freq-bad{% endif %}"
-                  style="width:{{ item.percentual_presenca }}%"></div>
+                  {% if item.percentual_presenca %}style="width: {{ item.percentual_presenca }}%;"{% else %}style="width: 0%;"{% endif %}></div>
               </div>
               <span style="font-size:.75rem;color:var(--text-muted);min-width:38px;">{{ item.percentual_presenca|floatformat:0 }}%</span>
             </div>
