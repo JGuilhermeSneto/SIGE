@@ -184,7 +184,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        if: ${{ secrets.SSH_HOST != '' }}
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        if: env.SSH_HOST != ''
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
