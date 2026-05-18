@@ -17,8 +17,8 @@ class PerfisFormsTest(TestCase):
             "cpf": "730.835.289-73",
             "data_nascimento": "1980-01-01",
             "email": "prof@example.com",
-            "senha": "password123",
-            "senha_confirmacao": "password123",
+            "senha": "SenhaSegura1!",
+            "senha_confirmacao": "SenhaSegura1!",
         }
         form = ProfessorForm(data=form_data)
         self.assertTrue(form.is_valid())
@@ -32,8 +32,8 @@ class PerfisFormsTest(TestCase):
             "cpf": "844.660.319-59",
             "data_nascimento": "2010-01-01",
             "email": "aluno@example.com",
-            "senha": "password123",
-            "senha_confirmacao": "password123",
+            "senha": "SenhaSegura1!",
+            "senha_confirmacao": "SenhaSegura1!",
             "turma": self.turma.pk,
         }
         form = AlunoForm(data=form_data)
@@ -49,8 +49,8 @@ class PerfisFormsTest(TestCase):
             "data_nascimento": "1975-01-01",
             "cargo": "diretor",
             "email": "gestor@example.com",
-            "senha": "password123",
-            "senha_confirmacao": "password123",
+            "senha": "SenhaSegura1!",
+            "senha_confirmacao": "SenhaSegura1!",
         }
         form = GestorForm(data=form_data)
         self.assertTrue(form.is_valid())

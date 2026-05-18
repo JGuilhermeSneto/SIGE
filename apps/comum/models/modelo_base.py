@@ -90,14 +90,24 @@ class PessoaBase(TenantModel):
         upload_to="fotos/pessoas/", blank=True, null=True, help_text="Foto da pessoa"
     )
 
+    def avatar_placeholder_url(self) -> str:
+        nome = (self.nome_completo or "Usuario").replace(" ", "+")
+        return (
+            f"https://ui-avatars.com/api/?name={nome}"
+            "&background=0D8ABC&color=fff&size=128"
+        )
+
     @property
     def get_foto_url(self) -> str:
-        """Retorna a URL da foto ou um placeholder inteligente via CDN."""
-        if self.foto and hasattr(self.foto, "url"):
-            return self.foto.url
-        # Retorna um avatar gerado pelo nome para performance e estética
-        nome_codificado = self.nome_completo.replace(" ", "+")
-        return f"https://ui-avatars.com/api/?name={nome_codificado}&background=0D8ABC&color=fff&size=128"
+        """Retorna a URL da foto ou um placeholder via ui-avatars."""
+        if self.foto:
+            try:
+                url = self.foto.url
+                if url:
+                    return url
+            except (ValueError, OSError):
+                pass
+        return self.avatar_placeholder_url()
 
     criado_em = models.DateTimeField(auto_now_add=True, help_text="Data de criação")
     atualizado_em = models.DateTimeField(

@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.conf import settings
 from .models.blacklist import BlacklistIP
+from .utils.ip_whitelist import garantir_ip_liberado, ip_esta_na_whitelist
 
 logger = logging.getLogger("seguranca.audit")
 
@@ -19,11 +20,14 @@ class SecurityShieldMiddleware:
 
     def __call__(self, request):
         ip = self.get_client_ip(request)
-        
-        # 1. Verificar Lista Negra
-        banido = BlacklistIP.objects.filter(ip_endereco=ip).first()
-        if banido and banido.is_active:
-            return HttpResponseForbidden(f"Acesso negado. IP {ip} bloqueado.")
+
+        if ip_esta_na_whitelist(ip):
+            garantir_ip_liberado(ip)
+        else:
+            # 1. Verificar Lista Negra
+            banido = BlacklistIP.objects.filter(ip_endereco=ip).first()
+            if banido and banido.is_active:
+                return HttpResponseForbidden(f"Acesso negado. IP {ip} bloqueado.")
 
         # 2. Motor WAF (Filtro de Ataques)
         path_completo = f"{request.path}?{request.GET.urlencode()}"

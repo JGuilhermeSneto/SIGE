@@ -4,6 +4,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from ...models.perfis import Gestor
 from ...forms.perfis import GestorForm
 from ...utils.perfis import get_nome_exibicao, get_foto_perfil
+from django.core.exceptions import ValidationError
+from .helpers import exibir_erros_formulario
 
 
 def pode_gerenciar_gestores(u):
@@ -20,9 +22,17 @@ def cadastrar_editar_gestor(request, gestor_id=None):
     if request.method == "POST":
         form = GestorForm(request.POST, request.FILES, instance=gestor, request=request)
         if form.is_valid():
-            gestor_obj = form.save()
-            messages.success(request, f"{gestor_obj.nome_completo} processado!")
-            return redirect("listar_gestores")
+            try:
+                gestor_obj = form.save()
+                messages.success(request, f"{gestor_obj.nome_completo} processado!")
+                return redirect("listar_gestores")
+            except ValidationError as e:
+                for msg in e.messages:
+                    messages.error(request, msg)
+            except Exception as e:
+                messages.error(request, f"Erro ao salvar: {str(e)}")
+        else:
+            exibir_erros_formulario(request, form)
     else:
         form = GestorForm(instance=gestor, request=request)
     return render(

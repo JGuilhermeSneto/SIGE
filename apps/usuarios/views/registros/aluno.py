@@ -7,6 +7,8 @@ from ...forms.perfis import AlunoForm
 from apps.saude.forms import FichaMedicaForm
 from ...utils.perfis import get_nome_exibicao, get_foto_perfil, is_super_ou_gestor
 from apps.academico.services.notificacao_servico import NotificacaoServico
+from django.core.exceptions import ValidationError
+from .helpers import exibir_erros_cadastro_aluno
 
 
 @login_required
@@ -57,8 +59,13 @@ def cadastrar_aluno(request):
                         f"Aluno(a) {aluno.nome_completo} cadastrado(a) com sucesso!",
                     )
                     return redirect("listar_alunos")
+            except ValidationError as e:
+                for msg in e.messages:
+                    messages.error(request, msg)
             except Exception as e:
                 messages.error(request, f"Erro ao salvar: {str(e)}")
+        else:
+            exibir_erros_cadastro_aluno(request, form, form_saude)
     else:
         form = AlunoForm(request=request)
         form_saude = FichaMedicaForm()
@@ -96,8 +103,13 @@ def editar_aluno(request, aluno_id):
                     ficha.save()
                     messages.success(request, "Aluno e Ficha Médica atualizados!")
                     return redirect("listar_alunos")
+            except ValidationError as e:
+                for msg in e.messages:
+                    messages.error(request, msg)
             except Exception as e:
                 messages.error(request, f"Erro ao atualizar: {str(e)}")
+        else:
+            exibir_erros_cadastro_aluno(request, form, form_saude)
     else:
         form = AlunoForm(instance=aluno, request=request)
         form_saude = FichaMedicaForm(instance=ficha_medica)

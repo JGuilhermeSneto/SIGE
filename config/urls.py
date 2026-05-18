@@ -36,6 +36,8 @@ from apps.academico.api import (
     FrequenciaViewSet,
     NotaViewSet,
     MaterialDidaticoViewSet,
+    AlunoDashboardView,
+    AlunoBoletimView,
 )
 from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
 from apps.saude.api import SaudeViewSet
@@ -67,6 +69,12 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/dashboard/resumo/", dashboard_resumo, name="api-dashboard-resumo"),
     path("api/token/", SIGETokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    
+    # Endpoints REST API v1 para Mobile
+    path("api/v1/auth/login/", SIGETokenObtainPairView.as_view(), name="api-v1-login"),
+    path("api/v1/aluno/dashboard/", AlunoDashboardView.as_view(), name="api-v1-aluno-dashboard"),
+    path("api/v1/aluno/boletim/", AlunoBoletimView.as_view(), name="api-v1-aluno-boletim"),
+
     path("api/", include(router.urls)),
 
     # Documentação da API
@@ -102,5 +110,5 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("", include(tf_urls)),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG or getattr(settings, "SERVE_MEDIA_FILES", False):
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

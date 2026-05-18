@@ -5,9 +5,6 @@ O que é: centraliza regras “quem é esse usuário no SIGE?” para views e
 templates sem repetir ``hasattr``/``getattr`` espalhados.
 """
 
-from django.templatetags.static import static
-
-
 def get_nome_exibicao(user):
     """Retorna o nome para exibição (Primeiro Sobrenome ou E-mail)."""
     nome_auth = f"{user.first_name} {user.last_name}".strip()
@@ -24,11 +21,20 @@ def get_user_profile(user):
 
 
 def get_foto_perfil(user):
-    """Retorna a URL da foto de perfil ou imagem padrão dinâmica."""
+    """Retorna a URL da foto de perfil ou avatar gerado pelo nome."""
     perfil = get_user_profile(user)
     if perfil and hasattr(perfil, "get_foto_url"):
         return perfil.get_foto_url
-    return static("core/img/default-user.png")
+    nome = (
+        user.get_full_name().strip()
+        or user.get_short_name()
+        or user.username
+        or "Usuario"
+    ).replace(" ", "+")
+    return (
+        f"https://ui-avatars.com/api/?name={nome}"
+        "&background=0D8ABC&color=fff&size=128"
+    )
 
 
 def redirect_user(user):

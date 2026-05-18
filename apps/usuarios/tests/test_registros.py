@@ -11,7 +11,7 @@ from apps.academico.models import Turma
 class RegistrosViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.password = "senha123"
+        self.password = "SenhaSegura1!"
         self.super_user = User.objects.create_superuser(
             username="admin", email="admin@test.com", password=self.password
         )
@@ -55,8 +55,8 @@ class RegistrosViewsTest(TestCase):
     def test_cadastrar_professor_post(self):
         data = {
             "email": "prof_novo@test.com",
-            "senha": "senha123",
-            "senha_confirmacao": "senha123",
+            "senha": "SenhaSegura1!",
+            "senha_confirmacao": "SenhaSegura1!",
             "nome_completo": "Novo Professor",
             "cpf": "893.434.452-02",
             "data_nascimento": "1980-01-01",
@@ -72,8 +72,8 @@ class RegistrosViewsTest(TestCase):
     def test_cadastrar_aluno_post(self):
         data = {
             "email": "aluno_novo@test.com",
-            "senha": "senha123",
-            "senha_confirmacao": "senha123",
+            "senha": "SenhaSegura1!",
+            "senha_confirmacao": "SenhaSegura1!",
             "nome_completo": "Novo Aluno",
             "cpf": "109.796.860-08",
             "data_nascimento": "2010-01-01",
@@ -81,7 +81,7 @@ class RegistrosViewsTest(TestCase):
             "telefone": "84888888888",
             "responsavel1": "Mae do Aluno",
             # Ficha Médica (os campos são processados pela view no mesmo POST)
-            "tipagem_sanguinea": "A+",
+            "tipo_sanguineo": "A+",
             "alergias": "Nenhuma",
         }
         response = self.client.post(reverse("cadastrar_aluno"), data)

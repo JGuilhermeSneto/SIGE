@@ -15,6 +15,7 @@ from apps.seguranca.utils.access import (
     pode_executar_acoes_seguranca,
     pode_ver_dashboard_seguranca,
 )
+from apps.seguranca.utils.ip_whitelist import garantir_ip_liberado, ip_esta_na_whitelist
 import logging
 
 logger = logging.getLogger("sige.audit")
@@ -29,12 +30,19 @@ def is_security_admin(user):
 
 @user_passes_test(is_security_admin)
 def bloquear_ip(request, ip):
+    if ip_esta_na_whitelist(ip):
+        garantir_ip_liberado(ip)
+        messages.warning(
+            request,
+            f"O IP {ip} está na lista de IPs protegidos e não pode ser bloqueado.",
+        )
+        return redirect("ti:seguranca")
+
     motivo = request.POST.get("motivo", "Bloqueio manual via Shield Dashboard")
     BlacklistIP.objects.get_or_create(
         ip_endereco=ip, defaults={"motivo": motivo, "bloqueado_por": request.user}
     )
 
-    # Limpa tentativas do Axes para este IP
     AccessAttempt.objects.filter(ip_address=ip).delete()
 
     messages.success(request, f"O IP {ip} foi adicionado à Blacklist com sucesso.")
@@ -165,17 +173,17 @@ def honeypot_view(request):
     ip = get_client_ip(request)
     path = request.path
 
-    BlacklistIP.objects.get_or_create(
-        ip_endereco=ip,
-        defaults={
-            "motivo": f"Honeypot Triggered: Acesso ao caminho proibido [{path}]",
-            "bloqueado_por": None,
-        },
-    )
-
-    logger.warning(
-        f"HONEYPOT: IP {ip} bloqueado automaticamente ao tentar acessar {path}"
-    )
+    if not ip_esta_na_whitelist(ip):
+        BlacklistIP.objects.get_or_create(
+            ip_endereco=ip,
+            defaults={
+                "motivo": f"Honeypot Triggered: Acesso ao caminho proibido [{path}]",
+                "bloqueado_por": None,
+            },
+        )
+        logger.warning(
+            f"HONEYPOT: IP {ip} bloqueado automaticamente ao tentar acessar {path}"
+        )
     return HttpResponseForbidden(
         "Acesso Proibido. Seu IP foi permanentemente bloqueado por atividade suspeita."
     )

@@ -241,15 +241,21 @@ else:
         }
     }
 
-# Cloudinary
+# Cloudinary (só ativa se as credenciais estiverem configuradas)
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": config("CLOUDINARY_CLOUD_NAME", default=""),
     "API_KEY": config("CLOUDINARY_API_KEY", default=""),
     "API_SECRET": config("CLOUDINARY_API_SECRET", default=""),
 }
 
-if not DEBUG:
+USE_CLOUDINARY_STORAGE = all(CLOUDINARY_STORAGE.values())
+if USE_CLOUDINARY_STORAGE:
     DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# Servir uploads locais quando não há Cloudinary (dev e Render sem CDN)
+SERVE_MEDIA_FILES = config(
+    "SERVE_MEDIA_FILES", default=not USE_CLOUDINARY_STORAGE, cast=bool
+)
 
 # Tarefas Assíncronas (Celery + RabbitMQ)
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="amqp://guest:guest@localhost:5672//")
@@ -294,6 +300,12 @@ CSRF_TRUSTED_ORIGINS = config("CSRF_TRUSTED_ORIGINS", default="http://127.0.0.1:
 if RENDER_EXTERNAL_HOSTNAME:
     CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
+for _host in ALLOWED_HOSTS:
+    if _host not in ("*", "localhost", "127.0.0.1", "0.0.0.0") and "." in _host:
+        _origin = f"https://{_host}"
+        if _origin not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(_origin)
+
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -315,11 +327,19 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
+# IPs que nunca entram na blacklist nem no lockout do Axes
+SEGURANCA_IP_WHITELIST = config(
+    "SEGURANCA_IP_WHITELIST",
+    default="127.0.0.1,::1,192.168.18.14",
+    cast=Csv(),
+)
+
 # Brute Force Protection (Axes)
 AXES_FAILURE_LIMIT = 5 if not DEBUG else 15
 AXES_COOLOFF_TIME = 1
 AXES_LOCKOUT_TEMPLATE = "core/lockout.html"
 AXES_RESET_ON_SUCCESS = True
+AXES_IP_WHITELIST = SEGURANCA_IP_WHITELIST
 
 # Content Security Policy (CSP)
 CSP_DEFAULT_SRC = ("'self'",)

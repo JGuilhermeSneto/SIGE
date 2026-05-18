@@ -34,6 +34,14 @@ class BlacklistIP(TenantModel):
     def __str__(self):
         return f"{self.ip_endereco} - {self.motivo[:30]}"
 
+    def save(self, *args, **kwargs):
+        from apps.seguranca.utils.ip_whitelist import ip_esta_na_whitelist
+
+        if ip_esta_na_whitelist(self.ip_endereco):
+            type(self).objects.filter(ip_endereco=self.ip_endereco).delete()
+            return
+        super().save(*args, **kwargs)
+
     @property
     def is_active(self):
         from django.utils import timezone

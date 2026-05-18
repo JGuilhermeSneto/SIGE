@@ -5,6 +5,8 @@ from ...models.perfis import Professor
 from ...forms.perfis import ProfessorForm
 from ...utils.perfis import get_nome_exibicao, get_foto_perfil, is_super_ou_gestor
 from apps.academico.services.notificacao_servico import NotificacaoServico
+from django.core.exceptions import ValidationError
+from .helpers import exibir_erros_formulario
 
 
 @login_required
@@ -34,21 +36,26 @@ def cadastrar_professor(request):
     if request.method == "POST":
         form = ProfessorForm(request.POST, request.FILES, request=request)
         if form.is_valid():
-            professor = form.save()
-            NotificacaoServico.notificar_gestores(
-                tipo="SISTEMA",
-                titulo="Novo Professor Cadastrado",
-                mensagem=f"O professor {professor.nome_completo} foi integrado ao sistema.",
-                url_destino="/usuarios/professores/",
-            )
-            messages.success(
-                request,
-                f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!",
-            )
-            return redirect("listar_professores")
-        for field, erros in form.errors.items():
-            for erro in erros:
-                messages.error(request, f"{field}: {erro}")
+            try:
+                professor = form.save()
+                NotificacaoServico.notificar_gestores(
+                    tipo="SISTEMA",
+                    titulo="Novo Professor Cadastrado",
+                    mensagem=f"O professor {professor.nome_completo} foi integrado ao sistema.",
+                    url_destino="/usuarios/professores/",
+                )
+                messages.success(
+                    request,
+                    f"Professor(a) {professor.nome_completo} cadastrado(a) com sucesso!",
+                )
+                return redirect("listar_professores")
+            except ValidationError as e:
+                for msg in e.messages:
+                    messages.error(request, msg)
+            except Exception as e:
+                messages.error(request, f"Erro ao salvar: {str(e)}")
+        else:
+            exibir_erros_formulario(request, form)
     else:
         form = ProfessorForm(request=request)
     return render(
@@ -73,15 +80,20 @@ def editar_professor(request, professor_id):
             request.POST, request.FILES, instance=professor, request=request
         )
         if form.is_valid():
-            form.save()
-            messages.success(
-                request,
-                f"Professor(a) {professor.nome_completo} atualizado(a) com sucesso!",
-            )
-            return redirect("listar_professores")
-        for field, erros in form.errors.items():
-            for erro in erros:
-                messages.error(request, f"{field}: {erro}")
+            try:
+                form.save()
+                messages.success(
+                    request,
+                    f"Professor(a) {professor.nome_completo} atualizado(a) com sucesso!",
+                )
+                return redirect("listar_professores")
+            except ValidationError as e:
+                for msg in e.messages:
+                    messages.error(request, msg)
+            except Exception as e:
+                messages.error(request, f"Erro ao atualizar: {str(e)}")
+        else:
+            exibir_erros_formulario(request, form)
     else:
         form = ProfessorForm(instance=professor, request=request)
     return render(
