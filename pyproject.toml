@@ -8,7 +8,19 @@ include = ["apps"]
 exclude = [
     "**/node_modules",
     "**/__pycache__",
-    "**/.*"
+    "**/.*",
+    "venv",
+    ".venv",
+    "env",
+    "dist",
+    "build",
+    ".git",
+    ".pytest_cache",
+    ".mypy_cache",
+    "htmlcov",
+    "staticfiles",
+    "media",
+    "migrations"
 ]
 # Configurações de Ambiente Virtual
 venvPath = "."

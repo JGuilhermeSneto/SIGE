@@ -13,6 +13,7 @@ class TiConfig(AppConfig):
         import subprocess
         import threading
         import socket
+        import apps.ti.signals  # Registra sinais de WebSocket
 
         # Só inicia automaticamente em ambiente de desenvolvimento (DEBUG=True)
         # e se não for o processo de reload do Django

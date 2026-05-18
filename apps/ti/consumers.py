@@ -78,3 +78,14 @@ class TINotificacoesConsumer(AsyncWebsocketConsumer):
             "tipo": "alerta_seguranca",
             "mensagem": event.get("mensagem", "Alerta de segurança detectado."),
         }))
+
+    async def novo_login(self, event):
+        """Notifica novo login bem-sucedido em tempo real."""
+        await self.send(text_data=json.dumps({
+            "tipo": "novo_login",
+            "usuario": event.get("usuario", "Desconhecido"),
+            "ip": event.get("ip", "N/A"),
+            "dispositivo": event.get("dispositivo", "N/A"),
+            "data_hora": event.get("data_hora", ""),
+            "timestamp": event.get("timestamp", 0),
+        }))

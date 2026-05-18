@@ -13,6 +13,7 @@
         font-weight: 800;
         margin: 5px 0;
     }
+
     .ip-box-security {
         font-family: 'JetBrains Mono', monospace;
         background: var(--bg-elevated);
@@ -21,12 +22,20 @@
         font-size: 0.8rem;
         border: 1px solid var(--border-subtle);
     }
-    
+
     @media (max-width: 768px) {
-        .metric-value-security { font-size: 1.8rem; }
-        .header-painel h1 { font-size: 1.6rem !important; }
-        .painel-sige { padding: 15px 12px !important; }
-        
+        .metric-value-security {
+            font-size: 1.8rem;
+        }
+
+        .header-painel h1 {
+            font-size: 1.6rem !important;
+        }
+
+        .painel-sige {
+            padding: 15px 12px !important;
+        }
+
         .infra-tab-nav {
             display: flex;
             overflow-x: auto;
@@ -36,8 +45,16 @@
             padding: 4px;
             scrollbar-width: none;
         }
-        .infra-tab-nav::-webkit-scrollbar { display: none; }
-        .tab-btn { flex-shrink: 0; padding: 8px 16px; font-size: 0.75rem; }
+
+        .infra-tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .tab-btn {
+            flex-shrink: 0;
+            padding: 8px 16px;
+            font-size: 0.75rem;
+        }
     }
 </style>
 
@@ -48,14 +65,14 @@
 
     {% if not pode_executar_acoes_seguranca %}
     <div class="sige-card" style="border-left: 4px solid var(--accent-amber); padding: 14px 18px; margin-bottom: 18px;">
-      <strong><i class="fa-solid fa-eye"></i> Modo leitura</strong>
-      <p style="margin: 0.35rem 0 0 0; font-size: 0.88rem; color: var(--text-muted);">
-        Métricas e listagens estão visíveis. Ações sensíveis (manutenção, bloqueios, limpeza de logs) exigem
-        <strong>coordenação de TI</strong> ou <strong>gestor/superusuário</strong>.
-      </p>
+        <strong><i class="fa-solid fa-eye"></i> Modo leitura</strong>
+        <p style="margin: 0.35rem 0 0 0; font-size: 0.88rem; color: var(--text-muted);">
+            Métricas e listagens estão visíveis. Ações sensíveis (manutenção, bloqueios, limpeza de logs) exigem
+            <strong>coordenação de TI</strong> ou <strong>gestor/superusuário</strong>.
+        </p>
     </div>
     {% endif %}
-    
+
     {# ════ HEADER ════ #}
     <header class="header-painel">
         <div class="header-esquerda">
@@ -65,7 +82,9 @@
 
         <div class="header-acoes">
             {% if pode_executar_acoes_seguranca %}
-            <a href="{% url 'seguranca:limpar_erros' %}" class="btn-sige-secundario" style="color: var(--accent-ruby); border-color: var(--accent-ruby);" onclick="return confirm('Tem certeza que deseja limpar todos os logs de erro?')">
+            <a href="{% url 'seguranca:limpar_erros' %}" class="btn-sige-secundario"
+                style="color: var(--accent-ruby); border-color: var(--accent-ruby);"
+                onclick="return confirm('Tem certeza que deseja limpar todos os logs de erro?')">
                 <i class="fa-solid fa-trash-can"></i> Limpar Erros
             </a>
             {% endif %}
@@ -78,41 +97,52 @@
 
     <!-- ═════════ MODO MANUTENÇÃO (PAINEL DE CONTROLE) ═════════ -->
     <div style="margin-bottom: 30px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px;">
-        <div class="sige-card" style="grid-column: span 2; display: flex; align-items: center; gap: 20px; border-left: 5px solid {% if config_seguranca.manutencao_ativa %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %}; padding: 25px;">
-            <div style="font-size: 2.5rem; color: {% if config_seguranca.manutencao_ativa %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};">
+        <div class="sige-card"
+            style="grid-column: span 2; display: flex; align-items: center; gap: 20px; border-left: 5px solid {% if config_seguranca.manutencao_ativa %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %}; padding: 25px;">
+            <div
+                style="font-size: 2.5rem; color: {% if config_seguranca.manutencao_ativa %}var(--accent-ruby){% else %}var(--accent-emerald){% endif %};">
                 <i class="fa-solid fa-screwdriver-wrench"></i>
             </div>
             <div style="flex: 1;">
-                <h3 style="margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Estado do Sistema</h3>
+                <h3 style="margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Estado do
+                    Sistema</h3>
                 <p style="margin: 5px 0; font-size: 1.2rem; font-weight: 800; color: var(--text-primary);">
-                    {% if config_seguranca.manutencao_ativa %}SISTEMA EM MANUTENÇÃO{% else %}SISTEMA OPERACIONAL{% endif %}
+                    {% if config_seguranca.manutencao_ativa %}SISTEMA EM MANUTENÇÃO{% else %}SISTEMA OPERACIONAL{% endif
+                    %}
                 </p>
-                <span style="font-size: 0.75rem; color: var(--text-muted);">Acesso restrito apenas para Administradores.</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">Acesso restrito apenas para
+                    Administradores.</span>
             </div>
             {% if pode_executar_acoes_seguranca %}
             <form action="{% url 'seguranca:toggle_manutencao' %}" method="POST">
                 {% csrf_token %}
-                <button type="submit" class="btn-sige-primario" style="background: {% if config_seguranca.manutencao_ativa %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %}; padding: 10px 20px; border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer;">
+                <button type="submit" class="btn-sige-primario"
+                    style="background: {% if config_seguranca.manutencao_ativa %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %}; padding: 10px 20px; border: none; border-radius: 12px; color: white; font-weight: 700; cursor: pointer;">
                     {% if config_seguranca.manutencao_ativa %}
-                        <i class="fa-solid fa-play"></i> Finalizar Manutenção
+                    <i class="fa-solid fa-play"></i> Finalizar Manutenção
                     {% else %}
-                        <i class="fa-solid fa-pause"></i> Ativar Manutenção
+                    <i class="fa-solid fa-pause"></i> Ativar Manutenção
                     {% endif %}
                 </button>
             </form>
             {% else %}
-            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Ação indisponível (somente leitura)</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-lock"></i> Ação
+                indisponível (somente leitura)</span>
             {% endif %}
         </div>
 
         <div class="sige-card" style="display: flex; flex-direction: column; justify-content: center; padding: 25px;">
-            <h3 style="margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Sessões Ativas</h3>
-            <p style="margin: 5px 0; font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan);">{{ sessoes_ativas }}</p>
+            <h3 style="margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Sessões
+                Ativas</h3>
+            <p style="margin: 5px 0; font-size: 1.8rem; font-weight: 800; color: var(--accent-cyan);">{{ sessoes_ativas
+                }}</p>
         </div>
 
         <div class="sige-card" style="display: flex; flex-direction: column; justify-content: center; padding: 25px;">
-            <h3 style="margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Proteção MFA</h3>
-            <p style="margin: 5px 0; font-size: 1.8rem; font-weight: 800; color: var(--accent-violet);">{{ stats_2fa.porcentagem }}%</p>
+            <h3 style="margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Proteção MFA
+            </h3>
+            <p style="margin: 5px 0; font-size: 1.8rem; font-weight: 800; color: var(--accent-violet);">{{
+                stats_2fa.porcentagem }}%</p>
         </div>
     </div>
 
@@ -126,7 +156,8 @@
         <div class="sige-glass-card" style="border-left: 4px solid var(--accent-amber) !important;">
             <p class="passo-label">Adoção de MFA (2FA)</p>
             <p class="metric-value-security" style="color: var(--accent-amber);">{{ stats_2fa.porcentagem }}%</p>
-            <p style="font-size: 0.75rem; color: var(--text-muted);">{{ stats_2fa.ativos }} de {{ stats_2fa.total }} usuários ativos</p>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">{{ stats_2fa.ativos }} de {{ stats_2fa.total }}
+                usuários ativos</p>
         </div>
         <div class="sige-glass-card" style="border-left: 4px solid var(--accent-emerald) !important;">
             <p class="passo-label">Sessões Ativas</p>
@@ -175,7 +206,8 @@
         <div class="card-listagem">
             <div class="barra-busca-gestao">
                 <i class="fa-solid fa-fingerprint" style="color: var(--accent-violet);"></i>
-                <span style="font-weight: 700; font-size: 0.9rem;">Rastreamento de Acessos a Áreas Sensíveis (LGPD)</span>
+                <span style="font-weight: 700; font-size: 0.9rem;">Rastreamento de Acessos a Áreas Sensíveis
+                    (LGPD)</span>
             </div>
             <table class="tabela-sige sige-table table-stack">
                 <thead>
@@ -192,7 +224,8 @@
                     <tr>
                         <td>
                             <strong>{{ log.usuario.username }}</strong><br>
-                            <span style="font-size: 0.7rem; color: var(--text-muted);">{{ log.usuario.get_full_name }}</span>
+                            <span style="font-size: 0.7rem; color: var(--text-muted);">{{ log.usuario.get_full_name
+                                }}</span>
                         </td>
                         <td>
                             <code style="color: var(--accent-violet);">{{ log.path }}</code><br>
@@ -200,19 +233,24 @@
                         </td>
                         <td>
                             <span class="ip-box-security">{{ log.ip_endereco }}</span><br>
-                            <span style="font-size: 0.65rem; color: var(--text-muted);">{{ log.user_agent|truncatechars:50 }}</span>
+                            <span style="font-size: 0.65rem; color: var(--text-muted);">{{
+                                log.user_agent|truncatechars:50 }}</span>
                         </td>
                         <td>{{ log.data_evento|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 {% if pode_executar_acoes_seguranca %}
-                                <form action="{% url 'seguranca:bloquear_usuario' log.usuario.id %}" method="POST" style="display: inline;" onsubmit="return confirm('Deseja realmente BLOQUEAR este usuário e encerrar todas as suas sessões?')">
+                                <form action="{% url 'seguranca:bloquear_usuario' log.usuario.id %}" method="POST"
+                                    style="display: inline;"
+                                    onsubmit="return confirm('Deseja realmente BLOQUEAR este usuário e encerrar todas as suas sessões?')">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-icone-excluir" title="Bloquear Usuário" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
+                                    <button type="submit" class="btn-icone-excluir" title="Bloquear Usuário"
+                                        style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
                                         <i class="fa-solid fa-user-lock"></i>
                                     </button>
                                 </form>
-                                <form action="{% url 'seguranca:bloquear_ip' log.ip_endereco %}" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:bloquear_ip' log.ip_endereco %}" method="POST"
+                                    style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" title="Bloquear IP">
                                         <i class="fa-solid fa-ban"></i>
@@ -259,7 +297,8 @@
                     <tr style="border-left: 3px solid var(--accent-ruby);">
                         <td>
                             <strong style="color: var(--accent-ruby); display: block;">{{ erro.tipo_excecao }}</strong>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">{{ erro.metodo }} | IP: {{ erro.ip_endereco }}</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">{{ erro.metodo }} | IP: {{
+                                erro.ip_endereco }}</span>
                         </td>
                         <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                             {{ erro.mensagem }}
@@ -268,15 +307,20 @@
                         <td>{{ erro.data_ocorrencia|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <button onclick="verTraceback('{{ erro.id }}')" class="btn-icone-excluir" title="Ver Traceback Completo" style="color: var(--accent-violet); border-color: var(--accent-violet);">
+                                <button onclick="verTraceback('{{ erro.id }}')" class="btn-icone-excluir"
+                                    title="Ver Traceback Completo"
+                                    style="color: var(--accent-violet); border-color: var(--accent-violet);">
                                     <i class="fa-solid fa-laptop-code"></i>
                                 </button>
                                 <div id="traceback-{{ erro.id }}" style="display: none;">{{ erro.traceback }}</div>
                                 {% if pode_executar_acoes_seguranca %}
-                                <form action="{% url 'seguranca:bloquear_ip' erro.ip_endereco %}" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:bloquear_ip' erro.ip_endereco %}" method="POST"
+                                    style="display: inline;">
                                     {% csrf_token %}
-                                    <input type="hidden" name="motivo" value="Tentativa de acesso malicioso resultando em erro 500: {{ erro.tipo_excecao }}">
-                                    <button type="submit" class="btn-icone-excluir" title="Bloquear IP" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
+                                    <input type="hidden" name="motivo"
+                                        value="Tentativa de acesso malicioso resultando em erro 500: {{ erro.tipo_excecao }}">
+                                    <button type="submit" class="btn-icone-excluir" title="Bloquear IP"
+                                        style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
                                         <i class="fa-solid fa-user-slash"></i>
                                     </button>
                                 </form>
@@ -321,16 +365,20 @@
                         <td><strong>{{ log.user.username }}</strong></td>
                         <td>
                             <span style="font-weight: 700;">
-                                {% if log.is_addition %}Adição{% elif log.is_change %}Alteração{% elif log.is_deletion %}Exclusão{% endif %}
+                                {% if log.is_addition %}Adição{% elif log.is_change %}Alteração{% elif log.is_deletion
+                                %}Exclusão{% endif %}
                             </span>
                         </td>
                         <td>
-                            <span style="color: var(--text-muted); font-size: 0.85rem;">{{ log.content_type }}</span><br>
-                            <span style="font-weight: 600; color: var(--text-primary);">{{ log.object_repr|truncatechars:50 }}</span>
+                            <span style="color: var(--text-muted); font-size: 0.85rem;">{{ log.content_type
+                                }}</span><br>
+                            <span style="font-weight: 600; color: var(--text-primary);">{{
+                                log.object_repr|truncatechars:50 }}</span>
                         </td>
                         <td>{{ log.action_time|date:"d/m/Y H:i" }}</td>
                         <td>
-                            <span class="badge-status {% if log.is_deletion %}badge-danger{% elif log.is_addition %}badge-ok{% else %}badge-warn{% endif %}">
+                            <span
+                                class="badge-status {% if log.is_deletion %}badge-danger{% elif log.is_addition %}badge-ok{% else %}badge-warn{% endif %}">
                                 {{ log.get_action_flag_display }}
                             </span>
                         </td>
@@ -369,17 +417,23 @@
                 <tbody>
                     {% for attempt in tentativas_falhas %}
                     <tr>
-                        <td><span class="ip-box-security" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">{{ attempt.ip_address }}</span></td>
+                        <td><span class="ip-box-security"
+                                style="color: var(--accent-ruby); border-color: var(--accent-ruby);">{{
+                                attempt.ip_address }}</span></td>
                         <td><span style="font-weight: 700;">{{ attempt.username|default:"N/A" }}</span></td>
                         <td><strong style="color: var(--accent-ruby);">{{ attempt.failures_count }}</strong></td>
                         <td>{{ attempt.attempt_time|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 {% if pode_executar_acoes_seguranca %}
-                                <form action="{% url 'seguranca:bloquear_ip' attempt.ip_address %}" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:bloquear_ip' attempt.ip_address %}" method="POST"
+                                    style="display: inline;">
                                     {% csrf_token %}
-                                    <input type="hidden" name="motivo" value="Tentativas excessivas de login detectadas pelo Axes.">
-                                    <button type="submit" class="btn-icone-excluir" title="Mover para Blacklist Permanente" style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
+                                    <input type="hidden" name="motivo"
+                                        value="Tentativas excessivas de login detectadas pelo Axes.">
+                                    <button type="submit" class="btn-icone-excluir"
+                                        title="Mover para Blacklist Permanente"
+                                        style="color: var(--accent-ruby); border-color: var(--accent-ruby);">
                                         <i class="fa-solid fa-ban"></i>
                                     </button>
                                 </form>
@@ -407,7 +461,8 @@
         <div class="card-listagem">
             <div class="barra-busca-gestao">
                 <i class="fa-solid fa-ban" style="color: var(--accent-ruby);"></i>
-                <span style="font-weight: 700; font-size: 0.9rem;">Lista Negra de IPs (Bloqueio em Nível de Middleware)</span>
+                <span style="font-weight: 700; font-size: 0.9rem;">Lista Negra de IPs (Bloqueio em Nível de
+                    Middleware)</span>
             </div>
             <table class="tabela-sige sige-table table-stack">
                 <thead>
@@ -429,7 +484,9 @@
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 {% if pode_executar_acoes_seguranca %}
-                                <a href="{% url 'seguranca:desbloquear_ip' item.id %}" class="btn-icone-primario" title="Remover Bloqueio" style="color: var(--accent-emerald); border-color: var(--accent-emerald);">
+                                <a href="{% url 'seguranca:desbloquear_ip' item.id %}" class="btn-icone-primario"
+                                    title="Remover Bloqueio"
+                                    style="color: var(--accent-emerald); border-color: var(--accent-emerald);">
                                     <i class="fa-solid fa-unlock"></i>
                                 </a>
                                 {% else %}
@@ -472,10 +529,12 @@
                     <tr>
                         <td>
                             <strong>{{ bug.titulo }}</strong><br>
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">Por: {{ bug.usuario.username|default:"Anônimo" }}</span>
+                            <span style="font-size: 0.75rem; color: var(--text-muted);">Por: {{
+                                bug.usuario.username|default:"Anônimo" }}</span>
                         </td>
                         <td>
-                            <span class="badge-status {% if bug.prioridade == 'CRITICA' %}badge-danger{% elif bug.prioridade == 'ALTA' %}badge-warn{% else %}badge-ok{% endif %}">
+                            <span
+                                class="badge-status {% if bug.prioridade == 'CRITICA' %}badge-danger{% elif bug.prioridade == 'ALTA' %}badge-warn{% else %}badge-ok{% endif %}">
                                 {{ bug.get_prioridade_display }}
                             </span>
                         </td>
@@ -483,22 +542,30 @@
                         <td>{{ bug.data_criacao|date:"d/m/Y H:i" }}</td>
                         <td>
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
-                                <a href="{% url 'seguranca:detalhe_bug' bug.id %}" class="btn-icone-excluir" title="Ver Detalhes Técnicos" style="color: var(--accent-violet); border-color: var(--accent-violet);">
+                                <a href="{% url 'seguranca:detalhe_bug' bug.id %}" class="btn-icone-excluir"
+                                    title="Ver Detalhes Técnicos"
+                                    style="color: var(--accent-violet); border-color: var(--accent-violet);">
                                     <i class="fa-solid fa-magnifying-glass-plus"></i>
                                 </a>
 
                                 {% if pode_executar_acoes_seguranca %}
                                 {% if bug.status == 'NOVO' %}
-                                <form action="{% url 'seguranca:encaminhar_ti' bug.id %}" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:encaminhar_ti' bug.id %}" method="POST"
+                                    style="display: inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-icone-excluir" style="color: var(--accent-amber); border-color: var(--accent-amber);" title="Encaminhar para Equipe de TI">
+                                    <button type="submit" class="btn-icone-excluir"
+                                        style="color: var(--accent-amber); border-color: var(--accent-amber);"
+                                        title="Encaminhar para Equipe de TI">
                                         <i class="fa-solid fa-laptop-code"></i>
                                     </button>
                                 </form>
                                 {% elif bug.status == 'ANALISE' %}
-                                <form action="{% url 'seguranca:resolver_bug' bug.id %}" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:resolver_bug' bug.id %}" method="POST"
+                                    style="display: inline;">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn-icone-excluir" style="color: var(--accent-emerald); border-color: var(--accent-emerald);" title="Bug Resolvido">
+                                    <button type="submit" class="btn-icone-excluir"
+                                        style="color: var(--accent-emerald); border-color: var(--accent-emerald);"
+                                        title="Bug Resolvido">
                                         <i class="fa-solid fa-circle-check"></i>
                                     </button>
                                 </form>
@@ -550,7 +617,8 @@
                         <td data-label="Ações">
                             <div style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                 {% if pode_executar_acoes_seguranca %}
-                                <form action="{% url 'seguranca:bloquear_ip' log.ip_address %}" method="POST" style="display: inline;">
+                                <form action="{% url 'seguranca:bloquear_ip' log.ip_address %}" method="POST"
+                                    style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-icone-excluir" title="Bloquear IP">
                                         <i class="fa-solid fa-ban"></i>
@@ -601,85 +669,109 @@
         document.getElementById('detalhe-bug-descricao').style.fontFamily = "monospace";
         document.getElementById('detalhe-bug-descricao').style.fontSize = "0.75rem";
         document.getElementById('detalhe-bug-descricao').innerText = content;
-        
+
         // Esconder campos de bug irrelevantes para erro técnico
         document.getElementById('detalhe-bug-url').parentElement.style.display = 'none';
         document.getElementById('detalhe-bug-data').parentElement.parentElement.style.display = 'none';
-        
+
         document.getElementById('modal-detalhes-bug').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 </script>
-    <!-- ═════════ MODAL DETALHES DO BUG ═════════ -->
-    <div id="modal-detalhes-bug" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
-        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 600px; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease-out;">
-            <div style="padding: 20px 25px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
-                <h3 id="detalhe-bug-titulo" style="margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--accent-violet);">Detalhes do Report</h3>
-                <button onclick="fecharDetalhesBug()" style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+<!-- ═════════ MODAL DETALHES DO BUG ═════════ -->
+<div id="modal-detalhes-bug"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); z-index: 10002; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+    <div
+        style="background: var(--bg-surface); border: 1px solid var(--border-subtle); width: 90%; max-width: 600px; border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-lg); animation: slideUp 0.3s ease-out;">
+        <div
+            style="padding: 20px 25px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="detalhe-bug-titulo"
+                style="margin: 0; font-family: var(--font-display); font-weight: 800; color: var(--accent-violet);">
+                Detalhes do Report</h3>
+            <button onclick="fecharDetalhesBug()"
+                style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+        </div>
+        <div
+            style="padding: 25px; display: flex; flex-direction: column; gap: 20px; max-height: 70vh; overflow-y: auto;">
+            <div>
+                <label
+                    style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Descrição
+                    do Problema</label>
+                <p id="detalhe-bug-descricao"
+                    style="margin-top: 5px; line-height: 1.6; color: var(--text-primary); background: var(--bg-hover); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-violet);">
+                </p>
             </div>
-            <div style="padding: 25px; display: flex; flex-direction: column; gap: 20px; max-height: 70vh; overflow-y: auto;">
-                <div>
-                    <label style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700;">Descrição do Problema</label>
-                    <p id="detalhe-bug-descricao" style="margin-top: 5px; line-height: 1.6; color: var(--text-primary); background: var(--bg-hover); padding: 15px; border-radius: 12px; border-left: 4px solid var(--accent-violet);"></p>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div>
-                        <label style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Data do Report</label>
-                        <p id="detalhe-bug-data" style="margin-top: 3px; font-weight: 600;"></p>
-                    </div>
-                    <div>
-                        <label style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Prioridade</label>
-                        <p id="detalhe-bug-prioridade" style="margin-top: 3px; font-weight: 600;"></p>
-                    </div>
-                </div>
 
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <div>
-                    <label style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">URL de Origem</label>
-                    <p id="detalhe-bug-url" style="margin-top: 3px; font-family: monospace; font-size: 0.8rem; color: var(--accent-cyan); word-break: break-all;"></p>
+                    <label
+                        style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Data
+                        do Report</label>
+                    <p id="detalhe-bug-data" style="margin-top: 3px; font-weight: 600;"></p>
                 </div>
-
-                <div style="padding-top: 15px; border-top: 1px dashed var(--border-subtle); display: flex; flex-direction: column; gap: 5px;">
-                    <span style="font-size: 0.65rem; color: var(--text-muted);"><strong>IP:</strong> <span id="detalhe-bug-ip"></span></span>
-                    <span style="font-size: 0.65rem; color: var(--text-muted);"><strong>Browser:</strong> <span id="detalhe-bug-browser"></span></span>
+                <div>
+                    <label
+                        style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">Prioridade</label>
+                    <p id="detalhe-bug-prioridade" style="margin-top: 3px; font-weight: 600;"></p>
                 </div>
             </div>
-            <div style="padding: 15px 25px; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); text-align: right;">
-                <button onclick="fecharDetalhesBug()" class="btn-sige-secundario" style="padding: 8px 20px;">Fechar</button>
+
+            <div>
+                <label
+                    style="font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;">URL
+                    de Origem</label>
+                <p id="detalhe-bug-url"
+                    style="margin-top: 3px; font-family: monospace; font-size: 0.8rem; color: var(--accent-cyan); word-break: break-all;">
+                </p>
+            </div>
+
+            <div
+                style="padding-top: 15px; border-top: 1px dashed var(--border-subtle); display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-size: 0.65rem; color: var(--text-muted);"><strong>IP:</strong> <span
+                        id="detalhe-bug-ip"></span></span>
+                <span style="font-size: 0.65rem; color: var(--text-muted);"><strong>Browser:</strong> <span
+                        id="detalhe-bug-browser"></span></span>
             </div>
         </div>
+        <div
+            style="padding: 15px 25px; background: var(--bg-elevated); border-top: 1px solid var(--border-subtle); text-align: right;">
+            <button onclick="fecharDetalhesBug()" class="btn-sige-secundario" style="padding: 8px 20px;">Fechar</button>
+        </div>
     </div>
+</div>
 
-    <script>
-        function abrirDetalhesBug(titulo, desc, url, ip, browser, data, prioridade) {
-            document.getElementById('detalhe-bug-titulo').innerText = titulo;
-            document.getElementById('detalhe-bug-descricao').style.fontFamily = "inherit";
-            document.getElementById('detalhe-bug-descricao').style.fontSize = "1rem";
-            document.getElementById('detalhe-bug-descricao').innerText = desc;
-            document.getElementById('detalhe-bug-url').innerText = url;
-            document.getElementById('detalhe-bug-ip').innerText = ip;
-            document.getElementById('detalhe-bug-browser').innerText = browser;
-            document.getElementById('detalhe-bug-data').innerText = data;
-            document.getElementById('detalhe-bug-prioridade').innerText = prioridade;
-            
-            // Garantir que campos estejam visíveis
-            document.getElementById('detalhe-bug-url').parentElement.style.display = 'block';
-            document.getElementById('detalhe-bug-data').parentElement.parentElement.style.display = 'grid';
-            
-            document.getElementById('modal-detalhes-bug').style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+<script>
+    function abrirDetalhesBug(titulo, desc, url, ip, browser, data, prioridade) {
+        document.getElementById('detalhe-bug-titulo').innerText = titulo;
+        document.getElementById('detalhe-bug-descricao').style.fontFamily = "inherit";
+        document.getElementById('detalhe-bug-descricao').style.fontSize = "1rem";
+        document.getElementById('detalhe-bug-descricao').innerText = desc;
+        document.getElementById('detalhe-bug-url').innerText = url;
+        document.getElementById('detalhe-bug-ip').innerText = ip;
+        document.getElementById('detalhe-bug-browser').innerText = browser;
+        document.getElementById('detalhe-bug-data').innerText = data;
+        document.getElementById('detalhe-bug-prioridade').innerText = prioridade;
 
-        function fecharDetalhesBug() {
-            document.getElementById('modal-detalhes-bug').style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
+        // Garantir que campos estejam visíveis
+        document.getElementById('detalhe-bug-url').parentElement.style.display = 'block';
+        document.getElementById('detalhe-bug-data').parentElement.parentElement.style.display = 'grid';
 
-        // Fechar ao clicar fora
-        window.addEventListener('click', function(e) {
-            if (e.target == document.getElementById('modal-detalhes-bug')) fecharDetalhesBug();
-        });
-    </script>
+        document.getElementById('modal-detalhes-bug').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function fecharDetalhesBug() {
+        document.getElementById('modal-detalhes-bug').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Fechar ao clicar fora
+    window.addEventListener('click', function (e) {
+        if (e.target == document.getElementById('modal-detalhes-bug')) fecharDetalhesBug();
+    });
+</script>
+
+{# ═══ WebSocket: Monitoramento de Logins em Tempo Real ═══ #}
+<script src="{% static 'ti/js/security_dashboard.js' %}"></script>
 
 {% endblock %}
-
