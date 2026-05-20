@@ -69,11 +69,11 @@ O SIGE v8.0 consolida uma infraestrutura **modular de alta disponibilidade** foc
 | :--- | :--- |
 | **🎛️ Mission Control God-Tier** | Painel TI localizado com telemetria avançada, monitoramento de recursos em tempo real e orquestração CI/CD |
 | **📸 Quantum Snapshots** | Backup de alta fidelidade com radar de integridade, replicação geográfica e defesa anti-ransomware |
-| **🛡️ Security Operations Center (SOC)** | Camada de defesa ativa com filtragem de IPs, auditoria de eventos e Trust Score |
+| **🛡️ Security Operations Center (SOC)** | Camada de defesa ativa em tempo real (WebSockets + AJAX) com filtragem de IPs, auditoria de eventos e Trust Score |
 | **🔐 IAM & Vault** | Gestão de identidades com MFA mandatório (flag configurável) e cofre de segredos criptografado |
 | **🌍 Localização Total** | 100% em Português (Brasil) — Acessibilidade e conformidade operacional |
 | **✅ QA Integrado** | 149 casos de teste cobrindo 68% do código-fonte (7.732 statements rastreados) |
-| **⚡ Real-Time Notifications** | WebSockets para notificações ao vivo, login monitoring, alertas de segurança |
+| **⚡ Real-Time SOC & Notifications** | WebSockets e chamadas assíncronas para controle em tempo real do SOC (logins, blacklist) e alertas de segurança |
 | **📡 Observabilidade 360°** | Prometheus, Grafana, Health Checks, Django Prometheus, Sentry |
 
 ---

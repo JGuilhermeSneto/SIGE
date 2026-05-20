@@ -137,40 +137,103 @@ def painel_soc(request):
 @login_required
 @user_passes_test(usuario_tem_painel_ti)
 def bloquear_ip(request):
-    """Adiciona um IP à blacklist permanentemente ou temporariamente."""
-    if request.method == "POST":
-        from apps.seguranca.models import BlacklistIP
-        from apps.seguranca.utils.ip_whitelist import garantir_ip_liberado, ip_esta_na_whitelist
+    """Adiciona um IP à blacklist permanentemente ou temporariamente.
+    
+    Suporta duas formas de chamada:
+    - Formulário HTML tradicional → redireciona para soc
+    - AJAX (X-Requested-With: XMLHttpRequest) → retorna JsonResponse
+    """
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "mensagem": "Método inválido."}, status=405)
 
-        ip = request.POST.get("ip")
-        if ip_esta_na_whitelist(ip):
-            garantir_ip_liberado(ip)
-        else:
-            motivo = request.POST.get("motivo", "Bloqueio manual via SOC")
-            tipo = request.POST.get("tipo", "PERMANENTE")
+    from apps.seguranca.models import BlacklistIP
+    from apps.seguranca.utils.ip_whitelist import garantir_ip_liberado, ip_esta_na_whitelist
 
-            expira = None
-            if tipo == "TIMEOUT":
-                expira = timezone.now() + timedelta(hours=2)
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest"
 
-            BlacklistIP.objects.update_or_create(
-                ip_endereco=ip,
-                defaults={
-                    "motivo": motivo,
-                    "expira_em": expira,
-                    "bloqueado_por": request.user,
-                },
-            )
+    # Suporte a JSON body (AJAX fetch) e form data
+    if is_ajax and request.content_type == "application/json":
+        import json as _json
+        try:
+            payload = _json.loads(request.body)
+        except Exception:
+            payload = {}
+        ip = payload.get("ip", "")
+        motivo = payload.get("motivo", "Bloqueio manual via SOC")
+        tipo = payload.get("tipo", "PERMANENTE")
+    else:
+        ip = request.POST.get("ip", "")
+        motivo = request.POST.get("motivo", "Bloqueio manual via SOC")
+        tipo = request.POST.get("tipo", "PERMANENTE")
+
+    if not ip:
+        if is_ajax:
+            return JsonResponse({"status": "error", "mensagem": "IP não informado."}, status=400)
+        from django.shortcuts import redirect
+        return redirect("ti:soc")
+
+    if ip_esta_na_whitelist(ip):
+        garantir_ip_liberado(ip)
+        if is_ajax:
+            return JsonResponse({"status": "whitelist", "mensagem": f"IP {ip} está na whitelist e não pode ser bloqueado."})
+        from django.shortcuts import redirect
+        return redirect("ti:soc")
+
+    expira = None
+    if tipo == "TIMEOUT":
+        expira = timezone.now() + timedelta(hours=2)
+
+    obj, created = BlacklistIP.objects.update_or_create(
+        ip_endereco=ip,
+        defaults={
+            "motivo": motivo,
+            "expira_em": expira,
+            "bloqueado_por": request.user,
+        },
+    )
+
+    if is_ajax:
+        expira_str = expira.strftime("%d/%m/%Y %H:%M") if expira else None
+        return JsonResponse({
+            "status": "ok",
+            "ip": ip,
+            "blacklist_id": obj.id,
+            "motivo": motivo,
+            "tipo": tipo,
+            "expira_em": expira_str,
+            "mensagem": f"IP {ip} bloqueado com sucesso.",
+        })
+
     from django.shortcuts import redirect
     return redirect("ti:soc")
 
 @login_required
 @user_passes_test(usuario_tem_painel_ti)
 def desbloquear_ip(request, blacklist_id):
-    """Remove um IP da blacklist."""
+    """Remove um IP da blacklist.
+    
+    Suporta duas formas de chamada:
+    - Link/redirect tradicional → redireciona para soc
+    - AJAX (X-Requested-With: XMLHttpRequest ou Accept: application/json) → JsonResponse
+    """
     from apps.seguranca.models import BlacklistIP
     ip_block = get_object_or_404(BlacklistIP, id=blacklist_id)
-    ip_block.delete()
+    ip = ip_block.ip_endereco
+    ip_block.delete()  # O signal post_delete em signals.py emite o evento WebSocket
+
+    is_ajax = (
+        request.headers.get("X-Requested-With") == "XMLHttpRequest"
+        or "application/json" in request.headers.get("Accept", "")
+    )
+
+    if is_ajax:
+        return JsonResponse({
+            "status": "ok",
+            "ip": ip,
+            "blacklist_id": blacklist_id,
+            "mensagem": f"IP {ip} removido da blacklist com sucesso.",
+        })
+
     from django.shortcuts import redirect
     return redirect("ti:soc")
 

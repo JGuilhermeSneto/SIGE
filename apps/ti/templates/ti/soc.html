@@ -1,7 +1,7 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Área de TI · SOC v7.2{% endblock %}
+{% block title %}Área de TI · SOC v7.3 — Tempo Real{% endblock %}
 
 {% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
@@ -23,36 +23,90 @@
   .btn-warning { background: var(--accent-amber); color: black; }
   .btn-success { background: var(--accent-emerald); color: black; }
 
-  .login-node { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); margin-bottom: 10px; border: 1px solid transparent; }
+  .login-node { display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.03); margin-bottom: 10px; border: 1px solid transparent; transition: all 0.3s ease; }
   .login-node:hover { border-color: rgba(255,255,255,0.1); }
+  .login-node.login-new { animation: loginPulse 0.6s ease-out; border-color: rgba(34, 211, 238, 0.3); background: rgba(34, 211, 238, 0.05); }
   .avatar-mini { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-elevated); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 1px solid var(--border-subtle); }
 
   .stack-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center; backdrop-filter: blur(8px); }
   .stack-content { background: var(--bg-surface); width: 90%; max-width: 900px; max-height: 85vh; border-radius: 20px; border: 1px solid var(--border-mid); overflow: hidden; display: flex; flex-direction: column; }
   .stack-body { padding: 20px; overflow-y: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #10b981; background: #000; line-height: 1.5; flex: 1; }
+
+  /* Status WebSocket */
+  .ws-status { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 6px 14px; border-radius: 10px; border: 1px solid var(--border-subtle); background: var(--bg-elevated); }
+  .ws-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .ws-dot.connected { background: var(--accent-emerald); box-shadow: 0 0 8px var(--accent-emerald); animation: wsPulse 2s infinite; }
+  .ws-dot.disconnected { background: var(--accent-ruby); }
+  .ws-dot.connecting { background: var(--accent-amber); animation: wsPulse 0.5s infinite; }
+
+  /* Blacklist item com animação */
+  .blacklist-item { padding: 10px 0; border-bottom: 1px solid var(--border-subtle); transition: all 0.4s ease; }
+  .blacklist-item.item-new { animation: itemSlideIn 0.5s ease-out; background: rgba(248, 113, 113, 0.05); }
+  .blacklist-item.item-removing { animation: itemSlideOut 0.4s ease-in forwards; }
+
+  /* Toast notification SOC */
+  .soc-toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; max-width: 400px; pointer-events: none; }
+  .soc-toast { background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); color: white; padding: 14px 18px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: toastIn 0.35s ease-out; display: flex; align-items: center; gap: 10px; pointer-events: auto; }
+  .soc-toast.toast-success { border-left: 4px solid var(--accent-emerald); }
+  .soc-toast.toast-danger { border-left: 4px solid var(--accent-ruby); }
+  .soc-toast.toast-info { border-left: 4px solid var(--accent-cyan); }
+  .soc-toast.toast-warn { border-left: 4px solid var(--accent-amber); }
+  .soc-toast.toast-out { animation: toastOut 0.3s ease-in forwards; }
+
+  @keyframes loginPulse {
+    0% { transform: translateY(-8px); opacity: 0; border-color: rgba(34, 211, 238, 0.6); }
+    100% { transform: translateY(0); opacity: 1; border-color: rgba(34, 211, 238, 0.3); }
+  }
+  @keyframes wsPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes itemSlideIn {
+    from { opacity: 0; transform: translateX(20px); max-height: 0; }
+    to { opacity: 1; transform: translateX(0); max-height: 200px; }
+  }
+  @keyframes itemSlideOut {
+    from { opacity: 1; transform: translateX(0); max-height: 200px; }
+    to { opacity: 0; transform: translateX(-20px); max-height: 0; padding: 0; margin: 0; border: none; }
+  }
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes toastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(30px); }
+  }
 </style>
 {% endblock %}
 
 {% block ti_content %}
 <header class="header-painel">
   <div class="header-esquerda">
-    <span class="header-label">SEGURANÇA E DEFESA · v7.2.4</span>
+    <span class="header-label">SEGURANÇA E DEFESA · v7.3 · LIVE</span>
     <h1>Security <span class="nome-destaque">Operations Center</span></h1>
   </div>
-  <div class="header-acoes">
+  <div class="header-acoes" style="display: flex; align-items: center; gap: 12px;">
+     <div class="ws-status" id="ws-status-badge">
+        <span class="ws-dot connecting" id="ws-dot"></span>
+        <span id="ws-label">Conectando…</span>
+     </div>
      <button class="btn-sige-secundario" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Refresh SOC</button>
   </div>
 </header>
+
+{# Toast container #}
+<div class="soc-toast-container" id="soc-toasts"></div>
 
 <div class="conteudo-geral">
   <div class="coluna-esquerda">
     
     {# 🔐 MONITOR DE LOGINS EM TEMPO REAL #}
     <div class="soc-card" style="border-top: 3px solid var(--accent-cyan);">
-       <h3 class="hub-title"><i class="fa-solid fa-right-to-bracket" style="color: var(--accent-cyan);"></i> Login Intelligence (Acessos Recentes)</h3>
-       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+       <h3 class="hub-title"><i class="fa-solid fa-right-to-bracket" style="color: var(--accent-cyan);"></i> Login Intelligence (Tempo Real) <span id="login-count-badge" style="font-size: 0.6rem; background: var(--accent-cyan); color: black; padding: 2px 8px; border-radius: 8px; margin-left: 8px;">{{ logins_recentes|length }}</span></h3>
+       <div id="login-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
           {% for login in logins_recentes %}
-          <div class="login-node">
+          <div class="login-node" data-ip="{{ login.ip_endereco }}">
              <div class="avatar-mini"><i class="fa-solid fa-user"></i></div>
              <div style="flex: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -125,21 +179,23 @@
   {# 🧱 SIDEBAR DE DEFESA #}
   <aside class="coluna-direita">
      
-     {# BLACKLIST ATIVA #}
+     {# BLACKLIST ATIVA — Atualizada em tempo real #}
      <div class="soc-card" style="border-top: 3px solid var(--accent-ruby);">
-        <h3 class="hub-title"><i class="fa-solid fa-user-slash"></i> Blacklist Ativa</h3>
+        <h3 class="hub-title"><i class="fa-solid fa-user-slash"></i> Blacklist Ativa <span id="blacklist-count-badge" style="font-size: 0.6rem; background: var(--accent-ruby); color: white; padding: 2px 8px; border-radius: 8px; margin-left: 8px;">{{ blacklist|length }}</span></h3>
+        <div id="blacklist-container">
         {% for b in blacklist %}
-        <div style="padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
+        <div class="blacklist-item" id="bl-item-{{ b.id }}" data-ip="{{ b.ip_endereco }}">
            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
               <strong style="font-size: 0.75rem; color: var(--accent-ruby);">{{ b.ip_endereco }}</strong>
-              <a href="{% url 'ti:desbloquear_ip' b.id %}" title="Desbloquear" style="color: var(--text-muted); font-size: 0.8rem;"><i class="fa-solid fa-trash-can"></i></a>
+              <button onclick="desbloquearIP({{ b.id }}, '{{ b.ip_endereco }}')" title="Desbloquear" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 4px;"><i class="fa-solid fa-lock-open"></i></button>
            </div>
            <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">{{ b.motivo|truncatechars:40 }}</p>
            {% if b.expira_em %}<span style="font-size: 0.55rem; color: var(--accent-amber);">Expira em {{ b.expira_em|timeuntil }}</span>{% endif %}
         </div>
         {% empty %}
-        <p style="font-size: 0.7rem; opacity: 0.5; text-align: center; padding: 20px;">Nenhum IP bloqueado.</p>
+        <p id="blacklist-vazio" style="font-size: 0.7rem; opacity: 0.5; text-align: center; padding: 20px;">Nenhum IP bloqueado.</p>
         {% endfor %}
+        </div>
      </div>
 
      <div class="soc-card">
@@ -154,6 +210,10 @@
            <span style="color: var(--text-muted); font-size: 0.75rem;">Filtro de IPs</span>
            <strong style="color: var(--accent-cyan); font-size: 0.75rem;">ATIVO</strong>
         </div>
+        <div class="metric-item" style="padding: 12px 0;">
+           <span style="color: var(--text-muted); font-size: 0.75rem;">WebSocket</span>
+           <strong id="ws-firewall-label" style="color: var(--accent-amber); font-size: 0.75rem;">CONECTANDO</strong>
+        </div>
         <div class="metric-item" style="padding: 12px 0; border-bottom: none;">
            <span style="color: var(--text-muted); font-size: 0.75rem;">Rate Limit</span>
            <span style="background: var(--bg-elevated); padding: 4px 8px; border-radius: 6px; font-size: 0.7rem; border: 1px solid var(--border-subtle);">100 r/m</span>
@@ -162,35 +222,34 @@
   </aside>
 </div>
 
-{# MODAL DE BLOQUEIO #}
-<div id="modal-block" class="stack-modal">
-  <form action="{% url 'ti:bloquear_ip' %}" method="POST" class="stack-content" style="max-width: 400px;" onclick="event.stopPropagation()">
-     {% csrf_token %}
+{# MODAL DE BLOQUEIO — Agora usa AJAX #}
+<div id="modal-block" class="stack-modal" onclick="fecharBlock()">
+  <div class="stack-content" style="max-width: 400px;" onclick="event.stopPropagation()">
      <div style="padding: 20px; background: var(--bg-elevated); border-bottom: 1px solid var(--border-subtle);">
         <h3 style="margin: 0; color: var(--accent-ruby);"><i class="fa-solid fa-hand"></i> Bloquear Endereço IP</h3>
      </div>
      <div style="padding: 25px; display: flex; flex-direction: column; gap: 15px;">
         <div>
            <label style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">IP Selecionado</label>
-           <input type="text" name="ip" id="target-ip" readonly style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:10px; border-radius:8px; color:var(--accent-ruby); font-weight: 800; font-family: monospace;">
+           <input type="text" id="target-ip" readonly style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:10px; border-radius:8px; color:var(--accent-ruby); font-weight: 800; font-family: monospace;">
         </div>
         <div>
            <label style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Tipo de Bloqueio</label>
-           <select name="tipo" style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:10px; border-radius:8px; color:white;">
+           <select id="block-tipo" style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:10px; border-radius:8px; color:white;">
               <option value="TIMEOUT">TIMEOUT (2 Horas)</option>
               <option value="PERMANENTE">PERMANENTE (Blacklist)</option>
            </select>
         </div>
         <div>
            <label style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Motivo</label>
-           <input type="text" name="motivo" placeholder="Ex: Brute Force detected" required style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:10px; border-radius:8px; color:white;">
+           <input type="text" id="block-motivo" placeholder="Ex: Brute Force detected" style="width:100%; background:var(--bg-base); border:1px solid var(--border-subtle); padding:10px; border-radius:8px; color:white;">
         </div>
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 10px;">
            <button type="button" class="btn-mini btn-sige-secundario" onclick="fecharBlock()" style="padding: 10px 20px;">Cancelar</button>
-           <button type="submit" class="btn-mini btn-danger" style="padding: 10px 20px;">Confirmar Bloqueio</button>
+           <button type="button" class="btn-mini btn-danger" id="btn-confirmar-block" onclick="executarBloqueio()" style="padding: 10px 20px;">Confirmar Bloqueio</button>
         </div>
      </div>
-  </form>
+  </div>
 </div>
 
 {# MODAL DE STACK #}
@@ -205,20 +264,317 @@
 </div>
 
 <script>
-  function promptBlock(ip) {
-    document.getElementById('target-ip').value = ip;
-    document.getElementById('modal-block').style.display = 'flex';
+// ═══════════════════════════════════════════════════════════════════════════
+// SOC v7.3 — Sistema em Tempo Real (WebSocket + AJAX)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const CSRF_TOKEN = '{{ csrf_token }}';
+
+// ─── Toast ─────────────────────────────────────────────────────────────────
+function socToast(msg, tipo = 'info') {
+  const container = document.getElementById('soc-toasts');
+  const toast = document.createElement('div');
+  toast.className = `soc-toast toast-${tipo}`;
+  toast.innerHTML = msg;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('toast-out');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+// ─── Modais ────────────────────────────────────────────────────────────────
+function promptBlock(ip) {
+  document.getElementById('target-ip').value = ip;
+  document.getElementById('block-motivo').value = '';
+  document.getElementById('block-tipo').value = 'TIMEOUT';
+  document.getElementById('modal-block').style.display = 'flex';
+}
+function fecharBlock() { document.getElementById('modal-block').style.display = 'none'; }
+
+function verStack(id) {
+  const data = document.getElementById('stack-data-' + id).innerText;
+  document.getElementById('stack-content-body').innerText = data;
+  document.getElementById('modal-stack').style.display = 'flex';
+}
+function fecharStack() { document.getElementById('modal-stack').style.display = 'none'; }
+
+// ─── AJAX: Bloquear IP ────────────────────────────────────────────────────
+async function executarBloqueio() {
+  const ip = document.getElementById('target-ip').value;
+  const motivo = document.getElementById('block-motivo').value || 'Bloqueio manual via SOC';
+  const tipo = document.getElementById('block-tipo').value;
+  const btn = document.getElementById('btn-confirmar-block');
+
+  if (!ip) return;
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Bloqueando...';
+
+  try {
+    const resp = await fetch("{% url 'ti:bloquear_ip' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': CSRF_TOKEN,
+        'X-Requested-With': 'XMLHttpRequest',
+      },
+      body: JSON.stringify({ ip, motivo, tipo }),
+    });
+    const data = await resp.json();
+
+    if (data.status === 'ok') {
+      socToast(`<i class="fa-solid fa-ban"></i> IP <strong>${ip}</strong> bloqueado com sucesso.`, 'danger');
+      // O signal de post_save emite o evento WebSocket — a UI será atualizada automaticamente
+    } else if (data.status === 'whitelist') {
+      socToast(`<i class="fa-solid fa-shield"></i> ${data.mensagem}`, 'warn');
+    } else {
+      socToast(`<i class="fa-solid fa-xmark"></i> ${data.mensagem || 'Erro ao bloquear.'}`, 'danger');
+    }
+  } catch (e) {
+    socToast('<i class="fa-solid fa-xmark"></i> Erro de conexão ao bloquear IP.', 'danger');
+    console.error(e);
   }
-  function fecharBlock() {
-    document.getElementById('modal-block').style.display = 'none';
+
+  btn.disabled = false;
+  btn.innerHTML = 'Confirmar Bloqueio';
+  fecharBlock();
+}
+
+// ─── AJAX: Desbloquear IP ─────────────────────────────────────────────────
+async function desbloquearIP(id, ip) {
+  if (!confirm(`Desbloquear o IP ${ip}?`)) return;
+
+  try {
+    const resp = await fetch(`/ti/soc/desbloquear-ip/${id}/`, {
+      method: 'GET',
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json',
+      },
+    });
+    const data = await resp.json();
+
+    if (data.status === 'ok') {
+      socToast(`<i class="fa-solid fa-lock-open"></i> IP <strong>${ip}</strong> desbloqueado.`, 'success');
+      // O signal de post_delete emite o evento WebSocket — a UI será atualizada automaticamente
+    } else {
+      socToast('<i class="fa-solid fa-xmark"></i> Erro ao desbloquear.', 'danger');
+    }
+  } catch (e) {
+    socToast('<i class="fa-solid fa-xmark"></i> Erro de conexão ao desbloquear IP.', 'danger');
+    console.error(e);
   }
-  function verStack(id) {
-    const data = document.getElementById('stack-data-' + id).innerText;
-    document.getElementById('stack-content-body').innerText = data;
-    document.getElementById('modal-stack').style.display = 'flex';
+}
+
+// ─── Helpers de DOM ───────────────────────────────────────────────────────
+function escapeHtml(text) {
+  const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
+}
+
+function atualizarContadores() {
+  const loginCount = document.querySelectorAll('#login-grid .login-node').length;
+  const blCount = document.querySelectorAll('#blacklist-container .blacklist-item').length;
+  document.getElementById('login-count-badge').textContent = loginCount;
+  document.getElementById('blacklist-count-badge').textContent = blCount;
+}
+
+// ─── WebSocket SOC ────────────────────────────────────────────────────────
+class SOCWebSocket {
+  constructor() {
+    this.socket = null;
+    this.reconnectAttempts = 0;
+    this.maxReconnect = 15;
+    this.reconnectDelay = 3000;
+    this.connecting = false;
+    this.connect();
   }
-  function fecharStack() {
-    document.getElementById('modal-stack').style.display = 'none';
+
+  connect() {
+    if (this.connecting) return;
+    this.connecting = true;
+    this.setStatus('connecting');
+
+    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const url = `${proto}//${location.host}/ws/ti/`;
+
+    try {
+      this.socket = new WebSocket(url);
+
+      this.socket.onopen = () => {
+        this.reconnectAttempts = 0;
+        this.connecting = false;
+        this.setStatus('connected');
+        socToast('<i class="fa-solid fa-satellite-dish"></i> SOC conectado em tempo real.', 'success');
+      };
+
+      this.socket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        this.handleEvent(data);
+      };
+
+      this.socket.onerror = () => { this.connecting = false; };
+
+      this.socket.onclose = () => {
+        this.connecting = false;
+        this.setStatus('disconnected');
+        this.tryReconnect();
+      };
+    } catch (err) {
+      this.connecting = false;
+      this.setStatus('disconnected');
+      this.tryReconnect();
+    }
   }
+
+  tryReconnect() {
+    if (this.reconnectAttempts < this.maxReconnect) {
+      this.reconnectAttempts++;
+      setTimeout(() => this.connect(), this.reconnectDelay);
+    }
+  }
+
+  setStatus(state) {
+    const dot = document.getElementById('ws-dot');
+    const label = document.getElementById('ws-label');
+    const fw = document.getElementById('ws-firewall-label');
+    dot.className = 'ws-dot ' + state;
+    if (state === 'connected') {
+      label.textContent = 'Live';
+      label.style.color = 'var(--accent-emerald)';
+      fw.textContent = 'CONECTADO';
+      fw.style.color = 'var(--accent-emerald)';
+    } else if (state === 'connecting') {
+      label.textContent = 'Conectando…';
+      label.style.color = 'var(--accent-amber)';
+      fw.textContent = 'CONECTANDO';
+      fw.style.color = 'var(--accent-amber)';
+    } else {
+      label.textContent = 'Offline';
+      label.style.color = 'var(--accent-ruby)';
+      fw.textContent = 'DESCONECTADO';
+      fw.style.color = 'var(--accent-ruby)';
+    }
+  }
+
+  handleEvent(data) {
+    switch (data.tipo) {
+      case 'novo_login':
+        this.onNovoLogin(data);
+        break;
+      case 'blacklist_update':
+        this.onBlacklistUpdate(data);
+        break;
+      case 'novo_erro':
+        socToast(`<i class="fa-solid fa-triangle-exclamation"></i> ${data.mensagem}`, 'danger');
+        break;
+      case 'alerta_seguranca':
+        socToast(`<i class="fa-solid fa-shield-virus"></i> ${data.mensagem}`, 'danger');
+        break;
+    }
+  }
+
+  // ── Novo Login em Tempo Real ──────────────────────────────────────────
+  onNovoLogin(data) {
+    const grid = document.getElementById('login-grid');
+    const card = document.createElement('div');
+    card.className = 'login-node login-new';
+    card.dataset.ip = data.ip;
+    card.innerHTML = `
+      <div class="avatar-mini"><i class="fa-solid fa-user"></i></div>
+      <div style="flex: 1;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <strong style="font-size: 0.8rem;">${escapeHtml(data.usuario)}</strong>
+          <span style="font-size: 0.6rem; color: var(--text-muted);">agora</span>
+        </div>
+        <div style="margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
+          <span class="ip-tag" onclick="promptBlock('${escapeHtml(data.ip)}')">${escapeHtml(data.ip)}</span>
+          <i class="fa-solid fa-shield" style="font-size: 0.7rem; color: var(--accent-emerald);"></i>
+        </div>
+      </div>
+    `;
+    grid.insertBefore(card, grid.firstChild);
+
+    // Remover animação após completar
+    setTimeout(() => card.classList.remove('login-new'), 800);
+
+    atualizarContadores();
+    this.playBeep(800);
+    socToast(`<i class="fa-solid fa-right-to-bracket"></i> <strong>${escapeHtml(data.usuario)}</strong> logou de ${escapeHtml(data.ip)}`, 'info');
+  }
+
+  // ── Blacklist em Tempo Real ───────────────────────────────────────────
+  onBlacklistUpdate(data) {
+    const container = document.getElementById('blacklist-container');
+
+    if (data.acao === 'bloqueado') {
+      // Remover mensagem "Nenhum IP bloqueado" se existir
+      const vazio = document.getElementById('blacklist-vazio');
+      if (vazio) vazio.remove();
+
+      // Verificar se já existe (update_or_create pode recriar)
+      const existente = document.getElementById(`bl-item-${data.blacklist_id}`);
+      if (existente) existente.remove();
+
+      const item = document.createElement('div');
+      item.className = 'blacklist-item item-new';
+      item.id = `bl-item-${data.blacklist_id}`;
+      item.dataset.ip = data.ip;
+      item.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+          <strong style="font-size: 0.75rem; color: var(--accent-ruby);">${escapeHtml(data.ip)}</strong>
+          <button onclick="desbloquearIP(${data.blacklist_id}, '${escapeHtml(data.ip)}')" title="Desbloquear" style="background: transparent; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 4px;"><i class="fa-solid fa-lock-open"></i></button>
+        </div>
+        <p style="margin: 0; font-size: 0.65rem; color: var(--text-muted);">${escapeHtml(data.motivo || '')}</p>
+        ${data.expira_em ? `<span style="font-size: 0.55rem; color: var(--accent-amber);">Expira: ${escapeHtml(data.expira_em)}</span>` : ''}
+      `;
+      container.insertBefore(item, container.firstChild);
+      setTimeout(() => item.classList.remove('item-new'), 600);
+
+      this.playBeep(400);
+
+    } else if (data.acao === 'desbloqueado') {
+      // Encontrar por ID ou por IP
+      let item = document.getElementById(`bl-item-${data.blacklist_id}`);
+      if (!item) {
+        item = container.querySelector(`.blacklist-item[data-ip="${data.ip}"]`);
+      }
+      if (item) {
+        item.classList.add('item-removing');
+        setTimeout(() => {
+          item.remove();
+          // Se não há mais itens, mostrar mensagem vazia
+          if (!container.querySelector('.blacklist-item')) {
+            container.innerHTML = '<p id="blacklist-vazio" style="font-size: 0.7rem; opacity: 0.5; text-align: center; padding: 20px;">Nenhum IP bloqueado.</p>';
+          }
+        }, 400);
+      }
+    }
+
+    atualizarContadores();
+  }
+
+  playBeep(freq) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'sine';
+      gain.gain.setValueAtTime(0.2, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.12);
+    } catch (e) {}
+  }
+}
+
+// ─── Inicializar ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  window.socWS = new SOCWebSocket();
+});
 </script>
 {% endblock %}

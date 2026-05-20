@@ -287,6 +287,20 @@ class AlunoDashboardView(APIView):
                 "media": media
             })
 
+        # Monta grade da semana inteira para o seletor de dias do mobile
+        dias_semana = ["segunda", "terca", "quarta", "quinta", "sexta"]
+        grade_semana = {}
+        for dia in dias_semana:
+            items = GradeHorario.objects.filter(turma=aluno.turma, dia=dia).order_by("horario")
+            grade_semana[dia] = [
+                {
+                    "id": item.id,
+                    "horario": item.horario,
+                    "disciplina": item.disciplina.nome if item.disciplina else "Intervalo"
+                }
+                for item in items
+            ]
+
         return Response({
             "aluno": {
                 "id": aluno.id,
@@ -308,6 +322,7 @@ class AlunoDashboardView(APIView):
             },
             "mural": mural_list,
             "grade_hoje": grade_list,
+            "grade_semana": grade_semana,
             "livros_posse": livros_list,
             "desempenho_grafico": desempenho_grafico
         }, status=status.HTTP_200_OK)
@@ -395,3 +410,212 @@ class AlunoBoletimView(APIView):
             "frequencia_total": int(percentual_frequencia_geral),
             "boletim": boletim_list
         }, status=status.HTTP_200_OK)
+
+
+class AlunoPerfilView(APIView):
+    """
+    API endpoint para visualizar e atualizar o perfil do aluno logado.
+    GET: Retorna dados pessoais, acadêmicos, responsáveis e estatísticas.
+    PUT: Permite atualizar campos pessoais (nome, cpf, data_nascimento, naturalidade, telefone).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        aluno = getattr(user, "aluno", None)
+        if not aluno:
+            return Response({"detail": "Usuário não possui perfil de aluno."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Estatísticas consolidadas (reutiliza lógica do dashboard)
+        disciplinas = DesempenhoSelector.get_resumo_academico_aluno(aluno)
+        soma_medias = 0
+        total_disc_com_media = 0
+        total_aulas = 0
+        total_faltas = 0
+
+        for d in disciplinas:
+            nota = d.nota_aluno_prefetched[0] if d.nota_aluno_prefetched else None
+            freqs = d.frequencias_aluno_prefetched
+            total_aulas += len(freqs)
+            faltas = len([f for f in freqs if not f.presente])
+            total_faltas += faltas
+            if nota and nota.media is not None:
+                soma_medias += float(nota.media)
+                total_disc_com_media += 1
+
+        media_geral = round(soma_medias / total_disc_com_media, 1) if total_disc_com_media > 0 else 0.0
+        pct_freq = round(100 - ((total_faltas / total_aulas * 100) if total_aulas > 0 else 0), 1)
+
+        # Dados do responsável
+        responsaveis_list = []
+        for resp in aluno.responsaveis.all():
+            responsaveis_list.append({
+                "nome": resp.nome_completo,
+                "parentesco": resp.parentesco or "—",
+                "telefone": resp.telefone or "—",
+            })
+
+        return Response({
+            "nome": aluno.nome_completo,
+            "matricula": aluno.matricula or "—",
+            "cpf": aluno.cpf or "—",
+            "data_nascimento": aluno.data_nascimento.strftime("%d/%m/%Y") if aluno.data_nascimento else "",
+            "naturalidade": aluno.naturalidade or "",
+            "telefone": aluno.telefone or "",
+            "turma": aluno.turma.nome if aluno.turma else "—",
+            "turno": aluno.turma.get_turno_display() if aluno.turma else "—",
+            "ano_letivo": str(aluno.turma.ano) if aluno.turma else "—",
+            "status_matricula": aluno.get_status_matricula_display(),
+            "stats": {
+                "media_geral": str(media_geral),
+                "frequencia": f"{pct_freq}%",
+                "disciplinas": str(disciplinas.count()),
+                "faltas": str(total_faltas),
+            },
+            "responsaveis": responsaveis_list,
+        }, status=status.HTTP_200_OK)
+
+    def put(self, request, *args, **kwargs):
+        user = request.user
+        aluno = getattr(user, "aluno", None)
+        if not aluno:
+            return Response({"detail": "Usuário não possui perfil de aluno."}, status=status.HTTP_403_FORBIDDEN)
+
+        dados = request.data
+        if "nome" in dados and dados["nome"].strip():
+            aluno.nome_completo = dados["nome"].strip()
+        if "naturalidade" in dados:
+            aluno.naturalidade = dados["naturalidade"].strip()
+        if "telefone" in dados:
+            aluno.telefone = dados["telefone"].strip()
+        if "cpf" in dados and dados["cpf"].strip():
+            aluno.cpf = dados["cpf"].strip()
+        if "data_nascimento" in dados and dados["data_nascimento"].strip():
+            from datetime import datetime
+            try:
+                aluno.data_nascimento = datetime.strptime(dados["data_nascimento"].strip(), "%d/%m/%Y").date()
+            except ValueError:
+                pass
+
+        aluno.save()
+        return Response({"detail": "Perfil atualizado com sucesso."}, status=status.HTTP_200_OK)
+
+
+class AlunoRoteiroView(APIView):
+    """
+    API endpoint para o roteiro (trilha educacional) do aluno.
+    Retorna as disciplinas da turma e os planejamentos de aula de cada uma (PlanejamentoAula).
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        aluno = getattr(user, "aluno", None)
+        if not aluno:
+            return Response({"detail": "Usuário não possui perfil de aluno."}, status=status.HTTP_403_FORBIDDEN)
+
+        from apps.academico.models.academico import PlanejamentoAula
+        import locale
+
+        disciplinas = Disciplina.objects.filter(turma=aluno.turma).select_related("professor").order_by("nome")
+
+        materias_list = []
+        aulas_dict = {}
+
+        dias_pt = {
+            0: "Segunda-Feira",
+            1: "Terça-Feira",
+            2: "Quarta-Feira",
+            3: "Quinta-Feira",
+            4: "Sexta-Feira",
+            5: "Sábado",
+            6: "Domingo",
+        }
+        meses_pt = {
+            1: "Janeiro", 2: "Fevereiro", 3: "Março", 4: "Abril",
+            5: "Maio", 6: "Junho", 7: "Julho", 8: "Agosto",
+            9: "Setembro", 10: "Outubro", 11: "Novembro", 12: "Dezembro"
+        }
+
+        for d in disciplinas:
+            materias_list.append({
+                "id": d.id,
+                "nome": d.nome,
+                "professor": d.professor.nome_completo if d.professor else "Sem Professor",
+            })
+
+            planejamentos = PlanejamentoAula.objects.filter(
+                disciplina=d, turma=aluno.turma
+            ).order_by("-data_aula")
+
+            aulas = []
+            for p in planejamentos:
+                nome_dia = dias_pt.get(p.data_aula.weekday(), "")
+                dia_num = p.data_aula.day
+                nome_mes = meses_pt.get(p.data_aula.month, "")
+                ano = p.data_aula.year
+                data_fmt = f"{nome_dia}, {dia_num:02d} De {nome_mes} De {ano}"
+                situacao = "concluida" if p.concluido else "pendente"
+                aulas.append({
+                    "data": data_fmt,
+                    "situacao": situacao,
+                    "assunto": p.conteudo[:60] if p.conteudo else "Sem título",
+                    "topicos": p.conteudo[60:120] if len(p.conteudo) > 60 else "",
+                })
+
+            aulas_dict[str(d.id)] = aulas
+
+        return Response({
+            "materias": materias_list,
+            "aulas": aulas_dict,
+        }, status=status.HTTP_200_OK)
+
+
+class AlunoMateriaisView(APIView):
+    """
+    API endpoint para os materiais didáticos do aluno.
+    Retorna os materiais organizados por disciplina, com tipo, URL e título.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        aluno = getattr(user, "aluno", None)
+        if not aluno:
+            return Response({"detail": "Usuário não possui perfil de aluno."}, status=status.HTTP_403_FORBIDDEN)
+
+        disciplinas = Disciplina.objects.filter(turma=aluno.turma).select_related("professor").order_by("nome")
+
+        resultado = []
+        for d in disciplinas:
+            materiais = MaterialDidatico.objects.filter(disciplina=d).order_by("-criado_em")
+            arquivos = []
+            for mat in materiais:
+                if mat.tipo == "ARQUIVO" and mat.arquivo:
+                    try:
+                        url = request.build_absolute_uri(mat.arquivo.url)
+                    except Exception:
+                        url = None
+                elif mat.tipo == "LINK":
+                    url = mat.url
+                else:
+                    url = None
+
+                arquivos.append({
+                    "nome": mat.titulo,
+                    "meta": f"{mat.get_tipo_display()} · {mat.descricao[:40] if mat.descricao else ''}",
+                    "quantidade": 1,
+                    "url": url,
+                    "tipo": mat.tipo,
+                })
+
+            if arquivos:
+                resultado.append({
+                    "id": d.id,
+                    "nome": d.nome,
+                    "professor": d.professor.nome_completo if d.professor else "Sem Professor",
+                    "arquivos": arquivos,
+                })
+
+        return Response(resultado, status=status.HTTP_200_OK)
+

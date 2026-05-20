@@ -89,3 +89,16 @@ class TINotificacoesConsumer(AsyncWebsocketConsumer):
             "data_hora": event.get("data_hora", ""),
             "timestamp": event.get("timestamp", 0),
         }))
+
+    async def blacklist_update(self, event):
+        """Notifica em tempo real quando um IP é bloqueado ou desbloqueado."""
+        await self.send(text_data=json.dumps({
+            "tipo": "blacklist_update",
+            "acao": event.get("acao", "bloqueado"),   # "bloqueado" | "desbloqueado"
+            "ip": event.get("ip", "N/A"),
+            "motivo": event.get("motivo", ""),
+            "blacklist_id": event.get("blacklist_id"),
+            "expira_em": event.get("expira_em"),
+            "bloqueado_por": event.get("bloqueado_por", "Sistema"),
+            "data_hora": event.get("data_hora", ""),
+        }))
