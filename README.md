@@ -787,6 +787,7 @@ Grafana: http://localhost:3000 (admin/admin)
 | [GUIA_APRESENTACAO.md](docs/GUIA_APRESENTACAO.md) | Apresentação para stakeholders |
 | [COMPENDIO_TECNICO.md](docs/COMPENDIO_TECNICO.md) | Referência técnica completa |
 | [ROADMAP.md](docs/ROADMAP.md) | Plano de desenvolvimento futuro |
+| [DOCUMENTACAO_PERFIS_SIGE.md](docs/documentacao_perfis_sige.md) | Arquitetura de perfis e níveis de acesso (Superusuário, Gestor, Docente, Discente) |
 
 ---
 
