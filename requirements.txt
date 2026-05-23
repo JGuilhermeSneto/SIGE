@@ -96,5 +96,5 @@ channels-redis>=4.2.0
 daphne>=4.1.0
 flower>=2.0.1
 psutil>=5.9.8
-django-impersonate>=1.9.3
+django-impersonate>=1.9.5
 
