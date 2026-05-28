@@ -15,6 +15,7 @@ Em modo DEBUG, acrescenta servir arquivos de ``MEDIA`` (uploads).
 """
 
 from django.conf import settings
+from rest_framework.permissions import IsAdminUser
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import URLPattern, URLResolver, include, path
@@ -76,11 +77,16 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/v1/aluno/boletim/", AlunoBoletimView.as_view(), name="api-v1-aluno-boletim"),
 
     path("api/", include(router.urls)),
+    path("api/mobile/", include("apps.mobile.urls")),
 
-    # Documentação da API
+    # Documentação da API Geral
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
-    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema", permission_classes=[IsAdminUser]), name="swagger-ui"),
+    path("api/redoc/", SpectacularRedocView.as_view(url_name="schema", permission_classes=[IsAdminUser]), name="redoc"),
+
+    # Documentação da API Mobile (Apenas Mobile)
+    path("api/schema/mobile/", SpectacularAPIView.as_view(urlconf='apps.mobile.urls'), name="schema-mobile"),
+    path("api/docs/mobile/", SpectacularSwaggerView.as_view(url_name="schema-mobile"), name="swagger-ui-mobile"),
 
     path("", include("apps.usuarios.urls")),
     path("academico/", include("apps.academico.urls")),

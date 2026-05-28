@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "apps.seguranca",
     "apps.ti",
     "apps.leads",
+    "apps.notifications",
     "django_prometheus",
     "health_check",              # API unificada (v4.x) — usa /health/ endpoint
     "channels",
@@ -184,7 +185,7 @@ else:
 
 # Se o banco for MySQL (via Aiven), garante que o Django use o motor correto se a URL começar com mysql
 if DATABASES["default"].get("ENGINE") == "django.db.backends.mysql":
-    DATABASES["default"]["OPTIONS"] = {
+    DATABASES["default"]["OPTIONS"] = {  # type: ignore[assignment]
         "charset": "utf8mb4",
     }
 elif "mysql" in DATABASES["default"].get("ENGINE", ""):
@@ -257,6 +258,10 @@ SERVE_MEDIA_FILES = config(
     "SERVE_MEDIA_FILES", default=not USE_CLOUDINARY_STORAGE, cast=bool
 )
 
+# Push Notifications (FCM & APNs)
+FCM_SERVER_KEY = config("FCM_SERVER_KEY", default="")
+APNS_CERT_PATH = config("APNS_CERT_PATH", default="")
+
 # Tarefas Assíncronas (Celery + RabbitMQ)
 CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="amqp://guest:guest@localhost:5672//")
 CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="rpc://")
@@ -312,7 +317,14 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
-    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "10/min",
+        "user": "30/min",
+    },
 }
 
 SPECTACULAR_SETTINGS = {

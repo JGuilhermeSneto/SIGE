@@ -1,0 +1,36 @@
+{
+  "title": "SIGE Real-time Observability",
+  "tags": ["sige", "django", "celery", "mysql", "redis"],
+  "timezone": "browser",
+  "refresh": "5s",
+  "panels": [
+    {
+      "title": "API Request Rate",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "rate(django_http_requests_total_by_method_total[1m])",
+          "legendFormat": "{{method}}"
+        }
+      ]
+    },
+    {
+      "title": "Celery Active Workers",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "sum(celery_workers)"
+        }
+      ]
+    },
+    {
+      "title": "MySQL Connections",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "mysql_global_status_threads_connected"
+        }
+      ]
+    }
+  ]
+}

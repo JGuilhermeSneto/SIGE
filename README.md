@@ -55,7 +55,9 @@ O **SIGE** é uma plataforma integrada de gestão escolar desenvolvida em **Djan
 ✅ **Backup & Recuperação** — Quantum Snapshots com Redundância Geográfica  
 ✅ **Processamento Assíncrono** — Celery + RabbitMQ para Tarefas Background  
 ✅ **Comunicação em Tempo Real** — WebSockets via Django Channels  
+✅ **Comunicação em Tempo Real** — WebSockets via Django Channels  
 ✅ **Monitoramento Avançado** — Prometheus + Grafana + Health Checks  
+✅ **Mobile Backend** — Documentação exclusiva via Swagger, Push Notifications (FCM/APNs) e CDN Integrado  
 
 ---
 
@@ -774,6 +776,28 @@ Grafana: http://localhost:3000 (admin/admin)
 ---
 
 ## 📚 Documentação Completa
+
+### 📡 API Endpoints
+
+- **Ping**: `GET /api/ping/` – Health check (no authentication required)
+- **Dashboard Resumo**: `GET /api/dashboard/resumo/` – Summary data (requires authentication)
+- **Obtain JWT Token**: `POST /api/token/` – Returns access and refresh tokens (username/matrícula & password)
+- **Refresh JWT Token**: `POST /api/token/refresh/` – Refreshes access token
+- **LGPD Logs**: `GET /api/lgpd-logs/` – Audit logs (authenticated users)
+- **JS Error Reporting**: `GET /api/js-error/` – Front‑end error collection
+- **Metrics**: `GET /api/metrics/` – System metrics endpoint
+- **Swagger UI**: `GET /api/docs/` – Interactive API docs (admin only)
+- **Redoc**: `GET /api/redoc/` – Alternative API docs (admin only)
+
+**Authentication**: All protected endpoints use JWT Bearer tokens (`Authorization: Bearer <token>`).
+
+**Rate Limiting**: Anon users – `10/min`; Authenticated users – `30/min` (configured in `settings.py`).
+
+**API Mobile**: Para integração exclusiva de aplicativos, temos uma documentação específica.
+- **Swagger Mobile**: `GET /api/docs/mobile/`
+- **Registro de Push Tokens**: `POST /api/mobile/notifications/register-token/`
+
+**Full API specification** can be found in [API.md](docs/API.md).
 
 | Documento | Descrição |
 | :--- | :--- |

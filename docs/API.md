@@ -9,9 +9,11 @@
 | Interface | URL | Descrição |
 |---|---|---|
 | **Landing Page (TI)** | `/ti/api-docs/` | Visão geral e guia de uso |
-| **Swagger UI** | `/api/schema/swagger-ui/` | Interface interativa para testes |
+| **Swagger UI** | `/api/schema/swagger-ui/` | Interface interativa para testes (Geral) |
 | **ReDoc** | `/api/schema/redoc/` | Documentação focada em leitura |
 | **Schema YAML** | `/api/schema/` | Download da especificação bruta |
+| **Swagger UI Mobile** | `/api/docs/mobile/` | Documentação exclusiva para endpoints Mobile |
+| **Schema YAML Mobile** | `/api/schema/mobile/` | Especificação bruta Mobile |
 
 ---
 
@@ -65,6 +67,7 @@ Content-Type: application/json
 | Financeiro | `/api/v1/financeiro/` |
 | Saúde | `/api/v1/saude/` |
 | Segurança (TI) | `/api/v1/seguranca/` |
+| Mobile Notifications | `/api/mobile/notifications/` |
 
 ---
 

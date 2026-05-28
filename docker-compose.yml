@@ -104,5 +104,32 @@ services:
       redis:
         condition: service_started
 
+  redis-exporter:
+    image: oliver006/redis_exporter
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=redis://redis:6379
+    depends_on:
+      - redis
+
+  celery-exporter:
+    image: danihodovic/celery-exporter
+    ports:
+      - "9808:9808"
+    environment:
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter
+    ports:
+      - "9104:9104"
+    environment:
+      - DATA_SOURCE_NAME=root:root@(db:3306)/
+    depends_on:
+      - db
+
 volumes:
   mysql_data:
