@@ -1,137 +1,328 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Hub de Infraestrutura — v7.2.4{% endblock %}
+{% block title %}Hub de Infraestrutura — Mission Control{% endblock %}
 
 {% block ti_extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_de_superusuario.css' %}">
 <style>
   .header-painel { padding: 0 2rem; margin-top: 20px; }
-  .conteudo-geral { padding: 0 2rem; margin-top: 10px; display: grid; grid-template-columns: 1fr 340px; gap: 25px; align-items: start; }
-  
-  /* Status Cards */
-  .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
-  .svc-card { 
-    background: var(--bg-surface); 
-    border: 1px solid var(--border-subtle); 
-    border-radius: var(--radius-lg); 
-    padding: 20px; 
+  .infra-layout { padding: 0 2rem; margin-top: 20px; display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+
+  /* ─── Service Grid ──────────────────────────── */
+  .svc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-bottom: 28px; }
+  .svc-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .svc-card:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+  .svc-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .svc-card.online::before { background: var(--accent-emerald); box-shadow: 0 0 12px var(--accent-emerald); }
+  .svc-card.offline::before { background: var(--accent-ruby); }
+  .svc-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; margin-bottom: 12px; }
+  .svc-name { font-size: 0.85rem; font-weight: 700; margin: 0 0 4px; }
+  .svc-meta { font-size: 0.65rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+  .latency-chip { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; background: rgba(34,211,238,0.08); color: var(--accent-cyan); padding: 2px 8px; border-radius: 6px; border: 1px solid rgba(34,211,238,0.2); }
+
+  /* ─── Terminal / Script Console ────────────────── */
+  .terminal-box {
+    background: #080c10;
+    border: 1px solid #1a2332;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    margin-bottom: 24px;
+  }
+  .terminal-topbar {
+    background: #0f1923;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #1a2332;
+  }
+  .t-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .terminal-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #3b5268; margin-left: 12px; flex: 1; }
+  .t-pill { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; background: rgba(34,211,238,0.08); color: var(--accent-cyan); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(34,211,238,0.15); }
+
+  .script-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding: 24px; }
+
+  .script-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
   }
-  .svc-status-line { height: 3px; width: 100%; position: absolute; bottom: 0; left: 0; }
-  .status-online { background: var(--accent-emerald); }
-  .status-offline { background: var(--accent-ruby); }
+  .script-card:hover {
+    border-color: var(--accent-cyan);
+    background: rgba(34,211,238,0.03);
+    transform: translateY(-2px);
+  }
+  .script-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 2px; width: 0;
+    background: var(--accent-cyan);
+    transition: width 0.3s ease;
+  }
+  .script-card:hover::after { width: 100%; }
 
-  /* Terminal Console */
-  .terminal-box { background: #0a0a0a; border: 1px solid #333; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-  .terminal-header { background: #1a1a1a; padding: 12px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #333; }
-  .dot { width: 10px; height: 10px; border-radius: 50%; }
-  
-  .script-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; padding: 25px; }
-  .script-card { background: #161616; border: 1px solid #222; border-radius: 12px; padding: 20px; transition: 0.2s; }
-  .script-card:hover { border-color: var(--accent-cyan); background: #1a1a1a; }
-  
-  .btn-run { background: var(--accent-emerald); color: #000; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; font-size: 0.7rem; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
+  .script-icon {
+    width: 42px; height: 42px;
+    background: rgba(34,211,238,0.08);
+    border: 1px solid rgba(34,211,238,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent-cyan);
+    margin-bottom: 14px;
+    transition: background 0.2s;
+  }
+  .script-card:hover .script-icon { background: rgba(34,211,238,0.15); }
+  .script-name { font-size: 0.85rem; font-weight: 800; color: #e2e8f0; margin: 0 0 6px; }
+  .script-desc { font-size: 0.65rem; color: var(--text-muted); margin: 0 0 18px; line-height: 1.5; }
+
+  .btn-run {
+    background: linear-gradient(135deg, rgba(34,211,238,0.15), rgba(34,211,238,0.05));
+    color: var(--accent-cyan);
+    border: 1px solid rgba(34,211,238,0.3);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 0.68rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.04em;
+  }
+  .btn-run:hover { background: rgba(34,211,238,0.2); border-color: var(--accent-cyan); transform: scale(1.02); }
+  .btn-run:active { transform: scale(0.98); }
+  .btn-run.loading { opacity: 0.7; pointer-events: none; }
+
+  /* ─── Log Output Panel ──────────────── */
+  .log-output {
+    background: #0a0f14;
+    border-top: 1px solid #1a2332;
+    padding: 16px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* ─── Messages ──────────────────────── */
+  .infra-messages { margin-bottom: 24px; display: flex; flex-direction: column; gap: 8px; }
+  .infra-msg {
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.78rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: msgIn 0.4s ease-out;
+  }
+  .infra-msg.success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #34d399; }
+  .infra-msg.error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #f87171; }
+  .infra-msg.warning { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); color: #fbbf24; }
+  @keyframes msgIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* ─── Sidebar ───────────────────────── */
+  .sidebar-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .sidebar-metric { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.75rem; }
+  .sidebar-metric:last-child { border-bottom: none; }
+  .sidebar-metric-label { color: var(--text-muted); }
+  .sidebar-metric-value { font-weight: 700; color: var(--text-primary); }
 </style>
 {% endblock %}
 
 {% block ti_content %}
 <header class="header-painel">
   <div class="header-esquerda">
-    <span class="header-label"><i class="fa-solid fa-microchip"></i> INFRAESTRUTURA & OPERAÇÕES · v7.2.4</span>
+    <span class="header-label"><span class="system-pulse"></span> INFRAESTRUTURA · MISSION CONTROL</span>
     <h1>Hub de <span class="nome-destaque">Serviços</span></h1>
   </div>
   <div class="header-acoes">
-     <button class="btn-sige-secundario" onclick="location.reload()"><i class="fa-solid fa-sync"></i> Sincronizar Tudo</button>
+    <button class="btn-sige-secundario" onclick="location.reload()">
+      <i class="fa-solid fa-arrows-rotate"></i> Sincronizar
+    </button>
   </div>
 </header>
 
-<div class="conteudo-geral">
+<div class="infra-layout">
   <div class="coluna-esquerda">
-    
-    {# 🌐 STATUS DOS SERVIÇOS #}
-    <div class="svc-grid">
-       {% for svc in integracoes %}
-       <article class="svc-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-             <i class="fa-solid {% if 'Database' in svc.service %}fa-database{% elif 'Redis' in svc.service %}fa-fire{% elif 'Cloudinary' in svc.service %}fa-image{% else %}fa-plug{% endif %}" 
-                style="color: {% if svc.status == 'Online' or svc.status == 'ONLINE' %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %}; font-size: 1.2rem;"></i>
-             <span style="font-family: monospace; font-size: 0.7rem; color: var(--accent-cyan);">{{ svc.latency }}</span>
-          </div>
-          <h3 style="font-size: 0.9rem; margin:0;">{{ svc.service }}</h3>
-          <p style="font-size: 0.65rem; color: var(--text-muted); margin: 5px 0 0 0;">{{ svc.status|upper }} · Uptime 99.9%</p>
-          <div class="svc-status-line {% if svc.status == 'Online' or svc.status == 'ONLINE' %}status-online{% else %}status-offline{% endif %}"></div>
-       </article>
-       {% endfor %}
-    </div>
 
-    {# 💻 CONSOLE DE MANUTENÇÃO #}
-    <div class="terminal-box">
-       <div class="terminal-header">
-          <div class="dot" style="background: #ff5f56;"></div>
-          <div class="dot" style="background: #ffbd2e;"></div>
-          <div class="dot" style="background: #27c93f;"></div>
-          <span style="font-size: 0.7rem; color: #666; font-family: monospace; margin-left: 10px;">sige@infra:~/maintenance_hub</span>
-       </div>
-       
-       <div class="script-grid">
-          {% for script in scripts %}
-          <div class="script-card">
-             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-                <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.05); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--accent-cyan);">
-                   <i class="fa-solid {{ script.icone }}"></i>
-                </div>
-                <h3 style="font-size: 0.8rem; margin: 0;">{{ script.nome }}</h3>
-             </div>
-             <p style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 20px; height: 32px; overflow: hidden;">{{ script.desc }}</p>
-             <form action="{% url 'ti:executar_script' script.id %}" method="POST">
-                {% csrf_token %}
-                <button type="submit" class="btn-run">
-                   <i class="fa-solid fa-play"></i> EXECUTAR
-                </button>
-             </form>
-          </div>
-          {% endfor %}
-       </div>
-    </div>
-
-    {# MENSAGENS DE LOG #}
     {% if messages %}
-    <div style="margin-top: 20px;">
-       {% for message in messages %}
-       <div style="padding: 12px 20px; border-radius: 8px; background: rgba(0,0,0,0.3); border-left: 4px solid {% if message.tags == 'success' %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %}; font-size: 0.75rem; margin-bottom: 8px; font-family: monospace;">
-          <span style="opacity: 0.5;">[LOG]</span> {{ message }}
-       </div>
-       {% endfor %}
+    <div class="infra-messages">
+      {% for message in messages %}
+      <div class="infra-msg {{ message.tags }}">
+        <i class="fa-solid {% if 'success' in message.tags %}fa-circle-check{% elif 'error' in message.tags %}fa-circle-xmark{% else %}fa-triangle-exclamation{% endif %}"></i>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
     </div>
     {% endif %}
+
+    {# ── Serviços Externos ── #}
+    <h3 class="hub-title" style="margin-bottom: 16px;">
+      <i class="fa-solid fa-satellite-dish" style="color: var(--accent-cyan);"></i> Serviços Externos
+    </h3>
+    <div class="svc-grid">
+      {% for svc in integracoes %}
+      {% with is_online=svc.status|lower %}
+      <article class="svc-card {% if 'online' in is_online %}online{% else %}offline{% endif %}">
+        <div class="svc-icon" style="background: rgba({% if 'online' in is_online %}16,185,129{% else %}239,68,68{% endif %},0.1); color: {% if 'online' in is_online %}var(--accent-emerald){% else %}var(--accent-ruby){% endif %};">
+          <i class="fa-solid {% if 'Redis' in svc.service %}fa-fire-flame-curved{% elif 'Cloudinary' in svc.service %}fa-cloud{% elif 'SMTP' in svc.service %}fa-envelope{% elif 'Flower' in svc.service %}fa-seedling{% else %}fa-plug{% endif %}"></i>
+        </div>
+        <h3 class="svc-name">{{ svc.service }}</h3>
+        <div class="svc-meta">
+          <span>{{ svc.status|upper }}</span>
+          <span class="latency-chip">{{ svc.latency }}</span>
+        </div>
+      </article>
+      {% endwith %}
+      {% endfor %}
+    </div>
+
+    {# ── Terminal de Manutenção ── #}
+    <div class="terminal-box">
+      <div class="terminal-topbar">
+        <div class="t-dot" style="background: #ff5f56;"></div>
+        <div class="t-dot" style="background: #ffbd2e;"></div>
+        <div class="t-dot" style="background: #27c93f;"></div>
+        <span class="terminal-title">sige@infra:~/maintenance_hub $</span>
+        <span class="t-pill">4 scripts disponíveis</span>
+      </div>
+
+      <div class="script-grid">
+        {% for script in scripts %}
+        <div class="script-card">
+          <div class="script-icon">
+            <i class="fa-solid {{ script.icone }}"></i>
+          </div>
+          <h3 class="script-name">{{ script.nome }}</h3>
+          <p class="script-desc">{{ script.desc }}</p>
+          <form action="{% url 'ti:executar_script' script.id %}" method="POST" onsubmit="onRunScript(this, '{{ script.nome|escapejs }}')">
+            {% csrf_token %}
+            <button type="submit" class="btn-run" id="btn-script-{{ script.id }}">
+              <i class="fa-solid fa-play"></i> EXECUTAR
+            </button>
+          </form>
+        </div>
+        {% endfor %}
+      </div>
+
+      {# Console de Log #}
+      <div class="log-output" id="log-output-panel">
+        <span style="color: #3b5268;"># Console de Manutenção · aguardando ação...</span>
+      </div>
+    </div>
+
   </div>
 
   <aside class="coluna-direita">
-     <div class="sidebar-box" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 20px;">
-        <h3 class="hub-title"><i class="fa-solid fa-circle-nodes"></i> API Gateway</h3>
-        <div style="font-size: 0.75rem;">
-           <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-              <span style="color: var(--text-muted);">Endpoints</span><strong>34 Ativos</strong>
-           </div>
-           <div style="display: flex; justify-content: space-between; padding: 10px 0;">
-              <span style="color: var(--text-muted);">Uptime (30d)</span><strong style="color: var(--accent-emerald);">99.98%</strong>
-           </div>
-           <div style="margin-top: 15px;">
-              <a href="{{ flower_url }}" target="_blank" class="btn-sige-secundario" style="width: 100%; display: block; text-align: center; font-size: 0.65rem; text-decoration: none; background: rgba(139, 92, 246, 0.05); border-color: var(--accent-violet); color: var(--accent-violet);">
-                 <i class="fa-solid fa-server"></i> ACESSAR MONITOR CELERY (FLOWER)
-              </a>
-           </div>
-        </div>
-     </div>
 
-     <div class="sidebar-box" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 20px; border-left: 4px solid var(--accent-amber);">
-        <h3 class="hub-title" style="color: var(--accent-amber);"><i class="fa-solid fa-triangle-exclamation"></i> Notas do Sistema</h3>
-        <p style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.6;">
-           A integração com Cloudinary está operando em modo otimizado. Redis limpo recentemente.
-        </p>
-     </div>
+    {# API Gateway #}
+    <div class="sidebar-card" style="border-top: 3px solid var(--accent-violet);">
+      <h3 class="hub-title"><i class="fa-solid fa-circle-nodes" style="color: var(--accent-violet);"></i> API Gateway</h3>
+      <div class="sidebar-metric">
+        <span class="sidebar-metric-label">Endpoints Ativos</span>
+        <span class="sidebar-metric-value">34</span>
+      </div>
+      <div class="sidebar-metric">
+        <span class="sidebar-metric-label">Uptime (30d)</span>
+        <span class="sidebar-metric-value" style="color: var(--accent-emerald);">99.98%</span>
+      </div>
+      <div class="sidebar-metric" style="border-bottom: none; padding-top: 16px;">
+        <a href="{{ flower_url }}" target="_blank" class="btn-sige-secundario" style="width: 100%; display: block; text-align: center; font-size: 0.65rem; text-decoration: none; border-color: var(--accent-violet); color: var(--accent-violet);">
+          <i class="fa-solid fa-seedling"></i> MONITOR CELERY (FLOWER)
+        </a>
+      </div>
+    </div>
+
+    {# Live CPU/RAM #}
+    <div class="sidebar-card" style="border-top: 3px solid var(--accent-cyan);">
+      <h3 class="hub-title"><i class="fa-solid fa-microchip" style="color: var(--accent-cyan);"></i> Recursos do Servidor</h3>
+      <div class="sidebar-metric">
+        <span class="sidebar-metric-label">CPU</span>
+        <span class="sidebar-metric-value" id="live-cpu">—%</span>
+      </div>
+      <div class="sidebar-metric">
+        <span class="sidebar-metric-label">RAM</span>
+        <span class="sidebar-metric-value" id="live-ram">—%</span>
+      </div>
+      <div class="sidebar-metric">
+        <span class="sidebar-metric-label">Serviços OK</span>
+        <span class="sidebar-metric-value" id="infra-health-count" style="color: var(--accent-emerald);">{{ integracoes|length }}</span>
+      </div>
+    </div>
+
+    {# Notas do Sistema #}
+    <div class="sidebar-card" style="border-top: 3px solid var(--accent-amber);">
+      <h3 class="hub-title" style="color: var(--accent-amber);">
+        <i class="fa-solid fa-triangle-exclamation"></i> Notas do Sistema
+      </h3>
+      <p style="font-size: 0.68rem; color: var(--text-muted); line-height: 1.7;">
+        Operações como <strong style="color: var(--text-secondary);">Collect Static</strong> e
+        <strong style="color: var(--text-secondary);">Restart Flower</strong> são executadas em
+        background e não bloqueiam a interface. Aguarde alguns instantes após disparar.
+      </p>
+    </div>
+
   </aside>
 </div>
+
+<script>
+  function onRunScript(form, nome) {
+    const btn = form.querySelector('button[type=submit]');
+    const log = document.getElementById('log-output-panel');
+
+    // Feedback visual no botão
+    btn.classList.add('loading');
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Executando...';
+
+    // Log no console
+    const now = new Date().toLocaleTimeString('pt-BR');
+    log.innerHTML += `\n<span style="color:#3b5268;">[${now}]</span> <span style="color:#22d3ee;">$</span> <span style="color:#e2e8f0;">Disparando: <strong>${nome}</strong>…</span>`;
+    log.scrollTop = log.scrollHeight;
+
+    // Deixa o form submeter normalmente após o próximo tick
+    return true;
+  }
+
+  // Atualizar CPU/RAM via polling do base_ti.html
+  window.addEventListener('tiMetricsUpdated', function(e) {
+    const d = e.detail;
+    if (d.recursos) {
+      document.getElementById('live-cpu').textContent = d.recursos.cpu_percent + '%';
+      document.getElementById('live-ram').textContent = d.recursos.ram_percent + '%';
+    }
+    if (d.health) {
+      const ok = d.health.filter(s => s.status === 'green').length;
+      document.getElementById('infra-health-count').textContent = ok + '/' + d.health.length;
+    }
+  });
+</script>
 {% endblock %}

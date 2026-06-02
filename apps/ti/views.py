@@ -12,6 +12,12 @@ from .models import FeatureFlag, JanelaManutencao, ParametroSistema, AvisoGlobal
 from django.views.decorators.csrf import csrf_exempt
 import json
 import random
+import threading
+import subprocess
+import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_nome_exibicao(user):
@@ -378,36 +384,79 @@ def logs_correlacionados(request, erro_id):
 @login_required
 @user_passes_test(usuario_tem_operacoes_ti)
 def executar_script(request, script_id):
-    """Executa uma tarefa de gerenciamento via UI."""
+    """
+    Executa uma tarefa de gerenciamento via UI.
+    
+    Operações rápidas (clear_cache, clear_sessions) são executadas inline.
+    Operações potencialmente demoradas (collect_static, restart_flower) são
+    disparadas em uma thread de background para não bloquear o request HTTP.
+    """
     from django.core import management
     from django.contrib import messages
-    
+
+    def _run_collect_static():
+        """Roda collectstatic de forma silenciosa em background."""
+        try:
+            management.call_command("collectstatic", interactive=False, verbosity=0)
+            logger.info("[TI] collectstatic executado com sucesso em background.")
+        except Exception as exc:
+            logger.error("[TI] Falha ao executar collectstatic: %s", exc)
+
+    def _run_restart_flower():
+        """Reinicia o Flower Celery em background de forma segura."""
+        try:
+            flower_cmd = ["celery", "-A", "config", "flower", "--port=5555"]
+            # shell=False é mais seguro; em Windows o executável pode ser .exe
+            subprocess.Popen(
+                flower_cmd,
+                shell=(os.name == "nt"),
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            logger.info("[TI] Flower iniciado/reiniciado em background.")
+        except FileNotFoundError:
+            logger.warning("[TI] Executável 'celery' não encontrado no PATH.")
+        except Exception as exc:
+            logger.error("[TI] Falha ao reiniciar Flower: %s", exc)
+
     try:
         if script_id == "clear_cache":
             from django.core.cache import cache
             cache.clear()
-            messages.success(request, "Cache do Redis limpo com sucesso!")
+            messages.success(request, "✅ Cache do Redis limpo com sucesso!")
+
         elif script_id == "clear_sessions":
             management.call_command("clearsessions")
-            messages.success(request, "Sessões expiradas removidas.")
+            messages.success(request, "✅ Sessões expiradas removidas com sucesso.")
+
         elif script_id == "collect_static":
-            # Executa com --noinput para não travar pedindo confirmação
-            management.call_command("collectstatic", interactive=False)
-            messages.success(request, "Arquivos estáticos sincronizados com sucesso (Collect Static concluído)!")
+            t = threading.Thread(target=_run_collect_static, daemon=True)
+            t.start()
+            messages.success(
+                request,
+                "⚡ Collect Static disparado em background. "
+                "Os assets serão sincronizados em alguns segundos."
+            )
+
         elif script_id == "restart_flower":
-            import subprocess
-            import os
-            try:
-                # Tenta matar processos antigos na porta 5555 (opcional/cauteloso)
-                subprocess.Popen(["celery", "-A", "config", "flower", "--port=5555"], shell=True if os.name == 'nt' else False)
-                messages.success(request, "Comando de reinicialização do Flower disparado!")
-            except Exception as e:
-                messages.error(request, f"Falha ao iniciar Flower: {e}")
+            t = threading.Thread(target=_run_restart_flower, daemon=True)
+            t.start()
+            messages.success(
+                request,
+                "🌸 Reinicialização do Flower Celery disparada. "
+                "Aguarde alguns instantes e acesse o dashboard."
+            )
+
         else:
-            messages.warning(request, f"Script '{script_id}' ainda não implementado para execução via UI.")
-    except Exception as e:
-        messages.error(request, f"Erro ao executar script: {str(e)}")
-        
+            messages.warning(
+                request,
+                f"⚠️ Script '{script_id}' ainda não está implementado para execução via UI."
+            )
+
+    except Exception as exc:
+        logger.exception("[TI] Erro inesperado ao executar script '%s'", script_id)
+        messages.error(request, f"❌ Erro ao executar script: {exc}")
+
     from django.shortcuts import redirect
     return redirect("ti:infraestrutura")
 
@@ -487,17 +536,31 @@ def api_logs_lgpd(request):
 @login_required
 @user_passes_test(usuario_tem_painel_ti)
 def api_ti_metrics(request):
-    """Endpoint central para atualizações em tempo real (AJAX/WebSockets)."""
+    """Endpoint central para atualizações em tempo real (AJAX polling do painel)."""
     from .utils import diagnostico
-    
+    from apps.seguranca.models import LogAuditoria, LogErro
+
+    # Serializa o event_feed para JSON
+    raw_events = diagnostico.get_global_event_feed()
+    eventos_serializados = [
+        {
+            "tipo": e["tipo"],
+            "icone": e["icone"],
+            "cor": e["cor"],
+            "texto": e["texto"],
+            "data_iso": e["data"].isoformat() if hasattr(e["data"], "isoformat") else str(e["data"]),
+        }
+        for e in raw_events[:10]
+    ]
+
     data = {
         "recursos": diagnostico.get_system_resources(),
         "health": diagnostico.get_service_health_traffic_light(),
         "waf": diagnostico.get_waf_stats(),
         "tasks": diagnostico.get_task_queue_stats(),
-        "eventos": diagnostico.get_global_event_feed()[:5], # Apenas os mais recentes
+        "eventos": eventos_serializados,
         "performance": diagnostico.get_request_stats(),
-        "agora": timezone.now().strftime("%H:%M:%S")
+        "agora": timezone.now().strftime("%H:%M:%S"),
     }
     return JsonResponse(data)
 

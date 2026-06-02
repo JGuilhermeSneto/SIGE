@@ -48,7 +48,7 @@
     </div>
     <div class="sige-glass-card" style="border-left: 4px solid var(--accent-amber) !important;">
       <p class="passo-label">Novos</p>
-      <p class="metric-value-security" style="color: var(--accent-amber); font-size: 2rem;">{{ stats.novos }}</p>
+      <p class="metric-value-security" style="color: var(--accent-amber); font-size: 2rem;" data-kpi="novos">{{ stats.novos }}</p>
       <p style="font-size: 0.75rem; color: var(--text-muted);">Aguardando triagem</p>
     </div>
     <div class="sige-glass-card" style="border-left: 4px solid var(--accent-cyan) !important;">
@@ -217,7 +217,7 @@
         document.getElementById('detalhe-bug-browser').innerText = browser;
         document.getElementById('detalhe-bug-data').innerText = data;
         document.getElementById('detalhe-bug-prioridade').innerText = prioridade;
-        
+
         document.getElementById('modal-detalhes-bug').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -230,6 +230,28 @@
     // Fechar ao clicar fora
     window.addEventListener('click', function(e) {
         if (e.target == document.getElementById('modal-detalhes-bug')) fecharDetalhesBug();
+    });
+
+    // ── Novo Bug em Tempo Real via WebSocket Global ────────────────────────
+    // Quando um novo bug chega pelo canal WebSocket (signal novo_bug),
+    // incrementa o contador e mostra o toast (socToast é global via base_ti.html)
+    window.addEventListener('socWsMessage', function(e) {
+        const data = e.detail;
+        if (data.tipo === 'novo_bug') {
+            // Exibe toast (socToast registrada globalmente no base_ti.html)
+            if (typeof window.socToast === 'function') {
+                window.socToast(
+                    `<i class="fa-solid fa-bug"></i> Novo chamado: <strong>${data.mensagem || 'Bug reportado!'}</strong>`,
+                    'warn'
+                );
+            }
+            // Atualiza o badge de "Novos" nos cards KPI dinamicamente
+            const novosBadge = document.querySelector('[data-kpi="novos"]');
+            if (novosBadge) {
+                const atual = parseInt(novosBadge.textContent, 10) || 0;
+                novosBadge.textContent = atual + (data.contagem || 1);
+            }
+        }
     });
 </script>
 {% endblock %}

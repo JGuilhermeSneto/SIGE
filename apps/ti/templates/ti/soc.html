@@ -44,38 +44,9 @@
   .blacklist-item.item-new { animation: itemSlideIn 0.5s ease-out; background: rgba(248, 113, 113, 0.05); }
   .blacklist-item.item-removing { animation: itemSlideOut 0.4s ease-in forwards; }
 
-  /* Toast notification SOC */
-  .soc-toast-container { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; max-width: 400px; pointer-events: none; }
-  .soc-toast { background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); color: white; padding: 14px 18px; border-radius: 12px; font-size: 0.8rem; font-weight: 600; box-shadow: 0 8px 24px rgba(0,0,0,0.4); animation: toastIn 0.35s ease-out; display: flex; align-items: center; gap: 10px; pointer-events: auto; }
-  .soc-toast.toast-success { border-left: 4px solid var(--accent-emerald); }
-  .soc-toast.toast-danger { border-left: 4px solid var(--accent-ruby); }
-  .soc-toast.toast-info { border-left: 4px solid var(--accent-cyan); }
-  .soc-toast.toast-warn { border-left: 4px solid var(--accent-amber); }
-  .soc-toast.toast-out { animation: toastOut 0.3s ease-in forwards; }
-
-  @keyframes loginPulse {
-    0% { transform: translateY(-8px); opacity: 0; border-color: rgba(34, 211, 238, 0.6); }
-    100% { transform: translateY(0); opacity: 1; border-color: rgba(34, 211, 238, 0.3); }
-  }
-  @keyframes wsPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  @keyframes itemSlideIn {
-    from { opacity: 0; transform: translateX(20px); max-height: 0; }
-    to { opacity: 1; transform: translateX(0); max-height: 200px; }
-  }
   @keyframes itemSlideOut {
     from { opacity: 1; transform: translateX(0); max-height: 200px; }
     to { opacity: 0; transform: translateX(-20px); max-height: 0; padding: 0; margin: 0; border: none; }
-  }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateX(30px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  @keyframes toastOut {
-    from { opacity: 1; transform: translateX(0); }
-    to { opacity: 0; transform: translateX(30px); }
   }
 </style>
 {% endblock %}
@@ -94,9 +65,6 @@
      <button class="btn-sige-secundario" onclick="location.reload()"><i class="fa-solid fa-rotate"></i> Refresh SOC</button>
   </div>
 </header>
-
-{# Toast container #}
-<div class="soc-toast-container" id="soc-toasts"></div>
 
 <div class="conteudo-geral">
   <div class="coluna-esquerda">
@@ -270,19 +238,6 @@
 
 const CSRF_TOKEN = '{{ csrf_token }}';
 
-// ─── Toast ─────────────────────────────────────────────────────────────────
-function socToast(msg, tipo = 'info') {
-  const container = document.getElementById('soc-toasts');
-  const toast = document.createElement('div');
-  toast.className = `soc-toast toast-${tipo}`;
-  toast.innerHTML = msg;
-  container.appendChild(toast);
-  setTimeout(() => {
-    toast.classList.add('toast-out');
-    setTimeout(() => toast.remove(), 300);
-  }, 5000);
-}
-
 // ─── Modais ────────────────────────────────────────────────────────────────
 function promptBlock(ip) {
   document.getElementById('target-ip').value = ip;
@@ -380,103 +335,35 @@ function atualizarContadores() {
   document.getElementById('blacklist-count-badge').textContent = blCount;
 }
 
-// ─── WebSocket SOC ────────────────────────────────────────────────────────
-class SOCWebSocket {
-  constructor() {
-    this.socket = null;
-    this.reconnectAttempts = 0;
-    this.maxReconnect = 15;
-    this.reconnectDelay = 3000;
-    this.connecting = false;
-    this.connect();
+// ─── Eventos do WebSocket Global ──────────────────────────────────────────
+
+window.addEventListener('socWsStatus', (e) => {
+  const state = e.detail.state;
+  const dot = document.getElementById('ws-dot');
+  const label = document.getElementById('ws-label');
+  const fw = document.getElementById('ws-firewall-label');
+  dot.className = 'ws-dot ' + state;
+  if (state === 'connected') {
+    label.textContent = 'Live';
+    label.style.color = 'var(--accent-emerald)';
+    fw.textContent = 'CONECTADO';
+    fw.style.color = 'var(--accent-emerald)';
+  } else if (state === 'connecting') {
+    label.textContent = 'Conectando…';
+    label.style.color = 'var(--accent-amber)';
+    fw.textContent = 'CONECTANDO';
+    fw.style.color = 'var(--accent-amber)';
+  } else {
+    label.textContent = 'Offline';
+    label.style.color = 'var(--accent-ruby)';
+    fw.textContent = 'DESCONECTADO';
+    fw.style.color = 'var(--accent-ruby)';
   }
+});
 
-  connect() {
-    if (this.connecting) return;
-    this.connecting = true;
-    this.setStatus('connecting');
-
-    const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const url = `${proto}//${location.host}/ws/ti/`;
-
-    try {
-      this.socket = new WebSocket(url);
-
-      this.socket.onopen = () => {
-        this.reconnectAttempts = 0;
-        this.connecting = false;
-        this.setStatus('connected');
-        socToast('<i class="fa-solid fa-satellite-dish"></i> SOC conectado em tempo real.', 'success');
-      };
-
-      this.socket.onmessage = (e) => {
-        const data = JSON.parse(e.data);
-        this.handleEvent(data);
-      };
-
-      this.socket.onerror = () => { this.connecting = false; };
-
-      this.socket.onclose = () => {
-        this.connecting = false;
-        this.setStatus('disconnected');
-        this.tryReconnect();
-      };
-    } catch (err) {
-      this.connecting = false;
-      this.setStatus('disconnected');
-      this.tryReconnect();
-    }
-  }
-
-  tryReconnect() {
-    if (this.reconnectAttempts < this.maxReconnect) {
-      this.reconnectAttempts++;
-      setTimeout(() => this.connect(), this.reconnectDelay);
-    }
-  }
-
-  setStatus(state) {
-    const dot = document.getElementById('ws-dot');
-    const label = document.getElementById('ws-label');
-    const fw = document.getElementById('ws-firewall-label');
-    dot.className = 'ws-dot ' + state;
-    if (state === 'connected') {
-      label.textContent = 'Live';
-      label.style.color = 'var(--accent-emerald)';
-      fw.textContent = 'CONECTADO';
-      fw.style.color = 'var(--accent-emerald)';
-    } else if (state === 'connecting') {
-      label.textContent = 'Conectando…';
-      label.style.color = 'var(--accent-amber)';
-      fw.textContent = 'CONECTANDO';
-      fw.style.color = 'var(--accent-amber)';
-    } else {
-      label.textContent = 'Offline';
-      label.style.color = 'var(--accent-ruby)';
-      fw.textContent = 'DESCONECTADO';
-      fw.style.color = 'var(--accent-ruby)';
-    }
-  }
-
-  handleEvent(data) {
-    switch (data.tipo) {
-      case 'novo_login':
-        this.onNovoLogin(data);
-        break;
-      case 'blacklist_update':
-        this.onBlacklistUpdate(data);
-        break;
-      case 'novo_erro':
-        socToast(`<i class="fa-solid fa-triangle-exclamation"></i> ${data.mensagem}`, 'danger');
-        break;
-      case 'alerta_seguranca':
-        socToast(`<i class="fa-solid fa-shield-virus"></i> ${data.mensagem}`, 'danger');
-        break;
-    }
-  }
-
-  // ── Novo Login em Tempo Real ──────────────────────────────────────────
-  onNovoLogin(data) {
+window.addEventListener('socWsMessage', (e) => {
+  const data = e.detail;
+  if (data.tipo === 'novo_login') {
     const grid = document.getElementById('login-grid');
     const card = document.createElement('div');
     card.className = 'login-node login-new';
@@ -495,28 +382,16 @@ class SOCWebSocket {
       </div>
     `;
     grid.insertBefore(card, grid.firstChild);
-
-    // Remover animação após completar
     setTimeout(() => card.classList.remove('login-new'), 800);
-
     atualizarContadores();
-    this.playBeep(800);
-    socToast(`<i class="fa-solid fa-right-to-bracket"></i> <strong>${escapeHtml(data.usuario)}</strong> logou de ${escapeHtml(data.ip)}`, 'info');
   }
-
-  // ── Blacklist em Tempo Real ───────────────────────────────────────────
-  onBlacklistUpdate(data) {
+  else if (data.tipo === 'blacklist_update') {
     const container = document.getElementById('blacklist-container');
-
     if (data.acao === 'bloqueado') {
-      // Remover mensagem "Nenhum IP bloqueado" se existir
       const vazio = document.getElementById('blacklist-vazio');
       if (vazio) vazio.remove();
-
-      // Verificar se já existe (update_or_create pode recriar)
       const existente = document.getElementById(`bl-item-${data.blacklist_id}`);
       if (existente) existente.remove();
-
       const item = document.createElement('div');
       item.className = 'blacklist-item item-new';
       item.id = `bl-item-${data.blacklist_id}`;
@@ -531,50 +406,21 @@ class SOCWebSocket {
       `;
       container.insertBefore(item, container.firstChild);
       setTimeout(() => item.classList.remove('item-new'), 600);
-
-      this.playBeep(400);
-
     } else if (data.acao === 'desbloqueado') {
-      // Encontrar por ID ou por IP
       let item = document.getElementById(`bl-item-${data.blacklist_id}`);
-      if (!item) {
-        item = container.querySelector(`.blacklist-item[data-ip="${data.ip}"]`);
-      }
+      if (!item) item = container.querySelector(`.blacklist-item[data-ip="${data.ip}"]`);
       if (item) {
         item.classList.add('item-removing');
         setTimeout(() => {
           item.remove();
-          // Se não há mais itens, mostrar mensagem vazia
           if (!container.querySelector('.blacklist-item')) {
             container.innerHTML = '<p id="blacklist-vazio" style="font-size: 0.7rem; opacity: 0.5; text-align: center; padding: 20px;">Nenhum IP bloqueado.</p>';
           }
         }, 400);
       }
     }
-
     atualizarContadores();
   }
-
-  playBeep(freq) {
-    try {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.frequency.value = freq;
-      osc.type = 'sine';
-      gain.gain.setValueAtTime(0.2, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
-      osc.start(ctx.currentTime);
-      osc.stop(ctx.currentTime + 0.12);
-    } catch (e) {}
-  }
-}
-
-// ─── Inicializar ──────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  window.socWS = new SOCWebSocket();
 });
 </script>
 {% endblock %}

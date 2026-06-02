@@ -278,7 +278,7 @@
     {# Event Feed Global #}
     <article class="hub-card" style="margin-bottom: 20px; height: 350px;">
       <h3 class="hub-title"><i class="fa-solid fa-tower-broadcast"></i> Global Event Feed</h3>
-      <div style="max-height: 400px; overflow-y: auto;">
+      <div id="event-feed-container" style="max-height: 400px; overflow-y: auto;">
         {% for event in event_feed %}
         <div class="metric-item" style="flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 0;">
           <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.65rem;">
@@ -323,8 +323,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // ── Chart.js: Tendência de Carga ─────────────────────────────────────
     const ctx = document.getElementById('performanceChart').getContext('2d');
-    new Chart(ctx, {
+    const perfChart = new Chart(ctx, {
       type: 'line',
       data: {
         labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '00:00'],
@@ -349,6 +350,58 @@
         }
       }
     });
+
+    // ── Feed Dinâmico de Eventos ─────────────────────────────────────────
+    function timeSince(isoDate) {
+      const seconds = Math.floor((new Date() - new Date(isoDate)) / 1000);
+      if (seconds < 60) return `${seconds}s atrás`;
+      const minutes = Math.floor(seconds / 60);
+      if (minutes < 60) return `${minutes}min atrás`;
+      const hours = Math.floor(minutes / 60);
+      if (hours < 24) return `${hours}h atrás`;
+      return `${Math.floor(hours / 24)}d atrás`;
+    }
+
+    function rebuildEventFeed(eventos) {
+      const container = document.getElementById('event-feed-container');
+      if (!container || !eventos || !eventos.length) return;
+
+      // Mantém scroll no topo apenas se o usuário não rolou para baixo
+      const scrolledDown = container.scrollTop > 40;
+
+      container.innerHTML = eventos.map(e => `
+        <div class="metric-item" style="flex-direction: column; align-items: flex-start; gap: 4px; padding: 12px 0; animation: feedIn 0.3s ease-out;">
+          <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 0.65rem;">
+            <i class="fa-solid ${e.icone}" style="color: ${e.cor};"></i> ${e.tipo.toUpperCase()}
+          </div>
+          <p style="margin: 0; opacity: 0.8; font-size: 0.7rem; line-height: 1.4;">${e.texto}</p>
+          <span style="font-size: 0.6rem; color: var(--text-muted);">${timeSince(e.data_iso)}</span>
+        </div>
+      `).join('');
+
+      if (!scrolledDown) container.scrollTop = 0;
+    }
+
+    // Escuta o evento do polling AJAX global (definido em base_ti.html)
+    window.addEventListener('tiMetricsUpdated', function(e) {
+      const data = e.detail;
+      if (data.eventos && data.eventos.length) {
+        rebuildEventFeed(data.eventos);
+      }
+      // Atualiza métricas de perf no chart (data point rolling)
+      if (data.recursos && perfChart) {
+        const ds = perfChart.data.datasets[0];
+        ds.data.push(data.recursos.cpu_percent);
+        ds.data.shift();
+        perfChart.update('none'); // 'none' = sem animação, mais performático
+      }
+    });
   });
 </script>
+<style>
+  @keyframes feedIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
 {% endblock %}
