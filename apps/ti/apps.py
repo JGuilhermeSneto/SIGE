@@ -24,7 +24,7 @@ class TiConfig(AppConfig):
 
             def start_flower():
                 if not check_port(5555):
-                    print("⚙️ Jarvis: Inicializando monitoramento Celery (Flower)...")
+                    print("[Jarvis] Inicializando monitoramento Celery (Flower)...")
                     try:
                         # Roda em background sem bloquear o Django
                         subprocess.Popen(
@@ -34,7 +34,7 @@ class TiConfig(AppConfig):
                             shell=True if os.name == 'nt' else False
                         )
                     except Exception as e:
-                        print(f"❌ Jarvis: Erro ao iniciar Flower: {e}")
+                        print(f"[Jarvis] Erro ao iniciar Flower: {e}")
 
             # Roda em uma thread separada para não travar o boot do Django
             threading.Thread(target=start_flower, daemon=True).start()

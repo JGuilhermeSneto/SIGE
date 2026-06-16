@@ -12,6 +12,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+import logging
+
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -27,6 +30,15 @@ class SIGETokenObtainPairView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
+        # Log temporário para depuração de payloads vindos do cliente mobile
+        try:
+            logger.debug("[SIGETokenObtainPairView] request.META: %s", {k: request.META.get(k) for k in ['REMOTE_ADDR','HTTP_HOST','CONTENT_TYPE','HTTP_USER_AGENT']})
+            logger.debug("[SIGETokenObtainPairView] request.data: %s", request.data)
+            # prints temporários para visualização imediata no console
+            print("[SIGETokenObtainPairView] request.META:", {k: request.META.get(k) for k in ['REMOTE_ADDR','HTTP_HOST','CONTENT_TYPE','HTTP_USER_AGENT']})
+            print("[SIGETokenObtainPairView] request.data:", request.data)
+        except Exception:
+            pass
         identifier = (
             request.data.get("username")
             or request.data.get("email")
