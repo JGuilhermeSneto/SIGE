@@ -65,6 +65,8 @@ INSTALLED_APPS = [
     "apps.ti",
     "apps.leads",
     "apps.notifications",
+    "apps.iot",
+
     "django_prometheus",
     "health_check",              # API unificada (v4.x) — usa /health/ endpoint
     "channels",
