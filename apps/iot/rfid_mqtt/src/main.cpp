@@ -58,21 +58,24 @@ String uidToString() {
 }
 
 void setup() {
-  Serial.begin(115200);
-  SPI.begin();
-  rfid.PCD_Init();
+    Serial.begin(115200);
+    // optional: wait for the serial port to be ready (useful on some boards)
+    // while (!Serial) { ; }
 
-  pinMode(LED_GREEN, OUTPUT);
-  pinMode(LED_RED, OUTPUT);
+    SPI.begin();
+    rfid.PCD_Init();
 
-  // Start with "closed" state (red on)
-  digitalWrite(LED_GREEN, LOW);
-  digitalWrite(LED_RED, HIGH);
+    pinMode(LED_GREEN, OUTPUT);
+    pinMode(LED_RED, OUTPUT);
 
-  connectToWiFi();
-  connectToMqtt();
+    // Start with "closed" state (red on)
+    digitalWrite(LED_GREEN, LOW);
+    digitalWrite(LED_RED, HIGH);
 
-  Serial.println("System ready. Await RFID tag...");
+    connectToWiFi();
+    connectToMqtt();
+
+    Serial.println("System ready. Await RFID tag...");
 }
 
 void loop() {
