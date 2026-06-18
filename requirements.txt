@@ -62,7 +62,7 @@ gunicorn==23.0.0
 html5lib==1.1
 humanize==4.15.0
 hyperlink==21.0.0
-idna==3.11
+idna==3.18
 Incremental==24.11.0
 inflection==0.5.1
 iniconfig==2.3.0
