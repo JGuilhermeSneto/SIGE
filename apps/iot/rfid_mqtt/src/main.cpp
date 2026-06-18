@@ -64,6 +64,10 @@ void setup() {
 
     SPI.begin();
     rfid.PCD_Init();
+    
+    // Mostra a versão do firmware do leitor RFID para testar a comunicação SPI
+    Serial.print("MFRC522: ");
+    rfid.PCD_DumpVersionToSerial();
 
     pinMode(LED_GREEN, OUTPUT);
     pinMode(LED_RED, OUTPUT);
@@ -99,11 +103,59 @@ void loop() {
     Serial.println("Failed to publish UID");
   }
 
-  // Open (green on, red off) for 5 seconds
-  digitalWrite(LED_GREEN, HIGH);
-  digitalWrite(LED_RED, LOW);
-  delay(5000);
-  // Close (green off, red on)
+  // Alternating red and green LEDs while starting to read/process
+  for (int i = 0; i < 10; i++) {
+    digitalWrite(LED_RED, i % 2 == 0 ? LOW : HIGH);
+    digitalWrite(LED_GREEN, i % 2 == 0 ? HIGH : LOW);
+    delay(100);
+  }
+
+  // Validate the connection (RFID UID check)
+  bool isValid = false;
+  String studentName = "";
+
+  if (uid.equalsIgnoreCase(AUTHORIZED_UID_ISRAEL)) {
+    isValid = true;
+    studentName = "Isreal";
+  } else if (uid.equalsIgnoreCase(AUTHORIZED_UID_PEDRO)) {
+    isValid = true;
+    studentName = "Pedro";
+  }
+
+  if (isValid) {
+    // Green ON, Red OFF for 10 seconds
+    digitalWrite(LED_GREEN, HIGH);
+    digitalWrite(LED_RED, LOW);
+    Serial.print("Nome do aluno: ");
+    Serial.print(studentName);
+    Serial.println(": Acesso Liberado!");
+
+    // Keep active state for 10 seconds keeping MQTT alive
+    unsigned long startMillis = millis();
+    while (millis() - startMillis < 10000) {
+      client.loop();
+      delay(50);
+    }
+  } else {
+    // Red blinks for 10 seconds, Green OFF
+    digitalWrite(LED_GREEN, LOW);
+    Serial.println("Nome do aluno: Acesso Negado!");
+
+    unsigned long startMillis = millis();
+    unsigned long lastToggle = 0;
+    bool redState = false;
+    while (millis() - startMillis < 10000) {
+      if (millis() - lastToggle >= 250) {
+        redState = !redState;
+        digitalWrite(LED_RED, redState ? HIGH : LOW);
+        lastToggle = millis();
+      }
+      client.loop();
+      delay(10);
+    }
+  }
+
+  // Return to normal (Red ON, Green OFF)
   digitalWrite(LED_GREEN, LOW);
   digitalWrite(LED_RED, HIGH);
   Serial.println("System closed.");
