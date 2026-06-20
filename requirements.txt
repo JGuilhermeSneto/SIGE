@@ -23,7 +23,7 @@ cloudinary==1.44.2
 colorama==0.4.6
 constantly==23.10.4
 coverage==7.13.5
-cryptography==46.0.7
+cryptography==49.0.0
 cssselect2==0.9.0
 daphne==4.2.1
 dill==0.4.1
