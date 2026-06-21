@@ -214,7 +214,69 @@ python apps/iot/mqtt_consumer.py
 
 ---
 
-## 📌 Checklist final
+## 🏫 Usando o IoT em Redes Institucionais (ex.: IFRN)
+
+Redes de institutos federais e universidades possuem **firewall que bloqueia o tráfego direto entre dispositivos** (ex.: ESP32 → PC na mesma rede). Se você estiver no IFRN ou em rede similar, siga uma das estratégias abaixo:
+
+### ✅ Solução 1 — Broker MQTT Público (testes rápidos)
+
+A forma mais simples: use um broker público acessível pela internet. O ESP32 e o Django Consumer apontam para o mesmo endereço externo, sem depender de comunicação local.
+
+No código do ESP32 (string `mqtt_server`):
+```cpp
+const char* mqtt_server = "broker.hivemq.com"; // ou broker.emqx.io
+const int   mqtt_port   = 1883;
+```
+
+No `apps/iot/mqtt_consumer.py`:
+```python
+BROKER_HOST = "broker.hivemq.com"
+BROKER_PORT = 1883
+TOPIC = "sige/iot/rfid/SEU_TOPICO_UNICO"
+```
+
+| Broker | Endereço | Porta |
+|---|---|---|
+| HiveMQ | `broker.hivemq.com` | `1883` |
+| EMQX | `broker.emqx.io` | `1883` |
+| Mosquitto (test) | `test.mosquitto.org` | `1883` |
+
+> ⚠️ **Nunca publique dados de produção em brokers públicos.** Use tópicos com nomes únicos (ex.: `sige/iot/rfid/ifrn-natal-2026`) para evitar colisão com outros usuários.
+
+---
+
+### ✅ Solução 2 — Hotspot do Celular (rede isolada)
+
+Conecte o ESP32 e o seu PC na mesma rede de hotspot do celular. Isso elimina o firewall institucional.
+
+1. Ative o **Hotspot** no celular.
+2. Conecte o PC ao hotspot.
+3. Descubra o IP do PC nessa rede:
+   ```powershell
+   ipconfig
+   # Ex.: 192.168.43.100  (interface "Wi-Fi" ou "Adaptador Ethernet sem Fio")
+   ```
+4. No firmware do ESP32, altere:
+   ```cpp
+   const char* ssid        = "Nome_do_Hotspot";
+   const char* password    = "Senha_do_Hotspot";
+   const char* mqtt_server = "192.168.43.100";  // IP do PC no hotspot
+   ```
+5. Inicie o Mosquitto no PC:
+   ```powershell
+   mosquitto -v
+   ```
+> **Dica:** O IP do PC no hotspot pode variar a cada reconexão. Se o ESP32 não alcançar o broker, repita o passo 3 e recompile o firmware.
+
+---
+
+### ✅ Solução 3 — Liberação de Porta pelo TI (produção)
+
+Para uso permanente nas instalações do IFRN, solicite à **Coordenação de TI** a liberação da **porta `1883` (TCP)** para o IP fixo da máquina que rodará o broker Mosquitto. Isso habilita a comunicação direta ESP32 → broker sem dependência de internet ou hotspot.
+
+---
+
+
 - [ ] Virtual‑env ativo e dependências instaladas (`pip install -r requirements.txt`).
 - [ ] Migrações IoT aplicadas.
 - [ ] Broker MQTT rodando e acessível.

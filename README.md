@@ -793,7 +793,13 @@ Grafana: http://localhost:3000 (admin/admin)
 
 **Rate Limiting**: Anon users – `10/min`; Authenticated users – `30/min` (configured in `settings.py`).
 
-**API Mobile**: Para integração exclusiva de aplicativos, temos uma documentação específica.
+**API Mobile (REST v1)**: Para integração de aplicativos móveis (Alunos e Pais):
+- **Login Mobile**: `POST /api/v1/auth/login/` – Login com JWT.
+- **Dashboard Aluno**: `GET /api/v1/aluno/dashboard/` – Resumo acadêmico, mural de avisos, livros pendentes, grade do dia e vetor de desempenho. Retorna a `foto_url` do estudante.
+- **Boletim Aluno**: `GET /api/v1/aluno/boletim/` – Notas detalhadas por bimestre, médias e frequência consolidada.
+- **Perfil Aluno**: `GET /api/v1/aluno/perfil/` e `PUT /api/v1/aluno/perfil/` – Leitura e escrita de dados de identificação e contato. O método `PUT` suporta `multipart/form-data` para envio de nova foto de perfil (chave `foto` contendo arquivo de imagem) ou remoção da foto existente (parâmetro `remover_foto=true`).
+- **Roteiro Aluno**: `GET /api/v1/aluno/roteiro/` – Planejamentos de aula e conteúdo ministrado pelos docentes.
+- **Materiais Didáticos**: `GET /api/v1/aluno/materiais/` – Arquivos e links compartilhados para estudo.
 - **Swagger Mobile**: `GET /api/docs/mobile/`
 - **Registro de Push Tokens**: `POST /api/mobile/notifications/register-token/`
 

@@ -1,6 +1,6 @@
-# 👥 App: Usuários (v2.2)
+# 👥 App: Usuários (v2.3)
 
-Módulo central de identidade, autenticação e perfis do SIGE.
+Módulo central de identidade, autenticação e perfis do SIGE. Integrado ao app SIGE Mobile via JWT.
 
 ![Testes](https://img.shields.io/badge/Testes-Estável-brightgreen?style=flat-square&logo=pytest)
 ![Cobertura](https://img.shields.io/badge/Cobertura-~82%25-green?style=flat-square)
@@ -10,7 +10,7 @@ Módulo central de identidade, autenticação e perfis do SIGE.
 - Autenticação em Dois Fatores (2FA — TOTP)
 - Gestão de perfis: Aluno, Professor, Gestor, Responsável, TI
 - Controle de permissões e grupos (RBAC)
-- Upload e gestão de foto de perfil (Cloudinary)
+- Upload e gestão de foto de perfil (Cloudinary + REST API para mobile)
 - Context processors para notificações globais
 
 ## ⚠️ Comportamento Crítico — `Aluno.save()`
@@ -47,3 +47,10 @@ O método `save()` do modelo `Aluno` **sobrescreve automaticamente** o `user.use
 | `test_usuarios_forms_perfis.py` | ✅ |
 | `test_views_autenticacao.py` | ✅ |
 | `test_views_perfis.py` | ✅ |
+
+## 📱 Integração Mobile (Junho 2026)
+- **Foto de perfil via API**: `PUT /api/v1/aluno/perfil/` com `multipart/form-data` para upload direto do SIGE Mobile.
+- **Consulta de perfil**: `GET /api/v1/aluno/perfil/` retorna dados do aluno incluindo `foto_url`.
+
+---
+> Atualizado em Junho de 2026 — Endpoints REST expostos para SIGE Mobile.

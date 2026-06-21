@@ -15,5 +15,9 @@ O diretório `config/` é o sistema nervoso central do SIGE, onde a orquestraç�
 ## 🚀 Orquestração de Tarefas
 - **Celery**: Configurações de Broker (RabbitMQ) e Result Backend centralizadas para processamento assíncrono em larga escala.
 
-> Atualizado em Maio de 2026 — Orquestração de Produção (Render) consolidada.
+## 📱 Mobile & API REST
+- JWT configurado com refresh automático, partilhado com o **SIGE Mobile** (React Native / Expo).
+- CORS habilitado para origens do app mobile em desenvolvimento e produção.
+
+> Atualizado em Junho de 2026 — JWT & CORS validados para integração com SIGE Mobile.
 

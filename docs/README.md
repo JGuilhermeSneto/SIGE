@@ -30,6 +30,7 @@ Bem-vindo à documentação oficial do SIGE. Navegue pelos documentos abaixo par
 |---|---|
 | [DEVOPS.md](./DEVOPS.md) | Pipeline de CI/CD, Docker, deploy no Render e checklist |
 | [API.md](./API.md) | API REST, autenticação JWT e guia do Swagger UI |
+| [DOCUMENTACAO_API_E_INTEGRACAO.md](./DOCUMENTACAO_API_E_INTEGRACAO.md) | **Integração API & Mobile** — Endpoints do SIGE Mobile, foto de perfil, gráficos |
 
 ---
 

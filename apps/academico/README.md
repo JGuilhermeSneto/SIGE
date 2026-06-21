@@ -6,6 +6,7 @@ Módulo responsável por toda a gestão pedagógica do SIGE.
 ![Cobertura](https://img.shields.io/badge/Cobertura-~75%25-green?style=flat-square)
 
 ## 🚀 Novidades (v8.0 Apex)
+- **REST API para Mobile Integrada:** Implementação e ativação completa de views REST no arquivo `api.py` (`AlunoDashboardView`, `AlunoBoletimView`, `AlunoPerfilView`, `AlunoRoteiroView` e `AlunoMateriaisView`), permitindo sincronização perfeita com o aplicativo React Native/Expo.
 - **Suíte de Testes 100% Estável:** Todos os 49 testes passando — views, services, utils, seletores e atividades.
 - **Service Layer Pattern:** Lógica de negócios centralizada em `services/` para maior manutenibilidade.
 - **Notificações Unificadas:** Sistema `Notificacao` integrado para alunos, professores e gestores.

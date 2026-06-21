@@ -39,6 +39,9 @@ from apps.academico.api import (
     MaterialDidaticoViewSet,
     AlunoDashboardView,
     AlunoBoletimView,
+    AlunoPerfilView,
+    AlunoRoteiroView,
+    AlunoMateriaisView,
 )
 from apps.biblioteca.api import BibliotecaViewSet, MeusEmprestimosViewSet
 from apps.saude.api import SaudeViewSet
@@ -75,6 +78,9 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("api/v1/auth/login/", SIGETokenObtainPairView.as_view(), name="api-v1-login"),
     path("api/v1/aluno/dashboard/", AlunoDashboardView.as_view(), name="api-v1-aluno-dashboard"),
     path("api/v1/aluno/boletim/", AlunoBoletimView.as_view(), name="api-v1-aluno-boletim"),
+    path("api/v1/aluno/perfil/", AlunoPerfilView.as_view(), name="api-v1-aluno-perfil"),
+    path("api/v1/aluno/roteiro/", AlunoRoteiroView.as_view(), name="api-v1-aluno-roteiro"),
+    path("api/v1/aluno/materiais/", AlunoMateriaisView.as_view(), name="api-v1-aluno-materiais"),
 
     path("api/", include(router.urls)),
     path("api/mobile/", include("apps.mobile.urls")),

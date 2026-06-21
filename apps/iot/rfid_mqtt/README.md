@@ -43,6 +43,71 @@ const char* MQTT_TOPIC   = "esp32/rfid";      // Topic where UIDs are published
 ```
 You can also point to a private broker (e.g., Mosquitto, EMQX) – just change the address/port.
 
+## 🏫 Configuração em Redes Institucionais (ex.: IFRN)
+
+Redes universitárias e de institutos federais (como a do **IFRN**) possuem restrições que diferem de uma rede doméstica. Siga os passos abaixo para adaptar o projeto:
+
+### Problema comum
+Nessas redes, o tráfego **peer-to-peer entre dispositivos** (ESP32 → PC) costuma ser **bloqueado por padrão**. Isso impede que o ESP32 alcance o broker MQTT rodando na sua máquina diretamente pelo IP local.
+
+### ✅ Solução 1 — Broker MQTT Público (recomendado para testes rápidos)
+Use um broker público gratuito que seja acessível pela internet. O ESP32 usa a internet da rede institucional para se conectar, **sem depender da comunicação direta com o seu PC**.
+
+Edite o `src/config.h`:
+```cpp
+const char* MQTT_BROKER = "broker.hivemq.com"; // broker público gratuito
+const uint16_t MQTT_PORT = 1883;
+const char* MQTT_TOPIC   = "sige/iot/rfid/SEU_NOME"; // use um tópico único!
+```
+> **⚠️ Atenção:** Brokers públicos são compartilhados. Nunca publique dados sensíveis neles. Use-os apenas para desenvolvimento e testes.
+
+Opções de brokers públicos gratuitos:
+| Broker | Endereço | Porta |
+|---|---|---|
+| HiveMQ | `broker.hivemq.com` | `1883` |
+| EMQX | `broker.emqx.io` | `1883` |
+| Mosquitto (test) | `test.mosquitto.org` | `1883` |
+
+O consumidor Django também precisa apontar para o mesmo broker. Em `apps/iot/mqtt_consumer.py`:
+```python
+BROKER_HOST = "broker.hivemq.com"
+BROKER_PORT = 1883
+TOPIC = "sige/iot/rfid/SEU_NOME"  # deve ser idêntico ao do ESP32
+```
+
+---
+
+### ✅ Solução 2 — Hotspot do Celular (rede isolada e controlada)
+Crie um **hotspot Wi-Fi** no seu celular e conecte tanto o ESP32 quanto o seu PC nessa rede. Assim, a comunicação é direta, sem firewall institucional.
+
+1. Ative o hotspot no celular.
+2. Conecte o seu PC ao hotspot.
+3. Descubra o IP do seu PC nessa rede:
+   ```powershell
+   ipconfig
+   # Procure pela interface "Adaptador de Rede sem Fio Wi-Fi" → Endereço IPv4
+   # Exemplo: 192.168.43.100
+   ```
+4. Edite o `src/config.h` do ESP32:
+   ```cpp
+   const char* WIFI_SSID     = "Nome_do_Hotspot";
+   const char* WIFI_PASSWORD = "Senha_do_Hotspot";
+   const char* MQTT_BROKER   = "192.168.43.100"; // IP do PC no hotspot
+   const uint16_t MQTT_PORT  = 1883;
+   ```
+5. Inicie o broker Mosquitto no seu PC:
+   ```powershell
+   mosquitto -v
+   ```
+> **Dica:** O IP do PC no hotspot pode mudar a cada conexão. Se o ESP32 não conectar, repita o passo 3 e atualize o `config.h`.
+
+---
+
+### ✅ Solução 3 — Solicitar Liberação de Porta ao TI (produção)
+Para implantação definitiva no IFRN, solicite à equipe de TI a **liberação da porta `1883`** (MQTT) e do IP fixo da máquina que rodará o broker. Essa é a solução mais robusta para ambiente de produção.
+
+---
+
 ## 🛠️ Build & Upload
 ```powershell
 # 1️⃣ Navigate to the project folder

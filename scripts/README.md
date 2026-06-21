@@ -6,9 +6,9 @@ Esta pasta contém ferramentas de suporte, debug e utilitários que não fazem p
 - `check_count.py`: Verifica a contagem de registros no banco de dados.
 - `debug_templates.py`: Ferramenta para identificar problemas de renderização em templates.
 - `fetch_covers.py`: Script para baixar capas de livros via API externa.
-- `test_api.py`: Testes rápidos de endpoints REST.
+- `test_api.py`: Testes rápidos de endpoints REST (incluindo endpoints de perfil do aluno e dashboard mobile).
 - `test_template_res.py`: Validação de responsividade e resolução em templates.
 
 > **Nota**: Sempre execute estes scripts a partir da raiz do projeto para garantir que os caminhos de importação funcionem.
 
-> Atualizado em Maio de 2026.
+> Atualizado em Junho de 2026.

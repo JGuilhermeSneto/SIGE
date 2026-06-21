@@ -2,6 +2,7 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from .models import (
     Turma, Disciplina, GradeHorario, AtividadeProfessor, MaterialDidatico,
@@ -301,13 +302,19 @@ class AlunoDashboardView(APIView):
                 for item in items
             ]
 
+        # Obter a foto de perfil (ou avatar placeholder)
+        foto_url = aluno.get_foto_url
+        if foto_url and not foto_url.startswith(("http://", "https://")):
+            foto_url = request.build_absolute_uri(foto_url)
+
         return Response({
             "aluno": {
                 "id": aluno.id,
                 "nome_completo": aluno.nome_completo,
                 "turma": aluno.turma.nome if aluno.turma else "Sem Turma",
                 "turno": aluno.turma.get_turno_display() if aluno.turma else "Sem Turno",
-                "ano_letivo": aluno.turma.ano if aluno.turma else ""
+                "ano_letivo": aluno.turma.ano if aluno.turma else "",
+                "foto_url": foto_url
             },
             "parental_control": {
                 "ativo": parental_ativo
@@ -416,9 +423,10 @@ class AlunoPerfilView(APIView):
     """
     API endpoint para visualizar e atualizar o perfil do aluno logado.
     GET: Retorna dados pessoais, acadêmicos, responsáveis e estatísticas.
-    PUT: Permite atualizar campos pessoais (nome, cpf, data_nascimento, naturalidade, telefone).
+    PUT: Permite atualizar campos pessoais (nome, cpf, data_nascimento, naturalidade, telefone) e a foto de perfil.
     """
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get(self, request, *args, **kwargs):
         user = request.user
@@ -455,6 +463,11 @@ class AlunoPerfilView(APIView):
                 "telefone": resp.telefone or "—",
             })
 
+        # Obter a foto de perfil (ou avatar placeholder)
+        foto_url = aluno.get_foto_url
+        if foto_url and not foto_url.startswith(("http://", "https://")):
+            foto_url = request.build_absolute_uri(foto_url)
+
         return Response({
             "nome": aluno.nome_completo,
             "matricula": aluno.matricula or "—",
@@ -466,6 +479,7 @@ class AlunoPerfilView(APIView):
             "turno": aluno.turma.get_turno_display() if aluno.turma else "—",
             "ano_letivo": str(aluno.turma.ano) if aluno.turma else "—",
             "status_matricula": aluno.get_status_matricula_display(),
+            "foto_url": foto_url,
             "stats": {
                 "media_geral": str(media_geral),
                 "frequencia": f"{pct_freq}%",
@@ -497,8 +511,33 @@ class AlunoPerfilView(APIView):
             except ValueError:
                 pass
 
+        # Atualizar ou remover foto de perfil
+        foto = request.FILES.get("foto") or request.data.get("foto")
+        if foto and not isinstance(foto, str):
+            if aluno.foto:
+                try:
+                    aluno.foto.delete(save=False)
+                except Exception:
+                    pass
+            aluno.foto = foto
+        elif dados.get("remover_foto") == "true" or dados.get("remover_foto") is True:
+            if aluno.foto:
+                try:
+                    aluno.foto.delete(save=False)
+                except Exception:
+                    pass
+            aluno.foto = None
+
         aluno.save()
-        return Response({"detail": "Perfil atualizado com sucesso."}, status=status.HTTP_200_OK)
+
+        foto_url = aluno.get_foto_url
+        if foto_url and not foto_url.startswith(("http://", "https://")):
+            foto_url = request.build_absolute_uri(foto_url)
+
+        return Response({
+            "detail": "Perfil atualizado com sucesso.",
+            "foto_url": foto_url
+        }, status=status.HTTP_200_OK)
 
 
 class AlunoRoteiroView(APIView):
