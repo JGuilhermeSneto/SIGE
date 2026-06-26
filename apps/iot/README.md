@@ -286,4 +286,39 @@ Para uso permanente nas instalações do IFRN, solicite à **Coordenação de TI
 
 ---
 
-**⚡️ Pronto!** Seu módulo IoT está pronto para receber tags RFID, registrar a presença dos alunos e alimentar o restante do ecossistema SIGE (dashboard, relatórios, notificações, etc.).
+**⚡️ Pronto! Seu módulo IoT está pronto para receber tags RFID, registrar a presença dos alunos e alimentar o restante do ecossistema SIGE (dashboard, relatórios, notificações, etc.).
+
+---
+
+## 📚 Scripts de gerenciamento Django
+
+Além do firmware ESP32, o backend SIGE oferece dois comandos úteis para facilitar testes e depuração:
+
+- **`seedrfids`** – cria usuários de exemplo e associa tags RFID a eles.  Ideal para rodar rapidamente a demonstração do consumer MQTT.
+  ```bash
+  python manage.py seedrfids
+  ```
+  O comando cria três usuários (`aluno1`, `aluno2`, `aluno3`) com UIDs `04A3B2C1`, `1F2E3D4C` e `9ABCDEF0`.
+
+- **`listrfid`** – lista todas as tags RFID cadastradas no banco, exibindo o UID e o usuário/aluno associado.
+  ```bash
+  python manage.py listrfid
+  ```
+  Exemplo de saída:
+  ```
+  UID: 04A3B2C1 -> aluno1 (Ana Silva) - Aluno: Ana Silva
+  UID: 1F2E3D4C -> aluno2 (Bruno Costa) - Aluno: Bruno Costa
+  UID: 9ABCDEF0 -> aluno3 (Carla Medeiros) - Aluno: Carla Medeiros
+  ```
+
+> **Dica:** Execute `seedrfids` antes de iniciar o consumer MQTT (`python manage.py runmqtt`) para garantir que haja registros de usuários a serem associados às tags lidas.
+
+---
+
+## 🚀 Próximos passos
+
+- Inicie o broker MQTT (público ou local) e rode `python manage.py runmqtt`.
+- Carregue o firmware no ESP32 e teste a leitura das tags.
+- Verifique a presença registrada via API (`/api/v1/iot/rfid/`).
+
+*Created by Antigravity – your AI coding assistant.*
