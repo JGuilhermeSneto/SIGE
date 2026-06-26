@@ -286,4 +286,71 @@ Para uso permanente nas instalações do IFRN, solicite à **Coordenação de TI
 
 ---
 
-**⚡️ Pronto!** Seu módulo IoT está pronto para receber tags RFID, registrar a presença dos alunos e alimentar o restante do ecossistema SIGE (dashboard, relatórios, notificações, etc.).
+**⚡️ Pronto! Seu módulo IoT está pronto para receber tags RFID, registrar a presença dos alunos e alimentar o restante do ecossistema SIGE (dashboard, relatórios, notificações, etc.).
+
+---
+
+## 📚 Scripts de gerenciamento Django
+
+Além do firmware ESP32, o backend SIGE oferece dois comandos úteis para facilitar testes e depuração:
+
+- **`seedrfids`** – cria usuários de exemplo e associa tags RFID a eles.  Ideal para rodar rapidamente a demonstração do consumer MQTT.
+  ```bash
+  python manage.py seedrfids
+  ```
+  O comando cria três usuários (`aluno1`, `aluno2`, `aluno3`) com UIDs `04A3B2C1`, `1F2E3D4C` e `9ABCDEF0`.
+
+- **`listrfid`** – lista todas as tags RFID cadastradas no banco, exibindo o UID e o usuário/aluno associado.
+  ```bash
+  python manage.py listrfid
+  ```
+  Exemplo de saída:
+  ```
+  UID: 04A3B2C1 -> aluno1 (Ana Silva) - Aluno: Ana Silva
+  UID: 1F2E3D4C -> aluno2 (Bruno Costa) - Aluno: Bruno Costa
+  UID: 9ABCDEF0 -> aluno3 (Carla Medeiros) - Aluno: Carla Medeiros
+  ```
+
+> **Dica:** Execute `seedrfids` antes de iniciar o consumer MQTT (`python manage.py runmqtt`) para garantir que haja registros de usuários a serem associados às tags lidas.
+
+---
+
+## 🚀 Próximos passos
+
+- Inicie o broker MQTT (público ou local) e rode `python manage.py runmqtt`.
+- Carregue o firmware no ESP32 e teste a leitura das tags.
+- Verifique a presença registrada via API (`/api/v1/iot/rfid/`).
+
+*Created by Antigravity – your AI coding assistant.*
+
+---
+
+## 📢 Contribuindo via Fork
+
+1. **Fork** o repositório no GitHub (botão *Fork* no canto superior direito).
+2. Clone seu fork localmente:
+
+   ```bash
+   git clone https://github.com/Israelf1lho/SIGE.git
+   cd SIGE
+   ```
+
+3. **Crie um branch** para sua mudança:
+
+   ```bash
+   git checkout -b doc/update-seedrfids
+   ```
+
+4. **Faça as alterações** (ex.: editar este README).
+5. **Commit** e **push** para o seu fork:
+
+   ```bash
+   git add .
+   git commit -m "Atualiza documentação: adiciona seedrfids e listrfid"
+   git push -u origin doc/update-seedrfids
+   ```
+
+6. Abra um **Pull Request** do seu fork para o repositório original (`JGuilhermeSneto/SIGE`). O maintainer revisará e, se tudo estiver ok, mesclará sua melhoria.
+
+> **Dica:** Use `git push -u fork doc/update-seedrfids` se o remoto do fork foi adicionado como `fork`.
+

@@ -3,10 +3,11 @@
 
 #include <Arduino.h>
 #include <cstdint>
+
 // ----- WiFi & MQTT Settings (replace with your own) -----
-constexpr const char* WIFI_SSID = "Keyla-2G";             // WiFi SSID
-constexpr const char* WIFI_PASSWORD = "23265554"; // WiFi password
-constexpr const char* MQTT_BROKER = "broker.hivemq.com"; // MQTT broker host
+constexpr const char* WIFI_SSID = "Zeca";             // WiFi SSID
+constexpr const char* WIFI_PASSWORD = "zecas1301"; // WiFi password
+constexpr const char* MQTT_BROKER = "broker.hivemq.com"; // Public HiveMQ broker
 const uint16_t MQTT_PORT = 1883;               // MQTT broker port
 constexpr const char* MQTT_TOPIC = "esp32/rfid";        // Topic to publish UID
 
