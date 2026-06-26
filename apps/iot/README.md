@@ -322,3 +322,35 @@ Além do firmware ESP32, o backend SIGE oferece dois comandos úteis para facili
 - Verifique a presença registrada via API (`/api/v1/iot/rfid/`).
 
 *Created by Antigravity – your AI coding assistant.*
+
+---
+
+## 📢 Contribuindo via Fork
+
+1. **Fork** o repositório no GitHub (botão *Fork* no canto superior direito).
+2. Clone seu fork localmente:
+
+   ```bash
+   git clone https://github.com/Israelf1lho/SIGE.git
+   cd SIGE
+   ```
+
+3. **Crie um branch** para sua mudança:
+
+   ```bash
+   git checkout -b doc/update-seedrfids
+   ```
+
+4. **Faça as alterações** (ex.: editar este README).
+5. **Commit** e **push** para o seu fork:
+
+   ```bash
+   git add .
+   git commit -m "Atualiza documentação: adiciona seedrfids e listrfid"
+   git push -u origin doc/update-seedrfids
+   ```
+
+6. Abra um **Pull Request** do seu fork para o repositório original (`JGuilhermeSneto/SIGE`). O maintainer revisará e, se tudo estiver ok, mesclará sua melhoria.
+
+> **Dica:** Use `git push -u fork doc/update-seedrfids` se o remoto do fork foi adicionado como `fork`.
+
