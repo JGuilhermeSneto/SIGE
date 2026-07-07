@@ -4,8 +4,10 @@ from datetime import date
 from django.core.management.base import BaseCommand
 import paho.mqtt.client as mqtt
 from apps.iot.models import RFIDTag
+import json
+import datetime
 from apps.academico.models.desempenho_v8 import Frequencia, Notificacao
-from apps.academico.models.academico import Disciplina
+from apps.academico.models.academico import Disciplina, GradeHorario
 
 class Command(BaseCommand):
     help = "Inicia o consumidor MQTT para registrar presenças via RFID"
@@ -37,6 +39,12 @@ class Command(BaseCommand):
                 tag = RFIDTag.objects.filter(uid__iexact=uid).first()
                 if not tag:
                     self.stdout.write(self.style.ERROR(f"Tag UID '{uid}' não está associada a nenhum usuário no banco de dados."))
+                    # Publicar resposta de negado
+                    client.publish("esp32/rfid/response", json.dumps({
+                        "uid": uid,
+                        "authorized": False,
+                        "name": ""
+                    }))
                     return
 
                 user = tag.user
@@ -45,10 +53,31 @@ class Command(BaseCommand):
                 # Verificar se o usuário possui perfil de Aluno
                 if hasattr(user, 'aluno'):
                     aluno = user.aluno
-                    disciplina = Disciplina.objects.first() # Pega a primeira disciplina cadastrada como padrão
                     
+                    # Buscar a disciplina de hoje com base no dia da semana na grade horária
+                    dia_semana_map = {
+                        0: "SEG", 1: "TER", 2: "QUA", 3: "QUI", 4: "SEX", 5: "SAB", 6: "DOM"
+                    }
+                    hoje_dia = dia_semana_map[datetime.date.today().weekday()]
+                    grade = GradeHorario.objects.filter(turma=aluno.turma, dia=hoje_dia).first()
+                    
+                    if grade and grade.disciplina:
+                        disciplina = grade.disciplina
+                    else:
+                        # Fallback para a primeira disciplina da turma do aluno
+                        disciplina = Disciplina.objects.filter(turma=aluno.turma).first()
+                        
+                    if not disciplina:
+                        # Fallback geral para a primeira cadastrada
+                        disciplina = Disciplina.objects.first()
+                        
                     if not disciplina:
                         self.stdout.write(self.style.ERROR("Nenhuma disciplina cadastrada no sistema. Cadastre uma disciplina para registrar a frequência."))
+                        client.publish("esp32/rfid/response", json.dumps({
+                            "uid": uid,
+                            "authorized": False,
+                            "name": ""
+                        }))
                         return
 
                     hoje = date.today()
@@ -82,8 +111,20 @@ class Command(BaseCommand):
                         self.stdout.write(self.style.WARNING(
                             f"Presença já existente para {aluno_nome} na disciplina '{disciplina.nome}' hoje ({hoje})."
                         ))
+
+                    # Publicar resposta de autorizado
+                    client.publish("esp32/rfid/response", json.dumps({
+                        "uid": uid,
+                        "authorized": True,
+                        "name": aluno_nome
+                    }))
                 else:
                     self.stdout.write(self.style.ERROR(f"O usuário {user.username} não possui um perfil de Aluno associado."))
+                    client.publish("esp32/rfid/response", json.dumps({
+                        "uid": uid,
+                        "authorized": False,
+                        "name": ""
+                    }))
 
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f"Erro ao processar mensagem MQTT: {str(e)}"))
