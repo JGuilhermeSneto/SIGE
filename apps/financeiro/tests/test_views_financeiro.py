@@ -21,13 +21,18 @@ class FinanceiroViewsTest(TestCase):
             user=self.gestor_user, nome_completo="Gestor Fin", cpf="111.111.111-11"
         )
 
+        # Turma
+        from apps.academico.models import Turma
+        self.turma = Turma.objects.create(nome="1A", turno="manha", ano=2024)
+
         # Aluno
         self.aluno_user = User.objects.create_user(
             username="aluno_fin", email="aluno@fin.com", password=self.password
         )
         self.aluno = Aluno.objects.create(
-            user=self.aluno_user, nome_completo="Aluno Fin", cpf="222.222.222-22"
+            user=self.aluno_user, nome_completo="Aluno Fin", cpf="222.222.222-22", turma=self.turma
         )
+        self.aluno_user.refresh_from_db()
 
         # Categoria
         self.categoria = CategoriaFinanceira.objects.create(nome="Mensalidade")
@@ -41,7 +46,7 @@ class FinanceiroViewsTest(TestCase):
         )
 
     def test_listar_faturas_aluno(self):
-        self.client.login(username="aluno_fin", password=self.password)
+        self.client.login(username=self.aluno_user.username, password=self.password)
         response = self.client.get(reverse("financeiro:listar_faturas"))
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.fatura, response.context["faturas"])
@@ -58,7 +63,7 @@ class FinanceiroViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_detalhes_fatura(self):
-        self.client.login(username="aluno_fin", password=self.password)
+        self.client.login(username=self.aluno_user.username, password=self.password)
         response = self.client.get(
             reverse("financeiro:detalhes_fatura", args=[self.fatura.id])
         )
@@ -66,7 +71,7 @@ class FinanceiroViewsTest(TestCase):
         self.assertEqual(response.context["fatura"], self.fatura)
 
     def test_gestao_despesas_negado_aluno(self):
-        self.client.login(username="aluno_fin", password=self.password)
+        self.client.login(username=self.aluno_user.username, password=self.password)
         response = self.client.get(reverse("financeiro:gestao_despesas"))
         self.assertEqual(response.status_code, 403)
 

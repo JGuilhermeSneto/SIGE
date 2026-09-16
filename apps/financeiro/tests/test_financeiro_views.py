@@ -37,6 +37,7 @@ class FinanceiroViewsTest(TestCase):
             data_nascimento="2010-01-01",
             turma=self.turma,
         )
+        self.aluno_user.refresh_from_db()
 
         # Fatura
         self.fatura = Fatura.objects.create(
@@ -50,7 +51,7 @@ class FinanceiroViewsTest(TestCase):
         self.categoria = CategoriaFinanceira.objects.create(nome="Educação")
 
     def test_listar_faturas_aluno(self):
-        self.client.login(username="aluno", password=self.password)
+        self.client.login(username=self.aluno_user.username, password=self.password)
         response = self.client.get(reverse("financeiro:listar_faturas"))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Mensalidade Jan")
@@ -61,7 +62,7 @@ class FinanceiroViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_painel_financeiro_aluno_negado(self):
-        self.client.login(username="aluno", password=self.password)
+        self.client.login(username=self.aluno_user.username, password=self.password)
         response = self.client.get(reverse("financeiro:painel_financeiro"))
         self.assertEqual(response.status_code, 403)
 
@@ -81,7 +82,7 @@ class FinanceiroViewsTest(TestCase):
         )
 
     def test_detalhes_fatura(self):
-        self.client.login(username="aluno", password=self.password)
+        self.client.login(username=self.aluno_user.username, password=self.password)
         response = self.client.get(
             reverse("financeiro:detalhes_fatura", args=[self.fatura.id])
         )

@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
@@ -239,11 +239,12 @@ class AtividadeServicoTest(TestCase):
         )
 
     def test_atividade_prova_exibe_gabarito_apos_data(self):
+        # Usa data fixa no passado para evitar problemas de timezone (UTC vs local)
         atividade_prova = AtividadeProfessor.objects.create(
             disciplina=self.disciplina,
             titulo="Prova 2",
             tipo="PROVA",
-            data=timezone.now().date() - timedelta(days=1),
+            data=date(2020, 1, 1),
         )
 
         questao = Questao.objects.create(
