@@ -20,7 +20,7 @@ import qrcode
 
 class InstitutionalPDF:
     """
-    Classe base para geração de PDFs institucionais do SIGE usando ReportLab.
+    Classe base para geração de PDFs institucionais da ELISE usando ReportLab.
     Suporta cabeçalho dinâmico, rodapé com numeração e QR Code de autenticidade.
     """
 
@@ -37,7 +37,7 @@ class InstitutionalPDF:
                 name="InstitutionalTitle",
                 parent=self.styles["Heading1"],
                 fontSize=16,
-                textColor=colors.HexColor("#1e3a8a"),  # Azul Corporativo SIGE
+                textColor=colors.HexColor("#1e3a8a"),  # Azul Corporativo ELISE
                 alignment=1,  # Centralizado
                 spaceAfter=20,
             )
@@ -73,7 +73,7 @@ class InstitutionalPDF:
 
         canvas.setFont("Helvetica-Bold", 14)
         canvas.drawCentredString(
-            A4[0] / 2, A4[1] - 2.0 * cm, "SIGE - Sistema Integrado de Gestão Escolar"
+            A4[0] / 2, A4[1] - 2.0 * cm, "ELISE - Sistema Integrado de Gestão Escolar"
         )
         canvas.setFont("Helvetica", 9)
         canvas.drawCentredString(
@@ -101,7 +101,7 @@ class InstitutionalPDF:
         """Gera e desenha um QR Code de autenticidade no rodapé."""
         # URL de verificação fictícia (será integrada com o módulo de validação depois)
         qr_data = (
-            f"https://sige.edu.br/validar/DOC-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            f"https://ELISE.edu.br/validar/DOC-{datetime.now().strftime('%Y%m%d%H%M%S')}"
         )
 
         qr = qrcode.QRCode(box_size=2, border=1)

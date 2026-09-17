@@ -101,7 +101,7 @@ class Command(BaseCommand):
         # --- COMUNICAÇÃO ---
         Comunicado.objects.create(
             titulo="Boas-vindas ao Ano Letivo 2024",
-            conteudo="O Colégio SIGE Premium deseja a todos um excelente ano. Estamos ansiosos para vê-los!",
+            conteudo="O Colégio ELISE Premium deseja a todos um excelente ano. Estamos ansiosos para vê-los!",
             publico_alvo="GLOBAL",
             importancia="NORMAL",
         )
@@ -136,10 +136,10 @@ class Command(BaseCommand):
         ]
         for cargo, nome, username, cpf in gestores_info:
             u, created = User.objects.get_or_create(
-                username=username, email=f"{username}@sige.com"
+                username=username, email=f"{username}@ELISE.com"
             )
             if created:
-                u.set_password("sige123")
+                u.set_password("ELISE123")
                 u.save()
             Gestor.objects.get_or_create(
                 user=u, nome_completo=nome, cpf=cpf, cargo=cargo
@@ -154,10 +154,10 @@ class Command(BaseCommand):
         professores = []
         for nome, username, cpf in profs_info:
             u, created = User.objects.get_or_create(
-                username=username, email=f"{username}@sige.com"
+                username=username, email=f"{username}@ELISE.com"
             )
             if created:
-                u.set_password("sige123")
+                u.set_password("ELISE123")
                 u.save()
             p, _ = Professor.objects.get_or_create(
                 user=u, nome_completo=nome, cpf=cpf
@@ -176,7 +176,7 @@ class Command(BaseCommand):
                 username=username, email=f"{username}@familia.com"
             )
             if created:
-                u.set_password("sige123")
+                u.set_password("ELISE123")
                 u.save()
             r, _ = Responsavel.objects.get_or_create(
                 user=u, 
@@ -215,7 +215,7 @@ class Command(BaseCommand):
                     username=al_username, email=f"{al_username}@estudante.com"
                 )
                 if created:
-                    u.set_password("sige123")
+                    u.set_password("ELISE123")
                     u.save()
                 
                 aluno, created_al = Aluno.objects.get_or_create(

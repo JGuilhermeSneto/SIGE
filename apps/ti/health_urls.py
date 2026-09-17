@@ -7,9 +7,9 @@ from django.urls import path
 from health_check.views import HealthCheckView
 
 
-class SIGEHealthCheckView(HealthCheckView):
+class ELISEHealthCheckView(HealthCheckView):
     """
-    Health check customizado para o SIGE.
+    Health check customizado para a ELISE.
     Verifica: Banco de dados, Cache e Storage.
 
     Acesso: GET /health/
@@ -23,5 +23,5 @@ class SIGEHealthCheckView(HealthCheckView):
 
 
 urlpatterns = [
-    path("", SIGEHealthCheckView.as_view(), name="health-check"),
+    path("", ELISEHealthCheckView.as_view(), name="health-check"),
 ]

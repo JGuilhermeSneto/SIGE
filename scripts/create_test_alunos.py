@@ -12,7 +12,7 @@ User = get_user_model()
 
 # Config
 turma_id = 77  # ajuste se necessário
-password = 'SenhaSIGE2026'  # mínimo 10 caracteres
+password = 'SenhaELISE2026'  # mínimo 10 caracteres
 students = [
     ('Junior Silva',),
     ('Israel Souza',),

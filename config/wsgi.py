@@ -1,5 +1,5 @@
 """
-Interface WSGI do SIGE — usada por servidores de produção (Gunicorn, uWSGI, etc.).
+Interface WSGI da ELISE — usada por servidores de produção (Gunicorn, uWSGI, etc.).
 
 O que é: expõe o callable ``application`` que o servidor HTTP chama para
 cada requisição síncrona.

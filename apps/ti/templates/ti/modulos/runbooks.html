@@ -1,7 +1,7 @@
 {% extends "ti/base_ti.html" %}
 {% load static %}
 
-{% block title %}Runbooks & Wiki — SIGE Mission Control{% endblock %}
+{% block title %}Runbooks & Wiki — ELISE Mission Control{% endblock %}
 
 {% block ti_extra_css %}
 <style>
@@ -90,7 +90,7 @@
 
     <div class="rb-category">
       <div class="rb-category-title">Arquitetura & Design</div>
-      <div class="rb-item" onclick="showPage('arquitetura')"><i class="fa-solid fa-sitemap"></i> Ecossistema SIGE</div>
+      <div class="rb-item" onclick="showPage('arquitetura')"><i class="fa-solid fa-sitemap"></i> ecossistema ELISE</div>
       <div class="rb-item" onclick="showPage('seguranca')"><i class="fa-solid fa-user-shield"></i> SOC & Honeypots</div>
     </div>
 
@@ -124,7 +124,7 @@
 
     <!-- PAGE: ARQUITETURA -->
     <section id="page-arquitetura" class="rb-page">
-      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Arquitetura do Ecossistema SIGE</h2>
+      <h2 style="font-family: 'Syne'; margin-bottom: 30px;">Arquitetura do ecossistema ELISE</h2>
       <div class="doc-section">
         <h3>1. Core Engine (Django v6.x)</h3>
         <p>O coração do sistema opera sob o padrão <strong>Service Layer Pattern</strong>, garantindo o desacoplamento total da lógica de negócio das Views e facilitando a testabilidade.</p>

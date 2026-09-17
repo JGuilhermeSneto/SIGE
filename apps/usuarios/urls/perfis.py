@@ -14,7 +14,7 @@ from ..views import (
 )
 
 urlpatterns = [
-    # React (Vite) dentro do layout SIGE
+    # React (Vite) dentro do layout ELISE
     path("app/vite/", react_app.app_vite_shell, name="app_vite"),
     # Dashboards (Painéis)
     path("", paineis.painel_usuarios, name="painel_usuarios"),

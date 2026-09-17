@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SIGE — Login Seguro</title>
+    <title>ELISE — Login Seguro</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'core/css/design_system/tokens.css' %}">
     <link rel="stylesheet" href="{% static 'core/css/design_system/themes.css' %}">
@@ -14,7 +14,7 @@
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('sige_theme');
+          var t = localStorage.getItem('elise_theme') || localStorage.getItem('sige_theme');
           if (t) document.documentElement.setAttribute('data-theme', t);
         } catch (e) { /* ignore */ }
       })();
@@ -33,7 +33,7 @@
                 <div class="logo-ring">
                     <img src="{% static 'core/img/Logo_Branca.png' %}" alt="Logo" class="logo-img" />
                 </div>
-                <h1 class="brand-name">SIGE</h1>
+                <h1 class="brand-name">ELISE</h1>
                 <p class="brand-sub">Autenticação de Dois Fatores</p>
             </div>
 

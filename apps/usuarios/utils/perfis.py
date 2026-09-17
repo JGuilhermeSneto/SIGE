@@ -1,7 +1,7 @@
 """
 Funções auxiliares de perfil: nome na UI, foto, redirecionamento por papel.
 
-O que é: centraliza regras “quem é esse usuário no SIGE?” para views e
+O que é: centraliza regras “quem é esse usuário na ELISE?” para views e
 templates sem repetir ``hasattr``/``getattr`` espalhados.
 """
 

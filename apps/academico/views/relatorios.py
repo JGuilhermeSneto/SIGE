@@ -75,7 +75,7 @@ def exportar_historico_pdf(request, aluno_id):
     # --- Cabeçalho ---
     p.setFont("Helvetica-Bold", 16)
     p.drawCentredString(
-        width / 2, height - 2 * cm, "SIGE - SISTEMA INTEGRADO DE GESTÃO ESCOLAR"
+        width / 2, height - 2 * cm, "ELISE - SISTEMA INTEGRADO DE GESTÃO ESCOLAR"
     )
     p.setFont("Helvetica", 12)
     p.drawCentredString(width / 2, height - 2.8 * cm, "HISTÓRICO ESCOLAR OFICIAL")

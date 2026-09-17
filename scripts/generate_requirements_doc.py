@@ -6,11 +6,11 @@ def create_doc():
     doc = Document()
     
     # Title
-    title = doc.add_heading('Documentação de Requisitos - SIGE v2.0', 0)
+    title = doc.add_heading('Documentação de Requisitos - ELISE v2.0', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
     # Intro
-    doc.add_paragraph('Este documento descreve detalhadamente os requisitos funcionais e não funcionais do Sistema Integrado de Gestão Escolar (SIGE).')
+    doc.add_paragraph('Este documento descreve detalhadamente os requisitos funcionais e não funcionais do Sistema Integrado de Gestão Escolar (ELISE).')
 
     # Functional Requirements
     doc.add_heading('1. Requisitos Funcionais (RF)', level=1)
@@ -91,8 +91,8 @@ def create_doc():
             row_cells[i].text = val
 
     # Save
-    doc.save('SIGE_Requisitos.docx')
-    print("Arquivo SIGE_Requisitos.docx gerado com sucesso.")
+    doc.save('ELISE_Requisitos.docx')
+    print("Arquivo ELISE_Requisitos.docx gerado com sucesso.")
 
 if __name__ == "__main__":
     create_doc()

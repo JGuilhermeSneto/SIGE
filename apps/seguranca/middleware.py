@@ -21,25 +21,32 @@ class SecurityShieldMiddleware:
     def __call__(self, request):
         ip = self.get_client_ip(request)
 
-        if ip_esta_na_whitelist(ip):
-            garantir_ip_liberado(ip)
-        else:
-            # 1. Verificar Lista Negra
-            banido = BlacklistIP.objects.filter(ip_endereco=ip).first()
-            if banido and banido.is_active:
-                return HttpResponseForbidden(f"Acesso negado. IP {ip} bloqueado.")
+        # Se o IP está na whitelist (ex: localhost, loopback ou IPs confiáveis), ignora blacklist
+        if not ip_esta_na_whitelist(ip):
+            try:
+                # 1. Verificar Lista Negra
+                banido = BlacklistIP.objects.filter(ip_endereco=ip, is_active=True).first()
+                if banido:
+                    return HttpResponseForbidden(f"Acesso negado. IP {ip} bloqueado.")
+            except Exception as e:
+                logger.error(f"Erro ao verificar blacklist para IP {ip}: {e}")
 
-        # 2. Motor WAF (Filtro de Ataques)
-        path_completo = f"{request.path}?{request.GET.urlencode()}"
-        regras_waf = RegraWAF.objects.filter(ativo=True)
-        for regra in regras_waf:
-            if re.search(regra.padrao_regex, path_completo, re.IGNORECASE):
-                logger.warning(f"WAF: Bloqueado IP {ip} tentando {path_completo} (Regra: {regra.nome})")
-                return HttpResponseForbidden(f"Ação bloqueada pelo firewall do sistema (WAF).")
+        # 2. Motor WAF (Filtro de Ataques com cache para evitar query em toda requisição)
+        from django.core.cache import cache
+        try:
+            regras_waf = cache.get("regras_waf_ativas")
+            if regras_waf is None:
+                regras_waf = list(RegraWAF.objects.filter(ativo=True))
+                cache.set("regras_waf_ativas", regras_waf, 60)
 
-        # 3. Monitor de Tráfego (Placeholder para Exfiltração)
-        # Aqui poderíamos integrar um contador no Redis para limitar downloads por minuto
-        
+            path_completo = f"{request.path}?{request.GET.urlencode()}"
+            for regra in regras_waf:
+                if re.search(regra.padrao_regex, path_completo, re.IGNORECASE):
+                    logger.warning(f"WAF: Bloqueado IP {ip} tentando {path_completo} (Regra: {regra.nome})")
+                    return HttpResponseForbidden("Ação bloqueada pelo firewall do sistema (WAF).")
+        except Exception as e:
+            logger.error(f"Erro no motor WAF: {e}")
+
         return self.get_response(request)
 
     def get_client_ip(self, request):

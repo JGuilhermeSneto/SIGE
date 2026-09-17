@@ -1,1 +1,1 @@
-"""Área de TI do SIGE — painéis e ferramentas com permissões dedicadas."""
+"""Área de TI da ELISE — painéis e ferramentas com permissões dedicadas."""

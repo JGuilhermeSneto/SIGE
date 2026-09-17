@@ -2,7 +2,7 @@
 Configuração do app Django ``usuarios``.
 
 O que é: registro do aplicativo que concentra autenticação, perfis (aluno,
-professor, gestor) e painéis principais do SIGE.
+professor, gestor) e painéis principais da ELISE.
 """
 
 from django.apps import AppConfig

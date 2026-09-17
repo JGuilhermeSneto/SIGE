@@ -164,7 +164,7 @@
 <div class="soc-toast-container" id="soc-toasts"></div>
 {% if request.user|pode_menu_ti %}
 <div class="ti-nav-wrapper">
-  <nav class="ti-nav-grid" aria-label="SIGE Mission Control">
+  <nav class="ti-nav-grid" aria-label="ELISE Mission Control">
     
     {# ── 1. OPERAÇÕES ── #}
     <div class="ti-nav-group">
@@ -285,7 +285,7 @@
 {% block ti_content %}{% endblock %}
 
 <script>
-  // SIGE Apex - Universal Live Monitoring Engine
+  // ELISE Apex - Universal Live Monitoring Engine
   async function refreshTIMetrics() {
     try {
       const response = await fetch("{% url 'ti:api_metrics' %}");
@@ -335,7 +335,11 @@
 
   // Iniciar monitoramento instantâneo
   refreshTIMetrics();
-  setInterval(refreshTIMetrics, 2000);
+  setInterval(() => {
+    if (!document.hidden) {
+      refreshTIMetrics();
+    }
+  }, 10000);
 
   // ─── Toast Global ─────────────────────────────────────────────────────────
   function socToast(msg, tipo = 'info') {

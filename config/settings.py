@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "apps.leads",
     "apps.notifications",
     "apps.iot",
+    "apps.ia",
 
     "django_prometheus",
     "health_check",              # API unificada (v4.x) — usa /health/ endpoint
@@ -121,7 +122,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "apps.usuarios.context_processors.notificacoes_sige",
+                "apps.usuarios.context_processors.notificacoes_elise",
             ],
             "libraries": {
                 "custom_tags": "apps.comum.templatetags.custom_tags",
@@ -180,7 +181,7 @@ else:
     DATABASES = {
         'default': dj_database_url.config(
             default=config("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
-            conn_max_age=600,
+            conn_max_age=config("DB_CONN_MAX_AGE", default=0, cast=int),
             conn_health_checks=True,
         )
     }
@@ -240,7 +241,7 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-            "LOCATION": "sige-local-cache",
+            "LOCATION": "elise-local-cache",
         }
     }
 
@@ -330,8 +331,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    "TITLE": "SIGE API Documentation",
-    "DESCRIPTION": "Documentação da API do SIGE.",
+    "TITLE": "ELISE API Documentation",
+    "DESCRIPTION": "Documentação da API da Plataforma Educacional ELISE.",
     "VERSION": "1.0.0",
 }
 

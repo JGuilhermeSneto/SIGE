@@ -37,7 +37,7 @@ def seed_ti():
         ("MAX_LOGIN_ATTEMPTS", "5", "Número máximo de tentativas de login antes do bloqueio por IP."),
         ("BACKUP_RETENTION_DAYS", "30", "Dias de retenção de snapshots no cofre."),
         ("MAX_UPLOAD_SIZE_MB", "10", "Tamanho máximo permitido para upload de arquivos."),
-        ("SUPPORT_EMAIL", "ti@sige.com.br", "Email oficial para suporte técnico e abertura de chamados."),
+        ("SUPPORT_EMAIL", "ti@ELISE.com.br", "Email oficial para suporte técnico e abertura de chamados."),
     ]
     
     for chave, valor, desc in params:

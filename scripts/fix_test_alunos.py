@@ -24,13 +24,13 @@ try:
     print(f"\nReferencia (202677590):")
     print(f"  turma_id={turma_id}")
     print(f"  instituicao_id={inst_id}")
-    print(f"  senha ok? {ref.user.check_password('SenhaSIGE2026')}")
+    print(f"  senha ok? {ref.user.check_password('SenhaELISE2026')}")
 
-    SENHA = 'SenhaSIGE2026'
+    SENHA = 'SenhaELISE2026'
     alunos_teste = [
-        ('202677588', 'Junior', 'Teste', 'junior.teste@sige.local'),
-        ('202677589', 'Israel', 'Teste', 'israel.teste@sige.local'),
-        ('202677591', 'Pedro',  'Teste', 'pedro.teste@sige.local'),
+        ('202677588', 'Junior', 'Teste', 'junior.teste@ELISE.local'),
+        ('202677589', 'Israel', 'Teste', 'israel.teste@ELISE.local'),
+        ('202677591', 'Pedro',  'Teste', 'pedro.teste@ELISE.local'),
     ]
 
     print("\n=== CRIANDO ALUNOS FALTANTES ===")
@@ -69,7 +69,7 @@ try:
     # Atualiza nome do 202677590 (Guilherme Teste)
     ref.user.first_name = 'Guilherme'
     ref.user.last_name = 'Teste'
-    ref.user.email = 'guilherme.teste@sige.local'
+    ref.user.email = 'guilherme.teste@ELISE.local'
     ref.user.save()
     ref.user.set_password(SENHA)
     ref.user.save()

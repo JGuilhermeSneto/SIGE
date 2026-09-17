@@ -24,7 +24,7 @@ class TenantMiddleware(MiddlewareMixin):
         if not instituicao:
             # Seed automático se não houver nenhuma (facilita o dev)
             instituicao = Instituicao.objects.create(
-                nome="SIGE - Escola Padrão",
+                nome="ELISE - Escola Padrão",
                 cnpj="00.000.000/0001-00",
                 slug="escola-padrao",
             )

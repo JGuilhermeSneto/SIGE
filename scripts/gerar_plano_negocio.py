@@ -1,5 +1,5 @@
 """
-Gera o Plano de Negócio do SIGE em formato DOCX.
+Gera o Plano de Negócio do ELISE em formato DOCX.
 Uso: python scripts/gerar_plano_negocio.py
 """
 
@@ -9,7 +9,7 @@ from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Cm, Pt
 
-OUTPUT = Path(__file__).resolve().parent.parent / "Plano_de_Negocio_SIGE.docx"
+OUTPUT = Path(__file__).resolve().parent.parent / "Plano_de_Negocio_ELISE.docx"
 
 
 def add_title(doc: Document, text: str, level: int = 1) -> None:
@@ -42,7 +42,7 @@ def build_document() -> Document:
     run = title.add_run("PLANO DE NEGÓCIO\n\n")
     run.bold = True
     run.font.size = Pt(22)
-    run2 = title.add_run("SIGE — Sistema Integrado de Gestão Escolar\n")
+    run2 = title.add_run("ELISE — Sistema Integrado de Gestão Escolar\n")
     run2.bold = True
     run2.font.size = Pt(16)
     run3 = title.add_run("\nEcossistema Web + Mobile + IoT para Gestão Educacional\n")
@@ -57,7 +57,7 @@ def build_document() -> Document:
     add_para(
         doc,
         "Este Plano de Negócio descreve a viabilidade comercial, operacional e financeira do "
-        "SIGE (Sistema Integrado de Gestão Escolar), plataforma SaaS desenvolvida para "
+        "ELISE (Sistema Integrado de Gestão Escolar), plataforma SaaS desenvolvida para "
         "escolas privadas, redes de ensino e instituições que necessitam de gestão acadêmica, "
         "administrativa, financeira e de comunicação integradas em um único ecossistema digital.",
     )
@@ -95,7 +95,7 @@ def build_document() -> Document:
     add_title(doc, "1.1 – Resumo dos principais pontos do plano de negócio", 3)
     add_para(
         doc,
-        "O SIGE é uma plataforma integrada de gestão escolar composta por quatro pilares: "
+        "O ELISE é uma plataforma integrada de gestão escolar composta por quatro pilares: "
         "Backend Django (núcleo de negócio), Frontend React/Vite (gestores e professores), "
         "Aplicativo Mobile React Native/Expo (alunos e responsáveis) e camada IoT (RFID/MQTT "
         "para frequência e controle de acesso). O sistema cobre 11+ módulos funcionais, "
@@ -121,7 +121,7 @@ def build_document() -> Document:
     add_bullets(
         doc,
         [
-            "J. Guilherme S. Netos — Fundador e desenvolvedor principal do ecossistema SIGE.",
+            "J. Guilherme S. Netos — Fundador e desenvolvedor principal do ecossistema ELISE.",
             "Experiência: desenvolvimento full-stack (Python/Django, React, React Native), "
             "arquitetura de software, DevOps (Docker, Render, CI/CD) e gestão de produto digital.",
             "Atribuições: visão de produto, arquitetura técnica, desenvolvimento do core, "
@@ -143,12 +143,12 @@ def build_document() -> Document:
     add_bullets(
         doc,
         [
-            "Nome fantasia: SIGE — Sistema Integrado de Gestão Escolar",
-            "Razão social: [A definir na constituição — ex.: SIGE Tecnologia Educacional LTDA]",
+            "Nome fantasia: ELISE — Sistema Integrado de Gestão Escolar",
+            "Razão social: [A definir na constituição — ex.: ELISE Tecnologia Educacional LTDA]",
             "Natureza: desenvolvimento e licenciamento de software educacional (SaaS)",
             "Sede operacional: Brasil (operação remota com infraestrutura em nuvem)",
-            "Repositório e produto: github.com/JGuilhermeSneto/SIGE",
-            "URL de produção: sige-g7w2.onrender.com (ambiente de demonstração/homologação)",
+            "Repositório e produto: github.com/JGuilhermeSneto/ELISE",
+            "URL de produção: ELISE-g7w2.onrender.com (ambiente de demonstração/homologação)",
             "Público-alvo inicial: escolas privadas de ensino fundamental e médio (50–800 alunos)",
         ],
     )
@@ -236,7 +236,7 @@ def build_document() -> Document:
             "Disposição a pagar: R$ 2.500 a R$ 6.000/mês por pacote completo web + mobile.",
         ],
     )
-    add_para(doc, "Personas atendidas pelo SIGE:", bold=True)
+    add_para(doc, "Personas atendidas pelo ELISE:", bold=True)
     add_bullets(
         doc,
         [
@@ -259,7 +259,7 @@ def build_document() -> Document:
             "Planilhas + WhatsApp + Google Classroom — custo zero, sem governança nem LGPD.",
         ],
     )
-    add_para(doc, "Posicionamento competitivo do SIGE:", bold=True)
+    add_para(doc, "Posicionamento competitivo do ELISE:", bold=True)
     add_bullets(
         doc,
         [
@@ -290,13 +290,13 @@ def build_document() -> Document:
     add_bullets(
         doc,
         [
-            "SIGE Core Web — gestão acadêmica, usuários, calendário, documentos, dashboards.",
-            "SIGE Mobile — app para alunos e responsáveis (notas, frequência, perfil, push).",
-            "SIGE Shield — segurança, auditoria LGPD, SOC, 2FA, monitoramento de logins.",
-            "SIGE Financeiro — mensalidades, faturas, inadimplência, BI (módulo beta).",
-            "SIGE Saúde — ficha médica, atestados, vacinas.",
-            "SIGE Biblioteca — acervo digital e empréstimos.",
-            "SIGE IoT — frequência RFID e automação (P&D, comercialização fase 2).",
+            "ELISE Core Web — gestão acadêmica, usuários, calendário, documentos, dashboards.",
+            "ELISE Mobile — app para alunos e responsáveis (notas, frequência, perfil, push).",
+            "ELISE Shield — segurança, auditoria LGPD, SOC, 2FA, monitoramento de logins.",
+            "ELISE Financeiro — mensalidades, faturas, inadimplência, BI (módulo beta).",
+            "ELISE Saúde — ficha médica, atestados, vacinas.",
+            "ELISE Biblioteca — acervo digital e empréstimos.",
+            "ELISE IoT — frequência RFID e automação (P&D, comercialização fase 2).",
             "Serviços: implantação, migração de dados, treinamento e suporte premium.",
         ],
     )
@@ -356,7 +356,7 @@ def build_document() -> Document:
         doc,
         "Modelo remoto/híbrido: home office para desenvolvimento e comercial; coworking "
         "para reuniões com clientes. Infraestrutura lógica (não física): monorepo com "
-        "SIGE/ (Django), frontend_SIGE/ (React), SIGE_APP/ (Expo) e documentação em docs/.",
+        "ELISE/ (Django), frontend_ELISE/ (React), ELISE_APP/ (Expo) e documentação em docs/.",
     )
 
     add_title(doc, "4.2 – Capacidade produtiva, comercial e de prestação de serviços", 3)
@@ -378,7 +378,7 @@ def build_document() -> Document:
             "Onboarding: diagnóstico → migração de dados → treinamento → go-live (2–4 semanas).",
             "Desenvolvimento: Git flow, CI/CD, testes automatizados (pytest, 149 casos).",
             "Deploy: build.sh (collectstatic + migrate) no Render via GitHub.",
-            "Suporte: canal por e-mail/WhatsApp + documentação em SIGE/docs/.",
+            "Suporte: canal por e-mail/WhatsApp + documentação em ELISE/docs/.",
             "Segurança: backups Quantum Snapshots, SOC em tempo real, revisão trimestral LGPD.",
             "Atualizações: releases mensais com changelog e comunicação aos gestores.",
         ],
@@ -454,7 +454,7 @@ def build_document() -> Document:
             "Capital de giro (12 meses): R$ 76.560",
             "Pré-operacionais: R$ 10.000",
             "INVESTIMENTO TOTAL: R$ 120.060",
-            "Ativo intangível (software SIGE já desenvolvido): R$ 180.000 (valor estimado)",
+            "Ativo intangível (software ELISE já desenvolvido): R$ 180.000 (valor estimado)",
         ],
     )
 
@@ -651,7 +651,7 @@ def build_document() -> Document:
     add_title(doc, "8 – Avaliação do Plano de Negócio", 2)
     add_para(
         doc,
-        "O SIGE apresenta viabilidade técnica comprovada (produto em produção, banco MySQL "
+        "O ELISE apresenta viabilidade técnica comprovada (produto em produção, banco MySQL "
         "ativo com 50+ usuários, API mobile validada) e viabilidade comercial condicionada "
         "à execução do plano de go-to-market B2B. O investimento de R$ 120.060 é compatível "
         "com o estágio MVP avançado → tração. Recomenda-se iniciar com 2 pilotos pagos, "
@@ -691,7 +691,7 @@ def build_document() -> Document:
     add_para(
         doc,
         "Esta seção apresenta modelos resumidos para preenchimento e atualização. "
-        "Os dados abaixo refletem o estado atual do projeto SIGE (junho/2026).",
+        "Os dados abaixo refletem o estado atual do projeto ELISE (junho/2026).",
     )
 
     sections_part2 = [
@@ -700,7 +700,7 @@ def build_document() -> Document:
             [
                 ("1.1 – Resumo", "SaaS EdTech integrado (web + mobile + IoT). MRR alvo R$ 42k em 18 meses."),
                 ("1.2 – Empreendedores", "J. Guilherme S. Netos — fundador e tech lead."),
-                ("1.3 – Empreendimento", "SIGE Tecnologia Educacional; software de gestão escolar."),
+                ("1.3 – Empreendimento", "ELISE Tecnologia Educacional; software de gestão escolar."),
                 ("1.4 – Missão", "Excelência na gestão educacional com tecnologia segura e acessível."),
                 ("1.5 – Setores", "EdTech; CNAE 62.01-5/01 e correlatos."),
                 ("1.6 – Forma jurídica", "LTDA (recomendado)."),
@@ -720,7 +720,7 @@ def build_document() -> Document:
         (
             "3 – Plano de Marketing",
             [
-                ("3.1 – Produtos", "SIGE Core, Mobile, Shield, Financeiro, Saúde, Biblioteca, IoT."),
+                ("3.1 – Produtos", "ELISE Core, Mobile, Shield, Financeiro, Saúde, Biblioteca, IoT."),
                 ("3.2 – Preço", "R$ 1.990 a R$ 5.990/mês conforme porte."),
                 ("3.3 – Promoção", "Piloto 60 dias, webinars, indicação, feiras."),
                 ("3.4 – Comercialização", "B2B direto, parcerias, licitações (médio prazo)."),
@@ -730,7 +730,7 @@ def build_document() -> Document:
         (
             "4 – Plano Operacional",
             [
-                ("4.1 – Layout", "Remoto/híbrido; monorepo SIGE + frontend + mobile."),
+                ("4.1 – Layout", "Remoto/híbrido; monorepo ELISE + frontend + mobile."),
                 ("4.2 – Capacidade", "Multi-tenant; meta 15 escolas ano 1."),
                 ("4.3 – Processos", "Onboarding 2–4 sem; CI/CD; suporte documentado."),
                 ("4.4 – Pessoal", "1 fundador + 3 contratações em 12 meses."),
@@ -777,9 +777,9 @@ def build_document() -> Document:
     footer = doc.add_paragraph()
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = footer.add_run(
-        "\n\nDocumento gerado automaticamente a partir da documentação técnica do SIGE.\n"
-        "Fontes: README.md, COMPENDIO_TECNICO.md, ROADMAP.md, documentacao_perfis_sige.md\n"
-        "Repositório: https://github.com/JGuilhermeSneto/SIGE"
+        "\n\nDocumento gerado automaticamente a partir da documentação técnica do ELISE.\n"
+        "Fontes: README.md, COMPENDIO_TECNICO.md, ROADMAP.md, documentacao_perfis_ELISE.md\n"
+        "Repositório: https://github.com/JGuilhermeSneto/ELISE"
     )
     run.font.size = Pt(9)
     run.italic = True

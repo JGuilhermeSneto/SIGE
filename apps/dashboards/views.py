@@ -82,7 +82,7 @@ def dashboard_saude_inclusao(request):
 @login_required
 @user_passes_test(is_super_ou_gestor)
 def central_inteligencia(request):
-    """Painel unificado SIGE: BI Acadêmico + Central de Relatórios."""
+    """Painel unificado ELISE: BI Acadêmico + Central de Relatórios."""
     ano_atual = datetime.datetime.now().year
     ano_filtro = request.GET.get("ano", ano_atual)
     mes_filtro = request.GET.get("mes")

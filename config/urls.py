@@ -1,5 +1,5 @@
 """
-URLconf raiz do SIGE — mapa de rotas HTTP do site inteiro. [Reloaded v2]
+URLconf raiz da ELISE — mapa de rotas HTTP do site inteiro. [Reloaded v2]
 
 O que é: lista de ``path()`` que o Django percorre na ordem até achar
 uma view que atenda à URL.
@@ -21,7 +21,7 @@ from django.contrib import admin
 from django.urls import URLPattern, URLResolver, include, path
 
 from config.api_views import dashboard_resumo, ping
-from config.jwt_views import SIGETokenObtainPairView
+from config.jwt_views import ELISETokenObtainPairView
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.routers import DefaultRouter
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -71,11 +71,11 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("admin/", admin.site.urls),
     path("api/ping/", ping, name="api-ping"),
     path("api/dashboard/resumo/", dashboard_resumo, name="api-dashboard-resumo"),
-    path("api/token/", SIGETokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/", ELISETokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     
     # Endpoints REST API v1 para Mobile
-    path("api/v1/auth/login/", SIGETokenObtainPairView.as_view(), name="api-v1-login"),
+    path("api/v1/auth/login/", ELISETokenObtainPairView.as_view(), name="api-v1-login"),
     path("api/v1/aluno/dashboard/", AlunoDashboardView.as_view(), name="api-v1-aluno-dashboard"),
     path("api/v1/aluno/boletim/", AlunoBoletimView.as_view(), name="api-v1-aluno-boletim"),
     path("api/v1/aluno/perfil/", AlunoPerfilView.as_view(), name="api-v1-aluno-perfil"),
@@ -106,6 +106,7 @@ urlpatterns: list[URLPattern | URLResolver] = [
     path("financeiro/", include("apps.financeiro.urls")),
     path("seguranca/", include("apps.seguranca.urls")),
     path("ti/", include("apps.ti.urls")),
+    path("ia/", include("apps.ia.urls", namespace="ia")),
     path("health/", include("apps.ti.health_urls")),
     path("impersonate/", include("impersonate.urls")),
     path("", include("django_prometheus.urls")),

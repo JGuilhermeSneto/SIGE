@@ -2,7 +2,7 @@
 Configuração do app Django ``calendario``.
 
 O que é: calendário acadêmico, eventos e telas associadas à visualização
-mensal/anual para os usuários do SIGE.
+mensal/anual para os usuários do ELISE.
 """
 
 from django.apps import AppConfig

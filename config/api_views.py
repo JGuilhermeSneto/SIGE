@@ -15,13 +15,13 @@ from rest_framework.response import Response
 @permission_classes([AllowAny])
 def ping(_request: Request) -> Response:
     """Resposta simples para o front confirmar que o back-end está no ar."""
-    return Response({"ok": True, "service": "SIGE"})
+    return Response({"ok": True, "service": "ELISE"})
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def dashboard_resumo(_request: Request) -> Response:
-    """Totais e amostra de turmas lidos do banco (dados reais do SIGE)."""
+    """Totais e amostra de turmas lidos do banco (dados reais da ELISE)."""
     turmas_qs = Turma.objects.order_by("-ano", "nome")[:12]
     turmas = [
         {

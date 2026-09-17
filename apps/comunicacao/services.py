@@ -16,7 +16,7 @@ class ComunicacaoService:
         Motivo: {fatores}
         
         Atenciosamente,
-        Coordenação SIGE Apex
+        Coordenação ELISE Apex
         """
         
         # Simulação de envio (usa o e-mail do usuário associado ao aluno)

@@ -37,8 +37,8 @@ def seed_backups():
             data_fim=data_ini + timedelta(minutes=random.randint(5, 15)),
             status=b["status"],
             tamanho_bytes=b["tamanho_bytes"],
-            arquivo=f"sige_backup_{data_ini.strftime('%Y%m%d_%H%M')}.sql.gz",
-            storage_path=b.get("storage_path", "s3://sige-backups/vault-primary/")
+            arquivo=f"ELISE_backup_{data_ini.strftime('%Y%m%d_%H%M')}.sql.gz",
+            storage_path=b.get("storage_path", "s3://ELISE-backups/vault-primary/")
         )
         
     print(f"Semeados {len(backups_data)} backups.")

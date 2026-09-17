@@ -53,7 +53,7 @@ class DeclaracaoGenerator(InstitutionalPDF):
         elements.append(Paragraph("<b>Secretaria Acadêmica</b>", self.styles["Normal"]))
         elements.append(
             Paragraph(
-                "SIGE - Sistema Integrado de Gestão Escolar", self.styles["Normal"]
+                "ELISE - Sistema Integrado de Gestão Escolar", self.styles["Normal"]
             )
         )
 

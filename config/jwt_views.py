@@ -1,5 +1,5 @@
 """
-Views de autenticação JWT para o backend SIGE.
+Views de autenticação JWT para o backend ELISE.
 
 Esse módulo expõe:
 - `POST /api/token/` para obter access/refresh tokens via e-mail, matrícula ou username.
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
-class SIGETokenObtainPairView(APIView):
+class ELISETokenObtainPairView(APIView):
     """
     View customizada para obtenção de tokens JWT.
     Suporta login via:
@@ -32,11 +32,11 @@ class SIGETokenObtainPairView(APIView):
     def post(self, request, *args, **kwargs):
         # Log temporário para depuração de payloads vindos do cliente mobile
         try:
-            logger.debug("[SIGETokenObtainPairView] request.META: %s", {k: request.META.get(k) for k in ['REMOTE_ADDR','HTTP_HOST','CONTENT_TYPE','HTTP_USER_AGENT']})
-            logger.debug("[SIGETokenObtainPairView] request.data: %s", request.data)
+            logger.debug("[ELISETokenObtainPairView] request.META: %s", {k: request.META.get(k) for k in ['REMOTE_ADDR','HTTP_HOST','CONTENT_TYPE','HTTP_USER_AGENT']})
+            logger.debug("[ELISETokenObtainPairView] request.data: %s", request.data)
             # prints temporários para visualização imediata no console
-            print("[SIGETokenObtainPairView] request.META:", {k: request.META.get(k) for k in ['REMOTE_ADDR','HTTP_HOST','CONTENT_TYPE','HTTP_USER_AGENT']})
-            print("[SIGETokenObtainPairView] request.data:", request.data)
+            print("[ELISETokenObtainPairView] request.META:", {k: request.META.get(k) for k in ['REMOTE_ADDR','HTTP_HOST','CONTENT_TYPE','HTTP_USER_AGENT']})
+            print("[ELISETokenObtainPairView] request.data:", request.data)
         except Exception:
             pass
         identifier = (

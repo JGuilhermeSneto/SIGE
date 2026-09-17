@@ -15,7 +15,7 @@ class RelatorioMasterPDF:
         self.width, self.height = A4
         self.titulo = titulo_relatorio
 
-    def desenhar_marca_dagua(self, texto="CONFIDENCIAL - SIGE"):
+    def desenhar_marca_dagua(self, texto="CONFIDENCIAL - ELISE"):
         """Desenha uma marca d'água transversal por toda a página A4."""
         self.canvas.saveState()
         self.canvas.setFont("Helvetica-Bold", 60)
@@ -28,7 +28,7 @@ class RelatorioMasterPDF:
         self.canvas.restoreState()
 
     def desenhar_cabecalho(self):
-        """Cabeçalho Padrão do SIGE."""
+        """Cabeçalho Padrão do ELISE."""
         self.canvas.setFillColorRGB(0.04, 0.05, 0.1)  # Cor Índigo Escuro Simulada
         self.canvas.rect(0, self.height - 2 * cm, self.width, 2 * cm, fill=1, stroke=0)
 

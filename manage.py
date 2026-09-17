@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Ponto de entrada da linha de comando do Django (SIGE).
+Ponto de entrada da linha de comando do Django (ELISE).
 
 O que é: script padrão que o Django gera para rodar comandos como
 ``migrate``, ``runserver``, ``createsuperuser``, etc.

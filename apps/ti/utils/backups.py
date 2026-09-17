@@ -26,9 +26,9 @@ def realizar_backup_sistema():
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
         if 'sqlite' in db_engine:
-            arquivo_nome = f"sige_backup_{timestamp}.sqlite3"
+            arquivo_nome = f"elise_backup_{timestamp}.sqlite3"
         else:
-            arquivo_nome = f"sige_backup_{timestamp}.sql"
+            arquivo_nome = f"elise_backup_{timestamp}.sql"
             
         caminho_backup = os.path.join(settings.BASE_DIR, 'media', 'backups', arquivo_nome)
         os.makedirs(os.path.dirname(caminho_backup), exist_ok=True)
@@ -66,7 +66,7 @@ def realizar_backup_sistema():
         else:
             # Caso outro banco não suportado, gera simulação
             with open(caminho_backup, 'w') as f:
-                f.write(f"-- SIGE Backup Automatizado (Simulação para {db_engine}) --\n")
+                f.write(f"-- ELISE Backup Automatizado (Simulação para {db_engine}) --\n")
             
         if not os.path.exists(caminho_backup) or os.path.getsize(caminho_backup) == 0:
             raise Exception("O arquivo de backup está vazio ou não foi criado com sucesso.")

@@ -38,13 +38,16 @@ def garantir_ip_liberado(ip):
     if not ip or not ip_esta_na_whitelist(ip):
         return
 
-    from apps.seguranca.models import BlacklistIP
-
-    BlacklistIP.objects.filter(ip_endereco=ip).delete()
+    try:
+        from apps.seguranca.models import BlacklistIP
+        if BlacklistIP.objects.filter(ip_endereco=ip).exists():
+            BlacklistIP.objects.filter(ip_endereco=ip).delete()
+    except Exception:
+        pass
 
     try:
         from axes.models import AccessAttempt
-
-        AccessAttempt.objects.filter(ip_address=ip).delete()
+        if AccessAttempt.objects.filter(ip_address=ip).exists():
+            AccessAttempt.objects.filter(ip_address=ip).delete()
     except Exception:
         pass

@@ -4,7 +4,7 @@ from celery import Celery
 # Define o módulo de configurações padrão do Django para o programa 'celery'.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 
-app = Celery('SIGE')
+app = Celery('ELISE')
 
 # Usar uma string aqui significa que o worker não precisa serializar
 # o objeto de configuração para processos filhos.

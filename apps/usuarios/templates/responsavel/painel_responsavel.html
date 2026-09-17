@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}SIGE · Portal do Responsável{% endblock %}
+{% block title %}ELISE · Portal do Responsável{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'core/css/painel_dos_alunos.css' %}">
@@ -39,7 +39,7 @@
     {# HEADER PADRONIZADO #}
     <div class="header-painel">
         <div class="header-esquerda">
-            <span class="header-label"><i class="fa-solid fa-users-viewfinder"></i> SIGE · Portal do Responsável</span>
+            <span class="header-label"><i class="fa-solid fa-users-viewfinder"></i> ELISE · Portal do Responsável</span>
             <h1>Olá, <span class="nome-destaque">{{ responsavel.nome_completo|truncatewords:2 }}</span> 👋</h1>
             <p class="header-sub">Acompanhe o progresso acadêmico de seus dependentes em tempo real.</p>
         </div>

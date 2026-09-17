@@ -2,10 +2,10 @@ from apps.academico.models import Notificacao
 from apps.saude.models.ficha_medica import AtestadoMedico
 
 
-def notificacoes_sige(request):
+def notificacoes_elise(request):
     """
     Context processor unificado para injetar notificações e pendências
-    de todos os perfis (Aluno, Professor, Gestor) em todas as telas.
+    de todos os perfis (Aluno, Professor, Gestor) nas telas do ELISE.
     """
     if not request.user.is_authenticated:
         return {}
@@ -58,3 +58,7 @@ def notificacoes_sige(request):
             pass
 
     return context
+ 
+ 
+# Alias para compatibilidade com versões anteriores
+notificacoes_sige = notificacoes_elise

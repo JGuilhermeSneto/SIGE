@@ -370,7 +370,7 @@ def exportar_inadimplentes_pdf(request):
 
     # Cabeçalho
     p.setFont("Helvetica-Bold", 16)
-    p.drawCentredString(width / 2, height - 2 * cm, "SIGE - RELATÓRIO DE INADIMPLÊNCIA")
+    p.drawCentredString(width / 2, height - 2 * cm, "ELISE - RELATÓRIO DE INADIMPLÊNCIA")
     p.setFont("Helvetica", 10)
     p.drawCentredString(
         width / 2, height - 2.6 * cm,

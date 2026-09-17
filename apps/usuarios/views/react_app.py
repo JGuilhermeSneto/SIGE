@@ -1,5 +1,5 @@
 """
-Shell do app React (Vite) dentro do layout HTML do SIGE (``core/base.html``).
+Shell do app React (Vite) dentro do layout HTML da ELISE (``core/base.html``).
 
 Em desenvolvimento, o template injeta os scripts do servidor Vite; em produção,
 substitua por arquivos estáticos gerados com ``npm run build``.

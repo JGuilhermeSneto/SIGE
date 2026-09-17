@@ -1,5 +1,5 @@
 """
-ASGI config do SIGE — suporte a HTTP e WebSockets via Django Channels.
+ASGI config da ELISE — suporte a HTTP e WebSockets via Django Channels.
 
 Expõe o callable ASGI como `application`.
 """
