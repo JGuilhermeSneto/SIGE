@@ -101,7 +101,7 @@ pyHanko==0.35.1
 pyhanko-certvalidator==0.30.2
 PyJWT==2.12.1
 pylint==4.0.5
-pylint-django==2.7.0
+pylint-django==2.8.0
 pylint-plugin-utils==0.9.0
 pyOpenSSL==26.3.0
 pypdf==6.10.2
