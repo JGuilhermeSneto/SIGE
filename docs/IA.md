@@ -1,118 +1,219 @@
-# 🤖 ELISE IA — Sistema de Apoio à Tomada de Decisão (DSS)
+# 🤖 ELISE IA — Documentação Técnica, Instalação e Execução
 
-## 📌 Visão Geral & Escopo do Projeto
-
-O **ELISE IA** é um módulo de Inteligência Artificial voltado ao apoio à tomada de decisão na gestão escolar, integrado nativamente ao ecossistema **ELISE/SIGE**. 
-
-Projetado especificamente para suprir as dores operacionais e estratégicas de **escolas particulares de pequeno e médio porte**, o módulo transforma o grande volume de dados acadêmicos, financeiros e logísticos já centralizados pela plataforma em diagnósticos preditivos e planos de ação práticos.
+Este documento reúne todas as especificações técnicas, links oficiais de download, comandos de terminal e o passo a passo completo para instalar, configurar e executar o módulo de Inteligência Artificial **ELISE IA** integrado ao sistema de gestão escolar **ELISE/SIGE**.
 
 ---
 
-## 🛡️ Diretrizes Conceituais e Éticas (LGPD)
+## 📌 1. Visão Geral do Módulo
 
-O assistente foi desenhado sob quatro pilares inegociáveis:
+O **ELISE IA** é um módulo de **Apoio à Tomada de Decisão (Decision Support System - DSS)** voltado para gestores de escolas particulares de pequeno e médio porte.
 
-1. **Atuação como Sistema de Apoio à Decisão (DSS)**:
-   - A IA funciona como uma conselheira e simuladora de cenários, nunca tomando decisões arbitrárias.
-2. **Princípio *Human-in-the-Loop***:
-   - Nenhuma mutação de dados é realizada de forma autônoma.
-   - Toda recomendação gera um registro formal `PropostaDecisao` no banco de dados, que exige aprovação manual e clique explícito do gestor escolar para ter seus efeitos aplicados.
-3. **Direito à Explicação (Art. 20 da LGPD)**:
-   - Toda resposta e proposta gerada vem acompanhada de uma justificativa clara em linguagem natural, citando os números objetivos e indicadores determinísticos do sistema em que se baseou.
-4. **Execução 100% Local & Privacidade Absoluta**:
-   - A inferência é executada na infraestrutura local da escola via **Ollama**, sem envio de dados ou dependência de APIs de terceiros em nuvem, garantindo a conformidade com a LGPD e custo zero de requisições.
-5. **Zero Menção a Evasão Escolar**:
-   - O escopo prático do módulo foca exclusivamente na gestão escolar ativa (enturmação, infraestrutura e sustentabilidade de turmas).
+### 🛡️ Princípios Inegociáveis (LGPD e Governança)
+* **Human-in-the-Loop**: A IA gera diagnósticos e recomendações, mas **nunca grava alterações no banco de dados sem a validação e o clique explícito do gestor**.
+* **Direito à Explicação (Art. 20 da LGPD)**: Toda resposta e proposta gerada vem acompanhada de uma justificativa legível em linguagem natural embasada em indicadores objetivos.
+* **Privacidade e Execução 100% Local**: Os dados escolares não saem do ambiente da instituição; não há envio para APIs externas de terceiros em nuvem.
+* **Arquitetura Determinística**: Números, capacidades de salas, balanços e cálculos financeiros são processados diretamente pelo Django ORM. A LLM atua na síntese, contextualização e explicação em linguagem natural.
+* **Escopo Delimitado**: Foco na gestão escolar ativa (Enturmação, Infraestrutura/Salas e Sustentabilidade Financeira). **Zero menção a evasão escolar**.
 
 ---
 
-## 🏛️ Três Motores Principais de Apoio à Decisão
+## 💻 2. Especificações de Hardware e Software
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        ELISE IA - DECISION SUPPORT                     │
-├─────────────────────┬──────────────────────┬───────────────────────────┤
-│  1. Enturmação e    │  2. Infraestrutura e │  3. Sustentabilidade      │
-│     Balanceamento   │     Ocupação de Salas│     Financeira de Turmas  │
-├─────────────────────┼──────────────────────┼───────────────────────────┤
-│ • Paridade de gênero│ • Alocação por lotação│ • Ponto de equilíbrio     │
-│ • Equilíbrio etário │ • Choque de horários │   (breakeven de alunos)   │
-│ • Distribuição ética│ • Detecção de salas  │ • Custo docente x receita │
-│   de necessidades   │   ociosas/lotadas    │ • Régua de cobrança e     │
-│   especiais (PNE)   │ • Gestão de labs     │   renegociação preventiva │
-└─────────────────────┴──────────────────────┴───────────────────────────┘
-```
+As especificações abaixo seguem as medições e requisitos estabelecidos no documento oficial do TCC (*Seção 4, Quadros 1, 2 e 3*).
 
----
+### 2.1 Especificações da LLM (Modelo)
+| Característica | Especificação Técnica |
+|---|---|
+| **Modelo** | Llama 3.1 8B (variante ajustada para instruções) |
+| **Desenvolvedor** | Meta |
+| **Identificador no Ollama** | `llama3.1:8b` |
+| **Parâmetros** | ~8,03 bilhões |
+| **Quantização** | Q4_K_M (~4,9 GB de tamanho em disco) |
+| **Janela de Contexto** | Até 128 mil tokens (configurada em 4096 tokens no ELISE) |
+| **Idiomas Oficiais** | Português (Brasil), Inglês, Espanhol, Alemão, Francês, Italiano, etc. |
+| **Temperatura Adotada** | `0.2` (respostas mais determinísticas e analíticas) |
 
-## ⚙️ Arquitetura Técnica
-
-### 1. Modelo de Linguagem (LLM)
-* **Modelo**: Meta Llama 3.1 8B (`llama3.1:8b`).
-* **Quantização**: Q4_K_M (~4,9 GB).
-* **Ambiente de Execução**: Ollama Local (`http://localhost:11434`).
-* **Parâmetros de Inferência**:
-  * `temperature`: `0.2` (respostas determinísticas e consistentes).
-  * `num_ctx`: `4096` tokens.
-  * `timeout`: `120` segundos.
-
-### 2. Camada Determinística (Cálculos no Django)
-Para mitigar alucinações numéricas, a LLM **não realiza cálculos matemáticos**. O Django consulta o banco de dados via ORM, calcula os indicadores de forma determinística e os injeta estruturados no prompt da LLM (RAG Simplificado).
-
----
-
-## 📂 Estrutura de Arquivos (`apps/ia`)
-
-```
-SIGE/apps/ia/
-├── migrations/
-│   └── 0001_initial.py         # Criação das tabelas no banco de dados
-├── services/
-│   ├── __init__.py             # Exportação das interfaces de serviço
-│   ├── llm_service.py          # Integração direta com a API do Ollama (Llama 3.1)
-│   └── contexto.py             # Montagem do resumo estruturado de dados do ELISE
-├── admin.py                    # Gestão e auditoria de conversas e propostas
-├── apps.py                     # Configuração da aplicação Django
-├── models.py                   # SessaoAssistente, MensagemAssistente, PropostaDecisao
-├── urls.py                     # Rotas REST (/ia/chat/, /ia/status/, /ia/propostas/)
-└── views.py                    # Views protegidas com autenticação JWT
-```
-
----
-
-## 🔌 Endpoints da API REST
-
-| Método | Endpoint | Descrição |
+### 2.2 Requisitos de Hardware e Ambiente
+| Recurso | Requisito Mínimo Recomendado | Configuração de Teste (TCC) |
 |---|---|---|
-| `GET` | `/ia/status/` | Status rápido de prontidão do assistente. |
-| `GET` | `/ia/status/detalhado/` | Diagnóstico de conexão do Ollama, modelo ativo e métricas. |
-| `POST` | `/ia/chat/` | Envio de pergunta do gestor e recebimento da resposta assistida. |
-| `POST` | `/ia/propostas/<id>/acao/` | Aprovação (`APROVAR`) ou Rejeição (`REJEITAR`) de proposta. |
+| **Memória RAM** | 8 GB livres (ao menos 12 GB no total do sistema) | 12 GB RAM (~11,8 GB utilizáveis) |
+| **Processador** | CPU quad-core 2.5 GHz ou superior | CPU de ~3.0 GHz (inferência em CPU) |
+| **Armazenamento** | 10 GB de espaço livre em disco | HDD / SSD com espaço livre para o modelo |
+| **GPU (Opcional)** | Não obrigatória (acelera a inferência via CUDA/Vulkan se houver) | Execução validada em CPU |
+| **Sistema Operacional**| Windows 10/11 (64-bit), Linux ou macOS | Windows 10/11 |
+| **Python** | Python 3.11 a 3.14 (compatível com Django 6.0) | Python 3.14 |
 
 ---
 
-## 🛠️ Comandos de Gestão do Ollama
+## 📥 3. Links Oficiais para Download
 
-Para gerenciar o motor de inferência local no terminal:
+| Recurso | Link Oficial de Download |
+|---|---|
+| **Ollama para Windows (Instalador .exe)** | [https://ollama.com/download/windows](https://ollama.com/download/windows) |
+| **Download Direto do Instalador Windows** | [https://ollama.com/download/OllamaSetup.exe](https://ollama.com/download/OllamaSetup.exe) |
+| **Ollama para Linux (Script cURL)** | [https://ollama.com/download/linux](https://ollama.com/download/linux) |
+| **Ollama para macOS (.zip)** | [https://ollama.com/download/mac](https://ollama.com/download/mac) |
+| **Repositório do Modelo Llama 3.1** | [https://ollama.com/library/llama3.1](https://ollama.com/library/llama3.1) |
+| **Repositório Oficial do Ollama (GitHub)**| [https://github.com/ollama/ollama](https://github.com/ollama/ollama) |
 
+---
+
+## 🚀 4. Passo a Passo de Instalação e Configuração
+
+### Passo 1: Instalação do Ollama no Windows
+1. Baixe o instalador oficial através do link: [OllamaSetup.exe](https://ollama.com/download/OllamaSetup.exe).
+2. Execute o instalador `OllamaSetup.exe` (ou via terminal com `.\OllamaSetup.exe /silent`).
+3. Verifique se o executável foi adicionado ao PATH do Windows abrindo um novo terminal PowerShell:
+   ```powershell
+   ollama --version
+   ```
+   *(Deverá exibir a versão instalada, ex: `ollama version is 0.40.15`)*.
+
+### Passo 2: Baixar o Modelo Llama 3.1 8B
+No terminal PowerShell, execute o comando de download (~4,9 GB):
 ```powershell
-# 1. Iniciar o servidor Ollama (se não estiver em background)
+ollama pull llama3.1:8b
+```
+*(O Ollama fará o download das camadas e validará o hash SHA-256 automaticamente).*
+
+### Passo 3: Configurar o Ambiente Virtual Python do SIGE
+Abra o terminal na raiz do projeto (`c:\Users\gu268\Projetos\Django-projetos`):
+```powershell
+# 1. Ativar o ambiente virtual
+.\venv\Scripts\Activate.ps1
+
+# 2. Instalar a biblioteca cliente do Ollama
+pip install ollama
+```
+
+### Passo 4: Executar as Migrações do App de IA no Django
+Navegue até o diretório `SIGE` com o `venv` ativado:
+```powershell
+cd SIGE
+python manage.py migrate ia
+```
+*(Isso criará as tabelas `ia_sessaoassistente`, `ia_mensagemassistente` e `ia_propostadecisao` no banco de dados).*
+
+---
+
+## 🖥️ 5. Comandos de Gerenciamento da LLM
+
+| Objetivo | Comando no Terminal |
+|---|---|
+| **Iniciar o servidor Ollama** | `ollama serve` |
+| **Listar modelos instalados localmente** | `ollama list` |
+| **Verificar uso de memória e CPU/GPU** | `ollama ps` |
+| **Testar o modelo interativamente no terminal** | `ollama run llama3.1:8b` |
+| **Descarregar o modelo da memória RAM** | `ollama stop llama3.1:8b` |
+| **Excluir o modelo do disco (se necessário)** | `ollama rm llama3.1:8b` |
+
+---
+
+## 🐍 6. Como Executar o Sistema Completo
+
+Para rodar o ecossistema completo com a IA operacional:
+
+### 1º Terminal: Iniciar o Ollama (Motor de Inferência)
+```powershell
 ollama serve
+```
+> *O serviço estará escutando no endereço `http://127.0.0.1:11434`.*
 
-# 2. Listar modelos baixados
-ollama list
+### 2º Terminal: Iniciar o Servidor Django (SIGE)
+```powershell
+cd c:\Users\gu268\Projetos\Django-projetos
+.\venv\Scripts\Activate.ps1
+cd SIGE
+python manage.py runserver 8000
+```
+> *O backend estará acessível em `http://127.0.0.1:8000/`.*
 
-# 3. Verificar status do modelo e uso de memória
-ollama ps
+---
 
-# 4. Descarregar o modelo da memória RAM
-ollama stop llama3.1:8b
+## 🧪 7. Testes de Validação e Verificação da API
+
+### Teste 1: Testar a API nativa do Ollama via cURL
+No prompt de comando ou PowerShell:
+```powershell
+curl http://localhost:11434/api/chat -d '{"model":"llama3.1:8b","messages":[{"role":"user","content":"Explique o que é o sistema ELISE em uma frase."}],"stream":false}'
+```
+
+### Teste 2: Testar a comunicação via Python
+Execute no terminal com o ambiente virtual ativado:
+```powershell
+python -c "from ollama import chat; r = chat(model='llama3.1:8b', messages=[{'role': 'user', 'content': 'Olá, confirme se está pronto.'}]); print(r.message.content)"
+```
+
+### Teste 3: Checar o status da IA no Django
+Acesse via navegador ou cURL:
+```http
+GET http://127.0.0.1:8000/ia/status/
+```
+**Resposta esperada (JSON):**
+```json
+{
+  "status": "ready",
+  "assistant": "ELISE IA",
+  "version": "1.0.0",
+  "llm": {
+    "disponivel": true,
+    "host": "http://localhost:11434",
+    "modelo_configurado": "llama3.1:8b",
+    "modelo_presente": true,
+    "modelos_instalados": ["llama3.1:8b"]
+  }
+}
+```
+
+### Teste 4: Enviar pergunta ao Assistente (`POST /ia/chat/`)
+Requisição com autenticação JWT (ou sessão de gestor logado):
+```json
+// POST http://127.0.0.1:8000/ia/chat/
+// Headers: Authorization: Bearer <seu_token_jwt>
+{
+  "pergunta": "Qual é a situação de ocupação das salas e matrículas ativas hoje?",
+  "tipo": "GERAL"
+}
 ```
 
 ---
 
-## 📚 Referência Acadêmica
-Este módulo faz parte do Trabalho de Conclusão de Curso (TCC) de Guilherme Elise:
-* **Documento Base**: `TCC_Guilherme_Elise.docx`
-* **Cronograma Detalhado**: [docs/CRONOGRAMA_SPRINTS_ELISE_IA.md](file:///c:/Users/gu268/Projetos/Django-projetos/SIGE/docs/CRONOGRAMA_SPRINTS_ELISE_IA.md)
-* **Diário de Evolução Diária**: [docs/DIARIO_EVOLUCAO_IA.md](file:///c:/Users/gu268/Projetos/Django-projetos/SIGE/docs/DIARIO_EVOLUCAO_IA.md)
+## ⚙️ 8. Variáveis de Configuração (`SIGE/config/settings.py`)
+
+As seguintes variáveis controlam o comportamento da IA e podem ser customizadas no arquivo `.env`:
+
+```env
+# Configurações do Assistente ELISE IA
+ELISE_LLM_MODEL=llama3.1:8b
+ELISE_LLM_HOST=http://localhost:11434
+ELISE_LLM_TEMPERATURE=0.2
+ELISE_LLM_CONTEXT_WINDOW=4096
+ELISE_LLM_TIMEOUT=120
+```
+
+---
+
+## ⚠️ 9. Resolução de Problemas (Troubleshooting)
+
+### Problema 1: `Warning: could not connect to a running Ollama instance`
+* **Causa:** O servidor do Ollama não está em execução.
+* **Solução:** Abra um terminal e execute `ollama serve`, ou certifique-se de que o ícone do Ollama está ativo na bandeja do sistema (perto do relógio do Windows).
+
+### Problema 2: `modelo_presente: false` no endpoint `/ia/status/`
+* **Causa:** O modelo `llama3.1:8b` ainda não foi baixado pelo Ollama.
+* **Solução:** Execute `ollama pull llama3.1:8b` no terminal e aguarde a mensagem `success`.
+
+### Problema 3: Erro de Timeout (120 segundos excedidos)
+* **Causa:** Em computadores sem GPU dedicada executando sobre disco HDD, a inferência inicial do Llama 3.1 8B pode demorar mais que o normal.
+* **Solução:** Aumente o valor de `ELISE_LLM_TIMEOUT=180` no `.env` ou diminua a janela de contexto para `ELISE_LLM_CONTEXT_WINDOW=2048`.
+
+### Problema 4: Falha de memória RAM insuficiente
+* **Causa:** Menos de 6 GB de memória RAM livre para o modelo e o sistema operacional simultaneamente.
+* **Solução:** Feche navegadores pesados ou aplicativos desnecessários durante os testes e confirme o consumo com `ollama ps`.
+
+---
+
+## 📚 Documentos Correlatos
+* **Documento do TCC**: [TCC_Guilherme_Elise.docx](file:///c:/Users/gu268/Projetos/Django-projetos/TCC_Guilherme_Elise.docx)
+* **Cronograma das 10 Semanas**: [CRONOGRAMA_SPRINTS_ELISE_IA.md](file:///c:/Users/gu268/Projetos/Django-projetos/SIGE/docs/CRONOGRAMA_SPRINTS_ELISE_IA.md)
+* **Diário de Evolução Diária**: [DIARIO_EVOLUCAO_IA.md](file:///c:/Users/gu268/Projetos/Django-projetos/SIGE/docs/DIARIO_EVOLUCAO_IA.md)
