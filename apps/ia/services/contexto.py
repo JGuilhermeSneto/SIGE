@@ -61,3 +61,4 @@ def montar_contexto(usuario=None, tipo: str = "GERAL") -> str:
         f"{resumo_base}\n"
         "--- FIM DOS DADOS DO SISTEMA ---"
     )
+

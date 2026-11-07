@@ -34,3 +34,4 @@ class PropostaDecisaoAdmin(admin.ModelAdmin):
     list_filter = ("tipo", "status", "criado_em")
     search_fields = ("titulo", "descricao", "justificativa")
     readonly_fields = ("criado_em",)
+

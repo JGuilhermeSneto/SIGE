@@ -115,3 +115,4 @@ def perguntar(pergunta: str, contexto: str = "") -> Dict[str, Any]:
             "modelo": MODELO,
             "aviso": "Protótipo experimental (em modo de contingência).",
         }
+
