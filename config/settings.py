@@ -385,5 +385,5 @@ ELISE_LLM_MODEL = config("ELISE_LLM_MODEL", default="llama3.1:8b")
 ELISE_LLM_HOST = config("ELISE_LLM_HOST", default="http://localhost:11434")
 ELISE_LLM_TEMPERATURE = config("ELISE_LLM_TEMPERATURE", default=0.2, cast=float)
 ELISE_LLM_CONTEXT_WINDOW = config("ELISE_LLM_CONTEXT_WINDOW", default=4096, cast=int)
-ELISE_LLM_TIMEOUT = config("ELISE_LLM_TIMEOUT", default=120, cast=int)
+ELISE_LLM_TIMEOUT = config("ELISE_LLM_TIMEOUT", default=300, cast=int)
 

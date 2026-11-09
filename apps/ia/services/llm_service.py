@@ -11,7 +11,7 @@ MODELO = getattr(settings, "ELISE_LLM_MODEL", "llama3.1:8b")
 HOST = getattr(settings, "ELISE_LLM_HOST", "http://localhost:11434")
 TEMPERATURA = getattr(settings, "ELISE_LLM_TEMPERATURE", 0.2)
 CONTEXT_WINDOW = getattr(settings, "ELISE_LLM_CONTEXT_WINDOW", 4096)
-TIMEOUT = getattr(settings, "ELISE_LLM_TIMEOUT", 120)
+TIMEOUT = getattr(settings, "ELISE_LLM_TIMEOUT", 300)
 
 # Prompt de sistema oficial documentado no TCC (Código 3 e Seção 4.6)
 PROMPT_SISTEMA = (
@@ -90,6 +90,7 @@ def perguntar(pergunta: str, contexto: str = "") -> Dict[str, Any]:
                 "temperature": TEMPERATURA,
                 "num_ctx": CONTEXT_WINDOW,
             },
+            keep_alive="30m",
         )
         latencia = round(time.time() - inicio, 2)
         texto_resposta = resposta.message.content if hasattr(resposta, "message") else resposta["message"]["content"]
