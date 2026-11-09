@@ -50,3 +50,4 @@ print(f"Decidido em: {proposta.decidido_em.strftime('%d/%m/%Y %H:%M:%S')}")
 print(f"Observação do Gestor:\n  \"{proposta.observacao_gestor}\"")
 print(f"Dados estruturados prontos para execução: {proposta.dados_proposta}")
 print("\nFluxo Human-in-the-Loop validado com sucesso!")
+
