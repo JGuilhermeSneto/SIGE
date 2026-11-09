@@ -13,6 +13,7 @@ Este documento registra sistematicamente a evolução diária da Inteligência A
 - [16/09/2026 — Dia 1: Estabilização de Infraestrutura, Diretrizes Éticas e Cronograma](#16092026--dia-1-estabilização-de-infraestrutura-diretrizes-éticas-e-cronograma)
 - [07/11/2026 — Dia 2: Instalação do Ollama, Integração LLM e Fundação do Protótipo](#07112026--dia-2-instalação-do-ollama-integração-llm-e-fundação-do-protótipo)
 - [09/11/2026 — Dia 3: Parametrização INEP, RAG Determinístico e Validação End-to-End da Inferência Local](#09112026--dia-3-parametrização-inep-rag-determinístico-e-validação-end-to-end-da-inferência-local)
+- [09/11/2026 — Dia 4: Implementação do Motor 1 (Enturmação e Balanceamento) e Validação de Recomendações C3](#09112026--dia-4-implementação-do-motor-1-enturmação-e-balanceamento-e-validação-de-recomendações-c3)
 
 ---
 
@@ -124,5 +125,47 @@ Fundamentação metodológica dos dados simulados com base nos Microdados do Cen
 - **Seção 5.2 (Dados Utilizados e Preparação do Ambiente Experimental)**: Detalhamento da metodologia baseada nos microdados do INEP e Quadro 6 preenchido.
 - **Seção 5.3 (Construção do Assistente e Injeção de Contexto)**: Validação da camada de RAG determinístico e arquitetura de dados agregados.
 - **Seção 7.1 (Resultados Preliminares de Desempenho e Acurácia)**: Primeira coleta de métricas reais de tempo de resposta, vazão de tokens e taxa de acerto factual.
+
+---
+
+## 09/11/2026 — Dia 4: Implementação do Motor 1 (Enturmação e Balanceamento) e Validação de Recomendações C3
+
+### 🎯 Foco do Dia
+Construção e integração do **Motor 1 de Apoio à Decisão (Enturmação e Balanceamento)**, detecção determinística de assimetrias entre turmas da mesma série e inclusão de PCDs, geração automática de propostas deliberativas formais (*Human-in-the-Loop*) com Direito à Explicação (Art. 20 LGPD) e validação da Categoria C3 (Pedido de Recomendação) com o modelo Llama 3.1 8B.
+
+### 🛠️ O que foi Desenvolvido / Configurado
+1. **Desenvolvimento do Motor 1 (`apps/ia/services/enturmacao_service.py`)**:
+   - Criação do serviço com parâmetros normativos de referência (Capacidade Mínima: 15, Ideal: 25, Máxima: 30 alunos; Limite sugerido: 2 PCDs/turma).
+   - Função `diagnosticar_enturmacao(ano)`: agrupa turmas por série/turno, calcula ocupação, detecta assimetrias ($\Delta \ge 8$ alunos) e desequilíbrios na alocação de estudantes com necessidades especiais.
+   - Função `gerar_propostas_enturmacao(ano, persistir)`: gera recomendações estruturadas e registra instâncias de `PropostaDecisao` no banco com status `PENDENTE`.
+   - Função `montar_contexto_motor_enturmacao(ano)`: sintetiza o diagnóstico analítico em bloco compacto para consumo da LLM.
+2. **Cenário Experimental de Teste e Migração de Modelos (`scripts/seed_motor1_cenario.py`)**:
+   - Conclusão das migrações do app `usuarios` (adicionando campos de matrícula e histórico no SQLite).
+   - Configuração das turmas do ano letivo de 2026:
+     - `1º Ano A (2026)`: 29 alunos (com 3 estudantes PCD / AEE).
+     - `1º Ano B (2026)`: 12 alunos (0 PCDs) — turma sublotada e sala subutilizada ($\Delta = 17$ alunos).
+     - `2º Ano B (2026)`: 18 alunos (equilibrada).
+     - `3º Ano B (2026)`: 11 alunos (alerta de sublotação crítica).
+3. **Integração com a Camada de Injeção de Contexto (`apps/ia/services/contexto.py`)**:
+   - Atualização de `montar_contexto(tipo="ENTURMACAO")` para acoplar automaticamente o relatório do Motor 1 aos indicadores de infraestrutura predial.
+4. **Resolução de Timeout da LLM e Estabilidade em CPU**:
+   - Ajuste de `ELISE_LLM_TIMEOUT` em `config/settings.py` e `llm_service.py` para 600s, acomodando o tempo total de processamento de prompt e geração na CPU sem quebras de conexão.
+5. **Teste Experimental C3 (Pedido de Recomendação — Tabela 13 do TCC)**:
+   - Execução do script `scripts/test_motor1_c3.py`.
+   - Pergunta avaliada: *"Como gestor escolar, analisando as turmas de 2026, o que você diagnostica sobre o balanceamento entre as turmas do 1º Ano e o que recomenda para o equilíbrio da quantidade de alunos e a inclusão pedagógica de PCDs?"*
+   - Resposta gerada pela LLM: adotou tom estritamente consultivo (*"Sugestão para o gestor"*), citou com exatidão os 29 alunos e 3 PCDs do 1º Ano A vs 12 alunos e 0 PCDs do 1º Ano B, a assimetria crítica de 17 alunos calculada pelo ORM, e recomendou o remanejamento exato de 8 alunos para equalizar as turmas em 21 e 20 alunos.
+6. **Validação do Fluxo Human-in-the-Loop (`scripts/test_proposta_decisao_flow.py`)**:
+   - Validação de que a proposta permanece `PENDENTE` até que o gestor autenticado registre a aprovação explícita com data, autor e justificativa deliberativa, comprovando conformidade com a LGPD.
+
+### 🧠 Aprendizado & Evolução da IA
+- **Conformidade Total com a Categoria C3 (Tabela 13)**: A IA não tomou a decisão autonomamente; ofereceu 3 sugestões pragmáticas e respeitou a delimitação do problema.
+- **Precisão Factual 100% (Zero Alucinação)**: Todos os números citados no parecer em linguagem natural correspondem exatamente ao gabarito SQL do Django ORM.
+- **Métricas Coletadas para a Seção 7**: Latência de inferência no teste C3 de **224,03 segundos** (com ingestão de 668 tokens de contexto analítico e geração de 160 tokens em CPU a ~2,00 tokens/s).
+
+### 📊 Seções do TCC Impactadas
+- **Seção 2.2 e 5.1 (Decisões que Demandam Suporte Analítico)**: Formalização do problema de balanceamento de turmas e ocupação de salas.
+- **Seção 5.3 (Construção do Assistente - Motor 1)**: Documentação do algoritmo heurístico e das regras de negócio pedagógicas.
+- **Seção 7.2 (Avaliação de Recomendações e Human-in-the-Loop)**: Registro dos dados da Categoria C3 e comprovação de governança algorítmica.
+
 
 

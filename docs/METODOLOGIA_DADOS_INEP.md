@@ -56,3 +56,4 @@ Nenhum cálculo estatístico ou agregação quantitativa é delegado ao modelo d
 - O índice de alucinação numérica seja rigorosamente **0%**;
 - Toda afirmação do assistente possa ser conferida diretamente via SQL / Django Admin;
 - O tempo de recuperação dos dados institucionais ocorra em **menos de 50 milissegundos**, deixando o tempo de resposta prioritariamente para a geração da síntese em linguagem natural.
+

@@ -200,16 +200,28 @@ def montar_contexto(usuario=None, tipo: str = "GERAL") -> str:
     """
     blocos = []
 
-    if tipo in ("GERAL", "ENTURMACAO"):
-        blocos.append(_bloco_academico())
-
-    if tipo in ("GERAL", "ENTURMACAO", "INFRAESTRUTURA"):
+    if tipo == "ENTURMACAO":
+        try:
+            from apps.ia.services.enturmacao_service import montar_contexto_motor_enturmacao
+            blocos.append(montar_contexto_motor_enturmacao(ano=2026))
+        except Exception as e:
+            logger.warning(f"Erro ao carregar contexto do Motor 1: {e}")
+            blocos.append(_bloco_academico())
         blocos.append(_bloco_infraestrutura())
 
-    if tipo in ("GERAL", "BIBLIOTECA"):
+    elif tipo == "GERAL":
+        blocos.append(_bloco_academico())
+        blocos.append(_bloco_infraestrutura())
+        blocos.append(_bloco_biblioteca())
+        blocos.append(_bloco_financeiro())
+
+    elif tipo == "INFRAESTRUTURA":
+        blocos.append(_bloco_infraestrutura())
+
+    elif tipo == "BIBLIOTECA":
         blocos.append(_bloco_biblioteca())
 
-    if tipo in ("GERAL", "FINANCEIRO"):
+    elif tipo == "FINANCEIRO":
         blocos.append(_bloco_financeiro())
 
     # Fallback: se tipo desconhecido ou nenhum bloco ativo, usa tudo

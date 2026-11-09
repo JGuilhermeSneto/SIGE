@@ -56,3 +56,4 @@ for m in sessao.mensagens.all():
     print(f"  [{m.papel.upper()}] (latência: {m.latencia_segundos}s): {m.conteudo[:80]}...")
 
 print("\nAuditoria do banco de dados validada com sucesso!")
+
