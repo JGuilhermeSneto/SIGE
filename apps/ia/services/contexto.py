@@ -21,6 +21,43 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
+# Detecção Automática de Domínio / Intenção
+# ---------------------------------------------------------------------------
+
+def detectar_tipo_pergunta(pergunta: str) -> str:
+    """
+    Classifica deterministicamente a pergunta do gestor para selecionar
+    o motor de apoio à decisão mais adequado.
+    
+    Categorias:
+    - ENTURMACAO: turmas, alunos, enturmação, desbalanceamento, PCD, lotação
+    - INFRAESTRUTURA: salas, ambientes, patrimônio, avaria, laboratório, prédio
+    - FINANCEIRO: faturas, mensalidade, break-even, custo, receita, déficit, inadimplência
+    - BIBLIOTECA: acervo, livros, títulos, exemplares, empréstimos
+    - GERAL: visão panorâmica institucional
+    """
+    p = pergunta.lower()
+
+    # Domínio Financeiro
+    if any(k in p for k in ["financ", "fatura", "mensalid", "receita", "custo", "saldo", "inadimpl", "break-even", "breakeven", "deficit", "lucro", "orcament", "pagamento"]):
+        return "FINANCEIRO"
+
+    # Domínio Infraestrutura
+    if any(k in p for k in ["sala", "ambiente", "patrimon", "laborator", "lab", "predio", "mobilia", "conservac", "avaria", "equipament", "espaco"]):
+        return "INFRAESTRUTURA"
+
+    # Domínio Enturmação / Acadêmico
+    if any(k in p for k in ["turma", "enturma", "balance", "desbalance", "pcd", "aee", "aluno", "matricula", "vaga", "lotac", "sublot"]):
+        return "ENTURMACAO"
+
+    # Domínio Biblioteca
+    if any(k in p for k in ["livro", "bibliotec", "acervo", "exemplar", "emprestim"]):
+        return "BIBLIOTECA"
+
+    return "GERAL"
+
+
+# ---------------------------------------------------------------------------
 # Bloco 1 — Indicadores Acadêmicos (Motor 1: Enturmação e Balanceamento)
 # ---------------------------------------------------------------------------
 
@@ -34,11 +71,9 @@ def _bloco_academico() -> str:
         from apps.academico.models.academico import Turma, Disciplina
         from apps.usuarios.models.perfis import Professor
 
-        # Turmas e Matrículas Agregadas
         total_turmas = Turma.objects.count()
         linhas.append(f"[Acadêmico] Total de turmas cadastradas: {total_turmas}")
 
-        # Total de matrículas ativas agregadas (LGPD compliant)
         try:
             from apps.usuarios.models.perfis import Aluno
             total_alunos = Aluno.objects.filter(status_matricula="ATIVO").count()
@@ -46,7 +81,6 @@ def _bloco_academico() -> str:
         except Exception:
             pass
 
-        # Disciplinas e Professores
         total_disciplinas = Disciplina.objects.count()
         linhas.append(f"[Acadêmico] Total de disciplinas cadastradas: {total_disciplinas}")
 
@@ -68,6 +102,12 @@ def _bloco_infraestrutura() -> str:
     """
     Coleta indicadores de ambientes/salas e patrimônio institucional.
     """
+    try:
+        from apps.ia.services.infraestrutura_service import montar_contexto_motor_infraestrutura
+        return montar_contexto_motor_infraestrutura()
+    except Exception as e:
+        logger.warning(f"Motor 2 infraestrutura indisponível, usando fallback: {e}")
+
     linhas = []
     try:
         from apps.infraestrutura.models.patrimonio import (
@@ -82,19 +122,6 @@ def _bloco_infraestrutura() -> str:
         total_ambientes = Ambiente.objects.count()
         linhas.append(f"[Infraestrutura] Total de ambientes/salas cadastrados: {total_ambientes}")
 
-        # Detalhe por tipo de ambiente se disponível
-        try:
-            por_tipo = (
-                Ambiente.objects.values("tipo")
-                .annotate(qtd=Count("id"))
-                .order_by("-qtd")
-            )
-            for item in por_tipo:
-                linhas.append(f"  • {item['tipo']}: {item['qtd']} ambiente(s)")
-        except Exception as e:
-            logger.debug(f"Detalhe de ambientes indisponível: {e}")
-
-        # Patrimônio — contagem total sem expor itens específicos
         total_patrimonio = ItemPatrimonio.objects.count()
         linhas.append(f"[Infraestrutura] Itens de patrimônio registrados: {total_patrimonio}")
 
@@ -118,7 +145,6 @@ def _bloco_biblioteca() -> str:
     try:
         from apps.biblioteca.models.biblioteca import Livro, Emprestimo
 
-        # Acervo total
         resultado = Livro.objects.aggregate(
             total_titulos=Count("id"),
             total_exemplares=Sum("quantidade_total"),
@@ -128,18 +154,15 @@ def _bloco_biblioteca() -> str:
         linhas.append(f"[Biblioteca] Títulos cadastrados no acervo: {total_titulos}")
         linhas.append(f"[Biblioteca] Total de exemplares físicos: {total_exemplares}")
 
-        # Empréstimos ativos (status ATIVO = emprestado; RESERVA = reservado)
         emprestimos_ativos = Emprestimo.objects.filter(
             Q(status="ATIVO") | Q(status="RESERVA"),
             data_devolucao_real__isnull=True,
         ).count()
         linhas.append(f"[Biblioteca] Empréstimos/reservas em aberto: {emprestimos_ativos}")
 
-        # Atrasados
         emprestimos_atrasados = Emprestimo.objects.filter(status="ATRASADO").count()
         linhas.append(f"[Biblioteca] Empréstimos com devolução em atraso: {emprestimos_atrasados}")
 
-        # Exemplares disponíveis (estimativa via contagem)
         disponibilidade = max(0, total_exemplares - emprestimos_ativos)
         linhas.append(f"[Biblioteca] Estimativa de exemplares disponíveis: {disponibilidade}")
 
@@ -156,21 +179,27 @@ def _bloco_biblioteca() -> str:
 
 def _bloco_financeiro() -> str:
     """
-    Coleta indicadores financeiros APENAS agregados.
+    Coleta indicadores financeiros APENAS agregados via Motor 3.
     LGPD: sem valores individuais, sem dados bancários, sem CPF.
     """
+    try:
+        from apps.ia.services.financeiro_service import montar_contexto_motor_financeiro
+        return montar_contexto_motor_financeiro(ano=2026)
+    except Exception as e:
+        logger.warning(f"Motor 3 financeiro indisponível, usando fallback: {e}")
+
     linhas = []
     try:
-        from apps.financeiro.models import Fatura  # noqa: F401 — pode não existir
+        from apps.financeiro.models import Fatura
         pendentes = Fatura.objects.filter(status="PENDENTE").count()
         atrasadas = Fatura.objects.filter(status="ATRASADA").count()
         pagas = Fatura.objects.filter(status="PAGO").count()
         linhas.append(f"[Financeiro] Faturas pagas no período: {pagas}")
         linhas.append(f"[Financeiro] Faturas pendentes: {pendentes}")
-        linhas.append(f"[Financeiro] Faturas em atraso (atenção necessária): {atrasadas}")
+        linhas.append(f"[Financeiro] Faturas em atraso: {atrasadas}")
     except Exception as e:
-        logger.debug(f"Módulo financeiro não disponível neste ambiente: {e}")
-        linhas.append("[Financeiro] Indicadores financeiros agregados não disponíveis no ambiente de testes.")
+        logger.debug(f"Módulo financeiro não disponível: {e}")
+        linhas.append("[Financeiro] Indicadores financeiros não disponíveis no momento.")
 
     return "\n".join(linhas)
 
@@ -187,13 +216,13 @@ def montar_contexto(usuario=None, tipo: str = "GERAL") -> str:
     pronto para ser inserido no prompt da LLM como seção 'DADOS DO ELISE'.
 
     Parâmetros:
-        usuario: instância do usuário Django (opcional, para personalização futura)
+        usuario: instância do usuário Django (opcional)
         tipo: qual bloco priorizar. Valores:
-            - 'GERAL'          → todos os blocos
-            - 'ENTURMACAO'     → acadêmico + infraestrutura
-            - 'INFRAESTRUTURA' → infraestrutura apenas
-            - 'BIBLIOTECA'     → biblioteca apenas
-            - 'FINANCEIRO'     → financeiro apenas
+            - 'GERAL'          → visão executiva consolidada
+            - 'ENTURMACAO'     → Motor 1 (acadêmico e balanceamento)
+            - 'INFRAESTRUTURA' → Motor 2 (ocupação, salas e conservação patrimonial)
+            - 'FINANCEIRO'     → Motor 3 (break-even, sustentabilidade e receita)
+            - 'BIBLIOTECA'     → acervo e empréstimos agregados
 
     Retorno:
         str: bloco de contexto pronto para inserção no prompt
@@ -207,7 +236,15 @@ def montar_contexto(usuario=None, tipo: str = "GERAL") -> str:
         except Exception as e:
             logger.warning(f"Erro ao carregar contexto do Motor 1: {e}")
             blocos.append(_bloco_academico())
+
+    elif tipo == "INFRAESTRUTURA":
         blocos.append(_bloco_infraestrutura())
+
+    elif tipo == "FINANCEIRO":
+        blocos.append(_bloco_financeiro())
+
+    elif tipo == "BIBLIOTECA":
+        blocos.append(_bloco_biblioteca())
 
     elif tipo == "GERAL":
         blocos.append(_bloco_academico())
@@ -215,16 +252,7 @@ def montar_contexto(usuario=None, tipo: str = "GERAL") -> str:
         blocos.append(_bloco_biblioteca())
         blocos.append(_bloco_financeiro())
 
-    elif tipo == "INFRAESTRUTURA":
-        blocos.append(_bloco_infraestrutura())
-
-    elif tipo == "BIBLIOTECA":
-        blocos.append(_bloco_biblioteca())
-
-    elif tipo == "FINANCEIRO":
-        blocos.append(_bloco_financeiro())
-
-    # Fallback: se tipo desconhecido ou nenhum bloco ativo, usa tudo
+    # Fallback
     if not blocos:
         blocos = [
             _bloco_academico(),
@@ -242,7 +270,6 @@ def montar_contexto(usuario=None, tipo: str = "GERAL") -> str:
     )
 
 
-# Alias de compatibilidade com código legado
 def montar_contexto_resumo() -> str:
     """Alias de compatibilidade para montar_contexto(tipo='GERAL')."""
     return montar_contexto(tipo="GERAL")

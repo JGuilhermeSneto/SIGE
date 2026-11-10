@@ -7,7 +7,15 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 
 from .models import SessaoAssistente, MensagemAssistente, PropostaDecisao
-from .services import perguntar, montar_contexto, verificar_disponibilidade_llm
+from .services import (
+    perguntar,
+    montar_contexto,
+    verificar_disponibilidade_llm,
+    detectar_tipo_pergunta,
+    gerar_propostas_enturmacao,
+    gerar_propostas_infraestrutura,
+    gerar_propostas_financeiro,
+)
 
 
 def assistente_status(request):
@@ -59,13 +67,19 @@ class AssistenteChatView(APIView):
     def post(self, request):
         pergunta = request.data.get("pergunta", "").strip()
         sessao_id = request.data.get("sessao_id")
-        tipo_contexto = request.data.get("tipo", "GERAL")
+        tipo_solicitado = request.data.get("tipo", "AUTO")
 
         if not pergunta:
             return Response(
                 {"erro": "Informe uma pergunta para o assistente."},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Roteamento inteligente de contexto
+        if tipo_solicitado in ["AUTO", "GERAL", None, ""]:
+            tipo_contexto = detectar_tipo_pergunta(pergunta)
+        else:
+            tipo_contexto = tipo_solicitado
 
         # 1. Recupera ou cria uma sessão para o usuário
         if sessao_id:
@@ -102,10 +116,66 @@ class AssistenteChatView(APIView):
         return Response({
             "sucesso": resultado.get("sucesso", True),
             "sessao_id": sessao.id,
+            "tipo_contexto_aplicado": tipo_contexto,
             "resposta": resultado["resposta"],
             "latencia_segundos": resultado.get("latencia_segundos"),
             "modelo": resultado.get("modelo"),
             "aviso": resultado.get("aviso", "Protótipo experimental: valide as sugestões."),
+        })
+
+
+class PropostaDecisaoListView(APIView):
+    """
+    Lista propostas de decisão do DSS ou dispara geração automática a partir dos motores.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        status_filtro = request.query_params.get("status")
+        tipo_filtro = request.query_params.get("tipo")
+
+        qs = PropostaDecisao.objects.all().order_by("-criado_em")
+        if status_filtro:
+            qs = qs.filter(status=status_filtro.upper())
+        if tipo_filtro:
+            qs = qs.filter(tipo=tipo_filtro.upper())
+
+        propostas = [
+            {
+                "id": p.id,
+                "tipo": p.tipo,
+                "titulo": p.titulo,
+                "descricao": p.descricao,
+                "justificativa": p.justificativa,
+                "dados_proposta": p.dados_proposta,
+                "status": p.status,
+                "status_display": p.get_status_display(),
+                "decidido_por": p.decidido_por.username if p.decidido_por else None,
+                "decidido_em": p.decidido_em,
+                "observacao_gestor": p.observacao_gestor,
+                "criado_em": p.criado_em,
+            }
+            for p in qs
+        ]
+        return Response({"total": len(propostas), "propostas": propostas})
+
+    def post(self, request):
+        """Dispara a execução de diagnóstico e geração de propostas dos motores."""
+        motor = request.data.get("motor", "TODOS").upper()
+        ano = int(request.data.get("ano", 2026))
+
+        novas = []
+        if motor in ["MOTOR1", "ENTURMACAO", "TODOS"]:
+            novas.extend(gerar_propostas_enturmacao(ano=ano, persistir=True, usuario=request.user))
+        if motor in ["MOTOR2", "INFRAESTRUTURA", "TODOS"]:
+            novas.extend(gerar_propostas_infraestrutura(persistir=True, usuario=request.user))
+        if motor in ["MOTOR3", "FINANCEIRO", "TODOS"]:
+            novas.extend(gerar_propostas_financeiro(ano=ano, persistir=True, usuario=request.user))
+
+        return Response({
+            "mensagem": f"{len(novas)} proposta(s) gerada(s) ou atualizada(s) pelos motores de apoio à decisão.",
+            "total_geradas": len(novas),
+            "propostas": [p.id for p in novas]
         })
 
 
