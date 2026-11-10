@@ -674,6 +674,10 @@
 
       <!-- Adicionar Financeiro para Gestor -->
       {% if request.user.is_superuser or request.user|has_attr:"gestor" %}
+      <a href="{% url 'ia:dashboard' %}"
+        class="{% if request.resolver_match.app_name == 'ia' %}ativo{% endif %}">
+        <i class="fa-solid fa-brain" style="color: var(--accent-violet);"></i> Apoio à Decisão (IA)
+      </a>
       <a href="{% url 'financeiro:painel_financeiro' %}"
         class="{% if request.resolver_match.url_name == 'painel_financeiro' %}ativo{% endif %}">
         <i class="fa-solid fa-money-check-dollar icon-sidebar-financeiro"></i> Finanças (BI)
@@ -832,7 +836,7 @@
       if (window.abrirModalEliseIA) {
         window.abrirModalEliseIA();
       } else {
-        console.log("[ELISE IA] Assistente acionado.");
+        window.location.href = "{% url 'ia:dashboard' %}";
       }
     }
   </script>

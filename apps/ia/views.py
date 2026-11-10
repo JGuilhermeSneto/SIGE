@@ -3,8 +3,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 from .models import SessaoAssistente, MensagemAssistente, PropostaDecisao
 from .services import (
@@ -12,10 +13,45 @@ from .services import (
     montar_contexto,
     verificar_disponibilidade_llm,
     detectar_tipo_pergunta,
+    diagnosticar_enturmacao,
     gerar_propostas_enturmacao,
+    diagnosticar_infraestrutura,
     gerar_propostas_infraestrutura,
+    diagnosticar_financeiro,
     gerar_propostas_financeiro,
 )
+
+
+@login_required
+def dashboard_ia(request):
+    """
+    View visual principal do Dashboard de Apoio à Decisão (DSS) do ELISE IA.
+    Renderiza os 3 motores analíticos, as propostas Human-in-the-Loop e o chat assistente.
+    """
+    llm_status = verificar_disponibilidade_llm()
+
+    # Diagnósticos dos 3 Motores
+    diag_m1 = diagnosticar_enturmacao(ano=2026)
+    diag_m2 = diagnosticar_infraestrutura()
+    diag_m3 = diagnosticar_financeiro(ano=2026)
+
+    # Propostas de Decisão registradas
+    propostas_qs = PropostaDecisao.objects.all().order_by("-criado_em")
+    total_pendentes = propostas_qs.filter(status="PENDENTE").count()
+    total_aprovadas = propostas_qs.filter(status="APROVADA").count()
+    total_rejeitadas = propostas_qs.filter(status="REJEITADA").count()
+
+    contexto = {
+        "llm_status": llm_status,
+        "diag_m1": diag_m1,
+        "diag_m2": diag_m2,
+        "diag_m3": diag_m3,
+        "propostas": propostas_qs,
+        "total_pendentes": total_pendentes,
+        "total_aprovadas": total_aprovadas,
+        "total_rejeitadas": total_rejeitadas,
+    }
+    return render(request, "ia/dashboard.html", contexto)
 
 
 def assistente_status(request):

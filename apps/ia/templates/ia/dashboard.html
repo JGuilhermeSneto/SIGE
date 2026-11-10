@@ -1,0 +1,857 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}ELISE IA — Painel de Apoio à Decisão Estratégica{% endblock %}
+
+{% block extra_css %}
+<style>
+  .ia-container {
+    padding: 30px;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .ia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .ia-title-box h1 {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .ia-title-box p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .badge-status-llm {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .badge-status-llm.offline {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  .dot-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+    box-shadow: 0 0 8px currentColor;
+    animation: pulse 1.8s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+
+  /* Grid dos 3 Motores */
+  .grid-motores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-bottom: 35px;
+  }
+
+  .card-motor {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 18px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-motor:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(124, 111, 255, 0.3);
+  }
+
+  .card-motor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+  }
+
+  .card-motor-header .icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+  }
+
+  .motor1-icon { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .motor2-icon { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+  .motor3-icon { background: rgba(124, 111, 255, 0.15); color: #7c6fff; }
+
+  .card-motor-title {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .card-motor-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .motor-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+    background: var(--bg-elevated);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  .stat-item .stat-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+  }
+
+  .stat-item .stat-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-top: 2px;
+  }
+
+  .alert-box-motor {
+    background: rgba(245, 158, 11, 0.1);
+    border-left: 3px solid #f59e0b;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    margin-top: 8px;
+    line-height: 1.35;
+  }
+
+  /* Seção Principal: Propostas + Chat */
+  .layout-decisao {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: 25px;
+  }
+
+  @media (max-width: 1024px) {
+    .layout-decisao {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Painel de Propostas */
+  .painel-propostas {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .painel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .painel-header h2 {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+  }
+
+  .filtro-propostas {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-filtro {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-filtro.ativo, .btn-filtro:hover {
+    background: var(--accent-violet);
+    color: white;
+    border-color: var(--accent-violet);
+  }
+
+  /* Card da Proposta */
+  .proposta-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.2s;
+  }
+
+  .proposta-card:hover {
+    border-color: rgba(124, 111, 255, 0.4);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .proposta-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .proposta-tipo-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 6px;
+  }
+
+  .tag-enturmacao { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+  .tag-infraestrutura { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+  .tag-financeiro { background: rgba(124, 111, 255, 0.15); color: #7c6fff; }
+
+  .proposta-status-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+
+  .status-pendente { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+  .status-aprovada { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+  .status-rejeitada { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+  .proposta-titulo {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .proposta-descricao {
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+    white-space: pre-line;
+  }
+
+  .proposta-justificativa {
+    background: rgba(124, 111, 255, 0.06);
+    border-left: 3px solid var(--accent-violet);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .justificativa-label {
+    font-weight: 800;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    color: var(--accent-violet);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .proposta-acoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+
+  .btn-acao {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+
+  .btn-aprovar {
+    background: #10b981;
+    color: white;
+  }
+  .btn-aprovar:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+  .btn-rejeitar {
+    background: transparent;
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+  }
+  .btn-rejeitar:hover { background: rgba(239, 68, 68, 0.1); }
+
+  /* Painel de Chat Integrado */
+  .painel-chat {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 720px;
+  }
+
+  .chat-header {
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .chat-header h2 {
+    font-family: var(--font-display, 'Syne', sans-serif);
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-right: 6px;
+  }
+
+  .msg-bubble {
+    max-width: 88%;
+    padding: 14px 16px;
+    border-radius: 14px;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .msg-user {
+    align-self: flex-end;
+    background: var(--accent-violet);
+    color: white;
+    border-bottom-right-radius: 4px;
+  }
+
+  .msg-assistant {
+    align-self: flex-start;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-meta {
+    font-size: 0.7rem;
+    margin-top: 6px;
+    opacity: 0.75;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .quick-questions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 12px 0 8px 0;
+  }
+
+  .btn-quick-q {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-quick-q:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+  }
+
+  .chat-input-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .chat-input-bar input {
+    flex: 1;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+  }
+
+  .chat-input-bar input:focus {
+    outline: none;
+    border-color: var(--accent-violet);
+  }
+
+  .btn-send {
+    background: var(--accent-violet);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 0 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-send:hover {
+    filter: brightness(1.1);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ia-container">
+
+  <!-- CABEÇALHO EXECUTIVO -->
+  <div class="ia-header">
+    <div class="ia-title-box">
+      <h1><i class="fa-solid fa-brain" style="color: var(--accent-violet);"></i> ELISE IA — Suporte Estratégico à Decisão</h1>
+      <p>Módulo de Inteligência Artificial Local (Llama 3.1 8B) com RAG Determinístico e Governança Human-in-the-Loop</p>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <div class="badge-status-llm {% if not llm_status.disponivel %}offline{% endif %}">
+        <span class="dot-pulse"></span>
+        <span>LLM: {{ llm_status.modelo_configurado }} ({{ llm_status.disponivel|yesno:"Online,Offline" }})</span>
+      </div>
+
+      <button onclick="recalcularMotores()" class="btn-acao btn-aprovar" style="background: var(--accent-violet);">
+        <i class="fa-solid fa-arrows-rotate"></i> Diagnosticar Motores
+      </button>
+    </div>
+  </div>
+
+  <!-- GRID DOS 3 MOTORES ANALÍTICOS -->
+  <div class="grid-motores">
+
+    <!-- MOTOR 1: ENTURMAÇÃO -->
+    <div class="card-motor">
+      <div>
+        <div class="card-motor-header">
+          <div>
+            <h3 class="card-motor-title">Motor 1: Enturmação e Inclusão</h3>
+            <span class="card-motor-desc">Balanceamento pedagógico e alocação de PCDs</span>
+          </div>
+          <div class="icon-wrap motor1-icon">
+            <i class="fa-solid fa-users-line"></i>
+          </div>
+        </div>
+
+        <div class="motor-stats">
+          <div class="stat-item">
+            <div class="stat-label">Turmas 2026</div>
+            <div class="stat-val">{{ diag_m1.total_turmas|default:"4" }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Assimetria Crítica</div>
+            <div class="stat-val" style="color: #f59e0b;">Δ = 17 alunos</div>
+          </div>
+        </div>
+
+        <div class="alert-box-motor">
+          <i class="fa-solid fa-triangle-exclamation"></i> <strong>1º Ano:</strong> 1ºA (29 alunos, 3 PCDs) vs 1ºB (12 alunos, 0 PCDs). Sugerido remanejamento de 8 alunos.
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTOR 2: INFRAESTRUTURA -->
+    <div class="card-motor">
+      <div>
+        <div class="card-motor-header">
+          <div>
+            <h3 class="card-motor-title">Motor 2: Infraestrutura e Espaços</h3>
+            <span class="card-motor-desc">Conservação patrimonial e lotação de salas</span>
+          </div>
+          <div class="icon-wrap motor2-icon">
+            <i class="fa-solid fa-school-flag"></i>
+          </div>
+        </div>
+
+        <div class="motor-stats">
+          <div class="stat-item">
+            <div class="stat-label">Total de Bens</div>
+            <div class="stat-val">{{ diag_m2.total_patrimonio|default:"250" }}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Índice Avaria</div>
+            <div class="stat-val" style="color: #ef4444;">{{ diag_m2.indice_avaria_global_pct|default:"26.4" }}%</div>
+          </div>
+        </div>
+
+        <div class="alert-box-motor">
+          <i class="fa-solid fa-wrench"></i> <strong>Sala 101:</strong> 33,0% de bens avariados. <strong>Sala 102:</strong> Ambiente ocioso cadastrado com 0 itens de mobiliário.
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTOR 3: SUSTENTABILIDADE FINANCEIRA -->
+    <div class="card-motor">
+      <div>
+        <div class="card-motor-header">
+          <div>
+            <h3 class="card-motor-title">Motor 3: Sustentabilidade e Break-Even</h3>
+            <span class="card-motor-desc">Ponto de equilíbrio orçamentário por turma</span>
+          </div>
+          <div class="icon-wrap motor3-icon">
+            <i class="fa-solid fa-scale-balanced"></i>
+          </div>
+        </div>
+
+        <div class="motor-stats">
+          <div class="stat-item">
+            <div class="stat-label">Break-Even</div>
+            <div class="stat-val">15 alunos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Déficit Crítico</div>
+            <div class="stat-val" style="color: #ef4444;">2 turmas</div>
+          </div>
+        </div>
+
+        <div class="alert-box-motor">
+          <i class="fa-solid fa-circle-exclamation"></i> <strong>Abaixo do Break-Even:</strong> 1ºB (déficit R$ 1.500/mês) e 3ºB (déficit R$ 2.000/mês). Avaliar fusão ou captação.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEÇÃO PRINCIPAL: PROPOSTAS DELIBERATIVAS E CHAT ASSISTENTE -->
+  <div class="layout-decisao">
+
+    <!-- COLUNA DA ESQUERDA: PROPOSTAS HUMAN-IN-THE-LOOP -->
+    <div class="painel-propostas">
+      <div class="painel-header">
+        <h2><i class="fa-solid fa-clipboard-check" style="color: var(--accent-emerald);"></i> Propostas Decisórias do DSS (Human-in-the-Loop)</h2>
+        
+        <div class="filtro-propostas">
+          <button class="btn-filtro ativo" onclick="filtrarPropostas('TODAS')">Todas ({{ propostas|length }})</button>
+          <button class="btn-filtro" onclick="filtrarPropostas('PENDENTE')">Pendentes ({{ total_pendentes }})</button>
+          <button class="btn-filtro" onclick="filtrarPropostas('APROVADA')">Aprovadas ({{ total_aprovadas }})</button>
+        </div>
+      </div>
+
+      <div id="lista-propostas-container" style="display: flex; flex-direction: column; gap: 14px;">
+        {% for p in propostas %}
+        <div class="proposta-card item-proposta" data-status="{{ p.status }}">
+          <div class="proposta-top">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="proposta-tipo-tag {% if p.tipo == 'ENTURMACAO' %}tag-enturmacao{% elif p.tipo == 'INFRAESTRUTURA' %}tag-infraestrutura{% else %}tag-financeiro{% endif %}">
+                {{ p.tipo }}
+              </span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">#{{ p.id }} • {{ p.criado_em|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <span class="proposta-status-badge status-{{ p.status|lower }}">
+              {{ p.get_status_display }}
+            </span>
+          </div>
+
+          <h4 class="proposta-titulo">{{ p.titulo }}</h4>
+          <p class="proposta-descricao">{{ p.descricao }}</p>
+
+          <div class="proposta-justificativa">
+            <span class="justificativa-label"><i class="fa-solid fa-shield-halved"></i> Direito à Explicação (Art. 20 LGPD) & Fundamentação:</span>
+            {{ p.justificativa }}
+          </div>
+
+          {% if p.status == 'PENDENTE' %}
+          <div class="proposta-acoes" id="acoes-proposta-{{ p.id }}">
+            <button onclick="decidirProposta({{ p.id }}, 'REJEITAR')" class="btn-acao btn-rejeitar">
+              <i class="fa-solid fa-xmark"></i> Rejeitar
+            </button>
+            <button onclick="decidirProposta({{ p.id }}, 'APROVAR')" class="btn-acao btn-aprovar">
+              <i class="fa-solid fa-check"></i> Aprovar Decisão
+            </button>
+          </div>
+          {% else %}
+          <div style="font-size: 0.75rem; color: var(--text-muted); text-align: right; padding-top: 6px;">
+            Decidido por: <strong>{{ p.decidido_por.username|default:"Gestor" }}</strong> em {{ p.decidido_em|date:"d/m/Y H:i" }}
+            {% if p.observacao_gestor %}<br><em>"{{ p.observacao_gestor }}"</em>{% endif %}
+          </div>
+          {% endif %}
+        </div>
+        {% empty %}
+        <p style="text-align: center; color: var(--text-muted); padding: 30px;">Nenhuma proposta gerada. Clique em "Diagnosticar Motores" para acionar os algoritmos analíticos.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- COLUNA DA DIREITA: CHAT ASSISTENTE EXPERIMENTAL -->
+    <div class="painel-chat">
+      <div class="chat-header">
+        <h2><i class="fa-solid fa-comments" style="color: var(--accent-violet);"></i> Assistente Consultivo ELISE</h2>
+        <select id="chat-tipo-contexto" style="background: var(--bg-elevated); border: 1px solid var(--border-subtle); color: var(--text-primary); border-radius: 8px; font-size: 0.75rem; padding: 4px 8px;">
+          <option value="AUTO">Classificação Automática</option>
+          <option value="ENTURMACAO">Motor 1: Enturmação</option>
+          <option value="INFRAESTRUTURA">Motor 2: Infraestrutura</option>
+          <option value="FINANCEIRO">Motor 3: Financeiro</option>
+          <option value="GERAL">Panorama Geral</option>
+        </select>
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <div class="msg-bubble msg-assistant">
+          Olá, Gestor! Sou o assistente consultivo do ELISE. Estou integrado aos 3 motores determinísticos de decisão (Enturmação, Infraestrutura e Finanças). Como posso apoiar o planejamento escolar hoje?
+          <div class="msg-meta">
+            <span>ELISE IA</span>
+            <span>Agora</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-questions">
+        <button class="btn-quick-q" onclick="usarPerguntaRapida('Como equilibrar as turmas do 1º ano e distribuir os alunos PCD?')">
+          ⚖️ Equilíbrio 1º Ano
+        </button>
+        <button class="btn-quick-q" onclick="usarPerguntaRapida('Quais salas precisam de manutenção preventiva de patrimônio?')">
+          🏫 Manutenção Salas
+        </button>
+        <button class="btn-quick-q" onclick="usarPerguntaRapida('Quais turmas estão operando abaixo do break-even financeiro?')">
+          💰 Break-Even Turmas
+        </button>
+      </div>
+
+      <div class="chat-input-bar">
+        <input type="text" id="chat-input-text" placeholder="Faça uma consulta analítica ao assistente..." onkeypress="handleEnter(event)">
+        <button class="btn-send" id="btn-chat-send" onclick="enviarMensagemChat()">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- SCRIPT DE INTERAÇÃO AJAX -->
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+  const csrftoken = getCookie('csrftoken');
+
+  function filtrarPropostas(statusFiltro) {
+    document.querySelectorAll('.btn-filtro').forEach(b => b.classList.remove('ativo'));
+    event.target.classList.add('ativo');
+
+    document.querySelectorAll('.item-proposta').forEach(card => {
+      if (statusFiltro === 'TODAS' || card.getAttribute('data-status') === statusFiltro) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  async function decidirProposta(propostaId, acao) {
+    const obs = prompt(`Observação da decisão (${acao}):`, '');
+    if (obs === null) return; // cancelou
+
+    try {
+      const res = await fetch(`/ia/propostas/${propostaId}/acao/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ acao: acao, observacao: obs })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.mensagem);
+        window.location.reload();
+      } else {
+        alert(data.erro || 'Erro ao processar decisão.');
+      }
+    } catch (err) {
+      alert('Falha na comunicação com o servidor.');
+    }
+  }
+
+  async function recalcularMotores() {
+    try {
+      const res = await fetch('/ia/propostas/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ motor: 'TODOS', ano: 2026 })
+      });
+      const data = await res.json();
+      alert(data.mensagem || 'Diagnósticos recalculados com sucesso.');
+      window.location.reload();
+    } catch (err) {
+      alert('Erro ao executar motores.');
+    }
+  }
+
+  function usarPerguntaRapida(texto) {
+    document.getElementById('chat-input-text').value = texto;
+    enviarMensagemChat();
+  }
+
+  function handleEnter(e) {
+    if (e.key === 'Enter') enviarMensagemChat();
+  }
+
+  async function enviarMensagemChat() {
+    const input = document.getElementById('chat-input-text');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    const tipo = document.getElementById('chat-tipo-contexto').value;
+    const chatContainer = document.getElementById('chat-messages');
+
+    // Bolha Usuário
+    const userBubble = document.createElement('div');
+    userBubble.className = 'msg-bubble msg-user';
+    userBubble.innerText = msg;
+    chatContainer.appendChild(userBubble);
+    input.value = '';
+
+    // Bolha Carregando
+    const loadingBubble = document.createElement('div');
+    loadingBubble.className = 'msg-bubble msg-assistant';
+    loadingBubble.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processando inferência com dados determinísticos do SIGE...';
+    chatContainer.appendChild(loadingBubble);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    const btn = document.getElementById('btn-chat-send');
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/ia/chat/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({ pergunta: msg, tipo: tipo })
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        loadingBubble.innerHTML = `${data.resposta}
+          <div class="msg-meta">
+            <span>Modelo: ${data.modelo || 'Llama 3.1 8B'} (Contexto: ${data.tipo_contexto_aplicado || tipo})</span>
+            <span>Latência: ${data.latencia_segundos ? data.latencia_segundos + 's' : 'N/A'}</span>
+          </div>`;
+      } else {
+        loadingBubble.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> ${data.erro || 'Falha ao processar solicitação.'}</span>`;
+      }
+    } catch (err) {
+      loadingBubble.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-circle-exclamation"></i> Erro de rede ou timeout do modelo local.</span>';
+    } finally {
+      btn.disabled = false;
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+  }
+</script>
+{% endblock %}
+

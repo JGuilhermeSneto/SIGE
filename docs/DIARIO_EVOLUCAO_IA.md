@@ -217,3 +217,44 @@ Conclusão da tríade de motores de apoio à decisão do ELISE:
 - **Seção 5.4 (Arquitetura de Contexto e Roteamento)**: Detalhamento do classificador determinístico de intenções.
 - **Seção 7.2 (Resultados Experimentais C1 a C5)**: Preenchimento das métricas empíricas para a Tabela 13 e Tabela 15.
 - **Seção 7.3 (Métricas Computacionais de Desempenho e Governança)**: Consolidação das medições de latência, uso de RAM (4,68 GB) e vazão de tokens em CPU para a Tabela 16.
+
+---
+
+## 10/11/2026 — Dia 6: Construção da Interface Visual do Gestor (Dashboard DSS), Painel Human-in-the-Loop e Chat Web Integrado
+
+### 🎯 Foco do Dia
+Desenvolvimento da interface gráfica executiva do módulo ELISE IA integrada ao Design System do SIGE:
+1. **Dashboard Executivo de Apoio à Decisão (`/ia/`)**: visualização consolidada em tempo real dos três motores analíticos (Enturmação, Infraestrutura e Finanças) com indicadores críticos e status da LLM local (Ollama).
+2. **Painel Interativo de Deliberação Human-in-the-Loop (Art. 20 LGPD)**: visualização estruturada das instâncias de `PropostaDecisao`, exibição destacada do Direito à Explicação (justificativa normativa) e botões de homologação em 1 clique (Aprovar / Rejeitar) via chamadas assíncronas AJAX.
+3. **Chat Assistente Consultivo Web Integrado**: interface de diálogo em linguagem natural incorporada ao dashboard com seletor de contexto/motor, sugestões de perguntas rápidas validadas no TCC e renderização da latência de inferência.
+4. **Navegação Global e Floating Action Button (FAB)**: inclusão do link "Apoio à Decisão (IA)" no menu lateral do SIGE para perfis de gestão e ativação do botão flutuante com efeito *pulse* em todo o sistema.
+
+### 🛠️ O que foi Desenvolvido / Configurado
+1. **Template do Dashboard (`apps/ia/templates/ia/dashboard.html`)**:
+   - Construído com herança de `core/base.html`, utilizando variáveis de tema do ELISE (`--bg-surface`, `--bg-elevated`, `--accent-violet`, `--accent-cyan`, `--accent-emerald`).
+   - Cards temáticos com ícones FontAwesome e métricas dos 3 motores:
+     * Motor 1: 4 turmas 2026, assimetria $\Delta = 17$ alunos e concentração de 3 PCDs no 1º Ano A.
+     * Motor 2: 7 ambientes, 250 bens patrimoniais, Sala 101 com 33,0% de avaria e Sala 102 ociosa.
+     * Motor 3: Ponto de equilíbrio de 15 alunos/turma e alerta das 2 turmas deficitárias (1ºB e 3ºB).
+   - Seção Human-in-the-Loop com filtros por status (`TODAS`, `PENDENTE`, `APROVADA`) e formulário dinâmico de decisão com observação do gestor.
+   - Painel de Chat com histórico de mensagens, botões de consulta rápida e indicador visual de processamento de inferência.
+2. **Camada de Visão Web (`apps/ia/views.py`)**:
+   - Implementação da view `dashboard_ia(request)` decorada com `@login_required`, reunindo métricas dos 3 motores determinísticos e contadores de propostas deliberativas.
+3. **Mapeamento de Rotas (`apps/ia/urls.py`)**:
+   - Adicionada rota principal `path("", views.dashboard_ia, name="dashboard")`.
+4. **Integração na Barra de Navegação e FAB (`apps/usuarios/templates/core/base.html`)**:
+   - Inclusão do link permanente no menu lateral para gestores e administradores escolares.
+   - Vinculação do botão flutuante (`elise-ai-fab-btn`) para direcionamento direto ao painel executivo.
+5. **Validação de Testes Automatizados**:
+   - `scripts/test_client_ia.py`: teste com `django.test.Client` validando renderização de 60.380 bytes de HTML com código HTTP 200 e 100% das asserções de componentes visuais atendidas.
+   - `scripts/test_client_chat.py`: teste integrado de chamada AJAX para `POST /ia/chat/`, validando auto-detecção de contexto para `INFRAESTRUTURA`, retorno HTTP 200 e resposta fundamentada em 404.53s.
+
+### 🧠 Aprendizado & Evolução da IA
+- **Materialização da Governança Algorítmica**: O conceito teórico de *Human-in-the-Loop* e Direito à Explicação (Art. 20 LGPD) ganhou forma visual tangível. O gestor visualiza a justificativa legal e pedagógica antes de aprovar ou rejeitar uma recomendação.
+- **Roteamento Transparente**: O gestor pode optar por deixar a IA detectar automaticamente a intenção da pergunta ou selecionar manualmente o motor de interesse no dropdown do chat.
+- **Consistência Visual**: A interface do módulo IA manteve estrita consonância estética com os demais módulos do SIGE (Finanças, Infraestrutura e Acadêmico), fortalecendo a viabilidade de adoção institucional.
+
+### 📊 Seções do TCC Impactadas
+- **Seção 5.5 (Interface com o Usuário e Painel de Apoio à Decisão)**: Documentação dos componentes de front-end, layout responsivo e usabilidade.
+- **Seção 5.6 (Governança e Fluxo Operacional Human-in-the-Loop)**: Evidência prática do ciclo de vida da proposta decisória (Geração $\rightarrow$ Explicação $\rightarrow$ Homologação Humana).
+- **Seção 7.4 (Usabilidade e Interação do Gestor Escolar)**: Demonstração da fluidez do diálogo consultivo e dos atalhos de tomada de decisão.
