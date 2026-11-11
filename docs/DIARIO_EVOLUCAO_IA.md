@@ -293,9 +293,18 @@ Validação empírica final do protótipo com cenários de borda (C4 — Dados I
    - Enriquecimento dos nós raiz `disponivel` e `modelo_configurado` para consumo instantâneo pelo front-end.
    - Métricas agregadas de governança: contagem de propostas pendentes, aprovadas e rejeitadas.
 
-4. **Auditoria LGPD e Segurança de Escopo**:
-   - Varredura de integridade em `apps/ia/services/*.py`: confirmação de **zero menções** a "evasão escolar".
-   - Isolamento total de dados sensíveis: nenhum dado nominal ou individual trafega para a LLM.
+4. **Suíte Formal de Testes Automatizados Django (`apps/ia/tests/`)**:
+   - Criação do pacote formal de testes de regressão do app `ia`:
+     - `test_models.py`: 3 testes cobrindo criação de sessões, mensagens e o ciclo de transição de status do `PropostaDecisao`.
+     - `test_contexto.py`: 4 testes cobrindo o classificador de intenção e verificação ativa de não vazamento de dados sensíveis (LGPD).
+     - `test_motores.py`: 6 testes unitários isolados para os Motores 1, 2 e 3 validando algoritmos determinísticos de balanceamento, cálculo de avaria patrimonial e ponto de equilíbrio (*break-even*).
+     - `test_views.py`: 6 testes de integração cobrindo o dashboard visual, controle de acesso e APIs REST.
+   - **Resultado Oficial da Suíte**: `Ran 19 tests in 68.583s — OK` (**19/19 testes aprovados**).
+
+5. **Artefatos Estratégicos de Fechamento**:
+   - Elaboração do **Guia de Demonstração Prática para a Banca** (`docs/GUIA_DEMO_BANCA_TCC.md`).
+   - Elaboração da **Minuta Consolidada das Seções 6 e 7 do TCC** (`docs/MINUTA_MONOGRAFIA_SECOES_6_E_7.md`).
+   - Varredura de integridade em `apps/ia/services/*.py`: confirmação contínua de **zero menções** a "evasão escolar".
 
 ### 🧠 Aprendizado & Evolução da IA
 - **O RAG Determinístico como Barreira Anti-Alucinação**: A experiência experimental de C4 demonstrou cabalmente a eficácia do RAG Estruturado em ambientes de gestão pública e corporativa. Em vez de recorrer aos pesos generativos pré-treinados para "prever" um cenário hipotético em 2030, a delimitação de fronteira factual via `PROMPT_SISTEMA` ancorou a resposta na realidade observável do banco.

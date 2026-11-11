@@ -39,19 +39,30 @@ def detectar_tipo_pergunta(pergunta: str) -> str:
     p = pergunta.lower()
 
     # Domínio Financeiro
-    if any(k in p for k in ["financ", "fatura", "mensalid", "receita", "custo", "saldo", "inadimpl", "break-even", "breakeven", "deficit", "lucro", "orcament", "pagamento"]):
+    if any(k in p for k in [
+        "financ", "fatura", "mensalid", "receita", "custo", "saldo",
+        "inadimpl", "break-even", "breakeven", "deficit", "déficit",
+        "lucro", "orcament", "orçamento", "pagamento", "mensalidade"
+    ]):
         return "FINANCEIRO"
 
     # Domínio Infraestrutura
-    if any(k in p for k in ["sala", "ambiente", "patrimon", "laborator", "lab", "predio", "mobilia", "conservac", "avaria", "equipament", "espaco"]):
+    if any(k in p for k in [
+        "sala", "ambiente", "patrimon", "patrimônio", "laborator", "laboratório",
+        "lab", "predio", "prédio", "mobilia", "mobília", "conservac", "conservação",
+        "avaria", "equipament", "espaco", "espaço", "espaços", "espacos", "bloco"
+    ]):
         return "INFRAESTRUTURA"
 
     # Domínio Enturmação / Acadêmico
-    if any(k in p for k in ["turma", "enturma", "balance", "desbalance", "pcd", "aee", "aluno", "matricula", "vaga", "lotac", "sublot"]):
+    if any(k in p for k in [
+        "turma", "enturma", "balance", "desbalance", "pcd", "aee",
+        "aluno", "matricula", "matrícula", "vaga", "lotac", "lotação", "sublot"
+    ]):
         return "ENTURMACAO"
 
     # Domínio Biblioteca
-    if any(k in p for k in ["livro", "bibliotec", "acervo", "exemplar", "emprestim"]):
+    if any(k in p for k in ["livro", "bibliotec", "biblioteca", "acervo", "exemplar", "emprestim", "empréstimo"]):
         return "BIBLIOTECA"
 
     return "GERAL"
