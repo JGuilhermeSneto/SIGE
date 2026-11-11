@@ -54,6 +54,33 @@ def dashboard_ia(request):
     return render(request, "ia/dashboard.html", contexto)
 
 
+@login_required
+def relatorio_executivo_dss(request):
+    """
+    Gera visão executiva formatada para impressão/PDF do parecer do Conselho Escolar,
+    consolidando diagnósticos dos 3 motores e a memória formal de deliberações (Human-in-the-Loop).
+    """
+    llm_status = verificar_disponibilidade_llm()
+    diag_m1 = diagnosticar_enturmacao(ano=2026)
+    diag_m2 = diagnosticar_infraestrutura()
+    diag_m3 = diagnosticar_financeiro(ano=2026)
+
+    propostas_aprovadas = PropostaDecisao.objects.filter(status="APROVADA").order_by("-decidido_em")
+    propostas_pendentes = PropostaDecisao.objects.filter(status="PENDENTE").order_by("-criado_em")
+
+    contexto = {
+        "llm_status": llm_status,
+        "diag_m1": diag_m1,
+        "diag_m2": diag_m2,
+        "diag_m3": diag_m3,
+        "propostas_aprovadas": propostas_aprovadas,
+        "propostas_pendentes": propostas_pendentes,
+        "data_emissao": timezone.now(),
+        "gestor_emissor": request.user,
+    }
+    return render(request, "ia/relatorio_executivo.html", contexto)
+
+
 def assistente_status(request):
     """
     Endpoint simples legado/compatibilidade para checagem rápida de status.

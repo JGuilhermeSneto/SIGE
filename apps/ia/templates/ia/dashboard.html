@@ -501,11 +501,15 @@
       <p>Módulo de Inteligência Artificial Local (Llama 3.1 8B) com RAG Determinístico e Governança Human-in-the-Loop</p>
     </div>
 
-    <div style="display: flex; gap: 12px; align-items: center;">
+    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
       <div class="badge-status-llm {% if not llm_status.disponivel %}offline{% endif %}">
         <span class="dot-pulse"></span>
         <span>LLM: {{ llm_status.modelo_configurado }} ({{ llm_status.disponivel|yesno:"Online,Offline" }})</span>
       </div>
+
+      <a href="{% url 'ia:relatorio' %}" target="_blank" class="btn-acao" style="background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-subtle); text-decoration: none;">
+        <i class="fa-solid fa-file-invoice"></i> Relatório do Conselho
+      </a>
 
       <button onclick="recalcularMotores()" class="btn-acao btn-aprovar" style="background: var(--accent-violet);">
         <i class="fa-solid fa-arrows-rotate"></i> Diagnosticar Motores

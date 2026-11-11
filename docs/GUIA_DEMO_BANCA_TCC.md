@@ -95,7 +95,19 @@ python manage.py runserver 8000
 
 ---
 
-## 🧪 Passo 5: Prova de Rigor Científico — Execução da Suíte de Testes
+## 📄 Passo 5: Emissão do Parecer Executivo do Conselho Escolar (`/ia/relatorio/`)
+
+1. No cabeçalho do Dashboard, clique no botão **"Relatório do Conselho"** (ou acesse `http://localhost:8000/ia/relatorio/`).
+2. **Apresentar à banca**:
+   - Cabeçalho institucional com carimbo de data/hora e identificação do gestor.
+   - Consolidação tabular e indicadores visuais dos 3 Motores (Enturmação, Infraestrutura e Finanças).
+   - Sessão formal de **Memória de Deliberações Human-in-the-Loop**, listando as propostas aprovadas com a fundamentação do Artigo 20 da LGPD.
+   - Campo para assinaturas formais da Direção Escolar e do Conselho de Administração.
+   - Clique em **"Imprimir / Salvar em PDF"** e mostre a formatação limpa A4 gerada via `@media print`.
+
+---
+
+## 🧪 Passo 6: Prova de Rigor Científico — Execução da Suíte de Testes
 
 Para finalizar a apresentação perante a banca com autoridade técnica irrefutável, abra o terminal e execute:
 
@@ -103,18 +115,19 @@ Para finalizar a apresentação perante a banca com autoridade técnica irrefut�
 python manage.py test apps.ia
 ```
 
-**Resultado esperado a ser projetado para a banca**:
+**Resultado oficial a ser projetado para a banca**:
 ```text
 Creating test database for alias 'default'...
-...................
+....................
 ----------------------------------------------------------------------
-Ran 19 tests in 68.583s
+Ran 20 tests in 73.259s
 
 OK
 ```
 
-**Significado dos 19 testes automatizados**:
+**Significado dos 20 testes automatizados**:
 - **3 testes de modelos**: integridade de sessões, mensagens e ciclo de vida de decisões.
 - **4 testes de contexto RAG**: classificação semântica e conformidade estrita de privacidade (LGPD).
 - **6 testes de motores analíticos**: exatidão dos algoritmos de enturmação, avarias e break-even.
-- **6 testes de interface e views**: autenticação, REST APIs e deliberação via HTTP.
+- **7 testes de interface e views**: autenticação, REST APIs, emissão de parecer executivo e deliberação via HTTP.
+

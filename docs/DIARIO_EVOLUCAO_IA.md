@@ -298,10 +298,15 @@ Validação empírica final do protótipo com cenários de borda (C4 — Dados I
      - `test_models.py`: 3 testes cobrindo criação de sessões, mensagens e o ciclo de transição de status do `PropostaDecisao`.
      - `test_contexto.py`: 4 testes cobrindo o classificador de intenção e verificação ativa de não vazamento de dados sensíveis (LGPD).
      - `test_motores.py`: 6 testes unitários isolados para os Motores 1, 2 e 3 validando algoritmos determinísticos de balanceamento, cálculo de avaria patrimonial e ponto de equilíbrio (*break-even*).
-     - `test_views.py`: 6 testes de integração cobrindo o dashboard visual, controle de acesso e APIs REST.
-   - **Resultado Oficial da Suíte**: `Ran 19 tests in 68.583s — OK` (**19/19 testes aprovados**).
+     - `test_views.py`: 7 testes de integração cobrindo o dashboard visual, controle de acesso, APIs REST e o relatório executivo do conselho escolar.
+   - **Resultado Oficial da Suíte**: `Ran 20 tests in 73.259s — OK` (**20/20 testes aprovados**).
 
-5. **Artefatos Estratégicos de Fechamento**:
+5. **Módulo de Relatório Executivo e Parecer do Conselho Escolar (`/ia/relatorio/`)**:
+   - Criação da view `relatorio_executivo_dss` e do template `relatorio_executivo.html` com layout formal para exportação/impressão em folha A4.
+   - Consolidação dos pareceres dos 3 motores e do histórico de deliberações homologadas com justificativas do Art. 20 da LGPD e campos de assinatura formal.
+   - Integração de botão de acesso direto no cabeçalho do Dashboard executivo.
+
+6. **Artefatos Estratégicos de Fechamento**:
    - Elaboração do **Guia de Demonstração Prática para a Banca** (`docs/GUIA_DEMO_BANCA_TCC.md`).
    - Elaboração da **Minuta Consolidada das Seções 6 e 7 do TCC** (`docs/MINUTA_MONOGRAFIA_SECOES_6_E_7.md`).
    - Varredura de integridade em `apps/ia/services/*.py`: confirmação contínua de **zero menções** a "evasão escolar".

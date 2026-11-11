@@ -40,6 +40,14 @@ class EliseIAViewsTestCase(TestCase):
         self.assertIn("text/html", response["Content-Type"])
         self.assertContains(response, "Apoio à Decisão")
 
+    def test_relatorio_executivo_autenticado_retorna_200(self):
+        """Usuário autenticado acessa /ia/relatorio/ e recebe HTML de impressão do conselho."""
+        response = self.client.get("/ia/relatorio/", HTTP_HOST="localhost")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("text/html", response["Content-Type"])
+        self.assertContains(response, "Parecer Executivo")
+        self.assertContains(response, "Colégio Modelo")
+
     def test_dashboard_ia_anonimo_redireciona(self):
         """Usuário anônimo é redirecionado para a tela de login."""
         anon_client = Client()

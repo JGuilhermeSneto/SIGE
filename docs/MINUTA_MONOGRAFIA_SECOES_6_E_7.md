@@ -84,3 +84,4 @@ Como desdobramentos promissores desta pesquisa acadêmica, recomendam-se:
 1. **Exploração de Modelos Destilados Ultraleves**: Avaliação comparativa de modelos de 3 a 4 bilhões de parâmetros (como Llama 3.2 3B e Qwen 2.5 3B), investigando se a perda de capacidade redacional é compensada pela redução de 60% na latência de CPU.
 2. **Mecanismo de Notificação Push e Websockets**: Evolução da interface do dashboard para processar as inferências em segundo plano via Celery/Redis, alertando o gestor através de notificações em tempo real quando o parecer decisório estiver sintetizado.
 3. **Extensão para Gestão de Estoque Pedagógico**: Incorporação de um quarto motor analítico voltado à distribuição otimizada de materiais didáticos e acervo bibliográfico.
+

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Relatório Executivo de Apoio à Decisão — ELISE IA / SIGE</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+
+    :root {
+      --primary: #1e1b4b;
+      --accent: #4f46e5;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg-card: #f8fafc;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      background: #f1f5f9;
+      margin: 0;
+      padding: 30px;
+      line-height: 1.5;
+    }
+
+    .report-page {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      padding: 45px 55px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    /* Barra de Ações (Oculta na Impressão) */
+    .action-bar {
+      max-width: 900px;
+      margin: 0 auto 20px auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-action {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-print { background: var(--accent); color: white; }
+    .btn-print:hover { filter: brightness(1.1); }
+    .btn-back { background: white; color: var(--muted); border: 1px solid var(--border); }
+    .btn-back:hover { background: #f8fafc; color: var(--text); }
+
+    /* Cabeçalho do Relatório */
+    .report-header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 20px;
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .institution-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 0 0 4px 0;
+    }
+
+    .report-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 0;
+    }
+
+    .meta-box {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    /* Seções */
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 30px 0 15px 0;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Grid de Indicadores */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .kpi-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .kpi-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tabelas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-card);
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .badge-ok { background: #dcfce7; color: #15803d; }
+    .badge-alert { background: #fef3c7; color: #b45309; }
+    .badge-danger { background: #fee2e2; color: #b91c1c; }
+
+    /* Decisões Homologadas */
+    .decisao-item {
+      background: #faf5ff;
+      border: 1px solid #e9d5ff;
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+
+    .decisao-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--primary);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .decisao-text {
+      font-size: 0.82rem;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    .decisao-obs {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--accent);
+      background: white;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #e9d5ff;
+    }
+
+    /* Assinaturas */
+    .signatures-box {
+      margin-top: 50px;
+      padding-top: 25px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      page-break-inside: avoid;
+    }
+
+    .signature-line {
+      text-align: center;
+    }
+
+    .signature-line .line {
+      border-top: 1px solid #94a3b8;
+      margin-bottom: 8px;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .signature-name {
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--primary);
+    }
+
+    .signature-role {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* Rodapé */
+    .report-footer {
+      margin-top: 35px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Print Rules */
+    @media print {
+      body { background: white; padding: 0; }
+      .report-page { box-shadow: none; padding: 20px; max-width: 100%; }
+      .action-bar { display: none !important; }
+      @page { margin: 1.5cm; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de Ações (oculta ao imprimir) -->
+  <div class="action-bar">
+    <a href="{% url 'ia:dashboard' %}" class="btn-action btn-back">
+      <i class="fa-solid fa-arrow-left"></i> Voltar ao Painel
+    </a>
+    <button onclick="window.print()" class="btn-action btn-print">
+      <i class="fa-solid fa-print"></i> Imprimir / Salvar em PDF
+    </button>
+  </div>
+
+  <div class="report-page">
+    <!-- Cabeçalho -->
+    <div class="report-header">
+      <div>
+        <h1 class="institution-name"><i class="fa-solid fa-graduation-cap"></i> SIGE — Colégio Modelo</h1>
+        <p class="report-title">Parecer Executivo de Apoio à Decisão Estratégica (ELISE DSS)</p>
+      </div>
+      <div class="meta-box">
+        <div><strong>Emissão:</strong> {{ data_emissao|date:"d/m/Y H:i" }}</div>
+        <div><strong>Responsável:</strong> {{ gestor_emissor.get_full_name|default:gestor_emissor.username }}</div>
+        <div><strong>Ano Letivo:</strong> 2026</div>
+      </div>
+    </div>
+
+    <!-- 1. Motor 1: Enturmação e Inclusão PCD -->
+    <h2 class="section-title"><i class="fa-solid fa-users-line"></i> 1. Diagnóstico de Enturmação e Inclusão Pedagógica</h2>
+    <div class="kpi-grid">
+      <div class="kpi-box">
+        <div class="kpi-val">{{ diag_m1.total_turmas_avaliadas }}</div>
+        <div class="kpi-label">Turmas Avaliadas</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" style="color: #10b981;">{{ diag_m1.total_equilibradas }}</div>
+        <div class="kpi-label">Turmas Equilibradas</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" style="color: #f59e0b;">{{ diag_m1.total_sublotadas }}</div>
+        <div class="kpi-label">Turmas Sublotadas (<15)</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Turma</th>
+          <th>Turno</th>
+          <th>Matrículas Ativas</th>
+          <th>Alunos PCD</th>
+          <th>Taxa Ocupação</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in diag_m1.turmas %}
+        <tr>
+          <td><strong>{{ t.nome }}</strong></td>
+          <td>{{ t.turno|title }}</td>
+          <td>{{ t.total_alunos }}</td>
+          <td>{{ t.total_pcd }}</td>
+          <td>{{ t.taxa_ocupacao }}%</td>
+          <td>
+            {% if t.status_lotacao == 'EQUILIBRADA' %}
+              <span class="badge badge-ok">Equilibrada</span>
+            {% elif t.status_lotacao == 'SUBLOTADA' %}
+              <span class="badge badge-alert">Sublotada</span>
+            {% else %}
+              <span class="badge badge-danger">Hiperlotada</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- 2. Motor 2: Infraestrutura e Espaços Físicos -->
+    <h2 class="section-title"><i class="fa-solid fa-school"></i> 2. Diagnóstico de Infraestrutura e Conservação Patrimonial</h2>
+    <div class="kpi-grid">
+      <div class="kpi-box">
+        <div class="kpi-val">{{ diag_m2.total_ambientes }}</div>
+        <div class="kpi-label">Ambientes Físicos</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val">{{ diag_m2.total_patrimonio }}</div>
+        <div class="kpi-label">Itens Tombados</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" style="color: {% if diag_m2.indice_avaria_global_pct > 15 %}#ef4444{% else %}#10b981{% endif %};">
+          {{ diag_m2.indice_avaria_global_pct }}%
+        </div>
+        <div class="kpi-label">Taxa Global de Avaria</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ambiente / Sala</th>
+          <th>Itens Alocados</th>
+          <th>Itens Operacionais</th>
+          <th>Itens Avariados</th>
+          <th>Taxa de Avaria</th>
+          <th>Situação</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in diag_m2.ambientes %}
+        <tr>
+          <td><strong>{{ a.nome }}</strong></td>
+          <td>{{ a.total_itens }}</td>
+          <td>{{ a.itens_operacionais }}</td>
+          <td>{{ a.itens_avariados }}</td>
+          <td>{{ a.taxa_avaria_pct }}%</td>
+          <td>
+            {% if a.status == 'OPERACIONAL' %}
+              <span class="badge badge-ok">Operacional</span>
+            {% elif a.status == 'DESPROVIDO_MOBILIARIO' %}
+              <span class="badge badge-alert">Sem Mobiliário</span>
+            {% else %}
+              <span class="badge badge-danger">Alerta Manutenção</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- 3. Motor 3: Sustentabilidade Financeira -->
+    <h2 class="section-title"><i class="fa-solid fa-coins"></i> 3. Sustentabilidade Financeira e Ponto de Equilíbrio (Break-Even)</h2>
+    <div class="kpi-grid">
+      <div class="kpi-box">
+        <div class="kpi-val">{{ diag_m3.break_even_alunos_por_turma }} alunos</div>
+        <div class="kpi-label">Meta de Break-Even</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val">R$ {{ diag_m3.saldo_mensal_operacional|floatformat:2 }}</div>
+        <div class="kpi-label">Saldo Operacional Mensal</div>
+      </div>
+      <div class="kpi-box">
+        <div class="kpi-val" style="color: #ef4444;">{{ diag_m3.turmas_deficitarias|length }}</div>
+        <div class="kpi-label">Turmas Deficitárias</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Turma</th>
+          <th>Alunos</th>
+          <th>Receita Mensal</th>
+          <th>Custo Operacional</th>
+          <th>Saldo Estimado</th>
+          <th>Margem Operacional</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in diag_m3.turmas %}
+        <tr>
+          <td><strong>{{ t.nome }}</strong></td>
+          <td>{{ t.alunos_ativos }} / {{ diag_m3.break_even_alunos_por_turma }}</td>
+          <td>R$ {{ t.receita_mensal_estimada|floatformat:2 }}</td>
+          <td>R$ {{ t.custo_mensal_estimado|floatformat:2 }}</td>
+          <td style="font-weight: 700; color: {% if t.saldo_mensal_estimado >= 0 %}#10b981{% else %}#ef4444{% endif %};">
+            R$ {{ t.saldo_mensal_estimado|floatformat:2 }}
+          </td>
+          <td>
+            {% if t.status_financeiro == 'SUPERAVITARIA' %}
+              <span class="badge badge-ok">Superavitária (+{{ t.margem_pct }}%)</span>
+            {% elif t.status_financeiro == 'SUSTENTAVEL' %}
+              <span class="badge badge-ok">Sustentável (+{{ t.margem_pct }}%)</span>
+            {% else %}
+              <span class="badge badge-danger">Deficitária ({{ t.margem_pct }}%)</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- 4. Deliberações Human-in-the-Loop Homologadas -->
+    <h2 class="section-title"><i class="fa-solid fa-gavel"></i> 4. Memória de Deliberações Human-in-the-Loop (Art. 20 LGPD)</h2>
+    {% if propostas_aprovadas %}
+      {% for p in propostas_aprovadas %}
+      <div class="decisao-item">
+        <div class="decisao-title">
+          <span>{{ p.titulo }}</span>
+          <span class="badge badge-ok"><i class="fa-solid fa-check-circle"></i> Homologada em {{ p.decidido_em|date:"d/m/Y H:i" }}</span>
+        </div>
+        <div class="decisao-text"><strong>Direito à Explicação (Justificativa Algorítmica):</strong> {{ p.justificativa }}</div>
+        {% if p.observacao_gestor %}
+        <div class="decisao-obs"><strong>Parecer do Gestor:</strong> "{{ p.observacao_gestor }}" (Decidido por: {{ p.decidido_por.username }})</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="font-size: 0.85rem; color: var(--muted); font-style: italic;">Nenhuma proposta homologada formalmente até o presente momento.</p>
+    {% endif %}
+
+    <!-- Assinaturas Formais -->
+    <div class="signatures-box">
+      <div class="signature-line">
+        <div class="line"></div>
+        <div class="signature-name">{{ gestor_emissor.get_full_name|default:gestor_emissor.username }}</div>
+        <div class="signature-role">Direção Escolar / Gestão Estratégica</div>
+      </div>
+      <div class="signature-line">
+        <div class="line"></div>
+        <div class="signature-name">Coordenação Pedagógica & Financeira</div>
+        <div class="signature-role">Conselho de Administração Escolar</div>
+      </div>
+    </div>
+
+    <!-- Rodapé -->
+    <div class="report-footer">
+      <div>ELISE IA — Decision Support System (DSS) com Inferência Local e Arquitetura RAG Determinística</div>
+      <div>Conformidade com o Art. 20 da LGPD (Lei nº 13.709/2018)</div>
+    </div>
+  </div>
+
+</body>
+</html>
+
