@@ -78,15 +78,26 @@ class StatusIAView(APIView):
         info_llm = verificar_disponibilidade_llm()
         sessoes_ativas = SessaoAssistente.objects.filter(usuario=request.user, ativo=True).count()
         propostas_pendentes = PropostaDecisao.objects.filter(status="PENDENTE").count()
+        propostas_aprovadas = PropostaDecisao.objects.filter(status="APROVADA").count()
+        propostas_rejeitadas = PropostaDecisao.objects.filter(status="REJEITADA").count()
 
         return Response({
             "status": "online" if info_llm.get("disponivel") else "offline",
             "assistant": "ELISE IA - Apoio à Decisão",
             "usuario": request.user.username,
+            "disponivel": info_llm.get("disponivel", False),
+            "modelo_configurado": info_llm.get("modelo_configurado"),
             "llm": info_llm,
+            "motores": {
+                "enturmacao": {"ativo": True, "descricao": "Motor 1 — Enturmação e Balanceamento"},
+                "infraestrutura": {"ativo": True, "descricao": "Motor 2 — Infraestrutura e Ocupação de Salas"},
+                "financeiro": {"ativo": True, "descricao": "Motor 3 — Sustentabilidade Financeira de Turmas"},
+            },
             "metricas": {
                 "sessoes_ativas": sessoes_ativas,
                 "propostas_pendentes": propostas_pendentes,
+                "propostas_aprovadas": propostas_aprovadas,
+                "propostas_rejeitadas": propostas_rejeitadas,
             },
             "aviso": "Protótipo experimental de IA em ambiente de validação."
         })

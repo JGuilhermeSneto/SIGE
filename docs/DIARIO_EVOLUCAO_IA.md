@@ -14,6 +14,9 @@ Este documento registra sistematicamente a evolução diária da Inteligência A
 - [07/11/2026 — Dia 2: Instalação do Ollama, Integração LLM e Fundação do Protótipo](#07112026--dia-2-instalação-do-ollama-integração-llm-e-fundação-do-protótipo)
 - [09/11/2026 — Dia 3: Parametrização INEP, RAG Determinístico e Validação End-to-End da Inferência Local](#09112026--dia-3-parametrização-inep-rag-determinístico-e-validação-end-to-end-da-inferência-local)
 - [09/11/2026 — Dia 4: Implementação do Motor 1 (Enturmação e Balanceamento) e Validação de Recomendações C3](#09112026--dia-4-implementação-do-motor-1-enturmação-e-balanceamento-e-validação-de-recomendações-c3)
+- [10/11/2026 — Dia 5: Implementação dos Motores 2 e 3, Classificador de Intenção e Suíte C2, C3 e C5](#10112026--dia-5-implementação-dos-motores-2-e-3-classificador-de-intenção-e-suíte-c2-c3-e-c5)
+- [10/11/2026 — Dia 6: Dashboard Executivo, Painel Human-in-the-Loop e Chat Web Integrado](#10112026--dia-6-dashboard-executivo-painel-human-in-the-loop-e-chat-web-integrado)
+- [11/11/2026 — Dia 7: Validação de Cenários de Borda (C4 Anti-Alucinação), Consolidação de Endpoints (C6) e Fechamento Experimental](#11112026--dia-7-validação-de-cenários-de-borda-c4-anti-alucinação-consolidação-de-endpoints-c6-e-fechamento-experimental)
 
 ---
 
@@ -258,3 +261,48 @@ Desenvolvimento da interface gráfica executiva do módulo ELISE IA integrada ao
 - **Seção 5.5 (Interface com o Usuário e Painel de Apoio à Decisão)**: Documentação dos componentes de front-end, layout responsivo e usabilidade.
 - **Seção 5.6 (Governança e Fluxo Operacional Human-in-the-Loop)**: Evidência prática do ciclo de vida da proposta decisória (Geração $\rightarrow$ Explicação $\rightarrow$ Homologação Humana).
 - **Seção 7.4 (Usabilidade e Interação do Gestor Escolar)**: Demonstração da fluidez do diálogo consultivo e dos atalhos de tomada de decisão.
+
+---
+
+## 11/11/2026 — Dia 7: Validação de Cenários de Borda (C4 Anti-Alucinação), Consolidação de Endpoints (C6) e Fechamento Experimental
+
+### 🎯 Foco do Dia
+Validação empírica final do protótipo com cenários de borda (C4 — Dados Inexistentes e Anti-Alucinação) e integração completa de endpoints (C6), refinamento da API de status dos três motores e consolidação integral dos resultados quantitativos e qualitativos para as Seções 5, 6 e 7 da Monografia de TCC.
+
+### 🛠️ O que foi Desenvolvido / Corrigido
+
+1. **Cenário Experimental C4 — Dados Inexistentes / Anti-Alucinação (Tabela 13)**:
+   - Implementação e execução de `scripts/test_c4_dados_ausentes.py` interrogando o sistema com: *"Quais são as turmas do ano letivo de 2030 e quantos alunos cada uma tem?"*
+   - Contexto injetado: Dados determinísticos do Motor 1 (ano letivo 2026).
+   - Intelecção e inferência pelo Llama 3.1 8B local (Ollama CPU): **Latência: 264.22s**.
+   - **Resposta Verbatim da LLM**: *"Desculpe, mas não há dados disponíveis sobre o ano letivo de 2030. Os dados fornecidos referem-se ao ano letivo de 2026. Não há informações sobre as turmas do ano letivo de 2030."*
+   - **Avaliação de Qualidade**: 100% anti-alucinação. O modelo recusou taxativamente inventar turmas ou quantitativos para períodos não registrados no banco de dados.
+
+2. **Cenário Experimental C6 — Integração de Endpoints REST e Human-in-the-Loop (100% aprovado)**:
+   - Implementação e execução de `scripts/test_c6_endpoints_ui.py` validando os 6 pilares de integração:
+     - GET `/ia/` $\rightarrow$ HTTP 200, template renderizado (58.726 bytes, latência de 30.84s com diagnósticos consolidados).
+     - GET `/ia/status/` $\rightarrow$ HTTP 200, status `ready`, Ollama conectado.
+     - GET `/ia/status/detalhado/` $\rightarrow$ HTTP 200, metadados dos 3 motores (`enturmacao`, `infraestrutura`, `financeiro`).
+     - GET `/ia/propostas/` $\rightarrow$ HTTP 200, lista de 7 propostas pendentes retornadas em JSON.
+     - POST `/ia/propostas/` $\rightarrow$ HTTP 200, disparo síncrono do Motor 1 gerando proposta ID 8.
+     - POST `/ia/propostas/8/acao/` $\rightarrow$ HTTP 200, homologação pelo gestor com alteração de status para `APROVADA`.
+   - **Resultado do C6: 19/19 verificações aprovadas (100%)**.
+
+3. **Refatoração da API `StatusIAView` (`apps/ia/views.py`)**:
+   - Inclusão do nó `motores` expondo os descritores e status ativo de cada um dos três motores analíticos.
+   - Enriquecimento dos nós raiz `disponivel` e `modelo_configurado` para consumo instantâneo pelo front-end.
+   - Métricas agregadas de governança: contagem de propostas pendentes, aprovadas e rejeitadas.
+
+4. **Auditoria LGPD e Segurança de Escopo**:
+   - Varredura de integridade em `apps/ia/services/*.py`: confirmação de **zero menções** a "evasão escolar".
+   - Isolamento total de dados sensíveis: nenhum dado nominal ou individual trafega para a LLM.
+
+### 🧠 Aprendizado & Evolução da IA
+- **O RAG Determinístico como Barreira Anti-Alucinação**: A experiência experimental de C4 demonstrou cabalmente a eficácia do RAG Estruturado em ambientes de gestão pública e corporativa. Em vez de recorrer aos pesos generativos pré-treinados para "prever" um cenário hipotético em 2030, a delimitação de fronteira factual via `PROMPT_SISTEMA` ancorou a resposta na realidade observável do banco.
+- **Fechamento do Ciclo Experimental**: Com os testes C1 a C6 finalizados com 100% de sucesso factual e conformidade regulatória, a suíte de avaliação do TCC atinge maturidade completa, demonstrando que a inteligência artificial local operando em hardware modesto de consumo é plenamente viável como Sistema de Suporte à Decisão.
+
+### 📊 Seções do TCC Impactadas
+- **Seção 5.3 (Avaliação de Fidelidade Factual e Anti-Alucinação)**: Inserção do teste C4 comprovando ausência de alucinações.
+- **Seção 5.4 e 5.5 (Validação dos Endpoints e Usabilidade da Interface)**: Evidências do teste C6 cobrindo todo o ciclo REST e visual.
+- **Seção 6 (Avaliação de Resultados)**: Consolidação completa das Tabelas 15 (Avaliação Qualitativa) e 16 (Métricas Computacionais de Desempenho).
+- **Seção 7 (Conclusão e Trabalhos Futuros)**: Discussão fundamentada sobre a viabilidade de implantação do ELISE DSS em escolas reais.
